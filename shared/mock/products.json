@@ -1,0 +1,122 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440001",
+      "name": "标准美式台球桌",
+      "model": "YS-AM-001",
+      "category": "台球桌",
+      "price": 12800,
+      "unit": "台",
+      "image_url": "https://example.com/pool-table-1.jpg",
+      "description": "专业级美式台球桌，适合比赛使用",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440002",
+      "name": "豪华美式台球桌",
+      "model": "YS-AM-002",
+      "category": "台球桌",
+      "price": 18800,
+      "unit": "台",
+      "image_url": "https://example.com/pool-table-2.jpg",
+      "description": "豪华版美式台球桌，实木材质",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440003",
+      "name": "标准中式台球桌",
+      "model": "YS-CN-001",
+      "category": "台球桌",
+      "price": 9800,
+      "unit": "台",
+      "image_url": "https://example.com/pool-table-3.jpg",
+      "description": "标准中式台球桌，适合娱乐场所",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440004",
+      "name": "专业斯诺克台球桌",
+      "model": "YS-SN-001",
+      "category": "台球桌",
+      "price": 25800,
+      "unit": "台",
+      "image_url": "https://example.com/pool-table-4.jpg",
+      "description": "国际标准斯诺克台球桌",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440005",
+      "name": "台球桌专用地毯",
+      "model": "YS-CP-001",
+      "category": "地毯",
+      "price": 180,
+      "unit": "平米",
+      "image_url": "https://example.com/carpet-1.jpg",
+      "description": "高密度台球室专用地毯",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z",
+      "skus": [
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440001",
+          "product_id": "550e8400-e29b-41d4-a716-446655440005",
+          "spec": "3mm厚",
+          "color": "深蓝色",
+          "price": 180,
+          "stock": 1000,
+          "is_active": true
+        },
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440002",
+          "product_id": "550e8400-e29b-41d4-a716-446655440005",
+          "spec": "3mm厚",
+          "color": "墨绿色",
+          "price": 180,
+          "stock": 1000,
+          "is_active": true
+        },
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440003",
+          "product_id": "550e8400-e29b-41d4-a716-446655440005",
+          "spec": "5mm厚",
+          "color": "深蓝色",
+          "price": 220,
+          "stock": 800,
+          "is_active": true
+        },
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440004",
+          "product_id": "550e8400-e29b-41d4-a716-446655440005",
+          "spec": "5mm厚",
+          "color": "墨绿色",
+          "price": 220,
+          "stock": 800,
+          "is_active": true
+        },
+        {
+          "id": "660e8400-e29b-41d4-a716-446655440005",
+          "product_id": "550e8400-e29b-41d4-a716-446655440005",
+          "spec": "5mm厚",
+          "color": "酒红色",
+          "price": 220,
+          "stock": 500,
+          "is_active": true
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "page_size": 20,
+    "total": 5
+  }
+}

@@ -1,0 +1,248 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: staging
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+
+      - name: Deploy Supabase Functions
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      
+      - name: Deploy functions to staging
+        run: |
+          supabase functions deploy --project-ref ${{ secrets.STAGING_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Deploy to Vercel (Staging)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          working-directory: ./
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: Run smoke tests
+        run: |
+          npm run test:smoke
+        env:
+          TEST_BASE_URL: ${{ secrets.STAGING_URL }}
+
+      - name: Notify deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : 'danger',
+                title: 'Staging Deployment',
+                text: `YesSales staging deployment ${{ job.status }}\nCommit: ${process.env.AS_COMMIT}`,
+                fields: [{
+                  title: 'Environment',
+                  value: 'Staging',
+                  short: true
+                }, {
+                  title: 'URL',
+                  value: '${{ secrets.STAGING_URL }}',
+                  short: true
+                }]
+              }]
+            }
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment: production
+    needs: []  # No dependencies for tag deployments
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run full test suite
+        run: npm run test:full
+        env:
+          NODE_ENV: test
+
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.PROD_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PROD_SUPABASE_ANON_KEY }}
+
+      - name: Security scan
+        run: npm audit --audit-level high
+
+      - name: Deploy Supabase Functions
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      
+      - name: Deploy functions to production
+        run: |
+          supabase functions deploy --project-ref ${{ secrets.PROD_PROJECT_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          working-directory: ./
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+
+      - name: Wait for deployment
+        run: sleep 30
+
+      - name: Health check
+        run: |
+          curl -f ${{ secrets.PROD_URL }}/api/health || exit 1
+
+      - name: Run production smoke tests
+        run: |
+          npm run test:smoke:prod
+        env:
+          TEST_BASE_URL: ${{ secrets.PROD_URL }}
+
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            ## 发布说明
+            
+            此版本包含以下更新：
+            - 功能改进和 Bug 修复
+            - 性能优化
+            - 安全更新
+            
+            ### 部署信息
+            - 部署时间: ${{ github.event.head_commit.timestamp }}
+            - 提交SHA: ${{ github.sha }}
+            - 部署环境: Production
+            
+            ### 链接
+            - 生产环境: ${{ secrets.PROD_URL }}
+            - 文档: ${{ secrets.PROD_URL }}/docs
+          draft: false
+          prerelease: false
+
+      - name: Notify production deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          channel: '#production'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : 'danger',
+                title: '🚀 Production Deployment',
+                text: `YesSales production deployment ${{ job.status }}\nVersion: ${process.env.AS_REF}`,
+                fields: [{
+                  title: 'Environment',
+                  value: 'Production',
+                  short: true
+                }, {
+                  title: 'URL',
+                  value: '${{ secrets.PROD_URL }}',
+                  short: true
+                }, {
+                  title: 'Version',
+                  value: '${process.env.AS_REF}',
+                  short: true
+                }]
+              }]
+            }
+
+  rollback:
+    name: Rollback Production
+    runs-on: ubuntu-latest
+    if: failure() && github.ref == 'refs/heads/main'
+    needs: [deploy-production]
+    environment: production
+    
+    steps:
+      - name: Rollback Vercel deployment
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--rollback'
+
+      - name: Notify rollback
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'warning'
+          channel: '#production'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          custom_payload: |
+            {
+              attachments: [{
+                color: 'warning',
+                title: '⚠️ Production Rollback',
+                text: 'YesSales production deployment failed and has been rolled back',
+                fields: [{
+                  title: 'Action',
+                  value: 'Automatic Rollback',
+                  short: true
+                }, {
+                  title: 'Status',
+                  value: 'Completed',
+                  short: true
+                }]
+              }]
+            }

@@ -1,0 +1,214 @@
+name: Dependency Updates
+
+on:
+  schedule:
+    # Run every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  update-dependencies:
+    name: Update Dependencies
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Check for dependency updates
+        id: updates
+        run: |
+          npm outdated --json > outdated.json || true
+          if [ -s outdated.json ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+            echo "Updates available:"
+            cat outdated.json | jq -r 'to_entries[] | "\(.key): \(.value.current) -> \(.value.wanted)"'
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+            echo "No updates available"
+          fi
+
+      - name: Update patch and minor versions
+        if: steps.updates.outputs.has_updates == 'true'
+        run: |
+          # Update patch versions (safe updates)
+          npm update
+          
+          # Check if package-lock.json was modified
+          if git diff --name-only | grep -q package-lock.json; then
+            echo "Dependencies updated"
+            echo "updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "No actual updates applied"
+            echo "updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests after update
+        if: steps.updates.outputs.has_updates == 'true'
+        run: |
+          npm ci
+          npm run lint
+          npm run type-check
+          npm run test
+          npm run build
+
+      - name: Check for security vulnerabilities
+        if: steps.updates.outputs.has_updates == 'true'
+        run: |
+          npm audit --audit-level moderate
+
+      - name: Create Pull Request
+        if: steps.updates.outputs.has_updates == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: update dependencies'
+          title: '🔄 Automated dependency updates'
+          body: |
+            ## 依赖更新摘要
+            
+            这是一个自动生成的 PR，用于更新项目依赖。
+            
+            ### 更新内容
+            - ✅ 补丁版本和次要版本更新
+            - ✅ 所有测试通过
+            - ✅ 安全审计通过
+            - ✅ 构建成功
+            
+            ### 检查清单
+            - [x] 自动测试通过
+            - [x] 安全扫描通过
+            - [ ] 人工代码审查
+            - [ ] 功能测试验证
+            
+            ### 更新详情
+            请查看 `package-lock.json` 的变更详情。
+            
+            ---
+            🤖 此 PR 由 GitHub Actions 自动创建
+          branch: dependency-updates
+          delete-branch: true
+
+  security-updates:
+    name: Security Updates
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Check for security vulnerabilities
+        id: audit
+        run: |
+          npm audit --json > audit.json || true
+          if [ -s audit.json ] && cat audit.json | jq -e '.vulnerabilities | length > 0' > /dev/null; then
+            echo "has_vulnerabilities=true" >> $GITHUB_OUTPUT
+            echo "Security vulnerabilities found:"
+            npm audit
+          else
+            echo "has_vulnerabilities=false" >> $GITHUB_OUTPUT
+            echo "No security vulnerabilities found"
+          fi
+
+      - name: Fix security vulnerabilities
+        if: steps.audit.outputs.has_vulnerabilities == 'true'
+        run: |
+          npm audit fix
+          
+          # Check if package-lock.json was modified
+          if git diff --name-only | grep -q package-lock.json; then
+            echo "Security fixes applied"
+            echo "fixed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No fixes applied"
+            echo "fixed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run tests after security fixes
+        if: steps.audit.outputs.has_vulnerabilities == 'true' && steps.audit.outputs.fixed == 'true'
+        run: |
+          npm ci
+          npm run lint
+          npm run type-check
+          npm run test
+          npm run build
+
+      - name: Create Security PR
+        if: steps.audit.outputs.has_vulnerabilities == 'true' && steps.audit.outputs.fixed == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'security: fix vulnerabilities'
+          title: '🔒 Security vulnerability fixes'
+          body: |
+            ## 安全漏洞修复
+            
+            这是一个紧急的安全更新 PR。
+            
+            ### 修复内容
+            - 🔒 修复了已知的安全漏洞
+            - ✅ 所有测试通过
+            - ✅ 构建成功
+            
+            ### 紧急程度
+            ⚠️ **高优先级** - 请尽快审查和合并
+            
+            ### 检查清单
+            - [x] 自动测试通过
+            - [x] 安全扫描通过
+            - [ ] 紧急代码审查
+            - [ ] 立即部署验证
+            
+            ### 漏洞详情
+            ```
+            $(npm audit)
+            ```
+            
+            ---
+            🚨 此 PR 包含安全修复，建议立即处理
+          branch: security-fixes
+          delete-branch: true
+          labels: |
+            security
+            priority-high
+
+      - name: Notify security team
+        if: steps.audit.outputs.has_vulnerabilities == 'true'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'warning'
+          channel: '#security'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          custom_payload: |
+            {
+              attachments: [{
+                color: 'warning',
+                title: '🔒 Security Vulnerabilities Detected',
+                text: 'Security vulnerabilities found in YesSales dependencies',
+                fields: [{
+                  title: 'Status',
+                  value: '${{ steps.audit.outputs.fixed == "true" && "Fixes Applied" || "Manual Review Required" }}',
+                  short: true
+                }, {
+                  title: 'Action Required',
+                  value: 'Review and merge security PR',
+                  short: true
+                }]
+              }]
+            }

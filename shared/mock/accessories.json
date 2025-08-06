@@ -1,0 +1,98 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440001",
+      "name": "专业球杆",
+      "price": 580,
+      "unit": "支",
+      "image_url": "https://example.com/cue-1.jpg",
+      "description": "进口白蜡木球杆，适合专业选手",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440002",
+      "name": "普通球杆",
+      "price": 180,
+      "unit": "支",
+      "image_url": "https://example.com/cue-2.jpg",
+      "description": "普通练习用球杆",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440003",
+      "name": "比赛用球",
+      "price": 380,
+      "unit": "套",
+      "image_url": "https://example.com/balls-1.jpg",
+      "description": "国际标准比赛用球，16颗装",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440004",
+      "name": "练习用球",
+      "price": 180,
+      "unit": "套",
+      "image_url": "https://example.com/balls-2.jpg",
+      "description": "普通练习用球，16颗装",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440005",
+      "name": "球杆架",
+      "price": 280,
+      "unit": "个",
+      "image_url": "https://example.com/rack-1.jpg",
+      "description": "实木球杆架，可放置6支球杆",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440006",
+      "name": "记分牌",
+      "price": 180,
+      "unit": "个",
+      "image_url": "https://example.com/scoreboard-1.jpg",
+      "description": "电子记分牌",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440007",
+      "name": "台球灯",
+      "price": 1280,
+      "unit": "套",
+      "image_url": "https://example.com/light-1.jpg",
+      "description": "LED专业台球灯，三头设计",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "770e8400-e29b-41d4-a716-446655440008",
+      "name": "巧克粉",
+      "price": 20,
+      "unit": "盒",
+      "image_url": "https://example.com/chalk-1.jpg",
+      "description": "防滑巧克粉",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00Z",
+      "updated_at": "2024-01-01T00:00:00Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "page_size": 20,
+    "total": 8
+  }
+}

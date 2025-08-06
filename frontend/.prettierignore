@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+unpackage/
+build/
+
+# Package files
+*.tgz
+*.tar.gz
+
+# Logs
+*.log
+logs/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+*.lcov
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Auto-generated files
+*.d.ts
+
+# Config files that should maintain their format
+.env*
+.gitignore
+.eslintignore
+
+# Documentation that might have specific formatting
+CHANGELOG.md
+LICENSE
+README.md
+
+# Uni-app specific
+manifest.json
+pages.json

@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+unpackage/
+build/
+
+# Auto-generated files
+*.d.ts
+
+# Config files
+*.config.js
+*.config.ts
+vite.config.*
+vue.config.*
+postcss.config.*
+tailwind.config.*
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Uni-app specific auto-generated
+manifest.json
+pages.json

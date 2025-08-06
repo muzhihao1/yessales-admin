@@ -1,0 +1,171 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": "880e8400-e29b-41d4-a716-446655440001",
+      "quote_no": "20240101-001",
+      "customer_id": "990e8400-e29b-41d4-a716-446655440001",
+      "sales_id": "aa0e8400-e29b-41d4-a716-446655440002",
+      "total_price": 26560,
+      "status": "pending",
+      "remark": "客户考虑中",
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z",
+      "customer": {
+        "id": "990e8400-e29b-41d4-a716-446655440001",
+        "name": "王先生",
+        "phone": "13900000001",
+        "wechat": "wang123",
+        "address": "昆明市斗南花卉市场A区"
+      },
+      "sales": {
+        "id": "aa0e8400-e29b-41d4-a716-446655440002",
+        "username": "sales01",
+        "name": "张三",
+        "role": "sales"
+      },
+      "items": [
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440001",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440001",
+          "product_id": "550e8400-e29b-41d4-a716-446655440001",
+          "type": "product",
+          "name": "标准美式台球桌",
+          "model": "YS-AM-001",
+          "unit_price": 12800,
+          "quantity": 2,
+          "total_price": 25600,
+          "image_url": "https://example.com/pool-table-1.jpg"
+        },
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440002",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440001",
+          "accessory_id": "770e8400-e29b-41d4-a716-446655440001",
+          "type": "accessory",
+          "name": "专业球杆",
+          "unit_price": 580,
+          "quantity": 4,
+          "total_price": 2320,
+          "image_url": "https://example.com/cue-1.jpg"
+        },
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440003",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440001",
+          "accessory_id": "770e8400-e29b-41d4-a716-446655440003",
+          "type": "accessory",
+          "name": "比赛用球",
+          "unit_price": 380,
+          "quantity": 2,
+          "total_price": 760,
+          "image_url": "https://example.com/balls-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": "880e8400-e29b-41d4-a716-446655440002",
+      "quote_no": "20240101-002",
+      "customer_id": "990e8400-e29b-41d4-a716-446655440002",
+      "sales_id": "aa0e8400-e29b-41d4-a716-446655440002",
+      "total_price": 85920,
+      "status": "approved",
+      "remark": "已确认订单",
+      "created_at": "2024-01-01T14:00:00Z",
+      "updated_at": "2024-01-01T15:00:00Z",
+      "customer": {
+        "id": "990e8400-e29b-41d4-a716-446655440002",
+        "name": "刘老板",
+        "phone": "13900000002",
+        "wechat": "liuboss",
+        "address": "昆明市呈贡区万达广场"
+      },
+      "sales": {
+        "id": "aa0e8400-e29b-41d4-a716-446655440002",
+        "username": "sales01",
+        "name": "张三",
+        "role": "sales"
+      },
+      "items": [
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440004",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440002",
+          "product_id": "550e8400-e29b-41d4-a716-446655440002",
+          "type": "product",
+          "name": "豪华美式台球桌",
+          "model": "YS-AM-002",
+          "unit_price": 18800,
+          "quantity": 4,
+          "total_price": 75200,
+          "image_url": "https://example.com/pool-table-2.jpg"
+        },
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440005",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440002",
+          "product_id": "550e8400-e29b-41d4-a716-446655440005",
+          "product_sku_id": "660e8400-e29b-41d4-a716-446655440003",
+          "type": "product",
+          "name": "台球桌专用地毯",
+          "model": "YS-CP-001",
+          "spec": "5mm厚 深蓝色",
+          "unit_price": 220,
+          "quantity": 48,
+          "total_price": 10560,
+          "image_url": "https://example.com/carpet-1.jpg"
+        },
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440006",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440002",
+          "accessory_id": "770e8400-e29b-41d4-a716-446655440007",
+          "type": "accessory",
+          "name": "台球灯",
+          "unit_price": 1280,
+          "quantity": 4,
+          "total_price": 5120,
+          "image_url": "https://example.com/light-1.jpg"
+        }
+      ]
+    },
+    {
+      "id": "880e8400-e29b-41d4-a716-446655440003",
+      "quote_no": "20240102-001",
+      "customer_id": "990e8400-e29b-41d4-a716-446655440003",
+      "sales_id": "aa0e8400-e29b-41d4-a716-446655440003",
+      "total_price": 51600,
+      "status": "completed",
+      "remark": "已完成交付",
+      "created_at": "2024-01-02T09:00:00Z",
+      "updated_at": "2024-01-05T16:00:00Z",
+      "customer": {
+        "id": "990e8400-e29b-41d4-a716-446655440003",
+        "name": "张经理",
+        "phone": "13900000003",
+        "wechat": "zhangmgr",
+        "address": "昆明市五华区金碧路"
+      },
+      "sales": {
+        "id": "aa0e8400-e29b-41d4-a716-446655440003",
+        "username": "sales02",
+        "name": "李四",
+        "role": "sales"
+      },
+      "items": [
+        {
+          "id": "bb0e8400-e29b-41d4-a716-446655440007",
+          "quote_id": "880e8400-e29b-41d4-a716-446655440003",
+          "product_id": "550e8400-e29b-41d4-a716-446655440004",
+          "type": "product",
+          "name": "专业斯诺克台球桌",
+          "model": "YS-SN-001",
+          "unit_price": 25800,
+          "quantity": 2,
+          "total_price": 51600,
+          "image_url": "https://example.com/pool-table-4.jpg"
+        }
+      ]
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "page_size": 20,
+    "total": 3
+  }
+}

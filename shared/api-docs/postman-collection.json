@@ -1,0 +1,527 @@
+{
+  "info": {
+    "name": "耶氏台球报价系统 API",
+    "description": "耶氏台球斗南销售中心报价系统 API 测试集合",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:54321",
+      "type": "string"
+    },
+    {
+      "key": "anonKey",
+      "value": "YOUR_SUPABASE_ANON_KEY",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.request.headers.add({",
+          "  key: 'apikey',",
+          "  value: pm.collectionVariables.get('anonKey')",
+          "});"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "认证 (Auth)",
+      "item": [
+        {
+          "name": "登录",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"Admin@123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/v1/token?grant_type=password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "v1", "token"],
+              "query": [
+                {
+                  "key": "grant_type",
+                  "value": "password"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const response = pm.response.json();",
+                  "  pm.collectionVariables.set('authToken', response.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "获取当前用户",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/v1/user",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "v1", "user"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "产品管理 (Products)",
+      "item": [
+        {
+          "name": "获取产品列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/products?select=*,product_skus(*)&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "*,product_skus(*)"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "获取产品详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/products?id=eq.{{productId}}&select=*,product_skus(*)",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "eq.{{productId}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*,product_skus(*)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "创建产品",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"测试台球桌\",\n  \"model\": \"TEST-001\",\n  \"category\": \"台球桌\",\n  \"price\": 15000,\n  \"unit\": \"台\",\n  \"description\": \"测试产品\",\n  \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "products"]
+            }
+          }
+        },
+        {
+          "name": "更新产品",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price\": 16000,\n  \"description\": \"更新后的描述\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/products?id=eq.{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "eq.{{productId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "删除产品（软删除）",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"is_active\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/products?id=eq.{{productId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "products"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "eq.{{productId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "配件管理 (Accessories)",
+      "item": [
+        {
+          "name": "获取配件列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/accessories?is_active=eq.true&order=created_at.desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "accessories"],
+              "query": [
+                {
+                  "key": "is_active",
+                  "value": "eq.true"
+                },
+                {
+                  "key": "order",
+                  "value": "created_at.desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "创建配件",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"测试球杆\",\n  \"price\": 500,\n  \"unit\": \"支\",\n  \"description\": \"测试配件\",\n  \"is_active\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/accessories",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "accessories"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "客户管理 (Customers)",
+      "item": [
+        {
+          "name": "获取客户列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/customers?order=created_at.desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "customers"],
+              "query": [
+                {
+                  "key": "order",
+                  "value": "created_at.desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "创建客户",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"测试客户\",\n  \"phone\": \"13800000999\",\n  \"wechat\": \"test123\",\n  \"address\": \"测试地址\",\n  \"remark\": \"测试客户备注\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "customers"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "报价单管理 (Quotes)",
+      "item": [
+        {
+          "name": "获取报价单列表",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/quotes?select=*,customer:customers(*),sales:users(*),items:quote_items(*)&order=created_at.desc",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "quotes"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "*,customer:customers(*),sales:users(*),items:quote_items(*)"
+                },
+                {
+                  "key": "order",
+                  "value": "created_at.desc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "获取报价单详情",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/quotes?id=eq.{{quoteId}}&select=*,customer:customers(*),sales:users(*),items:quote_items(*)",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "quotes"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "eq.{{quoteId}}"
+                },
+                {
+                  "key": "select",
+                  "value": "*,customer:customers(*),sales:users(*),items:quote_items(*)"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "更新报价单状态",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"approved\",\n  \"remark\": \"已确认订单\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/quotes?id=eq.{{quoteId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "quotes"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "eq.{{quoteId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Edge Functions",
+      "item": [
+        {
+          "name": "生成报价单号",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/functions/v1/generate-quote-no",
+              "host": ["{{baseUrl}}"],
+              "path": ["functions", "v1", "generate-quote-no"]
+            }
+          }
+        },
+        {
+          "name": "计算报价总价",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    { \"unit_price\": 12800, \"quantity\": 2 },\n    { \"unit_price\": 580, \"quantity\": 4 }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/functions/v1/calculate-quote-total",
+              "host": ["{{baseUrl}}"],
+              "path": ["functions", "v1", "calculate-quote-total"]
+            }
+          }
+        },
+        {
+          "name": "导出报价单",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"startDate\": \"2024-01-01\",\n  \"endDate\": \"2024-12-31\",\n  \"status\": \"approved\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/functions/v1/export-quotes",
+              "host": ["{{baseUrl}}"],
+              "path": ["functions", "v1", "export-quotes"]
+            }
+          }
+        },
+        {
+          "name": "上传图片",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "folder",
+                  "value": "products",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/functions/v1/upload-image",
+              "host": ["{{baseUrl}}"],
+              "path": ["functions", "v1", "upload-image"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "操作日志 (Logs)",
+      "item": [
+        {
+          "name": "获取操作日志",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/rest/v1/operation_logs?select=*,user:users(id,name,username)&order=created_at.desc&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["rest", "v1", "operation_logs"],
+              "query": [
+                {
+                  "key": "select",
+                  "value": "*,user:users(id,name,username)"
+                },
+                {
+                  "key": "order",
+                  "value": "created_at.desc"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

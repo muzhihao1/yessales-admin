@@ -1,0 +1,609 @@
+openapi: 3.0.0
+info:
+  title: 耶氏台球斗南销售中心报价系统 API
+  version: 1.0.0
+  description: 报价系统后端 API 文档
+servers:
+  - url: http://localhost:54321/rest/v1
+    description: 本地开发环境
+  - url: https://yessales.supabase.co/rest/v1
+    description: 生产环境
+
+security:
+  - BearerAuth: []
+
+paths:
+  /products:
+    get:
+      summary: 获取产品列表
+      tags:
+        - Products
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: 产品分类
+        - in: query
+          name: is_active
+          schema:
+            type: boolean
+          description: 是否激活
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+    
+    post:
+      summary: 创建产品
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+
+  /products/{id}:
+    get:
+      summary: 获取产品详情
+      tags:
+        - Products
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    
+    put:
+      summary: 更新产品
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+    
+    delete:
+      summary: 删除产品
+      tags:
+        - Products
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: 删除成功
+
+  /quotes:
+    get:
+      summary: 获取报价单列表
+      tags:
+        - Quotes
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [pending, approved, rejected, completed]
+        - in: query
+          name: customer_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: sales_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Quote'
+    
+    post:
+      summary: 创建报价单
+      tags:
+        - Quotes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateQuoteRequest'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+
+  /quotes/{id}:
+    get:
+      summary: 获取报价单详情
+      tags:
+        - Quotes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+    
+    put:
+      summary: 更新报价单
+      tags:
+        - Quotes
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateQuoteRequest'
+      responses:
+        '200':
+          description: 更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Quote'
+
+  /auth/login:
+    post:
+      summary: 用户登录
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      username:
+                        type: string
+                      role:
+                        type: string
+                      name:
+                        type: string
+
+  /customers:
+    get:
+      summary: 获取客户列表
+      tags:
+        - Customers
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: 搜索关键词
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Customer'
+    
+    post:
+      summary: 创建客户
+      tags:
+        - Customers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCustomerRequest'
+      responses:
+        '201':
+          description: 创建成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        model:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        unit:
+          type: string
+        image_url:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        skus:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductSKU'
+
+    ProductSKU:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        spec:
+          type: string
+        color:
+          type: string
+        price:
+          type: number
+        stock:
+          type: integer
+        is_active:
+          type: boolean
+
+    Quote:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        quote_no:
+          type: string
+        customer_id:
+          type: string
+          format: uuid
+        sales_id:
+          type: string
+          format: uuid
+        total_price:
+          type: number
+        status:
+          type: string
+          enum: [pending, approved, rejected, completed]
+        remark:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        customer:
+          $ref: '#/components/schemas/Customer'
+        sales:
+          $ref: '#/components/schemas/User'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuoteItem'
+
+    QuoteItem:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        quote_id:
+          type: string
+          format: uuid
+        product_id:
+          type: string
+          format: uuid
+        accessory_id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [product, accessory]
+        name:
+          type: string
+        model:
+          type: string
+        spec:
+          type: string
+        unit_price:
+          type: number
+        quantity:
+          type: integer
+        total_price:
+          type: number
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        phone:
+          type: string
+        wechat:
+          type: string
+        address:
+          type: string
+        remark:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        role:
+          type: string
+          enum: [admin, sales]
+        name:
+          type: string
+        phone:
+          type: string
+        is_active:
+          type: boolean
+
+    CreateProductRequest:
+      type: object
+      required:
+        - name
+        - model
+        - category
+        - price
+      properties:
+        name:
+          type: string
+        model:
+          type: string
+        category:
+          type: string
+        price:
+          type: number
+        unit:
+          type: string
+          default: '台'
+        image_url:
+          type: string
+        description:
+          type: string
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        image_url:
+          type: string
+        description:
+          type: string
+        is_active:
+          type: boolean
+
+    CreateQuoteRequest:
+      type: object
+      required:
+        - items
+      properties:
+        customer_id:
+          type: string
+          format: uuid
+        customer:
+          type: object
+          properties:
+            name:
+              type: string
+            phone:
+              type: string
+            wechat:
+              type: string
+            address:
+              type: string
+        items:
+          type: array
+          items:
+            type: object
+            required:
+              - type
+              - name
+              - unit_price
+              - quantity
+            properties:
+              type:
+                type: string
+                enum: [product, accessory]
+              product_id:
+                type: string
+                format: uuid
+              accessory_id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              model:
+                type: string
+              unit_price:
+                type: number
+              quantity:
+                type: integer
+        remark:
+          type: string
+
+    UpdateQuoteRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [pending, approved, rejected, completed]
+        remark:
+          type: string
+
+    CreateCustomerRequest:
+      type: object
+      required:
+        - name
+        - phone
+      properties:
+        name:
+          type: string
+          maxLength: 20
+        phone:
+          type: string
+          pattern: '^\d{11}$'
+        wechat:
+          type: string
+          maxLength: 50
+        address:
+          type: string
+          maxLength: 200
+        remark:
+          type: string
