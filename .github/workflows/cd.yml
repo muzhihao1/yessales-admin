@@ -36,11 +36,14 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
 
       - name: Deploy Supabase Functions
+        if: ${{ secrets.STAGING_PROJECT_REF != '' && secrets.SUPABASE_ACCESS_TOKEN != '' }}
         uses: supabase/setup-cli@v1
         with:
           version: latest
       
       - name: Deploy functions to staging
+        if: ${{ secrets.STAGING_PROJECT_REF != '' && secrets.SUPABASE_ACCESS_TOKEN != '' }}
+        working-directory: ./backend
         run: |
           supabase functions deploy --project-ref ${{ secrets.STAGING_PROJECT_REF }}
         env:
@@ -56,6 +59,7 @@ jobs:
           scope: ${{ secrets.VERCEL_ORG_ID }}
 
       - name: Run smoke tests
+        if: ${{ secrets.STAGING_URL != '' }}
         working-directory: ./frontend
         run: |
           npm run test:smoke
@@ -64,11 +68,12 @@ jobs:
 
       - name: Notify deployment
         uses: 8398a7/action-slack@v3
-        if: always()
+        if: ${{ always() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         with:
           status: ${{ job.status }}
           channel: '#deployments'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
           custom_payload: |
             {
               attachments: [{
@@ -128,11 +133,14 @@ jobs:
         run: npm audit --audit-level high
 
       - name: Deploy Supabase Functions
+        if: ${{ secrets.PROD_PROJECT_REF != '' && secrets.SUPABASE_ACCESS_TOKEN != '' }}
         uses: supabase/setup-cli@v1
         with:
           version: latest
       
       - name: Deploy functions to production
+        if: ${{ secrets.PROD_PROJECT_REF != '' && secrets.SUPABASE_ACCESS_TOKEN != '' }}
+        working-directory: ./backend
         run: |
           supabase functions deploy --project-ref ${{ secrets.PROD_PROJECT_REF }}
         env:
@@ -152,10 +160,12 @@ jobs:
         run: sleep 30
 
       - name: Health check
+        if: ${{ secrets.PROD_URL != '' }}
         run: |
           curl -f ${{ secrets.PROD_URL }}/api/health || exit 1
 
       - name: Run production smoke tests
+        if: ${{ secrets.PROD_URL != '' }}
         working-directory: ./frontend
         run: |
           npm run test:smoke:prod
@@ -190,11 +200,12 @@ jobs:
 
       - name: Notify production deployment
         uses: 8398a7/action-slack@v3
-        if: always()
+        if: ${{ always() && secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         with:
           status: ${{ job.status }}
           channel: '#production'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
           custom_payload: |
             {
               attachments: [{
@@ -235,10 +246,12 @@ jobs:
 
       - name: Notify rollback
         uses: 8398a7/action-slack@v3
+        if: ${{ secrets.SLACK_WEBHOOK != '' }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         with:
           status: 'warning'
           channel: '#production'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
           custom_payload: |
             {
               attachments: [{
