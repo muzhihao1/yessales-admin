@@ -1,0 +1,349 @@
+@import './variables.scss';
+@import './mixins.scss';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+page {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  font-size: $font-size-base;
+  color: $text-color;
+  background-color: $bg-color;
+}
+
+view, scroll-view, swiper, button, input, textarea, label, navigator, image {
+  box-sizing: border-box;
+}
+
+button {
+  font-size: inherit;
+  background-color: transparent;
+  &::after {
+    border: none;
+  }
+}
+
+input, textarea {
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.admin- {
+  &container {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &content {
+    flex: 1;
+    padding: $spacing-base;
+  }
+
+  &card {
+    background-color: #fff;
+    border-radius: $border-radius-base;
+    box-shadow: $box-shadow-base;
+    padding: $spacing-lg;
+    margin-bottom: $spacing-base;
+  }
+
+  &table {
+    width: 100%;
+    background-color: #fff;
+    border-radius: $border-radius-base;
+    overflow: hidden;
+  }
+
+  &form {
+    &-item {
+      margin-bottom: $spacing-md;
+    }
+
+    &-label {
+      display: block;
+      margin-bottom: $spacing-xs;
+      font-weight: 500;
+      color: $text-color-secondary;
+    }
+
+    &-control {
+      width: 100%;
+    }
+  }
+
+  &btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: $spacing-sm $spacing-md;
+    border-radius: $border-radius-sm;
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+
+    &-primary {
+      background-color: $primary-color;
+      color: #fff;
+      &:hover {
+        background-color: darken($primary-color, 10%);
+      }
+    }
+
+    &-default {
+      background-color: #fff;
+      border: 1px solid $border-color;
+      color: $text-color;
+      &:hover {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+    }
+
+    &-danger {
+      background-color: $danger-color;
+      color: #fff;
+      &:hover {
+        background-color: darken($danger-color, 10%);
+      }
+    }
+  }
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.mt-sm { margin-top: $spacing-sm; }
+.mt-md { margin-top: $spacing-md; }
+.mt-lg { margin-top: $spacing-lg; }
+.mb-sm { margin-bottom: $spacing-sm; }
+.mb-md { margin-bottom: $spacing-md; }
+.mb-lg { margin-bottom: $spacing-lg; }
+
+.flex {
+  display: flex;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// 销售端样式
+.sales- {
+  &container {
+    width: 100%;
+    min-height: 100vh;
+    background-color: $bg-color-page;
+  }
+
+  &page {
+    padding: $spacing-base;
+  }
+
+  &card {
+    @include card;
+    margin-bottom: $spacing-base;
+  }
+
+  &section {
+    margin-bottom: $spacing-lg;
+    
+    &-title {
+      font-size: $font-size-large;
+      font-weight: $font-weight-semibold;
+      color: $text-color;
+      margin-bottom: $spacing-base;
+      padding-bottom: $spacing-sm;
+      border-bottom: 2px solid $primary-color;
+    }
+  }
+
+  &form {
+    &-item {
+      margin-bottom: $spacing-md;
+    }
+
+    &-label {
+      display: block;
+      margin-bottom: $spacing-xs;
+      font-size: $font-size-base;
+      font-weight: $font-weight-medium;
+      color: $text-color-secondary;
+      
+      &.required::before {
+        content: '*';
+        color: $danger-color;
+        margin-right: 4px;
+      }
+    }
+
+    &-control {
+      width: 100%;
+    }
+
+    &-error {
+      margin-top: $spacing-xs;
+      font-size: $font-size-small;
+      color: $danger-color;
+    }
+
+    &-help {
+      margin-top: $spacing-xs;
+      font-size: $font-size-small;
+      color: $text-color-regular;
+    }
+  }
+
+  &btn {
+    @include button-base;
+    font-size: $font-size-base;
+    height: 44px;
+    padding: 0 $spacing-lg;
+    
+    &-primary {
+      @include button-variant($primary-color);
+    }
+    
+    &-success {
+      @include button-variant($success-color);
+    }
+    
+    &-danger {
+      @include button-variant($danger-color);
+    }
+    
+    &-default {
+      background-color: $bg-color-white;
+      color: $text-color;
+      border: 1px solid $border-color;
+      
+      &:hover:not([disabled]) {
+        border-color: $primary-color;
+        color: $primary-color;
+      }
+    }
+    
+    &-block {
+      display: block;
+      width: 100%;
+    }
+    
+    &-large {
+      height: 52px;
+      font-size: $font-size-large;
+      padding: 0 $spacing-xl;
+    }
+  }
+
+  &input {
+    @include input-base;
+    
+    &-textarea {
+      min-height: 100px;
+      padding: $spacing-sm $spacing-base;
+      resize: vertical;
+      line-height: 1.5;
+    }
+  }
+
+  &list {
+    background-color: $bg-color-white;
+    border-radius: $border-radius-base;
+    overflow: hidden;
+    
+    &-item {
+      padding: $spacing-base;
+      border-bottom: 1px solid $border-color-lighter;
+      transition: $transition-base;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      &:active {
+        background-color: $bg-color;
+      }
+    }
+  }
+
+  &product {
+    &-card {
+      display: flex;
+      align-items: center;
+      padding: $spacing-base;
+      background-color: $bg-color-white;
+      border-radius: $border-radius-base;
+      box-shadow: $box-shadow-base;
+      margin-bottom: $spacing-sm;
+      
+      &-image {
+        width: 80px;
+        height: 80px;
+        border-radius: $border-radius-base;
+        object-fit: cover;
+        margin-right: $spacing-base;
+      }
+      
+      &-info {
+        flex: 1;
+      }
+      
+      &-name {
+        font-size: $font-size-medium;
+        font-weight: $font-weight-medium;
+        color: $text-color;
+        margin-bottom: $spacing-xs;
+      }
+      
+      &-model {
+        font-size: $font-size-small;
+        color: $text-color-secondary;
+        margin-bottom: $spacing-xs;
+      }
+      
+      &-price {
+        font-size: $font-size-large;
+        font-weight: $font-weight-semibold;
+        color: $danger-color;
+      }
+    }
+  }
+
+  &empty {
+    padding: $spacing-xl;
+    text-align: center;
+    color: $text-color-regular;
+    
+    &-icon {
+      font-size: 48px;
+      margin-bottom: $spacing-base;
+    }
+    
+    &-text {
+      font-size: $font-size-base;
+    }
+  }
+}

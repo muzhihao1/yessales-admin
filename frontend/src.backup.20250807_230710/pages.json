@@ -1,0 +1,184 @@
+{
+  "pages": [
+    {
+      "path": "pages/sales/index",
+      "style": {
+        "navigationBarTitleText": "耶氏台球报价系统",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/sales/quote/create",
+      "style": {
+        "navigationBarTitleText": "新建报价",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/sales/quote/preview",
+      "style": {
+        "navigationBarTitleText": "报价预览",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/sales/history/index",
+      "style": {
+        "navigationBarTitleText": "我的报价",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/sales/history/detail",
+      "style": {
+        "navigationBarTitleText": "报价详情",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/sales/settings/index",
+      "style": {
+        "navigationBarTitleText": "应用设置",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/test/integration",
+      "style": {
+        "navigationBarTitleText": "集成测试",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/test/mobile-adaptation",
+      "style": {
+        "navigationBarTitleText": "移动端适配测试",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/login/index",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/admin/dashboard/index",
+      "style": {
+        "navigationBarTitleText": "仪表盘"
+      }
+    },
+    {
+      "path": "pages/admin/quotes/index",
+      "style": {
+        "navigationBarTitleText": "报价单管理"
+      }
+    },
+    {
+      "path": "pages/admin/quotes/detail",
+      "style": {
+        "navigationBarTitleText": "报价单详情"
+      }
+    },
+    {
+      "path": "pages/admin/products/index",
+      "style": {
+        "navigationBarTitleText": "产品管理"
+      }
+    },
+    {
+      "path": "pages/admin/products/edit",
+      "style": {
+        "navigationBarTitleText": "编辑产品"
+      }
+    },
+    {
+      "path": "pages/admin/users/index",
+      "style": {
+        "navigationBarTitleText": "用户管理"
+      }
+    },
+    {
+      "path": "pages/admin/users/edit",
+      "style": {
+        "navigationBarTitleText": "编辑用户"
+      }
+    },
+    {
+      "path": "pages/admin/customers/index",
+      "style": {
+        "navigationBarTitleText": "客户管理"
+      }
+    },
+    {
+      "path": "pages/admin/customers/detail",
+      "style": {
+        "navigationBarTitleText": "客户详情"
+      }
+    },
+    {
+      "path": "pages/admin/customers/edit",
+      "style": {
+        "navigationBarTitleText": "编辑客户"
+      }
+    },
+    {
+      "path": "pages/admin/logs/index",
+      "style": {
+        "navigationBarTitleText": "操作日志"
+      }
+    },
+    {
+      "path": "pages/admin/settings/index",
+      "style": {
+        "navigationBarTitleText": "系统设置"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "耶氏台球报价系统",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f9fafb",
+    "navigationBarShadow": "rgba(0, 0, 0, 0.08)"
+  },
+  "tabBar": {
+    "color": "#6b7280",
+    "selectedColor": "#2563eb",
+    "borderStyle": "white",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/admin/dashboard/index",
+        "iconPath": "static/tabbar/dashboard.png",
+        "selectedIconPath": "static/tabbar/dashboard-active.png",
+        "text": "仪表盘"
+      },
+      {
+        "pagePath": "pages/admin/quotes/index",
+        "iconPath": "static/tabbar/quotes.png",
+        "selectedIconPath": "static/tabbar/quotes-active.png",
+        "text": "报价单"
+      },
+      {
+        "pagePath": "pages/admin/products/index",
+        "iconPath": "static/tabbar/products.png",
+        "selectedIconPath": "static/tabbar/products-active.png",
+        "text": "产品"
+      },
+      {
+        "pagePath": "pages/admin/customers/index",
+        "iconPath": "static/tabbar/customers.png",
+        "selectedIconPath": "static/tabbar/customers-active.png",
+        "text": "客户"
+      },
+      {
+        "pagePath": "pages/admin/users/index",
+        "iconPath": "static/tabbar/users.png",
+        "selectedIconPath": "static/tabbar/users-active.png",
+        "text": "用户"
+      }
+    ]
+  }
+}

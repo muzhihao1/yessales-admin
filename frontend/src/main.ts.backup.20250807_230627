@@ -1,0 +1,43 @@
+import { createApp } from 'vue'
+import App from './App.vue'
+import Modal from '@/components/admin/Modal.vue'
+import { createAppPinia, initializeStores } from '@/stores'
+import { initializeApi } from '@/api'
+
+// SPA Pattern for UniApp H5 - Direct app creation and mounting
+const app = createApp(App)
+const pinia = createAppPinia()
+
+app.use(pinia)
+
+// Register global components
+app.component('Modal', Modal)
+
+// 初始化API和Stores
+const initializeAppSystems = async () => {
+  try {
+    // 1. 初始化API客户端
+    initializeApi();
+    
+    // 2. 初始化Stores
+    await initializeStores();
+    
+    console.log('🎉 应用系统初始化完成');
+  } catch (error) {
+    console.error('💥 应用系统初始化失败:', error);
+    // 错误处理已在initializeStores中完成
+  }
+};
+
+// Initialize on app mount
+app.mixin({
+  async mounted() {
+    if (this.$el === this.$root.$el) {
+      // 只在根组件挂载时执行一次
+      await initializeAppSystems();
+    }
+  },
+});
+
+// Mount the app to #app
+app.mount('#app')
