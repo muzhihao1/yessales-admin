@@ -15,7 +15,10 @@
     "format": "prettier --write src/",
     "format:check": "prettier --check src/",
     "validate": "npm run type-check && npm run lint:check && npm run format:check",
-    "prepare": "echo 'Skipping validation during deployment'"
+    "prepare": "echo 'Skipping validation during deployment'",
+    "test:full": "echo 'Full test suite placeholder - implement with vitest or other test framework'",
+    "test:smoke": "echo 'Smoke test placeholder - implement basic functionality tests'",
+    "test:smoke:prod": "echo 'Production smoke test placeholder - implement production-specific tests'"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4070520250711001",
