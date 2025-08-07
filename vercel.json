@@ -1,39 +1,33 @@
 {
-  "version": 2,
-  "builds": [
+  "buildCommand": "cd frontend && chmod +x build-vercel.sh && ./build-vercel.sh",
+  "devCommand": "cd frontend && npm run dev:h5",
+  "installCommand": "cd frontend && npm ci --legacy-peer-deps",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
     {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "frontend/dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/admin",
-      "dest": "/index.html"
+      "source": "/admin",
+      "destination": "/index.html"
     },
     {
-      "src": "/admin/(.*)",
-      "dest": "/index.html"
+      "source": "/admin/(.*)",
+      "destination": "/index.html"
     },
     {
-      "src": "/sales", 
-      "dest": "/index.html"
+      "source": "/sales", 
+      "destination": "/index.html"
     },
     {
-      "src": "/sales/(.*)",
-      "dest": "/index.html"
+      "source": "/sales/(.*)",
+      "destination": "/index.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
     {
-      "source": "/.*",
+      "source": "/(.*)",
       "headers": [
         {
           "key": "X-YesSales-Domain",
@@ -41,9 +35,5 @@
         }
       ]
     }
-  ],
-  "buildCommand": "cd frontend && chmod +x build-vercel.sh && ./build-vercel.sh",
-  "devCommand": "cd frontend && npm run dev:h5",
-  "installCommand": "cd frontend && npm ci --legacy-peer-deps",
-  "framework": null
+  ]
 }
