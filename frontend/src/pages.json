@@ -1,6 +1,5 @@
 {
   "pages": [
-    // 销售端页面 (无需登录)
     {
       "path": "pages/sales/index",
       "style": {
@@ -57,8 +56,6 @@
         "navigationStyle": "custom"
       }
     },
-    
-    // 管理端页面 (需要登录)
     {
       "path": "pages/admin/login/index",
       "style": {

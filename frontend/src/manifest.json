@@ -48,7 +48,7 @@
     "title": "耶氏台球报价系统",
     "domain": "",
     "router": {
-      "base": "/admin/"
+      "base": "/"
     }
   },
   "vueVersion": "3"
