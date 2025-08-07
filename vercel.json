@@ -11,8 +11,35 @@
   ],
   "routes": [
     {
+      "src": "/admin",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/sales", 
+      "dest": "/index.html"
+    },
+    {
+      "src": "/sales/(.*)",
+      "dest": "/index.html"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/.*",
+      "headers": [
+        {
+          "key": "X-YesSales-Domain",
+          "value": "true"
+        }
+      ]
     }
   ],
   "buildCommand": "cd frontend && chmod +x build-vercel.sh && ./build-vercel.sh",
