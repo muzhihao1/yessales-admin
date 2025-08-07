@@ -38,14 +38,14 @@
     "vue": "^3.4.21",
     "vue-i18n": "^9.9.0",
     "echarts": "^5.4.3",
-    "vite": "^5.2.8"
+    "vite": "^5.2.8",
+    "@dcloudio/vite-plugin-uni": "3.0.0-4070520250711001"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.8",
     "@dcloudio/uni-automator": "3.0.0-4070520250711001",
     "@dcloudio/uni-cli-shared": "3.0.0-4070520250711001",
     "@dcloudio/uni-stacktracey": "3.0.0-4070520250711001",
-    "@dcloudio/vite-plugin-uni": "3.0.0-4070520250711001",
     "@rushstack/eslint-patch": "^1.7.2",
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^20.11.24",
