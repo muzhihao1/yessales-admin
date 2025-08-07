@@ -1,0 +1,22 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "buildCommand": "cd frontend && chmod +x build-vercel.sh && ./build-vercel.sh",
+  "devCommand": "cd frontend && npm run dev:h5",
+  "installCommand": "cd frontend && npm ci --legacy-peer-deps",
+  "framework": null
+}
