@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd frontend && chmod +x build-vercel.sh && ./build-vercel.sh",
+  "buildCommand": "cd frontend && npm run build:h5",
   "devCommand": "cd frontend && npm run dev:h5",
   "installCommand": "cd frontend && npm ci --legacy-peer-deps",
   "outputDirectory": "frontend/dist",
