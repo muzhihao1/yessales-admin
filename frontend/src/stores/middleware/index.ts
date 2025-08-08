@@ -117,9 +117,9 @@ export class StoreEnhancer {
 
     for (const [key, value] of Object.entries(store)) {
       if (typeof value === 'function') {
-        enhanced[key] = async (...args: any[]) => {
+        enhanced[key] = (...args: any[]) => {
           // Direct execution - error handling delegated to error handler utility
-          return await value.apply(store, args)
+          return value.apply(store, args)
         }
       }
     }

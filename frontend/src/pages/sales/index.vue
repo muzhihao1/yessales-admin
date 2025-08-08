@@ -117,24 +117,29 @@
         </view>
         
         <!-- Loading state with skeleton -->
-        <Transition name="fade" v-if="productsLoading">
-          <view class="products-loading">
-            <LoadingSkeleton 
-              variant="product" 
-              :item-count="6" 
-              custom-class="product-skeleton"
-            />
-          </view>
-        </Transition>
+        <template v-if="productsLoading">
+          <Transition name="fade">
+            <view class="products-loading">
+              <LoadingSkeleton 
+                variant="product" 
+                :item-count="6" 
+                custom-class="product-skeleton"
+              />
+            </view>
+          </Transition>
+        </template>
         
         <!-- Error state -->
-        <view v-else-if="productsError" class="products-error">
-          <text class="error-text">{{ productsError }}</text>
-          <SalesButton size="small" @click="loadProducts">重试</SalesButton>
-        </view>
+        <template v-else-if="productsError">
+          <view class="products-error">
+            <text class="error-text">{{ productsError }}</text>
+            <SalesButton size="small" @click="loadProducts">重试</SalesButton>
+          </view>
+        </template>
         
         <!-- Product carousel with animations -->
-        <Transition name="fade-up" v-else-if="hotProducts.length > 0">
+        <template v-else-if="hotProducts.length > 0">
+          <Transition name="fade-up">
           <view class="product-carousel">
             <scroll-view
               scroll-x
@@ -191,17 +196,20 @@
               查看全部产品 →
             </SalesButton>
           </view>
-        </Transition>
+          </Transition>
+        </template>
         
         <!-- Empty state -->
-        <view v-else class="products-empty">
+        <template v-else>
+          <view class="products-empty">
           <image 
             class="empty-icon" 
             src="/static/images/empty-product.png" 
             mode="aspectFit"
           />
           <text class="empty-text">暂无推荐产品</text>
-        </view>
+          </view>
+        </template>
       </view>
     </Transition>
 
