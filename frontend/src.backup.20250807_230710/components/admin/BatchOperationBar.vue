@@ -2,8 +2,8 @@
   <transition name="batch-bar">
     <view v-if="selectedCount > 0" class="batch-operation-bar">
       <view class="batch-info">
-        <checkbox 
-          :checked="selectAllChecked" 
+        <checkbox
+          :checked="selectAllChecked"
           :indeterminate="selectAllIndeterminate"
           @change="handleSelectAllChange"
           class="batch-select-all"
@@ -16,10 +16,10 @@
           <text>清空</text>
         </button>
       </view>
-      
+
       <view class="batch-operations">
         <template v-for="operation in availableOperations" :key="operation.key">
-          <button 
+          <button
             class="operation-btn"
             :class="[
               `btn-${operation.type || 'default'}`,
@@ -28,9 +28,9 @@
             :disabled="operation.disabled || loadingOperations.has(operation.key)"
             @click="handleOperationClick(operation)"
           >
-            <uni-icons 
-              v-if="operation.icon && !loadingOperations.has(operation.key)" 
-              :type="operation.icon" 
+            <uni-icons
+              v-if="operation.icon && !loadingOperations.has(operation.key)"
+              :type="operation.icon"
               size="16"
             />
             <view v-if="loadingOperations.has(operation.key)" class="loading-spinner">
@@ -43,14 +43,11 @@
           </button>
         </template>
       </view>
-      
+
       <!-- 进度条 -->
       <view v-if="showProgress && currentProgress > 0" class="progress-container">
         <view class="progress-bar">
-          <view 
-            class="progress-fill" 
-            :style="{ width: currentProgress + '%' }"
-          ></view>
+          <view class="progress-fill" :style="{ width: currentProgress + '%' }"></view>
         </view>
         <text class="progress-text">{{ progressText }}</text>
       </view>
@@ -59,26 +56,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { showModal, showToast } from '@/utils/ui'
 
 /**
  * 批量操作栏组件
- * 
+ *
  * 功能说明：
  * - 当有项目被选中时显示批量操作栏
  * - 支持全选/取消全选功能
  * - 提供批量删除、导出、状态修改等常用操作
  * - 显示操作进度和反馈
  * - 符合PRD的二次确认要求
- * 
+ *
  * PRD要求对应：
  * - 支持快捷键和批量操作，提升效率 (PRD Line 187)
  * - 重要操作需二次确认，防止误操作 (PRD Line 181)
  * - 批量导入产品信息 (PRD Line 173)
  * - 数据导出功能 (PRD Line 97)
  * - 操作成功气泡提示 (PRD Line 845)
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -153,9 +150,10 @@ const handleOperationClick = async (operation: BatchOperation) => {
     // 需要确认的操作
     if (operation.requiresConfirmation) {
       const title = operation.confirmTitle || '确认批量操作'
-      const message = operation.confirmMessage || 
+      const message =
+        operation.confirmMessage ||
         `确定要对选中的 ${props.selectedCount} 个项目执行"${operation.label}"操作吗？`
-      
+
       const result = await showModal({
         title,
         content: message,
@@ -176,7 +174,6 @@ const handleOperationClick = async (operation: BatchOperation) => {
     if (props.selectedCount > 1) {
       showToast(`开始${operation.label} ${props.selectedCount} 个项目...`)
     }
-
   } catch (error) {
     console.error('批量操作失败:', error)
     showToast(`${operation.label}失败`, 'error')
@@ -204,14 +201,17 @@ const handleClearSelection = () => {
 }
 
 // 监听进度变化，完成时清除加载状态
-watch(() => props.currentProgress, (newProgress, oldProgress) => {
-  if (oldProgress > 0 && newProgress === 0) {
-    // 进度完成，清除所有加载状态
-    setTimeout(() => {
-      clearAllLoading()
-    }, 500)
+watch(
+  () => props.currentProgress,
+  (newProgress, oldProgress) => {
+    if (oldProgress > 0 && newProgress === 0) {
+      // 进度完成，清除所有加载状态
+      setTimeout(() => {
+        clearAllLoading()
+      }, 500)
+    }
   }
-})
+)
 
 // 暴露方法供父组件调用
 defineExpose({
@@ -247,7 +247,7 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
       confirmMessage: '确定要删除选中的报价单吗？此操作不可撤销。'
     }
   ],
-  
+
   // 产品管理批量操作 (PRD Line 855: 批量导入)
   products: [
     {
@@ -281,7 +281,7 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
       confirmMessage: '确定要删除选中的产品吗？此操作不可撤销。'
     }
   ],
-  
+
   // 客户管理批量操作 (PRD Line 883: 导出)
   customers: [
     {
@@ -292,7 +292,7 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
       requiresConfirmation: false
     }
   ],
-  
+
   // 用户管理批量操作
   users: [
     {
@@ -336,27 +336,27 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
   box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
   border-radius: 8px 8px 0 0;
-  
+
   .batch-info {
     display: flex;
     align-items: center;
     gap: 12px;
-    
+
     .batch-select-all {
       transform: scale(1.1);
     }
-    
+
     .selection-text {
       font-size: 14px;
       color: rgba(255, 255, 255, 0.9);
-      
+
       .selection-count {
         font-weight: 600;
         color: #fff;
         margin: 0 2px;
       }
     }
-    
+
     .clear-selection {
       display: flex;
       align-items: center;
@@ -369,19 +369,19 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
       font-size: 12px;
       cursor: pointer;
       transition: background-color 0.2s;
-      
+
       &:hover {
         background: rgba(255, 255, 255, 0.3);
       }
     }
   }
-  
+
   .batch-operations {
     display: flex;
     align-items: center;
     gap: 8px;
     flex-wrap: wrap;
-    
+
     .operation-btn {
       display: flex;
       align-items: center;
@@ -395,57 +395,57 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
-      
+
       &:hover:not(:disabled) {
         background: rgba(255, 255, 255, 0.2);
         transform: translateY(-1px);
       }
-      
+
       &:disabled {
         opacity: 0.5;
         cursor: not-allowed;
       }
-      
+
       &.btn-loading {
         pointer-events: none;
-        
+
         .loading-spinner {
           animation: spin 1s linear infinite;
         }
       }
-      
+
       // 按钮类型变体（在深色背景上的调整）
       &.btn-success {
         border-color: var(--color-success);
         background: rgba(var(--color-success-rgb), 0.2);
-        
+
         &:hover:not(:disabled) {
           background: rgba(var(--color-success-rgb), 0.3);
         }
       }
-      
+
       &.btn-warning {
         border-color: var(--color-warning);
         background: rgba(var(--color-warning-rgb), 0.2);
-        
+
         &:hover:not(:disabled) {
           background: rgba(var(--color-warning-rgb), 0.3);
         }
       }
-      
+
       &.btn-danger {
         border-color: var(--color-error);
         background: rgba(var(--color-error-rgb), 0.2);
-        
+
         &:hover:not(:disabled) {
           background: rgba(var(--color-error-rgb), 0.3);
         }
       }
-      
+
       .btn-text {
         font-weight: 500;
       }
-      
+
       .progress-badge {
         margin-left: 4px;
         padding: 2px 6px;
@@ -456,19 +456,19 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
       }
     }
   }
-  
+
   .progress-container {
     position: absolute;
     top: -4px;
     left: 0;
     right: 0;
-    
+
     .progress-bar {
       height: 4px;
       background: rgba(255, 255, 255, 0.3);
       border-radius: 2px;
       overflow: hidden;
-      
+
       .progress-fill {
         height: 100%;
         background: #fff;
@@ -476,7 +476,7 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
         transition: width 0.3s ease;
       }
     }
-    
+
     .progress-text {
       position: absolute;
       top: 8px;
@@ -518,24 +518,24 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
     flex-direction: column;
     gap: 8px;
     padding: 12px;
-    
+
     .batch-info {
       width: 100%;
       justify-content: space-between;
     }
-    
+
     .batch-operations {
       width: 100%;
       justify-content: center;
       overflow-x: auto;
-      
+
       .operation-btn {
         padding: 10px 16px;
         min-width: 100px;
         justify-content: center;
       }
     }
-    
+
     .progress-container .progress-text {
       top: 12px;
       right: 12px;
@@ -559,7 +559,7 @@ export const commonBatchOperations: Record<string, BatchOperation[]> = {
 @media (min-width: 768px) and (max-width: 1024px) {
   .batch-operation-bar {
     padding: 14px 20px;
-    
+
     .batch-operations .operation-btn {
       padding: 10px 16px;
       font-size: 14px;

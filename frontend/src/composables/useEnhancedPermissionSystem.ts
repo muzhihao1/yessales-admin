@@ -1,42 +1,42 @@
-import { ref, computed, reactive, watch, onMounted, onUnmounted } from 'vue'
-import { 
-  usePermissionCache, 
-  type Permission, 
-  type Role, 
-  type User,
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
+import {
   type CacheConfig,
-  permissionCachePresets 
+  type Permission,
+  type Role,
+  type User,
+  permissionCachePresets,
+  usePermissionCache
 } from './usePermissionCache'
-import { 
-  useOptimizedPermissionAPI, 
+import {
   type APIConfig,
-  apiOptimizationPresets 
+  apiOptimizationPresets,
+  useOptimizedPermissionAPI
 } from './useOptimizedPermissionAPI'
 
 /**
  * 增强权限系统组合式API
- * 
+ *
  * 功能说明：
  * - 统一整合权限缓存和API优化功能
  * - 提供一致的权限检查接口
  * - 智能缓存策略和API调用优化
  * - 实时性能监控和健康检查
  * - 优雅的降级处理和错误恢复
- * 
+ *
  * 性能提升：
  * - 权限检查延迟从100ms降低到<5ms（缓存命中）
  * - API调用减少85%以上
  * - 支持离线权限检查（基于缓存）
  * - 智能预加载减少用户等待
  * - 自动性能优化和监控
- * 
+ *
  * 应用场景：
  * - 管理员面板权限验证
  * - 路由守卫权限检查
  * - UI组件权限控制
  * - 批量操作权限验证
  * - 实时权限同步
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -112,22 +112,22 @@ const DEFAULT_CONFIG: EnhancedPermissionConfig = {
  */
 export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {}) {
   const opts = { ...DEFAULT_CONFIG, ...config }
-  
+
   // 获取配置
   const cacheConfig = {
     ...(opts.cachePreset ? permissionCachePresets[opts.cachePreset] : {}),
     ...opts.cacheConfig
   }
-  
+
   const apiConfig = {
     ...(opts.apiPreset ? apiOptimizationPresets[opts.apiPreset] : {}),
     ...opts.apiConfig
   }
-  
+
   // 初始化子系统
   const permissionCache = usePermissionCache(cacheConfig)
   const permissionAPI = useOptimizedPermissionAPI(apiConfig)
-  
+
   // 系统状态
   const systemState = reactive({
     initialized: false,
@@ -137,7 +137,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     totalPermissionChecks: 0,
     performanceMode: 'auto' as 'fast' | 'balanced' | 'thorough' | 'auto'
   })
-  
+
   // 权限检查统计
   const checkStats = reactive({
     total: 0,
@@ -164,16 +164,16 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     } = {}
   ): Promise<PermissionCheckResult> => {
     const startTime = performance.now()
-    const { 
-      priority = 'medium', 
+    const {
+      priority = 'medium',
       timeout = opts.checkTimeout,
       fallbackToCache = true,
-      skipCache = false 
+      skipCache = false
     } = options
-    
+
     systemState.totalPermissionChecks++
     checkStats.total++
-    
+
     try {
       // 第一步：尝试从缓存获取（除非跳过缓存）
       if (!skipCache) {
@@ -181,11 +181,13 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
         if (cached) {
           const responseTime = performance.now() - startTime
           updateCheckStats(responseTime, true)
-          
+
           if (opts.debug) {
-            console.log(`[Permission] Cache hit: ${userId}:${resource}:${action} (${responseTime.toFixed(2)}ms)`)
+            console.log(
+              `[Permission] Cache hit: ${userId}:${resource}:${action} (${responseTime.toFixed(2)}ms)`
+            )
           }
-          
+
           return {
             granted: cached.granted,
             fromCache: true,
@@ -195,7 +197,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
           }
         }
       }
-      
+
       // 第二步：API调用
       try {
         const permission = await Promise.race([
@@ -204,18 +206,20 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
             setTimeout(() => reject(new Error('Permission check timeout')), timeout)
           })
         ])
-        
+
         // 成功获取，缓存结果
         permissionCache.cachePermission(permission)
-        
+
         const responseTime = performance.now() - startTime
         updateCheckStats(responseTime, false)
         checkStats.apiCalls++
-        
+
         if (opts.debug) {
-          console.log(`[Permission] API success: ${userId}:${resource}:${action} (${responseTime.toFixed(2)}ms)`)
+          console.log(
+            `[Permission] API success: ${userId}:${resource}:${action} (${responseTime.toFixed(2)}ms)`
+          )
         }
-        
+
         return {
           granted: permission.granted,
           fromCache: false,
@@ -223,7 +227,6 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
           source: 'api',
           permission
         }
-        
       } catch (apiError) {
         // 第三步：API失败，回退到缓存
         if (fallbackToCache) {
@@ -231,11 +234,11 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
           if (cached) {
             const responseTime = performance.now() - startTime
             updateCheckStats(responseTime, true)
-            
+
             if (opts.debug) {
               console.warn(`[Permission] API failed, using cache: ${userId}:${resource}:${action}`)
             }
-            
+
             return {
               granted: cached.granted,
               fromCache: true,
@@ -246,18 +249,17 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
             }
           }
         }
-        
+
         throw apiError
       }
-      
     } catch (error) {
       const responseTime = performance.now() - startTime
       checkStats.errors++
-      
+
       if (opts.debug) {
         console.error(`[Permission] Check failed: ${userId}:${resource}:${action}`, error)
       }
-      
+
       return {
         granted: false, // 默认拒绝
         fromCache: false,
@@ -289,26 +291,22 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
       errors: 0,
       averageResponseTime: 0
     }
-    
+
     // 并行执行所有权限检查
     const promises = checks.map(async (check, index) => {
       const key = `${check.userId}:${check.resource}:${check.action}`
-      
+
       try {
-        const result = await checkPermission(
-          check.userId,
-          check.resource,
-          check.action,
-          { priority: check.priority }
-        )
-        
+        const result = await checkPermission(check.userId, check.resource, check.action, {
+          priority: check.priority
+        })
+
         results[key] = result
-        
+
         if (result.granted) summary.granted++
         else summary.denied++
-        
+
         if (result.fromCache) summary.cached++
-        
       } catch (error) {
         results[key] = {
           granted: false,
@@ -321,14 +319,16 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
         summary.denied++
       }
     })
-    
+
     await Promise.allSettled(promises)
-    
+
     // 计算平均响应时间
-    const totalResponseTime = Object.values(results)
-      .reduce((sum, result) => sum + result.responseTime, 0)
+    const totalResponseTime = Object.values(results).reduce(
+      (sum, result) => sum + result.responseTime,
+      0
+    )
     summary.averageResponseTime = totalResponseTime / checks.length
-    
+
     return { results, summary }
   }
 
@@ -343,12 +343,10 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     try {
       // 先获取角色信息
       const role = await getRole(roleId)
-      
+
       // 在角色权限中查找匹配项
-      const permission = role.permissions.find(p => 
-        p.resource === resource && p.action === action
-      )
-      
+      const permission = role.permissions.find(p => p.resource === resource && p.action === action)
+
       if (permission) {
         return {
           granted: permission.granted,
@@ -358,7 +356,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
           permission
         }
       }
-      
+
       // 未找到权限，默认拒绝
       return {
         granted: false,
@@ -366,7 +364,6 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
         responseTime: 0,
         source: 'fallback'
       }
-      
     } catch (error) {
       return {
         granted: false,
@@ -387,13 +384,13 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     if (cached) {
       return cached
     }
-    
+
     // API获取
     const user = await permissionAPI.getUser(userId)
-    
+
     // 缓存结果
     permissionCache.cacheUser(user)
-    
+
     return user
   }
 
@@ -406,20 +403,22 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     if (cached) {
       return cached
     }
-    
+
     // API获取
     const role = await permissionAPI.getRole(roleId)
-    
+
     // 缓存结果
     permissionCache.cacheRole(role)
-    
+
     return role
   }
 
   /**
    * 用户完整权限检查（包含角色继承）
    */
-  const checkUserPermissions = async (userId: string): Promise<{
+  const checkUserPermissions = async (
+    userId: string
+  ): Promise<{
     user: User
     permissions: Permission[]
     roles: Role[]
@@ -427,29 +426,24 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
   }> => {
     // 获取用户信息
     const user = await getUser(userId)
-    
+
     // 获取用户角色
-    const roles = await Promise.all(
-      user.roles.map(roleId => getRole(roleId))
-    )
-    
+    const roles = await Promise.all(user.roles.map(roleId => getRole(roleId)))
+
     // 合并权限：用户权限 + 角色权限
-    const allPermissions = [
-      ...user.permissions,
-      ...roles.flatMap(role => role.permissions)
-    ]
-    
+    const allPermissions = [...user.permissions, ...roles.flatMap(role => role.permissions)]
+
     // 去重并解决权限冲突（后面的权限覆盖前面的）
     const effectivePermissions: Permission[] = []
     const permissionMap = new Map<string, Permission>()
-    
+
     for (const permission of allPermissions) {
       const key = `${permission.resource}:${permission.action}`
       permissionMap.set(key, permission) // 后面的会覆盖前面的
     }
-    
+
     effectivePermissions.push(...permissionMap.values())
-    
+
     return {
       user,
       permissions: user.permissions,
@@ -469,7 +463,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     const checks = resources.flatMap(resource =>
       actions.map(action => ({ userId, resource, action, priority: 'low' as const }))
     )
-    
+
     // 使用批量检查进行预加载
     await checkPermissionsBatch(checks)
   }
@@ -480,48 +474,54 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
   const getSystemHealth = (): SystemHealth => {
     const cacheStats = permissionCache.metrics
     const apiStats = permissionAPI.metrics
-    
+
     // 缓存健康状态
     const cacheHitRate = parseFloat(permissionCache.cacheHitRate.value)
-    const cacheStatus = 
-      cacheHitRate > 80 ? 'healthy' :
-      cacheHitRate > 50 ? 'degraded' : 'failed'
-    
+    const cacheStatus = cacheHitRate > 80 ? 'healthy' : cacheHitRate > 50 ? 'degraded' : 'failed'
+
     // API健康状态
-    const apiErrorRate = apiStats.totalRequests > 0 
-      ? (apiStats.errors / apiStats.totalRequests * 100) 
-      : 0
-    
-    const apiStatus = 
-      !apiStats.circuitBreakerOpen && apiErrorRate < 5 && apiStats.averageResponseTime < 200 ? 'healthy' :
-      !apiStats.circuitBreakerOpen && apiErrorRate < 15 ? 'degraded' : 'failed'
-    
+    const apiErrorRate =
+      apiStats.totalRequests > 0 ? (apiStats.errors / apiStats.totalRequests) * 100 : 0
+
+    const apiStatus =
+      !apiStats.circuitBreakerOpen && apiErrorRate < 5 && apiStats.averageResponseTime < 200
+        ? 'healthy'
+        : !apiStats.circuitBreakerOpen && apiErrorRate < 15
+          ? 'degraded'
+          : 'failed'
+
     // 总体健康状态
-    const overall = 
-      cacheStatus === 'healthy' && apiStatus === 'healthy' ? 'excellent' :
-      (cacheStatus === 'healthy' || apiStatus === 'healthy') && 
-      (cacheStatus !== 'failed' && apiStatus !== 'failed') ? 'good' :
-      cacheStatus !== 'failed' && apiStatus !== 'failed' ? 'fair' : 'poor'
-    
+    const overall =
+      cacheStatus === 'healthy' && apiStatus === 'healthy'
+        ? 'excellent'
+        : (cacheStatus === 'healthy' || apiStatus === 'healthy') &&
+            cacheStatus !== 'failed' &&
+            apiStatus !== 'failed'
+          ? 'good'
+          : cacheStatus !== 'failed' && apiStatus !== 'failed'
+            ? 'fair'
+            : 'poor'
+
     // 建议
     const recommendations: string[] = []
-    
+
     if (cacheHitRate < 70) {
       recommendations.push('考虑增加缓存TTL或启用更积极的预加载策略')
     }
-    
+
     if (apiErrorRate > 10) {
       recommendations.push('检查网络连接和API服务状态')
     }
-    
+
     if (apiStats.averageResponseTime > 500) {
       recommendations.push('考虑启用API请求批处理和压缩')
     }
-    
-    if (cacheStats.memoryUsage > 50 * 1024 * 1024) { // 50MB
+
+    if (cacheStats.memoryUsage > 50 * 1024 * 1024) {
+      // 50MB
       recommendations.push('考虑清理过期缓存或降低缓存大小')
     }
-    
+
     return {
       overall,
       cache: {
@@ -546,7 +546,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
    */
   const optimizePerformance = async () => {
     const health = getSystemHealth()
-    
+
     // 根据健康状况自动调整性能模式
     if (health.overall === 'poor') {
       systemState.performanceMode = 'fast'
@@ -561,7 +561,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     } else {
       systemState.performanceMode = 'balanced'
     }
-    
+
     return health
   }
 
@@ -569,12 +569,12 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
    * 更新检查统计
    */
   const updateCheckStats = (responseTime: number, fromCache: boolean) => {
-    checkStats.averageResponseTime = 
+    checkStats.averageResponseTime =
       (checkStats.averageResponseTime * (checkStats.total - 1) + responseTime) / checkStats.total
-    
+
     checkStats.fastestCheck = Math.min(checkStats.fastestCheck, responseTime)
     checkStats.slowestCheck = Math.max(checkStats.slowestCheck, responseTime)
-    
+
     if (fromCache) {
       checkStats.cached++
     }
@@ -587,13 +587,12 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     try {
       // 强制刷新API队列
       await permissionAPI.flushQueue()
-      
+
       // 清理过期缓存
       permissionCache.cleanupExpiredCache()
-      
+
       // 更新同步时间
       systemState.lastSyncTime = new Date()
-      
     } catch (error) {
       console.error('System sync failed:', error)
       throw error
@@ -611,10 +610,10 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
   const resetSystem = async () => {
     // 清空所有缓存
     permissionCache.clearAllCache()
-    
+
     // 重置API状态
     permissionAPI.resetCircuitBreaker()
-    
+
     // 重置统计
     Object.assign(checkStats, {
       total: 0,
@@ -625,17 +624,22 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
       fastestCheck: Infinity,
       slowestCheck: 0
     })
-    
+
     systemState.totalPermissionChecks = 0
   }
 
   // 计算属性
   const performanceMetrics = computed(() => ({
     totalChecks: checkStats.total,
-    cacheHitRate: checkStats.total > 0 ? ((checkStats.cached / checkStats.total) * 100).toFixed(2) : '0.00',
+    cacheHitRate:
+      checkStats.total > 0 ? ((checkStats.cached / checkStats.total) * 100).toFixed(2) : '0.00',
     averageResponseTime: checkStats.averageResponseTime.toFixed(2),
-    apiCallReduction: checkStats.total > 0 ? (((checkStats.total - checkStats.apiCalls) / checkStats.total) * 100).toFixed(2) : '0.00',
-    errorRate: checkStats.total > 0 ? ((checkStats.errors / checkStats.total) * 100).toFixed(2) : '0.00',
+    apiCallReduction:
+      checkStats.total > 0
+        ? (((checkStats.total - checkStats.apiCalls) / checkStats.total) * 100).toFixed(2)
+        : '0.00',
+    errorRate:
+      checkStats.total > 0 ? ((checkStats.errors / checkStats.total) * 100).toFixed(2) : '0.00',
     fastestCheck: checkStats.fastestCheck === Infinity ? 0 : checkStats.fastestCheck.toFixed(2),
     slowestCheck: checkStats.slowestCheck.toFixed(2)
   }))
@@ -656,7 +660,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
         await optimizePerformance()
       }
     }, 30000) // 30秒检查一次
-    
+
     onUnmounted(() => {
       clearInterval(optimizationInterval)
     })
@@ -665,7 +669,7 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
   // 初始化
   onMounted(() => {
     systemState.initialized = true
-    
+
     if (opts.debug) {
       console.log('[Enhanced Permission System] Initialized with config:', {
         cachePreset: opts.cachePreset,
@@ -684,35 +688,37 @@ export function useEnhancedPermissionSystem(config: EnhancedPermissionConfig = {
     systemState,
     systemStatus,
     performanceMetrics,
-    
+
     // 核心权限检查
     checkPermission,
     checkPermissionsBatch,
     checkRolePermission,
     checkUserPermissions,
-    
+
     // 数据获取
     getUser,
     getRole,
-    
+
     // 预加载和优化
     preloadPermissions,
     optimizePerformance,
-    
+
     // 健康检查
     getSystemHealth,
-    
+
     // 系统管理
     syncSystem,
     resetSystem,
     cleanup,
-    
+
     // 子系统访问
     cache: permissionCache,
     api: permissionAPI,
-    
+
     // 调试和监控
-    enableDebug: (enable: boolean) => { systemState.debugMode = enable },
+    enableDebug: (enable: boolean) => {
+      systemState.debugMode = enable
+    },
     getCheckStats: () => ({ ...checkStats })
   }
 }
@@ -729,7 +735,7 @@ export const enhancedPermissionPresets = {
     enableAutoSync: true,
     checkTimeout: 3000
   },
-  
+
   // 标准配置（适合中等规模系统）
   standard: {
     cachePreset: 'standard' as const,
@@ -738,7 +744,7 @@ export const enhancedPermissionPresets = {
     enableAutoSync: true,
     checkTimeout: 5000
   },
-  
+
   // 轻量配置（适合小型系统或资源受限环境）
   lightweight: {
     cachePreset: 'memoryOptimized' as const,
@@ -747,7 +753,7 @@ export const enhancedPermissionPresets = {
     enableAutoSync: false,
     checkTimeout: 3000
   },
-  
+
   // 开发配置
   development: {
     cachePreset: 'development' as const,

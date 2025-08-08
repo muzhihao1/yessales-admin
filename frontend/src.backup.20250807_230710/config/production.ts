@@ -1,27 +1,27 @@
 /**
  * 生产环境配置文件
- * 
+ *
  * 功能说明：
  * - 生产环境专用的配置和优化设置
  * - 安全配置和敏感数据保护
  * - 性能优化和资源管理配置
  * - 监控和日志记录配置
  * - CDN和资源缓存优化
- * 
+ *
  * 安全特性：
  * - 环境变量安全验证
  * - API密钥和敏感信息加密存储
  * - CSP (Content Security Policy) 配置
  * - HTTPS强制和安全头设置
  * - 输入验证和XSS防护
- * 
+ *
  * 性能优化：
  * - 资源压缩和缓存策略
  * - CDN配置和静态资源优化
  * - 懒加载和代码分割配置
  * - 内存管理和垃圾回收优化
  * - 网络请求和连接池优化
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -35,7 +35,7 @@ export interface ProductionConfig {
     debug: boolean
     enableDevtools: boolean
   }
-  
+
   // API配置
   api: {
     baseURL: string
@@ -47,7 +47,7 @@ export interface ProductionConfig {
     maxConcurrentRequests: number
     rateLimitPerMinute: number
   }
-  
+
   // 安全配置
   security: {
     enableCSP: boolean
@@ -58,7 +58,7 @@ export interface ProductionConfig {
     maxLoginAttempts: number
     tokenRefreshThreshold: number
   }
-  
+
   // 缓存配置
   cache: {
     enableServiceWorker: boolean
@@ -68,7 +68,7 @@ export interface ProductionConfig {
     apiCacheDuration: number
     imageCacheDuration: number
   }
-  
+
   // 性能监控
   monitoring: {
     enablePerformanceTracking: boolean
@@ -83,7 +83,7 @@ export interface ProductionConfig {
       firstInputDelay: number
     }
   }
-  
+
   // 日志配置
   logging: {
     level: 'error' | 'warn' | 'info' | 'debug'
@@ -93,7 +93,7 @@ export interface ProductionConfig {
     logRetentionDays: number
     sensitiveDataMask: boolean
   }
-  
+
   // CDN和资源配置
   resources: {
     cdnURL: string
@@ -104,7 +104,7 @@ export interface ProductionConfig {
     preloadCriticalResources: string[]
     prefetchResources: string[]
   }
-  
+
   // UI/UX配置
   ui: {
     enableAnimations: boolean
@@ -114,7 +114,7 @@ export interface ProductionConfig {
     enableProgressiveLoading: boolean
     showPerformanceMetrics: boolean
   }
-  
+
   // 功能开关
   features: {
     enableRealTimeUpdates: boolean
@@ -138,42 +138,42 @@ class EnvironmentValidator {
     'VITE_CDN_URL',
     'VITE_MONITORING_KEY'
   ]
-  
-  static validate(): { valid: boolean, missing: string[], errors: string[] } {
+
+  static validate(): { valid: boolean; missing: string[]; errors: string[] } {
     const missing: string[] = []
     const errors: string[] = []
-    
+
     // 检查必需的环境变量
     for (const varName of this.requiredVars) {
       if (!import.meta.env[varName]) {
         missing.push(varName)
       }
     }
-    
+
     // 验证URL格式
     const apiUrl = import.meta.env.VITE_API_BASE_URL
     if (apiUrl && !this.isValidURL(apiUrl)) {
       errors.push(`Invalid API URL format: ${apiUrl}`)
     }
-    
+
     const cdnUrl = import.meta.env.VITE_CDN_URL
     if (cdnUrl && !this.isValidURL(cdnUrl)) {
       errors.push(`Invalid CDN URL format: ${cdnUrl}`)
     }
-    
+
     // 验证版本号格式
     const version = import.meta.env.VITE_APP_VERSION
     if (version && !this.isValidVersion(version)) {
       errors.push(`Invalid version format: ${version}`)
     }
-    
+
     return {
       valid: missing.length === 0 && errors.length === 0,
       missing,
       errors
     }
   }
-  
+
   private static isValidURL(url: string): boolean {
     try {
       new URL(url)
@@ -182,7 +182,7 @@ class EnvironmentValidator {
       return false
     }
   }
-  
+
   private static isValidVersion(version: string): boolean {
     return /^\d+\.\d+\.\d+(-\w+)?$/.test(version)
   }
@@ -193,11 +193,11 @@ class EnvironmentValidator {
  */
 class ProductionConfigBuilder {
   private config: Partial<ProductionConfig> = {}
-  
+
   static create(): ProductionConfigBuilder {
     return new ProductionConfigBuilder()
   }
-  
+
   build(): ProductionConfig {
     // 验证环境变量
     const validation = EnvironmentValidator.validate()
@@ -205,13 +205,13 @@ class ProductionConfigBuilder {
       console.error('Environment validation failed:', validation)
       throw new Error(`Missing environment variables: ${validation.missing.join(', ')}`)
     }
-    
+
     // 构建配置
     const baseConfig = this.buildBaseConfig()
     const securityConfig = this.buildSecurityConfig()
     const performanceConfig = this.buildPerformanceConfig()
     const monitoringConfig = this.buildMonitoringConfig()
-    
+
     return {
       ...baseConfig,
       ...securityConfig,
@@ -220,7 +220,7 @@ class ProductionConfigBuilder {
       ...this.config
     } as ProductionConfig
   }
-  
+
   private buildBaseConfig(): Partial<ProductionConfig> {
     return {
       app: {
@@ -231,7 +231,7 @@ class ProductionConfigBuilder {
         debug: false,
         enableDevtools: false
       },
-      
+
       api: {
         baseURL: import.meta.env.VITE_API_BASE_URL,
         timeout: 30000,
@@ -244,7 +244,7 @@ class ProductionConfigBuilder {
       }
     }
   }
-  
+
   private buildSecurityConfig(): Partial<ProductionConfig> {
     return {
       security: {
@@ -271,7 +271,7 @@ class ProductionConfigBuilder {
       }
     }
   }
-  
+
   private buildPerformanceConfig(): Partial<ProductionConfig> {
     return {
       cache: {
@@ -282,23 +282,17 @@ class ProductionConfigBuilder {
         apiCacheDuration: 5 * 60 * 1000, // 5分钟
         imageCacheDuration: 7 * 24 * 60 * 60 * 1000 // 7天
       },
-      
+
       resources: {
         cdnURL: import.meta.env.VITE_CDN_URL || '',
         enableImageOptimization: true,
         imageQuality: 80,
         enableWebP: true,
         enableLazyLoading: true,
-        preloadCriticalResources: [
-          '/fonts/inter.woff2',
-          '/icons/logo.svg'
-        ],
-        prefetchResources: [
-          '/api/v1/user/permissions',
-          '/api/v1/dashboard/stats'
-        ]
+        preloadCriticalResources: ['/fonts/inter.woff2', '/icons/logo.svg'],
+        prefetchResources: ['/api/v1/user/permissions', '/api/v1/dashboard/stats']
       },
-      
+
       ui: {
         enableAnimations: true,
         animationDuration: 200,
@@ -309,7 +303,7 @@ class ProductionConfigBuilder {
       }
     }
   }
-  
+
   private buildMonitoringConfig(): Partial<ProductionConfig> {
     return {
       monitoring: {
@@ -325,7 +319,7 @@ class ProductionConfigBuilder {
           firstInputDelay: 100
         }
       },
-      
+
       logging: {
         level: 'error',
         enableRemoteLogging: true,
@@ -334,7 +328,7 @@ class ProductionConfigBuilder {
         logRetentionDays: 30,
         sensitiveDataMask: true
       },
-      
+
       features: {
         enableRealTimeUpdates: true,
         enableOfflineMode: true,
@@ -356,23 +350,23 @@ class ProductionConfigBuilder {
       }
     }
   }
-  
+
   // 配置修改器方法
   withCustomAPI(config: Partial<ProductionConfig['api']>): ProductionConfigBuilder {
     this.config.api = { ...this.config.api, ...config }
     return this
   }
-  
+
   withCustomSecurity(config: Partial<ProductionConfig['security']>): ProductionConfigBuilder {
     this.config.security = { ...this.config.security, ...config }
     return this
   }
-  
+
   withCustomFeatures(config: Partial<ProductionConfig['features']>): ProductionConfigBuilder {
     this.config.features = { ...this.config.features, ...config }
     return this
   }
-  
+
   withCustomMonitoring(config: Partial<ProductionConfig['monitoring']>): ProductionConfigBuilder {
     this.config.monitoring = { ...this.config.monitoring, ...config }
     return this
@@ -387,7 +381,7 @@ export const productionPresets = {
   standard: (): ProductionConfig => {
     return ProductionConfigBuilder.create().build()
   },
-  
+
   // 高性能配置
   highPerformance: (): ProductionConfig => {
     return ProductionConfigBuilder.create()
@@ -402,7 +396,7 @@ export const productionPresets = {
       })
       .build()
   },
-  
+
   // 高安全配置
   highSecurity: (): ProductionConfig => {
     return ProductionConfigBuilder.create()
@@ -417,7 +411,7 @@ export const productionPresets = {
       })
       .build()
   },
-  
+
   // 低资源配置（适合资源受限环境）
   lowResource: (): ProductionConfig => {
     return ProductionConfigBuilder.create()
@@ -442,12 +436,13 @@ export const productionPresets = {
  * 获取当前生产配置
  */
 export function getProductionConfig(): ProductionConfig {
-  const preset = import.meta.env.VITE_CONFIG_PRESET as keyof typeof productionPresets || 'standard'
-  
+  const preset =
+    (import.meta.env.VITE_CONFIG_PRESET as keyof typeof productionPresets) || 'standard'
+
   if (preset in productionPresets) {
     return productionPresets[preset]()
   }
-  
+
   console.warn(`Unknown config preset: ${preset}, using standard preset`)
   return productionPresets.standard()
 }
@@ -456,43 +451,47 @@ export function getProductionConfig(): ProductionConfig {
  * 配置验证器
  */
 export class ConfigValidator {
-  static validateConfig(config: ProductionConfig): { valid: boolean, warnings: string[], errors: string[] } {
+  static validateConfig(config: ProductionConfig): {
+    valid: boolean
+    warnings: string[]
+    errors: string[]
+  } {
     const warnings: string[] = []
     const errors: string[] = []
-    
+
     // API配置验证
     if (config.api.timeout < 5000) {
       warnings.push('API timeout is very low, may cause frequent timeouts')
     }
-    
+
     if (config.api.maxConcurrentRequests > 50) {
       warnings.push('High concurrent request limit may impact server performance')
     }
-    
+
     // 安全配置验证
     if (!config.security.enableHTTPS) {
       errors.push('HTTPS must be enabled in production')
     }
-    
+
     if (config.security.sessionTimeout > 60 * 60 * 1000) {
       warnings.push('Session timeout is very long, consider security implications')
     }
-    
+
     // 缓存配置验证
     if (config.cache.maxCacheSize > 500 * 1024 * 1024) {
       warnings.push('Cache size is very large, may cause memory issues')
     }
-    
+
     // 监控配置验证
     if (config.monitoring.sampleRate > 0.5) {
       warnings.push('High sampling rate may impact performance')
     }
-    
+
     // 功能配置验证
     if (config.features.maxUploadFileSize > 50 * 1024 * 1024) {
       warnings.push('Large file upload size may cause server issues')
     }
-    
+
     return {
       valid: errors.length === 0,
       warnings,
@@ -514,26 +513,32 @@ export class ConfigApplier {
         meta.content = config.security.cspPolicy
         document.head.appendChild(meta)
       }
-      
+
       // 其他安全头设置需要在服务器端配置
-      console.info('Security headers should be configured on server side:', config.security.securityHeaders)
+      console.info(
+        'Security headers should be configured on server side:',
+        config.security.securityHeaders
+      )
     }
   }
-  
+
   static setupPerformanceMonitoring(config: ProductionConfig) {
     if (!config.monitoring.enablePerformanceTracking) return
-    
+
     // Web Vitals监控
     if ('PerformanceObserver' in window) {
-      const observer = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
+      const observer = new PerformanceObserver(list => {
+        list.getEntries().forEach(entry => {
           const { name, startTime, duration } = entry
-          
+
           // 检查性能阈值
-          if (name === 'first-contentful-paint' && startTime > config.monitoring.performanceThresholds.firstContentfulPaint) {
+          if (
+            name === 'first-contentful-paint' &&
+            startTime > config.monitoring.performanceThresholds.firstContentfulPaint
+          ) {
             console.warn(`FCP exceeded threshold: ${startTime}ms`)
           }
-          
+
           // 发送监控数据到远程服务
           if (config.monitoring.enablePerformanceTracking) {
             this.sendPerformanceData({
@@ -544,17 +549,17 @@ export class ConfigApplier {
           }
         })
       })
-      
+
       observer.observe({ entryTypes: ['paint', 'layout-shift', 'first-input'] })
     }
   }
-  
+
   static setupErrorTracking(config: ProductionConfig) {
     if (!config.monitoring.enableErrorTracking) return
-    
-    window.addEventListener('error', (event) => {
+
+    window.addEventListener('error', event => {
       if (config.logging.level !== 'error') return
-      
+
       const errorData = {
         message: event.message,
         filename: event.filename,
@@ -565,11 +570,11 @@ export class ConfigApplier {
         userAgent: navigator.userAgent,
         url: window.location.href
       }
-      
+
       this.sendErrorData(errorData)
     })
-    
-    window.addEventListener('unhandledrejection', (event) => {
+
+    window.addEventListener('unhandledrejection', event => {
       const errorData = {
         message: 'Unhandled Promise Rejection',
         error: event.reason?.toString(),
@@ -577,11 +582,11 @@ export class ConfigApplier {
         userAgent: navigator.userAgent,
         url: window.location.href
       }
-      
+
       this.sendErrorData(errorData)
     })
   }
-  
+
   private static sendPerformanceData(data: any) {
     // 实际项目中需要实现发送到监控服务
     if (import.meta.env.VITE_MONITORING_ENDPOINT) {
@@ -592,7 +597,7 @@ export class ConfigApplier {
       }).catch(console.error)
     }
   }
-  
+
   private static sendErrorData(data: any) {
     // 实际项目中需要实现发送到错误追踪服务
     if (import.meta.env.VITE_ERROR_REPORTING_ENDPOINT) {

@@ -1,23 +1,23 @@
 /**
  * Operations Log Store
- * 
+ *
  * Manages system operation logs, audit trails, and security events.
  * Provides centralized access to log data with filtering, search, and export capabilities.
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { 
-  LogEntry, 
-  LogFilter, 
-  LogSearchResult, 
-  LogStatistics,
-  LogExportOptions,
-  SecurityEvent,
-  SystemEvent,
-  LogLevel,
+import { computed, ref } from 'vue'
+import type {
+  LogAction,
   LogCategory,
-  LogAction
+  LogEntry,
+  LogExportOptions,
+  LogFilter,
+  LogLevel,
+  LogSearchResult,
+  LogStatistics,
+  SecurityEvent,
+  SystemEvent
 } from '@/types/logs'
 
 export const useLogsStore = defineStore('logs', () => {
@@ -30,62 +30,68 @@ export const useLogsStore = defineStore('logs', () => {
   const statistics = ref<LogStatistics | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
-  
+
   // Pagination state
   const currentPage = ref(1)
   const pageSize = ref(50)
   const totalEntries = ref(0)
-  
+
   // Real-time updates
   const autoRefresh = ref(false)
   const refreshInterval = ref(30000) // 30 seconds
-  
+
   // Computed properties
   const hasLogs = computed(() => logs.value.length > 0)
   const totalPages = computed(() => Math.ceil(totalEntries.value / pageSize.value))
   const hasPreviousPage = computed(() => currentPage.value > 1)
   const hasNextPage = computed(() => currentPage.value < totalPages.value)
-  
+
   const filteredLogs = computed(() => {
     if (!currentFilter.value || Object.keys(currentFilter.value).length === 0) {
       return logs.value
     }
-    
+
     return logs.value.filter(log => {
       // Filter by log level
       if (currentFilter.value.level?.length && !currentFilter.value.level.includes(log.level)) {
         return false
       }
-      
+
       // Filter by category
-      if (currentFilter.value.category?.length && !currentFilter.value.category.includes(log.category)) {
+      if (
+        currentFilter.value.category?.length &&
+        !currentFilter.value.category.includes(log.category)
+      ) {
         return false
       }
-      
+
       // Filter by action
       if (currentFilter.value.action?.length && !currentFilter.value.action.includes(log.action)) {
         return false
       }
-      
+
       // Filter by user
       if (currentFilter.value.user_id && log.user_id !== currentFilter.value.user_id) {
         return false
       }
-      
+
       // Filter by resource type
-      if (currentFilter.value.resource_type && log.resource_type !== currentFilter.value.resource_type) {
+      if (
+        currentFilter.value.resource_type &&
+        log.resource_type !== currentFilter.value.resource_type
+      ) {
         return false
       }
-      
+
       // Filter by date range
       if (currentFilter.value.date_from && log.timestamp < currentFilter.value.date_from) {
         return false
       }
-      
+
       if (currentFilter.value.date_to && log.timestamp > currentFilter.value.date_to) {
         return false
       }
-      
+
       // Search in message and details
       if (currentFilter.value.search) {
         const searchTerm = currentFilter.value.search.toLowerCase()
@@ -94,38 +100,40 @@ export const useLogsStore = defineStore('logs', () => {
           log.user_name,
           log.resource_name,
           JSON.stringify(log.details || {})
-        ].join(' ').toLowerCase()
-        
+        ]
+          .join(' ')
+          .toLowerCase()
+
         if (!searchableText.includes(searchTerm)) {
           return false
         }
       }
-      
+
       return true
     })
   })
-  
-  const criticalEvents = computed(() => 
+
+  const criticalEvents = computed(() =>
     logs.value.filter(log => log.level === 'critical' || log.level === 'error')
   )
-  
-  const recentActivity = computed(() => 
+
+  const recentActivity = computed(() =>
     logs.value
       .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 10)
   )
-  
+
   // Actions
   async function fetchLogs(filters?: LogFilter) {
     loading.value = true
     error.value = null
-    
+
     try {
       // Update current filter
       if (filters) {
         currentFilter.value = { ...filters }
       }
-      
+
       // Mock API call - replace with actual API integration
       const mockLogs: LogEntry[] = [
         {
@@ -159,20 +167,22 @@ export const useLogsStore = defineStore('logs', () => {
           created_at: new Date(Date.now() - 300000).toISOString()
         }
       ]
-      
+
       logs.value = mockLogs
       totalEntries.value = mockLogs.length
-      
+
       // Create search result
       searchResult.value = {
-        entries: filteredLogs.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value),
+        entries: filteredLogs.value.slice(
+          (currentPage.value - 1) * pageSize.value,
+          currentPage.value * pageSize.value
+        ),
         total: filteredLogs.value.length,
         page: currentPage.value,
         per_page: pageSize.value,
         has_next: hasNextPage.value,
         has_previous: hasPreviousPage.value
       }
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '获取日志失败'
       console.error('Failed to fetch logs:', err)
@@ -180,11 +190,11 @@ export const useLogsStore = defineStore('logs', () => {
       loading.value = false
     }
   }
-  
+
   async function fetchStatistics() {
     loading.value = true
     error.value = null
-    
+
     try {
       // Mock statistics - replace with actual API integration
       statistics.value = {
@@ -234,13 +244,16 @@ export const useLogsStore = defineStore('logs', () => {
         recent_activity: recentActivity.value,
         error_summary: [
           { error_code: 'AUTH001', count: 15, last_occurrence: new Date().toISOString() },
-          { error_code: 'PERM002', count: 8, last_occurrence: new Date(Date.now() - 3600000).toISOString() }
+          {
+            error_code: 'PERM002',
+            count: 8,
+            last_occurrence: new Date(Date.now() - 3600000).toISOString()
+          }
         ],
         security_events: 17,
         failed_logins: 25,
         data_operations: 50
       }
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '获取统计信息失败'
       console.error('Failed to fetch statistics:', err)
@@ -248,38 +261,38 @@ export const useLogsStore = defineStore('logs', () => {
       loading.value = false
     }
   }
-  
+
   async function searchLogs(searchTerm: string) {
     const searchFilter: LogFilter = {
       ...currentFilter.value,
       search: searchTerm
     }
-    
+
     await fetchLogs(searchFilter)
   }
-  
+
   async function applyFilter(filter: LogFilter) {
     currentPage.value = 1 // Reset to first page when applying new filter
     await fetchLogs(filter)
   }
-  
+
   function clearFilter() {
     currentFilter.value = {}
     currentPage.value = 1
     fetchLogs()
   }
-  
+
   async function changePage(page: number) {
     if (page >= 1 && page <= totalPages.value) {
       currentPage.value = page
       await fetchLogs(currentFilter.value)
     }
   }
-  
+
   async function exportLogs(options: LogExportOptions) {
     loading.value = true
     error.value = null
-    
+
     try {
       // Mock export functionality - replace with actual API integration
       const exportData = {
@@ -289,17 +302,16 @@ export const useLogsStore = defineStore('logs', () => {
         exported_at: new Date().toISOString(),
         filters_applied: currentFilter.value
       }
-      
+
       // Simulate file download
       const filename = `logs_export_${new Date().toISOString().split('T')[0]}.${options.format}`
-      
+
       uni.showToast({
         title: `导出完成: ${filename}`,
         icon: 'success'
       })
-      
+
       return exportData
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '导出日志失败'
       console.error('Failed to export logs:', err)
@@ -308,11 +320,11 @@ export const useLogsStore = defineStore('logs', () => {
       loading.value = false
     }
   }
-  
+
   async function fetchSecurityEvents() {
     loading.value = true
     error.value = null
-    
+
     try {
       // Mock security events - replace with actual API integration
       securityEvents.value = [
@@ -327,7 +339,6 @@ export const useLogsStore = defineStore('logs', () => {
           resolved: false
         }
       ]
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '获取安全事件失败'
       console.error('Failed to fetch security events:', err)
@@ -335,24 +346,23 @@ export const useLogsStore = defineStore('logs', () => {
       loading.value = false
     }
   }
-  
+
   async function resolveSecurityEvent(eventId: string, notes?: string) {
     loading.value = true
     error.value = null
-    
+
     try {
       const event = securityEvents.value.find(e => e.id === eventId)
       if (event) {
         event.resolved = true
         event.resolved_at = new Date().toISOString()
         event.resolution_notes = notes
-        
+
         uni.showToast({
           title: '安全事件已处理',
           icon: 'success'
         })
       }
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '处理安全事件失败'
       console.error('Failed to resolve security event:', err)
@@ -360,7 +370,7 @@ export const useLogsStore = defineStore('logs', () => {
       loading.value = false
     }
   }
-  
+
   function startAutoRefresh() {
     autoRefresh.value = true
     const interval = setInterval(() => {
@@ -371,23 +381,23 @@ export const useLogsStore = defineStore('logs', () => {
       }
     }, refreshInterval.value)
   }
-  
+
   function stopAutoRefresh() {
     autoRefresh.value = false
   }
-  
+
   // Utility functions
   function getLogLevelColor(level: LogLevel): string {
     const colors = {
-      info: '#3b82f6',     // blue
-      warn: '#f59e0b',     // amber
-      error: '#ef4444',    // red
-      debug: '#6b7280',    // gray
-      critical: '#dc2626'  // dark red
+      info: '#3b82f6', // blue
+      warn: '#f59e0b', // amber
+      error: '#ef4444', // red
+      debug: '#6b7280', // gray
+      critical: '#dc2626' // dark red
     }
     return colors[level] || '#6b7280'
   }
-  
+
   function getLogLevelText(level: LogLevel): string {
     const texts = {
       info: '信息',
@@ -398,7 +408,7 @@ export const useLogsStore = defineStore('logs', () => {
     }
     return texts[level] || level
   }
-  
+
   function getCategoryText(category: LogCategory): string {
     const texts = {
       auth: '认证',
@@ -414,7 +424,7 @@ export const useLogsStore = defineStore('logs', () => {
     }
     return texts[category] || category
   }
-  
+
   function getActionText(action: LogAction): string {
     const texts = {
       create: '创建',
@@ -437,7 +447,7 @@ export const useLogsStore = defineStore('logs', () => {
     }
     return texts[action] || action
   }
-  
+
   return {
     // State
     logs,
@@ -453,7 +463,7 @@ export const useLogsStore = defineStore('logs', () => {
     totalEntries,
     autoRefresh,
     refreshInterval,
-    
+
     // Computed
     hasLogs,
     totalPages,
@@ -462,7 +472,7 @@ export const useLogsStore = defineStore('logs', () => {
     filteredLogs,
     criticalEvents,
     recentActivity,
-    
+
     // Actions
     fetchLogs,
     fetchStatistics,
@@ -475,7 +485,7 @@ export const useLogsStore = defineStore('logs', () => {
     resolveSecurityEvent,
     startAutoRefresh,
     stopAutoRefresh,
-    
+
     // Utilities
     getLogLevelColor,
     getLogLevelText,

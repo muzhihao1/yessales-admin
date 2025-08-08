@@ -4,14 +4,8 @@
     <view class="page-header">
       <text class="page-title">{{ isEditMode ? '编辑客户' : '新增客户' }}</text>
       <view class="header-actions">
-        <button class="action-btn cancel-btn" @click="handleCancel">
-          取消
-        </button>
-        <button 
-          class="action-btn save-btn" 
-          @click="handleSave"
-          :loading="saving"
-        >
+        <button class="action-btn cancel-btn" @click="handleCancel">取消</button>
+        <button class="action-btn save-btn" @click="handleSave" :loading="saving">
           {{ isEditMode ? '更新' : '保存' }}
         </button>
       </view>
@@ -27,27 +21,27 @@
       <!-- Basic Information -->
       <view class="form-section">
         <text class="section-title">基本信息</text>
-        
+
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">客户姓名 *</text>
-            <input 
+            <input
               v-model="formData.name"
               class="form-input"
               placeholder="请输入客户姓名"
-              :class="{ 'error': errors.name }"
+              :class="{ error: errors.name }"
             />
             <text v-if="errors.name" class="error-text">{{ errors.name }}</text>
           </view>
-          
+
           <view class="form-item">
             <text class="form-label">联系电话 *</text>
-            <input 
+            <input
               v-model="formData.phone"
               class="form-input"
               placeholder="请输入手机号"
               type="tel"
-              :class="{ 'error': errors.phone }"
+              :class="{ error: errors.phone }"
             />
             <text v-if="errors.phone" class="error-text">{{ errors.phone }}</text>
           </view>
@@ -63,7 +57,7 @@
               :value="customerTypeIndex"
               @change="handleCustomerTypeChange"
             >
-              <view class="form-picker" :class="{ 'error': errors.customer_type }">
+              <view class="form-picker" :class="{ error: errors.customer_type }">
                 <text>{{ customerTypeOptions[customerTypeIndex].label }}</text>
                 <text class="picker-arrow">▼</text>
               </view>
@@ -127,18 +121,18 @@
           <view class="form-row">
             <view class="form-item">
               <text class="form-label">公司名称 *</text>
-              <input 
+              <input
                 v-model="formData.company"
                 class="form-input"
                 placeholder="请输入公司名称"
-                :class="{ 'error': errors.company }"
+                :class="{ error: errors.company }"
               />
               <text v-if="errors.company" class="error-text">{{ errors.company }}</text>
             </view>
 
             <view class="form-item">
               <text class="form-label">法定代表人</text>
-              <input 
+              <input
                 v-model="formData.legal_representative"
                 class="form-input"
                 placeholder="请输入法定代表人"
@@ -149,7 +143,7 @@
           <view class="form-row">
             <view class="form-item">
               <text class="form-label">营业执照号</text>
-              <input 
+              <input
                 v-model="formData.business_license"
                 class="form-input"
                 placeholder="请输入营业执照号"
@@ -158,11 +152,7 @@
 
             <view class="form-item">
               <text class="form-label">税务登记号</text>
-              <input 
-                v-model="formData.tax_id"
-                class="form-input"
-                placeholder="请输入税务登记号"
-              />
+              <input v-model="formData.tax_id" class="form-input" placeholder="请输入税务登记号" />
             </view>
           </view>
         </view>
@@ -172,11 +162,7 @@
           <view class="form-row">
             <view class="form-item">
               <text class="form-label">出生日期</text>
-              <picker
-                mode="date"
-                :value="formData.birthday"
-                @change="handleBirthdayChange"
-              >
+              <picker mode="date" :value="formData.birthday" @change="handleBirthdayChange">
                 <view class="form-picker">
                   <text>{{ formData.birthday || '选择出生日期' }}</text>
                   <text class="picker-arrow">▼</text>
@@ -186,11 +172,7 @@
 
             <view class="form-item">
               <text class="form-label">职业</text>
-              <input 
-                v-model="formData.occupation"
-                class="form-input"
-                placeholder="请输入职业"
-              />
+              <input v-model="formData.occupation" class="form-input" placeholder="请输入职业" />
             </view>
           </view>
         </view>
@@ -199,27 +181,23 @@
       <!-- Contact Information -->
       <view class="form-section">
         <text class="section-title">联系方式</text>
-        
+
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">电子邮箱</text>
-            <input 
+            <input
               v-model="formData.email"
               class="form-input"
               placeholder="请输入邮箱地址"
               type="email"
-              :class="{ 'error': errors.email }"
+              :class="{ error: errors.email }"
             />
             <text v-if="errors.email" class="error-text">{{ errors.email }}</text>
           </view>
 
           <view class="form-item">
             <text class="form-label">微信号</text>
-            <input 
-              v-model="formData.wechat_id"
-              class="form-input"
-              placeholder="请输入微信号"
-            />
+            <input v-model="formData.wechat_id" class="form-input" placeholder="请输入微信号" />
           </view>
         </view>
 
@@ -242,7 +220,7 @@
 
           <view class="form-item">
             <text class="form-label">联系时间偏好</text>
-            <input 
+            <input
               v-model="formData.contact_time_preference"
               class="form-input"
               placeholder="如：工作日上午9-12点"
@@ -254,41 +232,29 @@
       <!-- Address Information -->
       <view class="form-section">
         <text class="section-title">地址信息</text>
-        
+
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">城市</text>
-            <input 
-              v-model="formData.city"
-              class="form-input"
-              placeholder="请输入城市"
-            />
+            <input v-model="formData.city" class="form-input" placeholder="请输入城市" />
           </view>
 
           <view class="form-item">
             <text class="form-label">区域</text>
-            <input 
-              v-model="formData.district"
-              class="form-input"
-              placeholder="请输入区域/区县"
-            />
+            <input v-model="formData.district" class="form-input" placeholder="请输入区域/区县" />
           </view>
         </view>
 
         <view class="form-item">
           <text class="form-label">详细地址</text>
-          <input 
-            v-model="formData.address"
-            class="form-input"
-            placeholder="请输入详细地址"
-          />
+          <input v-model="formData.address" class="form-input" placeholder="请输入详细地址" />
         </view>
       </view>
 
       <!-- Additional Information -->
       <view class="form-section">
         <text class="section-title">备注信息</text>
-        
+
         <view class="form-item">
           <text class="form-label">备注</text>
           <textarea
@@ -315,10 +281,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, computed } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from '@dcloudio/uni-app'
 import { useCustomersStore } from '@/stores/customers'
-import type { CreateCustomerData, UpdateCustomerData, Customer } from '@/types/customer'
+import type { CreateCustomerData, Customer, UpdateCustomerData } from '@/types/customer'
 
 const route = useRoute()
 const router = useRouter()
@@ -420,19 +386,19 @@ onMounted(() => {
 // Load customer data for editing
 async function loadCustomer() {
   if (!customerId.value) return
-  
+
   loading.value = true
   try {
     const customer = await customersStore.fetchCustomerById(customerId.value, false, false)
     originalCustomer.value = customer
-    
+
     // Populate form data
     Object.keys(formData).forEach(key => {
       if (key in customer && customer[key as keyof Customer] !== undefined) {
-        (formData as any)[key] = customer[key as keyof Customer]
+        ;(formData as any)[key] = customer[key as keyof Customer]
       }
     })
-    
+
     // Set picker indices based on loaded data
     updatePickerIndices()
   } catch (error) {
@@ -464,7 +430,9 @@ function updatePickerIndices() {
   if (genderIndexValue !== -1) genderIndex.value = genderIndexValue
 
   // Update contact method index
-  const contactIndexValue = contactMethodOptions.findIndex(option => option.value === formData.preferred_contact_method)
+  const contactIndexValue = contactMethodOptions.findIndex(
+    option => option.value === formData.preferred_contact_method
+  )
   if (contactIndexValue !== -1) contactMethodIndex.value = contactIndexValue
 }
 
@@ -472,7 +440,7 @@ function updatePickerIndices() {
 function handleCustomerTypeChange(e: any) {
   customerTypeIndex.value = e.detail.value
   formData.customer_type = customerTypeOptions[e.detail.value].value as any
-  
+
   // Clear business/individual specific fields when switching
   if (formData.customer_type === 'individual') {
     formData.company = ''
@@ -484,7 +452,7 @@ function handleCustomerTypeChange(e: any) {
     formData.gender = undefined
     formData.occupation = ''
   }
-  
+
   clearFieldError('customer_type')
 }
 
@@ -574,10 +542,8 @@ async function handleSave() {
   }
 
   confirmModalTitle.value = isEditMode.value ? '确认更新' : '确认保存'
-  confirmModalContent.value = isEditMode.value 
-    ? '确定要更新客户信息吗？' 
-    : '确定要保存新客户吗？'
-    
+  confirmModalContent.value = isEditMode.value ? '确定要更新客户信息吗？' : '确定要保存新客户吗？'
+
   confirmAction.value = isEditMode.value ? performUpdate : performCreate
   showConfirmModal.value = true
 }
@@ -590,7 +556,7 @@ async function performCreate() {
       title: '客户创建成功',
       icon: 'success'
     })
-    
+
     setTimeout(() => {
       uni.navigateBack()
     }, 1500)
@@ -606,7 +572,7 @@ async function performCreate() {
 
 async function performUpdate() {
   if (!customerId.value) return
-  
+
   saving.value = true
   try {
     await customersStore.updateCustomer(customerId.value, formData as UpdateCustomerData)
@@ -614,7 +580,7 @@ async function performUpdate() {
       title: '客户信息更新成功',
       icon: 'success'
     })
-    
+
     setTimeout(() => {
       uni.navigateBack()
     }, 1500)
@@ -631,7 +597,7 @@ async function performUpdate() {
 function handleCancel() {
   // Check if form has changes
   const hasChanges = checkFormChanges()
-  
+
   if (hasChanges) {
     confirmModalTitle.value = '确认离开'
     confirmModalContent.value = '您有未保存的更改，确定要离开吗？'
@@ -647,13 +613,13 @@ function handleCancel() {
 function checkFormChanges(): boolean {
   if (!isEditMode.value) {
     // For create mode, check if any field has content
-    return Object.values(formData).some(value => 
+    return Object.values(formData).some(value =>
       typeof value === 'string' ? value.trim() : value !== undefined
     )
   }
-  
+
   if (!originalCustomer.value) return false
-  
+
   // For edit mode, compare with original data
   return Object.keys(formData).some(key => {
     const currentValue = (formData as any)[key]
@@ -722,7 +688,7 @@ function cancelAction() {
             background: darken($primary-color, 10%);
           }
 
-          &[loading="true"] {
+          &[loading='true'] {
             opacity: 0.7;
             pointer-events: none;
           }

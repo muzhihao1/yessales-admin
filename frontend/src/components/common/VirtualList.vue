@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useComponentPerformance } from '@/utils/performance'
 
 /**
@@ -110,9 +110,7 @@ const visibleItems = computed(() => {
 
 const offsetBefore = computed(() => startIndex.value * props.itemHeight)
 
-const offsetAfter = computed(() => 
-  (props.items.length - endIndex.value - 1) * props.itemHeight
-)
+const offsetAfter = computed(() => (props.items.length - endIndex.value - 1) * props.itemHeight)
 
 // Active items (for animations and interactions)
 const activeStart = computed(() => {
@@ -124,7 +122,10 @@ const activeStart = computed(() => {
 const activeEnd = computed(() => {
   const center = scrollTop.value + props.containerHeight / 2
   const centerIndex = Math.floor(center / props.itemHeight)
-  return Math.min(props.items.length - 1, centerIndex + Math.floor(props.activeThreshold / props.itemHeight))
+  return Math.min(
+    props.items.length - 1,
+    centerIndex + Math.floor(props.activeThreshold / props.itemHeight)
+  )
 })
 
 /**
@@ -139,17 +140,17 @@ function getItemKey(item: any, index: number): string {
 
 function handleScroll(event: any) {
   const newScrollTop = event.detail.scrollTop
-  
+
   // Determine scroll direction
   if (newScrollTop > lastScrollTop.value) {
     scrollDirection.value = 'down'
   } else if (newScrollTop < lastScrollTop.value) {
     scrollDirection.value = 'up'
   }
-  
+
   lastScrollTop.value = scrollTop.value
   scrollTop.value = newScrollTop
-  
+
   // Emit scroll event
   emit('scroll', {
     scrollTop: newScrollTop,
@@ -162,7 +163,7 @@ function handleScroll(event: any) {
  */
 function scrollToIndex(index: number, alignment: 'start' | 'center' | 'end' = 'start') {
   let targetScrollTop: number
-  
+
   switch (alignment) {
     case 'start':
       targetScrollTop = index * props.itemHeight
@@ -174,8 +175,11 @@ function scrollToIndex(index: number, alignment: 'start' | 'center' | 'end' = 's
       targetScrollTop = index * props.itemHeight - props.containerHeight + props.itemHeight
       break
   }
-  
-  targetScrollTop = Math.max(0, Math.min(targetScrollTop, totalHeight.value - props.containerHeight))
+
+  targetScrollTop = Math.max(
+    0,
+    Math.min(targetScrollTop, totalHeight.value - props.containerHeight)
+  )
   scrollTop.value = targetScrollTop
 }
 
@@ -221,7 +225,9 @@ defineExpose({
  * Lifecycle
  */
 onMounted(() => {
-  console.log(`🔧 VirtualList initialized: ${props.items.length} items, ${visibleItemCount.value} visible`)
+  console.log(
+    `🔧 VirtualList initialized: ${props.items.length} items, ${visibleItemCount.value} visible`
+  )
 })
 </script>
 
@@ -261,7 +267,7 @@ onMounted(() => {
   transform: translateZ(0);
   backface-visibility: hidden;
   perspective: 1000px;
-  
+
   /* Optimize scroll performance */
   -webkit-overflow-scrolling: touch;
   scroll-behavior: smooth;

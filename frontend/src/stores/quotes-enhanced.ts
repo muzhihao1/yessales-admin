@@ -1,24 +1,24 @@
 /**
  * Enhanced Quotes Store with Offline Support
- * 
+ *
  * Extends the original quotes store with offline functionality,
  * caching, optimistic updates, and error handling.
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { QuotesApi } from '@/api/quotes'
 import { useOffline } from '@/services/offline'
-import { 
-  useCache, 
-  useLoadingState, 
+import {
+  cachePatterns,
+  handleStoreError,
+  useCache,
+  useLoadingState,
   useOptimisticUpdates,
   usePersistence,
-  withLoading,
-  handleStoreError,
-  cachePatterns
+  withLoading
 } from '@/stores/utils'
-import type { Quote, Customer } from '@/types/models'
+import type { Customer, Quote } from '@/types/models'
 import type { QueryParams } from '@/types/api'
 
 export const useQuotesStore = defineStore('quotes', () => {
@@ -26,18 +26,18 @@ export const useQuotesStore = defineStore('quotes', () => {
   const quotes = ref<Quote[]>([])
   const currentQuote = ref<Quote | null>(null)
   const error = ref<string | null>(null)
-  
+
   // Pagination
   const currentPage = ref(1)
   const pageSize = ref(20)
   const total = ref(0)
-  
+
   // Filters
   const searchKeyword = ref('')
   const statusFilter = ref<string>('')
   const dateRange = ref<[string, string] | null>(null)
   const customerPhone = ref('')
-  
+
   // Utilities
   const { isLoading, startLoading, stopLoading } = useLoadingState('quotes')
   const cache = useCache('quotes', { defaultTTL: 5 * 60 * 1000 }) // 5 minutes
@@ -59,41 +59,34 @@ export const useQuotesStore = defineStore('quotes', () => {
 
   // Computed properties
   const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
-  
-  const pendingQuotes = computed(() => 
-    quotes.value.filter(q => q.status === 'pending')
-  )
-  
-  const approvedQuotes = computed(() => 
-    quotes.value.filter(q => q.status === 'approved')
-  )
-  
-  const rejectedQuotes = computed(() => 
-    quotes.value.filter(q => q.status === 'rejected')
-  )
-  
-  const totalQuotesAmount = computed(() => 
-    quotes.value.reduce((sum, q) => sum + q.total_price, 0)
-  )
-  
+
+  const pendingQuotes = computed(() => quotes.value.filter(q => q.status === 'pending'))
+
+  const approvedQuotes = computed(() => quotes.value.filter(q => q.status === 'approved'))
+
+  const rejectedQuotes = computed(() => quotes.value.filter(q => q.status === 'rejected'))
+
+  const totalQuotesAmount = computed(() => quotes.value.reduce((sum, q) => sum + q.total_price, 0))
+
   const filteredQuotes = computed(() => {
     let result = [...quotes.value]
-    
+
     // 关键词搜索 (报价单号、客户名称、客户电话)
     if (searchKeyword.value) {
       const keyword = searchKeyword.value.toLowerCase()
-      result = result.filter(q => 
-        q.quote_no?.toLowerCase().includes(keyword) ||
-        q.customer?.name?.toLowerCase().includes(keyword) ||
-        q.customer?.phone?.includes(keyword)
+      result = result.filter(
+        q =>
+          q.quote_no?.toLowerCase().includes(keyword) ||
+          q.customer?.name?.toLowerCase().includes(keyword) ||
+          q.customer?.phone?.includes(keyword)
       )
     }
-    
+
     // 状态筛选
     if (statusFilter.value) {
       result = result.filter(q => q.status === statusFilter.value)
     }
-    
+
     // 日期范围筛选
     if (dateRange.value) {
       const [start, end] = dateRange.value
@@ -102,7 +95,7 @@ export const useQuotesStore = defineStore('quotes', () => {
         return quoteDate >= new Date(start) && quoteDate <= new Date(end)
       })
     }
-    
+
     return result
   })
 
@@ -113,15 +106,15 @@ export const useQuotesStore = defineStore('quotes', () => {
    */
   async function fetchQuotes(params?: QueryParams) {
     const cacheKey = `quotes_${JSON.stringify(params || {})}_${currentPage.value}_${pageSize.value}`
-    
+
     // Try cache first
-    const cached = cache.get<{ quotes: Quote[], total: number }>(cacheKey)
+    const cached = cache.get<{ quotes: Quote[]; total: number }>(cacheKey)
     if (cached && !params?.forceRefresh) {
       quotes.value = cached.quotes
       total.value = cached.total
       return { success: true, data: cached.quotes }
     }
-    
+
     return await withLoading('quotes', 'fetchQuotes', async () => {
       try {
         const queryParams: QueryParams = {
@@ -129,21 +122,25 @@ export const useQuotesStore = defineStore('quotes', () => {
           page_size: pageSize.value,
           sort_by: 'created_at',
           sort_order: 'desc',
-          ...params,
+          ...params
         }
-        
+
         const response = await QuotesApi.getQuotes(queryParams)
-        
+
         if (response.success && response.data) {
           quotes.value = response.data
           total.value = response.pagination?.total || response.data.length
-          
+
           // Cache the result
-          cache.set(cacheKey, {
-            quotes: response.data,
-            total: total.value
-          }, cachePatterns.quote())
-          
+          cache.set(
+            cacheKey,
+            {
+              quotes: response.data,
+              total: total.value
+            },
+            cachePatterns.quote()
+          )
+
           return { success: true, data: response.data }
         } else {
           throw new Error(response.error?.message || '获取报价单列表失败')
@@ -156,30 +153,30 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
     })
   }
-  
+
   /**
    * Fetch single quote with caching
    */
   async function fetchQuote(id: string) {
     const cacheKey = `quote_${id}`
-    
+
     // Try cache first
     const cached = cache.get<Quote>(cacheKey)
     if (cached) {
       currentQuote.value = cached
       return cached
     }
-    
+
     return await withLoading('quotes', 'fetchQuote', async () => {
       try {
         const response = await QuotesApi.getQuote(id)
-        
+
         if (response.success && response.data) {
           currentQuote.value = response.data
-          
+
           // Cache the result
           cache.set(cacheKey, response.data, cachePatterns.quote(id))
-          
+
           return response.data
         } else {
           throw new Error(response.error?.message || '获取报价单详情失败')
@@ -223,25 +220,25 @@ export const useQuotesStore = defineStore('quotes', () => {
         )
       },
       {
-        addToList: (quote) => {
+        addToList: quote => {
           quotes.value.unshift(quote)
           total.value++
         },
-        removeFromList: (quote) => {
+        removeFromList: quote => {
           const index = quotes.value.findIndex(q => q.id === quote.id)
           if (index > -1) {
             quotes.value.splice(index, 1)
             total.value--
           }
         },
-        onSuccess: (result) => {
+        onSuccess: result => {
           if (result) {
             // Replace temp quote with real quote
             const index = quotes.value.findIndex(q => q.id === tempId)
             if (index > -1) {
               quotes.value[index] = result
             }
-            
+
             // Invalidate related cache
             cache.invalidateByTag('quote')
           }
@@ -289,24 +286,24 @@ export const useQuotesStore = defineStore('quotes', () => {
           if (index > -1) {
             quotes.value[index] = { ...original, ...updated }
           }
-          
+
           // Update current quote if it's the same
           if (currentQuote.value?.id === original.id) {
             currentQuote.value = { ...original, ...updated }
           }
         },
-        revertInList: (original) => {
+        revertInList: original => {
           const index = quotes.value.findIndex(q => q.id === original.id)
           if (index > -1) {
             quotes.value[index] = original
           }
-          
+
           // Revert current quote if it's the same
           if (currentQuote.value?.id === original.id) {
             currentQuote.value = original
           }
         },
-        onSuccess: (result) => {
+        onSuccess: result => {
           if (result) {
             // Invalidate cache for this quote
             cache.invalidateByTag(`quote:${id}`)
@@ -315,14 +312,14 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
     )
   }
-  
+
   /**
    * Approve quote with optimistic updates
    */
   async function approveQuote(id: string) {
     return await updateQuoteStatus(id, 'approved', '审批通过')
   }
-  
+
   /**
    * Reject quote with optimistic updates
    */
@@ -334,26 +331,26 @@ export const useQuotesStore = defineStore('quotes', () => {
    * Helper function to update quote status
    */
   async function updateQuoteStatus(
-    id: string, 
-    status: Quote['status'], 
+    id: string,
+    status: Quote['status'],
     successMessage: string,
     additionalData: Record<string, any> = {}
   ) {
-    const updates = { 
-      status, 
+    const updates = {
+      status,
       ...additionalData,
       updated_at: new Date().toISOString()
     }
-    
+
     const result = await updateQuote(id, updates)
-    
+
     if (result) {
       uni.showToast({
         title: successMessage,
         icon: 'success'
       })
     }
-    
+
     return result
   }
 
@@ -370,30 +367,27 @@ export const useQuotesStore = defineStore('quotes', () => {
       `quote_${id}`,
       quoteToDelete,
       async () => {
-        return await deleteOffline(
-          id,
-          async () => {
-            const response = await QuotesApi.deleteQuote(id)
-            if (!response.success) {
-              throw new Error(response.error?.message || '删除报价单失败')
-            }
+        return await deleteOffline(id, async () => {
+          const response = await QuotesApi.deleteQuote(id)
+          if (!response.success) {
+            throw new Error(response.error?.message || '删除报价单失败')
           }
-        )
+        })
       },
       {
-        removeFromList: (quote) => {
+        removeFromList: quote => {
           const index = quotes.value.findIndex(q => q.id === quote.id)
           if (index > -1) {
             quotes.value.splice(index, 1)
             total.value--
           }
-          
+
           // Clear current quote if it's the same
           if (currentQuote.value?.id === quote.id) {
             currentQuote.value = null
           }
         },
-        addToList: (quote) => {
+        addToList: quote => {
           quotes.value.push(quote)
           total.value++
         },
@@ -401,7 +395,7 @@ export const useQuotesStore = defineStore('quotes', () => {
           // Invalidate cache
           cache.invalidateByTag(`quote:${id}`)
           cache.invalidateByTag('quote')
-          
+
           uni.showToast({
             title: '删除成功',
             icon: 'success'
@@ -410,7 +404,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
     )
   }
-  
+
   /**
    * Export quotes (online only)
    */
@@ -418,13 +412,13 @@ export const useQuotesStore = defineStore('quotes', () => {
     return await withLoading('quotes', 'exportQuotes', async () => {
       try {
         const response = await QuotesApi.exportQuotes(params)
-        
+
         if (response.success && response.data) {
           // Handle file download in Uniapp
           const tempFilePath = await new Promise<string>((resolve, reject) => {
             uni.downloadFile({
               url: response.data as any, // Assuming API returns download URL
-              success: (res) => {
+              success: res => {
                 if (res.statusCode === 200) {
                   resolve(res.tempFilePath)
                 } else {
@@ -434,7 +428,7 @@ export const useQuotesStore = defineStore('quotes', () => {
               fail: reject
             })
           })
-          
+
           // Save file to local
           uni.saveFile({
             tempFilePath,
@@ -451,7 +445,7 @@ export const useQuotesStore = defineStore('quotes', () => {
               })
             }
           })
-          
+
           return { success: true }
         } else {
           throw new Error(response.error?.message || '导出失败')
@@ -464,7 +458,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
     })
   }
-  
+
   /**
    * Search quotes by phone with caching
    */
@@ -472,25 +466,25 @@ export const useQuotesStore = defineStore('quotes', () => {
     if (!phone.trim()) {
       return { success: true, data: [] }
     }
-    
+
     const cacheKey = `quotes_search_${phone}`
-    
+
     // Try cache first
     const cached = cache.get<Quote[]>(cacheKey)
     if (cached) {
       return { success: true, data: cached }
     }
-    
+
     return await withLoading('quotes', 'searchByPhone', async () => {
       try {
         const response = await QuotesApi.getQuotesByPhone(phone)
-        
+
         if (response.success) {
           const data = response.data || []
-          
+
           // Cache search results for short time
           cache.set(cacheKey, data, cachePatterns.shortLived())
-          
+
           return { success: true, data }
         } else {
           throw new Error(response.error?.message || '搜索失败')
@@ -503,7 +497,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       }
     })
   }
-  
+
   // Utility methods
   function resetFilters() {
     searchKeyword.value = ''
@@ -512,40 +506,40 @@ export const useQuotesStore = defineStore('quotes', () => {
     customerPhone.value = ''
     currentPage.value = 1
   }
-  
+
   function setPage(page: number) {
     currentPage.value = page
     fetchQuotes()
   }
-  
+
   function setPageSize(size: number) {
     pageSize.value = size
     currentPage.value = 1
     fetchQuotes()
   }
-  
+
   function getQuoteStats() {
     const totalCount = quotes.value.length
     const pendingCount = pendingQuotes.value.length
     const approvedCount = approvedQuotes.value.length
     const rejectedCount = rejectedQuotes.value.length
-    
+
     const totalAmount = totalQuotesAmount.value
     const pendingAmount = pendingQuotes.value.reduce((sum, q) => sum + q.total_price, 0)
     const approvedAmount = approvedQuotes.value.reduce((sum, q) => sum + q.total_price, 0)
-    
+
     return {
       counts: {
         total: totalCount,
         pending: pendingCount,
         approved: approvedCount,
-        rejected: rejectedCount,
+        rejected: rejectedCount
       },
       amounts: {
         total: totalAmount,
         pending: pendingAmount,
-        approved: approvedAmount,
-      },
+        approved: approvedAmount
+      }
     }
   }
 
@@ -570,26 +564,26 @@ export const useQuotesStore = defineStore('quotes', () => {
     currentQuote,
     isLoading,
     error,
-    
+
     // Pagination
     currentPage,
     pageSize,
     total,
     totalPages,
-    
+
     // Filters
     searchKeyword,
     statusFilter,
     dateRange,
     customerPhone,
-    
+
     // Computed
     pendingQuotes,
     approvedQuotes,
     rejectedQuotes,
     totalQuotesAmount,
     filteredQuotes,
-    
+
     // Actions
     fetchQuotes,
     fetchQuote,
@@ -600,13 +594,13 @@ export const useQuotesStore = defineStore('quotes', () => {
     deleteQuote,
     exportQuotes,
     searchByPhone,
-    
+
     // Utilities
     resetFilters,
     setPage,
     setPageSize,
     getQuoteStats,
     clearCache,
-    refresh,
+    refresh
   }
 })

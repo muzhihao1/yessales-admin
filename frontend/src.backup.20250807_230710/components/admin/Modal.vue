@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue'
+import { defineEmits, defineProps } from 'vue'
 
 interface Props {
   visible: boolean
@@ -42,8 +42,8 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
-  'confirm': []
-  'cancel': []
+  confirm: []
+  cancel: []
 }>()
 
 function handleOverlayClick() {

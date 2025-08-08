@@ -1,9 +1,9 @@
-import { ref, computed, reactive, watch, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { showToast } from '@/utils/ui'
 
 /**
  * 实时更新和数据同步功能组合式API
- * 
+ *
  * 功能说明：
  * - 防抖更新机制：避免频繁的API调用和UI刷新
  * - 增量数据同步：只更新变化的记录，提升性能
@@ -11,21 +11,21 @@ import { showToast } from '@/utils/ui'
  * - 乐观更新：立即更新UI，后台同步数据
  * - 冲突解决：处理并发更新和数据冲突
  * - WebSocket支持：实时数据推送和事件处理
- * 
+ *
  * 应用场景：
  * - 客户管理页面的实时状态更新
  * - 产品库存的实时数量变化
  * - 报价状态的实时审批进度
  * - 系统通知的实时推送
  * - 多用户协作时的数据同步
- * 
+ *
  * 性能优化：
  * - 智能防抖：不同操作类型使用不同的防抖延迟
  * - 批量更新：合并多个更新请求为单个批次
  * - 缓存策略：减少重复的网络请求
  * - 增量同步：只传输变化的数据字段
  * - 内存优化：自动清理过期的缓存数据
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -84,7 +84,7 @@ export function useRealTimeUpdates<T extends DataItem>(
   options: Partial<RealTimeUpdateOptions> = {}
 ) {
   const opts = { ...DEFAULT_OPTIONS, ...options }
-  
+
   // 响应式状态
   const state = reactive({
     items: [] as T[],
@@ -93,34 +93,30 @@ export function useRealTimeUpdates<T extends DataItem>(
     connected: false,
     lastSync: null as Date | null,
     pendingUpdates: [] as UpdateOperation[],
-    conflicts: [] as Array<{ local: T, remote: T }>
+    conflicts: [] as Array<{ local: T; remote: T }>
   })
 
   // 缓存管理
   const cache = new Map<string, CacheEntry<T>>()
   const updateQueue = new Map<string | number, UpdateOperation>()
-  
+
   // WebSocket连接
   let ws: WebSocket | null = null
   let reconnectTimer: number | null = null
-  
+
   // 防抖定时器
-  let debounceTimers = new Map<string, number>()
-  let batchTimer: number | null = null
+  const debounceTimers = new Map<string, number>()
+  const batchTimer: number | null = null
 
   /**
    * 智能防抖函数 - 根据操作类型使用不同延迟
    */
-  const debouncedUpdate = (
-    key: string, 
-    operation: () => Promise<void>, 
-    delay?: number
-  ) => {
+  const debouncedUpdate = (key: string, operation: () => Promise<void>, delay?: number) => {
     // 清除已存在的定时器
     if (debounceTimers.has(key)) {
       clearTimeout(debounceTimers.get(key)!)
     }
-    
+
     const actualDelay = delay || opts.debounceDelay
     const timer = setTimeout(async () => {
       try {
@@ -130,7 +126,7 @@ export function useRealTimeUpdates<T extends DataItem>(
         console.error(`Debounced operation failed for key ${key}:`, error)
       }
     }, actualDelay) as unknown as number
-    
+
     debounceTimers.set(key, timer)
   }
 
@@ -140,15 +136,15 @@ export function useRealTimeUpdates<T extends DataItem>(
   const getCached = (id: string | number): T | null => {
     const key = `${dataKey}_${id}`
     const entry = cache.get(key)
-    
+
     if (!entry) return null
-    
+
     // 检查是否过期
     if (Date.now() > entry.expiry) {
       cache.delete(key)
       return null
     }
-    
+
     return entry.data
   }
 
@@ -181,19 +177,19 @@ export function useRealTimeUpdates<T extends DataItem>(
   const mergeDataChanges = (current: T, updates: Partial<T>): T => {
     const merged = { ...current }
     let hasChanges = false
-    
+
     for (const [key, value] of Object.entries(updates)) {
       if (current[key] !== value) {
         merged[key] = value
         hasChanges = true
       }
     }
-    
+
     if (hasChanges) {
       merged._lastModified = new Date().toISOString()
       merged._version = (current._version || 0) + 1
     }
-    
+
     return merged
   }
 
@@ -201,14 +197,14 @@ export function useRealTimeUpdates<T extends DataItem>(
    * 乐观更新 - 立即更新UI，后台同步数据
    */
   const optimisticUpdate = (
-    id: string | number, 
+    id: string | number,
     updates: Partial<T>,
     syncOperation: () => Promise<T>
   ) => {
     if (!opts.optimisticUpdates) {
       return syncOperation()
     }
-    
+
     // 立即更新本地数据
     const index = state.items.findIndex(item => item.id === id)
     if (index !== -1) {
@@ -217,7 +213,7 @@ export function useRealTimeUpdates<T extends DataItem>(
       state.items[index] = optimisticData
       setCached(id, optimisticData)
     }
-    
+
     // 后台同步，失败时回滚
     return syncOperation().catch(error => {
       // 回滚乐观更新
@@ -225,7 +221,7 @@ export function useRealTimeUpdates<T extends DataItem>(
       if (cachedOriginal && index !== -1) {
         state.items[index] = cachedOriginal
       }
-      
+
       showToast('数据同步失败，已恢复原始状态', 'error')
       throw error
     })
@@ -236,38 +232,37 @@ export function useRealTimeUpdates<T extends DataItem>(
    */
   const processBatchUpdates = async () => {
     if (updateQueue.size === 0) return
-    
+
     const batch = Array.from(updateQueue.values()).slice(0, opts.batchSize)
     updateQueue.clear()
-    
+
     try {
       state.syncing = true
-      
+
       // 按类型分组批量操作
       const grouped = {
         create: batch.filter(op => op.type === 'create'),
         update: batch.filter(op => op.type === 'update'),
         delete: batch.filter(op => op.type === 'delete')
       }
-      
+
       // 并行执行批量操作
       const promises = []
-      
+
       if (grouped.create.length > 0) {
         promises.push(batchCreate(grouped.create))
       }
-      
+
       if (grouped.update.length > 0) {
         promises.push(batchUpdate(grouped.update))
       }
-      
+
       if (grouped.delete.length > 0) {
         promises.push(batchDelete(grouped.delete))
       }
-      
+
       await Promise.all(promises)
       state.lastSync = new Date()
-      
     } catch (error) {
       console.error('Batch update failed:', error)
       // 重新加入队列稍后重试
@@ -303,16 +298,20 @@ export function useRealTimeUpdates<T extends DataItem>(
     if (localData._version && remoteData._version) {
       return localData._version !== remoteData._version
     }
-    
+
     // 基于时间戳的冲突检测
     if (localData._lastModified && remoteData._lastModified) {
       return new Date(localData._lastModified) > new Date(remoteData._lastModified)
     }
-    
+
     return false
   }
 
-  const resolveConflict = (local: T, remote: T, strategy: 'local' | 'remote' | 'merge' = 'remote'): T => {
+  const resolveConflict = (
+    local: T,
+    remote: T,
+    strategy: 'local' | 'remote' | 'merge' = 'remote'
+  ): T => {
     switch (strategy) {
       case 'local':
         return local
@@ -323,10 +322,10 @@ export function useRealTimeUpdates<T extends DataItem>(
         const merged = { ...remote }
         for (const [key, value] of Object.entries(local)) {
           if (key.startsWith('_')) continue // 跳过元数据字段
-          
+
           const localTime = new Date(local._lastModified || 0)
           const remoteTime = new Date(remote._lastModified || 0)
-          
+
           if (localTime > remoteTime) {
             merged[key] = value
           }
@@ -345,22 +344,22 @@ export function useRealTimeUpdates<T extends DataItem>(
     if (!opts.websocketUrl || ws?.readyState === WebSocket.OPEN) {
       return
     }
-    
+
     try {
       ws = new WebSocket(opts.websocketUrl)
-      
+
       ws.onopen = () => {
         state.connected = true
         console.log(`WebSocket connected for ${dataKey}`)
-        
+
         // 清除重连定时器
         if (reconnectTimer) {
           clearTimeout(reconnectTimer)
           reconnectTimer = null
         }
       }
-      
-      ws.onmessage = (event) => {
+
+      ws.onmessage = event => {
         try {
           const message = JSON.parse(event.data)
           handleRealtimeMessage(message)
@@ -368,21 +367,20 @@ export function useRealTimeUpdates<T extends DataItem>(
           console.error('WebSocket message parse error:', error)
         }
       }
-      
+
       ws.onclose = () => {
         state.connected = false
         console.log(`WebSocket disconnected for ${dataKey}`)
-        
+
         // 自动重连
         reconnectTimer = setTimeout(() => {
           connectWebSocket()
         }, opts.reconnectInterval) as unknown as number
       }
-      
-      ws.onerror = (error) => {
+
+      ws.onerror = error => {
         console.error(`WebSocket error for ${dataKey}:`, error)
       }
-      
     } catch (error) {
       console.error('WebSocket connection failed:', error)
     }
@@ -393,7 +391,7 @@ export function useRealTimeUpdates<T extends DataItem>(
    */
   const handleRealtimeMessage = (message: any) => {
     const { type, data, id } = message
-    
+
     switch (type) {
       case 'update':
         handleRealtimeUpdate(id, data)
@@ -417,13 +415,13 @@ export function useRealTimeUpdates<T extends DataItem>(
     if (index !== -1) {
       const current = state.items[index]
       const updated = mergeDataChanges(current, updates)
-      
+
       // 检查冲突
       if (detectConflicts(current, updated)) {
         state.conflicts.push({ local: current, remote: updated })
         return
       }
-      
+
       state.items[index] = updated
       setCached(id, updated)
     }
@@ -445,7 +443,9 @@ export function useRealTimeUpdates<T extends DataItem>(
     }
   }
 
-  const handleRealtimeBatch = (operations: Array<{ type: string, id: string | number, data?: any }>) => {
+  const handleRealtimeBatch = (
+    operations: Array<{ type: string; id: string | number; data?: any }>
+  ) => {
     operations.forEach(op => {
       switch (op.type) {
         case 'update':
@@ -472,9 +472,9 @@ export function useRealTimeUpdates<T extends DataItem>(
       timestamp: Date.now(),
       optimistic: opts.optimisticUpdates
     }
-    
+
     updateQueue.set(id, operation)
-    
+
     // 防抖批量处理
     debouncedUpdate('batch_process', processBatchUpdates, opts.debounceDelay)
   }
@@ -495,13 +495,13 @@ export function useRealTimeUpdates<T extends DataItem>(
       _version: 1,
       _lastModified: new Date().toISOString()
     } as T
-    
+
     // 乐观创建
     if (opts.optimisticUpdates) {
       state.items.push(newItem)
       setCached(newItem.id, newItem)
     }
-    
+
     queueUpdate(newItem.id, 'create', newItem)
     return newItem
   }
@@ -515,7 +515,7 @@ export function useRealTimeUpdates<T extends DataItem>(
         clearCache(id)
       }
     }
-    
+
     queueUpdate(id, 'delete')
   }
 
@@ -534,21 +534,21 @@ export function useRealTimeUpdates<T extends DataItem>(
     // 清理所有定时器
     debounceTimers.forEach(timer => clearTimeout(timer))
     debounceTimers.clear()
-    
+
     if (batchTimer) {
       clearTimeout(batchTimer)
     }
-    
+
     if (reconnectTimer) {
       clearTimeout(reconnectTimer)
     }
-    
+
     // 关闭WebSocket连接
     if (ws) {
       ws.close()
       ws = null
     }
-    
+
     // 清理缓存
     cache.clear()
     updateQueue.clear()
@@ -573,44 +573,44 @@ export function useRealTimeUpdates<T extends DataItem>(
   return {
     // 状态
     state,
-    
+
     // 计算属性
     hasPendingUpdates,
     hasConflicts,
     isOnline,
-    
+
     // 核心方法
     updateItem,
     createItem,
     deleteItem,
     refreshData,
     forceSync,
-    
+
     // 缓存管理
     getCached,
     setCached,
     clearCache,
-    
+
     // 冲突解决
     resolveConflict: (index: number, strategy: 'local' | 'remote' | 'merge' = 'remote') => {
       if (index >= 0 && index < state.conflicts.length) {
         const conflict = state.conflicts[index]
         const resolved = resolveConflict(conflict.local, conflict.remote, strategy)
-        
+
         // 更新数据
         const itemIndex = state.items.findIndex(item => item.id === resolved.id)
         if (itemIndex !== -1) {
           state.items[itemIndex] = resolved
           setCached(resolved.id, resolved)
         }
-        
+
         // 移除冲突
         state.conflicts.splice(index, 1)
-        
+
         return resolved
       }
     },
-    
+
     // WebSocket控制
     connect: connectWebSocket,
     disconnect: () => {
@@ -620,7 +620,7 @@ export function useRealTimeUpdates<T extends DataItem>(
       }
       state.connected = false
     },
-    
+
     // 工具方法
     debouncedUpdate,
     cleanup
@@ -638,7 +638,7 @@ export const realtimeUpdatePresets = {
     batchSize: 5,
     optimisticUpdates: true
   },
-  
+
   // 标准更新（如数据表格）
   standard: {
     debounceDelay: 300,
@@ -646,7 +646,7 @@ export const realtimeUpdatePresets = {
     batchSize: 10,
     optimisticUpdates: true
   },
-  
+
   // 低频更新（如系统设置）
   lowFrequency: {
     debounceDelay: 1000,
@@ -654,7 +654,7 @@ export const realtimeUpdatePresets = {
     batchSize: 20,
     optimisticUpdates: false
   },
-  
+
   // 移动端优化
   mobile: {
     debounceDelay: 500,

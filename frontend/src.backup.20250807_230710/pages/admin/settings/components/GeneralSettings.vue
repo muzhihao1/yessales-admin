@@ -10,7 +10,7 @@
         <!-- 应用信息 -->
         <view class="form-group">
           <text class="group-title">应用配置</text>
-          
+
           <uni-forms-item label="应用名称" name="appName" required>
             <uni-easyinput
               v-model="formData.appName"
@@ -44,7 +44,7 @@
         <!-- 区域和语言设置 -->
         <view class="form-group">
           <text class="group-title">区域设置</text>
-          
+
           <uni-forms-item label="默认语言" name="defaultLanguage" required>
             <uni-data-picker
               v-model="formData.defaultLanguage"
@@ -94,7 +94,7 @@
         <!-- 系统设置 -->
         <view class="form-group">
           <text class="group-title">系统配置</text>
-          
+
           <uni-forms-item label="会话超时(分钟)" name="sessionTimeout">
             <uni-number-box
               v-model="formData.sessionTimeout"
@@ -132,7 +132,7 @@
         <!-- 公司信息 -->
         <view class="form-group">
           <text class="group-title">公司信息</text>
-          
+
           <uni-forms-item label="公司名称" name="companyName">
             <uni-easyinput
               v-model="formData.companyName"
@@ -195,20 +195,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { showToast, showModal } from '@/utils/ui'
+import { showModal, showToast } from '@/utils/ui'
 import type { SystemSettings } from '@/types/settings'
 
 /**
  * 通用设置组件
- * 
+ *
  * 功能说明：
  * - 管理应用的基本配置信息
  * - 处理区域化设置（语言、时区、货币等）
  * - 配置系统行为参数
  * - 管理公司基本信息
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -217,20 +217,20 @@ interface GeneralSettingsForm {
   appName: string
   appDescription: string
   appVersion: string
-  
+
   // 区域设置
   defaultLanguage: string
   timezone: string
   defaultCurrency: string
   dateFormat: string
   timeFormat: string
-  
+
   // 系统设置
   sessionTimeout: number
   defaultPageSize: number
   enableDebugMode: boolean
   enableDataCache: boolean
-  
+
   // 公司信息
   companyName: string
   companyAddress: string
@@ -276,44 +276,28 @@ const rules = {
     ]
   },
   appDescription: {
-    rules: [
-      { maxLength: 500, errorMessage: '应用描述不能超过500个字符' }
-    ]
+    rules: [{ maxLength: 500, errorMessage: '应用描述不能超过500个字符' }]
   },
   appVersion: {
-    rules: [
-      { pattern: /^\d+\.\d+\.\d+$/, errorMessage: '版本号格式应为 x.x.x' }
-    ]
+    rules: [{ pattern: /^\d+\.\d+\.\d+$/, errorMessage: '版本号格式应为 x.x.x' }]
   },
   defaultLanguage: {
-    rules: [
-      { required: true, errorMessage: '请选择默认语言' }
-    ]
+    rules: [{ required: true, errorMessage: '请选择默认语言' }]
   },
   timezone: {
-    rules: [
-      { required: true, errorMessage: '请选择时区' }
-    ]
+    rules: [{ required: true, errorMessage: '请选择时区' }]
   },
   defaultCurrency: {
-    rules: [
-      { required: true, errorMessage: '请选择默认货币' }
-    ]
+    rules: [{ required: true, errorMessage: '请选择默认货币' }]
   },
   sessionTimeout: {
-    rules: [
-      { type: 'number', min: 5, max: 1440, errorMessage: '会话超时时间应在5-1440分钟之间' }
-    ]
+    rules: [{ type: 'number', min: 5, max: 1440, errorMessage: '会话超时时间应在5-1440分钟之间' }]
   },
   companyEmail: {
-    rules: [
-      { format: 'email', errorMessage: '请输入正确的邮箱地址' }
-    ]
+    rules: [{ format: 'email', errorMessage: '请输入正确的邮箱地址' }]
   },
   companyWebsite: {
-    rules: [
-      { format: 'url', errorMessage: '请输入正确的网站地址' }
-    ]
+    rules: [{ format: 'url', errorMessage: '请输入正确的网站地址' }]
   }
 }
 
@@ -368,15 +352,15 @@ const hasChanges = computed(() => {
 
 // 事件处理
 const handleInputChange = (field: keyof GeneralSettingsForm, value: any) => {
-  (formData.value as any)[field] = value
+  ;(formData.value as any)[field] = value
 }
 
 const handlePickerChange = (field: keyof GeneralSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleSwitchChange = (field: keyof GeneralSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleReset = async () => {
@@ -384,7 +368,7 @@ const handleReset = async () => {
     title: '确认重置',
     content: '确定要重置所有设置吗？未保存的更改将丢失。'
   })
-  
+
   if (result.confirm) {
     formData.value = { ...originalData.value }
     showToast('已重置到上次保存的状态')
@@ -403,20 +387,22 @@ const handleSave = async () => {
     loading.value = true
 
     // 转换为设置格式
-    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(([key, value]) => ({
-      category: 'general' as const,
-      key,
-      value,
-      type: typeof value === 'boolean' ? 'boolean' : 
-            typeof value === 'number' ? 'number' : 'string'
-    }))
+    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(
+      ([key, value]) => ({
+        category: 'general' as const,
+        key,
+        value,
+        type:
+          typeof value === 'boolean' ? 'boolean' : typeof value === 'number' ? 'number' : 'string'
+      })
+    )
 
     // 保存设置
     await settingsStore.updateSettings(settings)
-    
+
     // 更新原始数据
     originalData.value = { ...formData.value }
-    
+
     showToast('设置保存成功')
   } catch (error) {
     console.error('保存设置失败:', error)
@@ -430,14 +416,14 @@ const handleSave = async () => {
 const loadSettings = async () => {
   try {
     const generalSettings = settingsStore.getSettingsByCategory('general')
-    
+
     // 将设置数据填充到表单
     generalSettings.forEach(setting => {
       if (setting.key in formData.value) {
-        (formData.value as any)[setting.key] = setting.value
+        ;(formData.value as any)[setting.key] = setting.value
       }
     })
-    
+
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -452,9 +438,13 @@ onMounted(() => {
 })
 
 // 监听设置变化
-watch(() => settingsStore.settings, () => {
-  loadSettings()
-}, { deep: true })
+watch(
+  () => settingsStore.settings,
+  () => {
+    loadSettings()
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -463,11 +453,11 @@ watch(() => settingsStore.settings, () => {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .section-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -475,20 +465,20 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .section-description {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .form-group {
       padding: 20px;
-      
+
       &:not(:last-child) {
         border-bottom: 1px solid var(--border-color-light);
       }
-      
+
       .group-title {
         font-size: 16px;
         font-weight: 500;
@@ -498,7 +488,7 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -506,34 +496,35 @@ watch(() => settingsStore.settings, () => {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    
-    .btn-secondary, .btn-primary {
+
+    .btn-secondary,
+    .btn-primary {
       padding: 10px 24px;
       border-radius: 6px;
       font-size: 14px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     }
-    
+
     .btn-secondary {
       background: var(--color-grey-100);
       color: var(--text-color-secondary);
-      
+
       &:hover:not(:disabled) {
         background: var(--color-grey-200);
       }
     }
-    
+
     .btn-primary {
       background: var(--color-primary);
       color: #fff;
-      
+
       &:hover:not(:disabled) {
         background: var(--color-primary-dark);
       }
@@ -547,19 +538,20 @@ watch(() => settingsStore.settings, () => {
     .settings-section {
       margin: 0 -16px 16px;
       border-radius: 0;
-      
+
       .section-header,
       .form-group {
         padding: 16px;
       }
     }
-    
+
     .actions {
       margin: 0 -16px;
       border-radius: 0;
       padding: 16px;
-      
-      .btn-secondary, .btn-primary {
+
+      .btn-secondary,
+      .btn-primary {
         flex: 1;
         text-align: center;
       }

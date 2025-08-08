@@ -1,7 +1,7 @@
 <template>
-  <view class="settings-help-tooltip" :class="{ 'show': visible }">
+  <view class="settings-help-tooltip" :class="{ show: visible }">
     <!-- Trigger button -->
-    <button 
+    <button
       class="help-trigger"
       @click="toggleTooltip"
       @mouseenter="showOnHover && (visible = true)"
@@ -9,10 +9,10 @@
     >
       <text class="help-icon">{{ icon }}</text>
     </button>
-    
+
     <!-- Tooltip content -->
-    <view 
-      v-if="visible" 
+    <view
+      v-if="visible"
       class="tooltip-content"
       :class="[`position-${position}`, `theme-${theme}`]"
     >
@@ -23,36 +23,32 @@
           <text>✕</text>
         </button>
       </view>
-      
+
       <!-- Content -->
       <view class="tooltip-body">
         <text v-if="content" class="tooltip-text">{{ content }}</text>
-        
+
         <!-- Best practices -->
         <view v-if="bestPractices && bestPractices.length > 0" class="best-practices">
           <text class="section-title">💡 最佳实践：</text>
           <view class="practices-list">
-            <text 
-              v-for="(practice, index) in bestPractices"
-              :key="index"
-              class="practice-item"
-            >
+            <text v-for="(practice, index) in bestPractices" :key="index" class="practice-item">
               • {{ practice }}
             </text>
           </view>
         </view>
-        
+
         <!-- Warning -->
         <view v-if="warning" class="warning-section">
           <text class="warning-title">⚠️ 注意：</text>
           <text class="warning-text">{{ warning }}</text>
         </view>
-        
+
         <!-- Related settings -->
         <view v-if="relatedSettings && relatedSettings.length > 0" class="related-settings">
           <text class="section-title">🔗 相关设置：</text>
           <view class="related-list">
-            <button 
+            <button
               v-for="related in relatedSettings"
               :key="related.key"
               class="related-item"
@@ -63,25 +59,19 @@
             </button>
           </view>
         </view>
-        
+
         <!-- Action buttons -->
         <view v-if="showActions" class="tooltip-actions">
-          <button class="action-btn secondary" @click="$emit('reset-default')">
-            重置默认值
-          </button>
+          <button class="action-btn secondary" @click="$emit('reset-default')">重置默认值</button>
           <button class="action-btn primary" @click="$emit('apply-recommended')">
             应用推荐设置
           </button>
         </view>
       </view>
     </view>
-    
+
     <!-- Backdrop -->
-    <view 
-      v-if="visible && !showOnHover" 
-      class="tooltip-backdrop"
-      @click="hideTooltip"
-    ></view>
+    <view v-if="visible && !showOnHover" class="tooltip-backdrop" @click="hideTooltip"></view>
   </view>
 </template>
 
@@ -90,14 +80,14 @@ import { ref } from 'vue'
 
 /**
  * 设置帮助提示组件
- * 
+ *
  * 功能特性：
  * - 提供设置项的详细说明和使用指导
  * - 支持最佳实践建议和警告提示
  * - 支持相关设置的快速导航
  * - 多种显示主题和位置配置
  * - iPad友好的触控交互
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -197,7 +187,7 @@ function hideTooltip() {
       top: calc(100% + 8px);
       left: 50%;
       transform: translateX(-50%) translateY(-8px);
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -216,7 +206,7 @@ function hideTooltip() {
       bottom: calc(100% + 8px);
       left: 50%;
       transform: translateX(-50%) translateY(8px);
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -235,7 +225,7 @@ function hideTooltip() {
       top: 50%;
       left: calc(100% + 8px);
       transform: translateY(-50%) translateX(-8px);
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -254,7 +244,7 @@ function hideTooltip() {
       top: 50%;
       right: calc(100% + 8px);
       transform: translateY(-50%) translateX(8px);
-      
+
       &::before {
         content: '';
         position: absolute;
@@ -498,7 +488,7 @@ function hideTooltip() {
       @include touch-friendly;
       width: 32px;
       height: 32px;
-      
+
       .help-icon {
         font-size: 14px;
       }
@@ -631,7 +621,7 @@ function hideTooltip() {
       @include touch-friendly;
       width: 28px;
       height: 28px;
-      
+
       .help-icon {
         font-size: 13px;
       }

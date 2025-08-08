@@ -27,7 +27,7 @@
             />
             <button class="search-btn" @click="handleSearch">搜索</button>
           </view>
-          
+
           <view class="filter-item">
             <picker
               mode="selector"
@@ -41,7 +41,7 @@
               </view>
             </picker>
           </view>
-          
+
           <view class="filter-item">
             <picker
               mode="selector"
@@ -56,7 +56,7 @@
               </view>
             </picker>
           </view>
-          
+
           <button class="filter-reset" @click="handleReset">重置</button>
         </view>
       </view>
@@ -67,8 +67,8 @@
         <view class="table-header">
           <view class="header-row">
             <view v-if="selectedItems.length > 0" class="header-selector">
-              <checkbox 
-                :checked="selectAllChecked" 
+              <checkbox
+                :checked="selectAllChecked"
                 :indeterminate="selectAllIndeterminate"
                 @change="handleSelectAll"
               />
@@ -77,7 +77,7 @@
               v-for="column in tableColumns"
               :key="column.key"
               class="header-cell"
-              :class="[`align-${column.align || 'left'}`, { 'sortable': column.sortable }]"
+              :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
@@ -99,7 +99,7 @@
             :has-selection="true"
             :show-header="false"
           />
-          
+
           <!-- Data Rows -->
           <template v-else>
             <DataTableRow
@@ -127,7 +127,7 @@
                   <text>📷</text>
                 </view>
               </template>
-              
+
               <!-- Custom product info cell -->
               <template #cell-name="{ item }">
                 <view class="product-info">
@@ -139,11 +139,12 @@
           </template>
 
           <!-- Empty State -->
-          <view v-if="!productsStore.isLoading && productsStore.filteredProducts.length === 0" class="empty-state">
+          <view
+            v-if="!productsStore.isLoading && productsStore.filteredProducts.length === 0"
+            class="empty-state"
+          >
             <text class="empty-text">暂无产品数据</text>
-            <button class="empty-action" @click="handleCreate">
-              添加产品
-            </button>
+            <button class="empty-action" @click="handleCreate">添加产品</button>
           </view>
         </view>
 
@@ -153,14 +154,14 @@
             共 {{ productsStore.total }} 条，第 {{ productsStore.currentPage }}/{{ totalPages }} 页
           </view>
           <view class="pagination-controls">
-            <button 
+            <button
               class="pagination-btn"
               :disabled="productsStore.currentPage <= 1"
               @click="handlePageChange(productsStore.currentPage - 1)"
             >
               上一页
             </button>
-            <button 
+            <button
               class="pagination-btn"
               :disabled="productsStore.currentPage >= totalPages"
               @click="handlePageChange(productsStore.currentPage + 1)"
@@ -202,7 +203,7 @@
         :operation-text="confirmDialog.operationText"
         @confirm="handleConfirmDialogConfirm"
         @cancel="handleConfirmDialogCancel"
-        @update:visible="(val) => confirmDialog.visible = val"
+        @update:visible="val => (confirmDialog.visible = val)"
       />
 
       <!-- Operation Progress Modal -->
@@ -222,14 +223,14 @@
         @cancel="handleProgressModalCancel"
         @retry="handleProgressModalRetry"
         @download="handleProgressModalDownload"
-        @update:visible="(val) => progressModal.visible = val"
+        @update:visible="val => (progressModal.visible = val)"
       />
     </AdminLayout>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useProductsStore } from '@/stores/products'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
@@ -244,14 +245,14 @@ import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
 /**
  * 产品管理页面 - 增强表格版本
- * 
+ *
  * 功能特性：
  * - 使用增强表格组件系统，提供专业的加载状态和交互体验
  * - 符合PRD要求，产品管理操作包括[新增][批量导入][图片管理] (PRD Line 855)
  * - 支持批量操作：导出、启用/停用、删除
  * - iPad和移动端触控优化
  * - 集成状态管理和选择功能
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -279,7 +280,7 @@ const categoryIndex = computed(() => {
 const statusOptions = [
   { value: null, label: '全部状态' },
   { value: true, label: '在售' },
-  { value: false, label: '已下架' },
+  { value: false, label: '已下架' }
 ]
 const statusIndex = ref(0)
 
@@ -289,36 +290,36 @@ const tableColumns: TableColumn[] = [
     key: 'image',
     title: '图片',
     width: '80px',
-    align: 'center',
+    align: 'center'
   },
   {
     key: 'name',
     title: '产品信息',
-    width: '200px',
+    width: '200px'
   },
   {
     key: 'category',
     title: '分类',
-    width: '120px',
+    width: '120px'
   },
   {
     key: 'price',
     title: '价格',
     width: '120px',
     align: 'right',
-    sortable: true,
+    sortable: true
   },
   {
     key: 'unit',
     title: '单位',
     width: '80px',
-    align: 'center',
+    align: 'center'
   },
   {
     key: 'status',
     title: '状态',
     width: '100px',
-    align: 'center',
+    align: 'center'
   },
   {
     key: 'created_at',
@@ -328,8 +329,8 @@ const tableColumns: TableColumn[] = [
     formatter: (value: string) => {
       const date = new Date(value)
       return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`
-    },
-  },
+    }
+  }
 ]
 
 // Enhanced columns for DataTableRow (converted from old format)
@@ -339,10 +340,16 @@ const enhancedColumns: TableColumn[] = tableColumns.map(col => ({
   width: col.width,
   align: col.align,
   sortable: col.sortable,
-  type: col.key === 'image' ? 'image' : 
-        col.key === 'price' ? 'price' :
-        col.key === 'created_at' ? 'date' :
-        col.key === 'status' ? 'status' : 'text'
+  type:
+    col.key === 'image'
+      ? 'image'
+      : col.key === 'price'
+        ? 'price'
+        : col.key === 'created_at'
+          ? 'date'
+          : col.key === 'status'
+            ? 'status'
+            : 'text'
 }))
 
 // Actions configuration (PRD compliant - includes view, edit, images, delete)
@@ -401,7 +408,7 @@ function handleRowSelect(selected: boolean, product: any) {
 
 function handleRowClick(product: any) {
   uni.navigateTo({
-    url: `/pages/admin/products/detail?id=${product.id}`,
+    url: `/pages/admin/products/detail?id=${product.id}`
   })
 }
 
@@ -409,18 +416,18 @@ function handleRowAction(actionKey: string, product: any) {
   switch (actionKey) {
     case 'view':
       uni.navigateTo({
-        url: `/pages/admin/products/detail?id=${product.id}`,
+        url: `/pages/admin/products/detail?id=${product.id}`
       })
       break
     case 'edit':
       uni.navigateTo({
-        url: `/pages/admin/products/edit?id=${product.id}`,
+        url: `/pages/admin/products/edit?id=${product.id}`
       })
       break
     case 'images':
       // Navigate to image management page
       uni.navigateTo({
-        url: `/pages/admin/products/images?id=${product.id}`,
+        url: `/pages/admin/products/images?id=${product.id}`
       })
       break
     case 'delete':
@@ -433,7 +440,10 @@ function handleRowAction(actionKey: string, product: any) {
 
 function handleSelectAll(event: any) {
   const checked = event.detail ? event.detail.value : event
-  selectAll(productsStore.filteredProducts.map(p => p.id), checked)
+  selectAll(
+    productsStore.filteredProducts.map(p => p.id),
+    checked
+  )
 }
 
 function handleSort(columnKey: string) {
@@ -477,7 +487,7 @@ async function handleBatchOperation(operationKey: string, count: number) {
 // Enhanced batch export with progress modal
 async function handleBatchExport() {
   const selectedCount = selectedItems.value.length
-  
+
   // Show progress modal
   progressModal.value = {
     visible: true,
@@ -496,39 +506,39 @@ async function handleBatchExport() {
     results: null,
     downloadLinks: []
   }
-  
+
   try {
     // Step 1: Prepare data
     progressModal.value.progress = 25
     progressModal.value.steps[0].status = 'completed'
     progressModal.value.steps[1].status = 'processing'
     progressModal.value.currentStepIndex = 1
-    
+
     await new Promise(resolve => setTimeout(resolve, 800)) // Simulate processing
-    
+
     // Step 2: Generate Excel
     progressModal.value.progress = 60
     progressModal.value.steps[1].status = 'completed'
     progressModal.value.steps[2].status = 'processing'
     progressModal.value.currentStepIndex = 2
-    
+
     // Call store export method
     const exportResult = await productsStore.exportProducts(selectedItems.value)
-    
+
     // Step 3: Package file
     progressModal.value.progress = 85
     progressModal.value.steps[2].status = 'completed'
     progressModal.value.steps[3].status = 'processing'
     progressModal.value.currentStepIndex = 3
-    
+
     await new Promise(resolve => setTimeout(resolve, 500)) // Simulate packaging
-    
+
     // Step 4: Complete
     progressModal.value.progress = 100
     progressModal.value.steps[3].status = 'completed'
     progressModal.value.currentStatus = 'completed'
     progressModal.value.subtitle = `成功导出 ${selectedCount} 个产品`
-    
+
     // Set results and download links
     progressModal.value.results = {
       success: selectedCount,
@@ -536,7 +546,7 @@ async function handleBatchExport() {
       warning: 0,
       skipped: 0
     }
-    
+
     progressModal.value.downloadLinks = [
       {
         name: `产品导出_${new Date().toISOString().split('T')[0]}.xlsx`,
@@ -545,15 +555,15 @@ async function handleBatchExport() {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       }
     ]
-    
+
     clearSelection()
-    
   } catch (error) {
     progressModal.value.currentStatus = 'error'
     progressModal.value.subtitle = '导出过程中发生错误'
     progressModal.value.steps[progressModal.value.currentStepIndex].status = 'error'
-    progressModal.value.steps[progressModal.value.currentStepIndex].error = '导出失败，请重试或联系技术支持'
-    
+    progressModal.value.steps[progressModal.value.currentStepIndex].error =
+      '导出失败，请重试或联系技术支持'
+
     progressModal.value.results = {
       success: 0,
       error: selectedCount,
@@ -571,17 +581,17 @@ async function handleBatchEnable() {
     batchOperating.value = true
     batchProgress.value = 50
     batchProgressText.value = `启用 ${selectedItems.value.length} 个产品...`
-    
+
     await productsStore.batchUpdateStatus(selectedItems.value, true)
-    
+
     batchProgress.value = 100
     batchProgressText.value = '启用完成'
-    
+
     uni.showToast({
       title: `成功启用 ${selectedItems.value.length} 个产品`,
       icon: 'success'
     })
-    
+
     clearSelection()
   } catch (error) {
     uni.showToast({
@@ -602,17 +612,17 @@ async function handleBatchDisable() {
     batchOperating.value = true
     batchProgress.value = 50
     batchProgressText.value = `停用 ${selectedItems.value.length} 个产品...`
-    
+
     await productsStore.batchUpdateStatus(selectedItems.value, false)
-    
+
     batchProgress.value = 100
     batchProgressText.value = '停用完成'
-    
+
     uni.showToast({
       title: `成功停用 ${selectedItems.value.length} 个产品`,
       icon: 'success'
     })
-    
+
     clearSelection()
   } catch (error) {
     uni.showToast({
@@ -631,10 +641,10 @@ async function handleBatchDisable() {
 // Enhanced batch delete with confirmation
 async function handleBatchDelete() {
   const selectedCount = selectedItems.value.length
-  const selectedProducts = productsStore.filteredProducts.filter(p => 
+  const selectedProducts = productsStore.filteredProducts.filter(p =>
     selectedItems.value.includes(p.id)
   )
-  
+
   confirmDialog.value = {
     visible: true,
     title: '批量删除产品确认',
@@ -653,7 +663,7 @@ async function handleBatchDelete() {
     confirmAction: async () => {
       try {
         confirmDialog.value.visible = false
-        
+
         // Show progress modal for batch delete
         progressModal.value = {
           visible: true,
@@ -672,51 +682,51 @@ async function handleBatchDelete() {
           results: null,
           downloadLinks: []
         }
-        
+
         // Simulate processing steps
         progressModal.value.progress = 25
         progressModal.value.steps[0].status = 'completed'
         progressModal.value.steps[1].status = 'processing'
         progressModal.value.currentStepIndex = 1
-        
+
         await new Promise(resolve => setTimeout(resolve, 500))
-        
+
         progressModal.value.progress = 50
         progressModal.value.steps[1].status = 'completed'
         progressModal.value.steps[2].status = 'processing'
         progressModal.value.currentStepIndex = 2
-        
+
         // Perform actual deletion
         await productsStore.batchDeleteProducts(selectedItems.value)
-        
+
         progressModal.value.progress = 85
         progressModal.value.steps[2].status = 'completed'
         progressModal.value.steps[3].status = 'processing'
         progressModal.value.currentStepIndex = 3
-        
+
         await new Promise(resolve => setTimeout(resolve, 300))
-        
+
         // Complete
         progressModal.value.progress = 100
         progressModal.value.steps[3].status = 'completed'
         progressModal.value.currentStatus = 'completed'
         progressModal.value.subtitle = `成功删除 ${selectedCount} 个产品`
-        
+
         progressModal.value.results = {
           success: selectedCount,
           error: 0,
           warning: 0,
           skipped: 0
         }
-        
+
         clearSelection()
-        
       } catch (error) {
         progressModal.value.currentStatus = 'error'
         progressModal.value.subtitle = '批量删除失败'
         progressModal.value.steps[progressModal.value.currentStepIndex].status = 'error'
-        progressModal.value.steps[progressModal.value.currentStepIndex].error = '删除操作失败，请重试'
-        
+        progressModal.value.steps[progressModal.value.currentStepIndex].error =
+          '删除操作失败，请重试'
+
         progressModal.value.results = {
           success: 0,
           error: selectedCount,
@@ -752,19 +762,19 @@ async function handleDeleteProduct(product: any) {
         if (result.success) {
           uni.showToast({
             title: '产品删除成功',
-            icon: 'success',
+            icon: 'success'
           })
           confirmDialog.value.visible = false
         } else {
           uni.showToast({
             title: result.error || '删除失败',
-            icon: 'none',
+            icon: 'none'
           })
         }
       } catch (error) {
         uni.showToast({
           title: '删除操作失败',
-          icon: 'none',
+          icon: 'none'
         })
       }
     }
@@ -799,7 +809,7 @@ const handleReset = () => {
 
 const handleCreate = () => {
   uni.navigateTo({
-    url: '/pages/admin/products/edit',
+    url: '/pages/admin/products/edit'
   })
 }
 
@@ -984,7 +994,7 @@ onMounted(() => {
         display: flex;
         justify-content: center;
         align-items: center;
-        
+
         checkbox {
           transform: scale(1.1);
         }
@@ -1183,7 +1193,7 @@ onMounted(() => {
   .filter-row {
     .filter-item {
       width: 100%;
-      
+
       &.filter-search {
         min-width: auto;
       }

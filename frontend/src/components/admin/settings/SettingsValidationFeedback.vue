@@ -1,11 +1,7 @@
 <template>
   <view class="settings-validation-feedback">
     <!-- Success state -->
-    <view 
-      v-if="state === 'success'" 
-      class="feedback-container success"
-      :class="{ 'show': visible }"
-    >
+    <view v-if="state === 'success'" class="feedback-container success" :class="{ show: visible }">
       <view class="feedback-icon">
         <text>✓</text>
       </view>
@@ -19,33 +15,25 @@
     </view>
 
     <!-- Error state -->
-    <view 
-      v-if="state === 'error'" 
-      class="feedback-container error"
-      :class="{ 'show': visible }"
-    >
+    <view v-if="state === 'error'" class="feedback-container error" :class="{ show: visible }">
       <view class="feedback-icon">
         <text>✕</text>
       </view>
       <view class="feedback-content">
         <text class="feedback-title">保存失败</text>
         <text class="feedback-message">{{ errorMessage || '请检查输入内容并重试' }}</text>
-        
+
         <!-- Error details -->
         <view v-if="errorDetails && errorDetails.length > 0" class="error-details">
           <text class="details-title">详细信息：</text>
           <view class="details-list">
-            <text 
-              v-for="(detail, index) in errorDetails"
-              :key="index"
-              class="detail-item"
-            >
+            <text v-for="(detail, index) in errorDetails" :key="index" class="detail-item">
               • {{ detail }}
             </text>
           </view>
         </view>
       </view>
-      
+
       <view class="feedback-actions">
         <button class="action-btn retry" @click="$emit('retry')">
           <text>重试</text>
@@ -57,18 +45,14 @@
     </view>
 
     <!-- Warning state -->
-    <view 
-      v-if="state === 'warning'" 
-      class="feedback-container warning"
-      :class="{ 'show': visible }"
-    >
+    <view v-if="state === 'warning'" class="feedback-container warning" :class="{ show: visible }">
       <view class="feedback-icon">
         <text>⚠</text>
       </view>
       <view class="feedback-content">
         <text class="feedback-title">需要注意</text>
         <text class="feedback-message">{{ warningMessage }}</text>
-        
+
         <!-- Warning suggestions -->
         <view v-if="suggestions && suggestions.length > 0" class="warning-suggestions">
           <text class="suggestions-title">建议：</text>
@@ -85,17 +69,17 @@
           </view>
         </view>
       </view>
-      
+
       <button v-if="dismissible" class="feedback-close" @click="dismiss">
         <text>✕</text>
       </button>
     </view>
 
     <!-- Validation state -->
-    <view 
-      v-if="state === 'validating'" 
+    <view
+      v-if="state === 'validating'"
       class="feedback-container validating"
-      :class="{ 'show': visible }"
+      :class="{ show: visible }"
     >
       <view class="feedback-icon">
         <view class="loading-spinner"></view>
@@ -107,24 +91,20 @@
     </view>
 
     <!-- Info state -->
-    <view 
-      v-if="state === 'info'" 
-      class="feedback-container info"
-      :class="{ 'show': visible }"
-    >
+    <view v-if="state === 'info'" class="feedback-container info" :class="{ show: visible }">
       <view class="feedback-icon">
         <text>ℹ</text>
       </view>
       <view class="feedback-content">
         <text class="feedback-title">信息提示</text>
         <text class="feedback-message">{{ infoMessage }}</text>
-        
+
         <!-- Additional info -->
         <view v-if="additionalInfo" class="additional-info">
           <text class="additional-text">{{ additionalInfo }}</text>
         </view>
       </view>
-      
+
       <button v-if="dismissible" class="feedback-close" @click="dismiss">
         <text>✕</text>
       </button>
@@ -134,15 +114,11 @@
     <view v-if="fieldErrors && Object.keys(fieldErrors).length > 0" class="field-errors">
       <text class="field-errors-title">请修正以下问题：</text>
       <view class="field-errors-list">
-        <view 
-          v-for="(errors, fieldName) in fieldErrors"
-          :key="fieldName"
-          class="field-error-group"
-        >
+        <view v-for="(errors, fieldName) in fieldErrors" :key="fieldName" class="field-error-group">
           <text class="field-name">{{ getFieldLabel(fieldName) }}:</text>
           <view class="field-error-messages">
-            <text 
-              v-for="(error, index) in (Array.isArray(errors) ? errors : [errors])"
+            <text
+              v-for="(error, index) in Array.isArray(errors) ? errors : [errors]"
               :key="index"
               class="field-error-message"
             >
@@ -154,34 +130,27 @@
     </view>
 
     <!-- Progress indicator for batch operations -->
-    <view 
-      v-if="showProgress" 
-      class="progress-container"
-      :class="{ 'show': visible }"
-    >
+    <view v-if="showProgress" class="progress-container" :class="{ show: visible }">
       <view class="progress-header">
         <text class="progress-title">{{ progressTitle || '处理中...' }}</text>
         <text class="progress-stats">{{ progressCurrent }}/{{ progressTotal }}</text>
       </view>
-      
+
       <view class="progress-bar-container">
-        <view 
-          class="progress-bar"
-          :style="{ width: progressPercentage + '%' }"
-        ></view>
+        <view class="progress-bar" :style="{ width: progressPercentage + '%' }"></view>
       </view>
-      
+
       <text v-if="progressMessage" class="progress-message">{{ progressMessage }}</text>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 /**
  * 设置验证反馈组件
- * 
+ *
  * 功能特性：
  * - 多种状态的反馈显示（成功、错误、警告、验证中、信息）
  * - 字段级别的验证错误显示
@@ -189,7 +158,7 @@ import { ref, computed, watch } from 'vue'
  * - 建议操作和重试机制
  * - 自动消失和手动关闭
  * - iPad友好的视觉设计
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -203,21 +172,21 @@ interface Props {
   visible?: boolean
   dismissible?: boolean
   autoHide?: number // Auto hide after milliseconds
-  
+
   // Messages
   successMessage?: string
   errorMessage?: string
   warningMessage?: string
   infoMessage?: string
   additionalInfo?: string
-  
+
   // Error details
   errorDetails?: string[]
   fieldErrors?: Record<string, string | string[]>
-  
+
   // Suggestions
   suggestions?: Suggestion[]
-  
+
   // Progress
   showProgress?: boolean
   progressTitle?: string
@@ -250,18 +219,21 @@ const progressPercentage = computed(() => {
 })
 
 // Watch for visibility changes
-watch(() => props.visible, (newValue) => {
-  isVisible.value = newValue
-  
-  // Auto hide functionality
-  if (newValue && props.autoHide > 0) {
-    setTimeout(() => {
-      if (props.dismissible) {
-        dismiss()
-      }
-    }, props.autoHide)
+watch(
+  () => props.visible,
+  newValue => {
+    isVisible.value = newValue
+
+    // Auto hide functionality
+    if (newValue && props.autoHide > 0) {
+      setTimeout(() => {
+        if (props.dismissible) {
+          dismiss()
+        }
+      }, props.autoHide)
+    }
   }
-})
+)
 
 // Methods
 function dismiss() {
@@ -272,18 +244,18 @@ function dismiss() {
 function getFieldLabel(fieldName: string): string {
   // Convert field names to user-friendly labels
   const labelMap: Record<string, string> = {
-    'email': '邮箱地址',
-    'password': '密码',
-    'phone': '电话号码',
-    'company_name': '公司名称',
-    'api_key': 'API密钥',
-    'webhook_url': 'Webhook地址',
-    'max_file_size': '文件大小限制',
-    'session_timeout': '会话超时时间',
-    'backup_frequency': '备份频率',
-    'notification_email': '通知邮箱'
+    email: '邮箱地址',
+    password: '密码',
+    phone: '电话号码',
+    company_name: '公司名称',
+    api_key: 'API密钥',
+    webhook_url: 'Webhook地址',
+    max_file_size: '文件大小限制',
+    session_timeout: '会话超时时间',
+    backup_frequency: '备份频率',
+    notification_email: '通知邮箱'
   }
-  
+
   return labelMap[fieldName] || fieldName
 }
 </script>
@@ -421,7 +393,7 @@ function getFieldLabel(fieldName: string): string {
         border-radius: 4px;
         cursor: pointer;
         transition: all 0.2s ease;
-        
+
         &.retry {
           background: rgba(255, 255, 255, 0.2);
           color: inherit;
@@ -606,7 +578,11 @@ function getFieldLabel(fieldName: string): string {
 
       .progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, var(--color-primary, #007aff), var(--color-success, #28a745));
+        background: linear-gradient(
+          90deg,
+          var(--color-primary, #007aff),
+          var(--color-success, #28a745)
+        );
         border-radius: 4px;
         transition: width 0.3s ease;
       }
@@ -621,8 +597,12 @@ function getFieldLabel(fieldName: string): string {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Enhanced Responsive Design - Using new mixins
@@ -640,7 +620,7 @@ function getFieldLabel(fieldName: string): string {
         width: 28px;
         height: 28px;
         font-size: 16px;
-        
+
         .loading-spinner {
           width: 20px;
           height: 20px;
@@ -800,7 +780,7 @@ function getFieldLabel(fieldName: string): string {
         width: 26px;
         height: 26px;
         font-size: 15px;
-        
+
         .loading-spinner {
           width: 18px;
           height: 18px;

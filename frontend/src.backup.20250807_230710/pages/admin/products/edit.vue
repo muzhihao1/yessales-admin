@@ -15,7 +15,7 @@
           <!-- 基本信息 -->
           <view class="form-section">
             <text class="section-title">基本信息</text>
-            
+
             <view class="admin-form-item">
               <text class="admin-form-label required">产品名称</text>
               <input
@@ -101,7 +101,7 @@
           <!-- 产品图片 -->
           <view class="form-section">
             <text class="section-title">产品图片</text>
-            
+
             <view class="image-upload">
               <view v-if="formData.image_url" class="image-preview">
                 <image :src="formData.image_url" mode="aspectFill" />
@@ -109,12 +109,12 @@
                   <text>×</text>
                 </button>
               </view>
-              
+
               <button v-else class="upload-btn" @click="chooseImage">
                 <text class="upload-icon">+</text>
                 <text class="upload-text">上传图片</text>
               </button>
-              
+
               <text class="upload-tips">建议尺寸：800x800px，支持 JPG、PNG 格式</text>
             </view>
           </view>
@@ -122,7 +122,7 @@
           <!-- 状态设置 -->
           <view class="form-section">
             <text class="section-title">状态设置</text>
-            
+
             <view class="admin-form-item">
               <view class="switch-item">
                 <text class="switch-label">是否上架</text>
@@ -146,9 +146,7 @@
             >
               {{ isSubmitting ? '保存中...' : '保存' }}
             </button>
-            <button class="admin-btn admin-btn-default" @click="handleCancel">
-              取消
-            </button>
+            <button class="admin-btn admin-btn-default" @click="handleCancel">取消</button>
           </view>
         </form>
       </view>
@@ -157,7 +155,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { onLoad } from '@dcloudio/uni-app'
 import { useProductsStore } from '@/stores/products'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
@@ -178,7 +176,7 @@ const formData = ref<Partial<Product>>({
   unit: '台',
   description: '',
   image_url: '',
-  is_active: true,
+  is_active: true
 })
 
 // 表单验证错误
@@ -201,14 +199,14 @@ const unitIndex = computed(() => {
 // 加载产品数据
 const loadProduct = async () => {
   if (!productId.value) return
-  
+
   const product = await productsStore.fetchProduct(productId.value)
   if (product) {
     formData.value = { ...product }
   } else {
     uni.showToast({
       title: '产品不存在',
-      icon: 'none',
+      icon: 'none'
     })
     setTimeout(() => {
       uni.navigateBack()
@@ -219,27 +217,27 @@ const loadProduct = async () => {
 // 表单验证
 const validateForm = (): boolean => {
   errors.value = {}
-  
+
   if (!formData.value.name?.trim()) {
     errors.value.name = '请输入产品名称'
   }
-  
+
   if (!formData.value.model?.trim()) {
     errors.value.model = '请输入产品型号'
   }
-  
+
   if (!formData.value.category) {
     errors.value.category = '请选择产品分类'
   }
-  
+
   if (!formData.value.price || formData.value.price <= 0) {
     errors.value.price = '请输入正确的价格'
   }
-  
+
   if (!formData.value.unit) {
     errors.value.unit = '请选择单位'
   }
-  
+
   return Object.keys(errors.value).length === 0
 }
 
@@ -261,31 +259,31 @@ const chooseImage = () => {
     count: 1,
     sizeType: ['compressed'],
     sourceType: ['album', 'camera'],
-    success: (res) => {
+    success: res => {
       const tempFilePath = res.tempFilePaths[0]
       uploadImage(tempFilePath)
-    },
+    }
   })
 }
 
 const uploadImage = async (filePath: string) => {
   uni.showLoading({ title: '上传中...' })
-  
+
   try {
     // TODO: 实现图片上传到 Supabase Storage
     // 这里暂时使用本地路径
     formData.value.image_url = filePath
-    
+
     uni.hideLoading()
     uni.showToast({
       title: '上传成功',
-      icon: 'success',
+      icon: 'success'
     })
   } catch (error) {
     uni.hideLoading()
     uni.showToast({
       title: '上传失败',
-      icon: 'none',
+      icon: 'none'
     })
   }
 }
@@ -298,9 +296,9 @@ const handleSubmit = async () => {
   if (!validateForm()) {
     return
   }
-  
+
   isSubmitting.value = true
-  
+
   try {
     let result
     if (isEditMode.value) {
@@ -308,26 +306,26 @@ const handleSubmit = async () => {
     } else {
       result = await productsStore.createProduct(formData.value)
     }
-    
+
     if (result.success) {
       uni.showToast({
         title: isEditMode.value ? '更新成功' : '添加成功',
-        icon: 'success',
+        icon: 'success'
       })
-      
+
       setTimeout(() => {
         uni.navigateBack()
       }, 1500)
     } else {
       uni.showToast({
         title: result.error || '操作失败',
-        icon: 'none',
+        icon: 'none'
       })
     }
   } catch (error) {
     uni.showToast({
       title: '操作失败',
-      icon: 'none',
+      icon: 'none'
     })
   } finally {
     isSubmitting.value = false
@@ -338,11 +336,11 @@ const handleCancel = () => {
   uni.showModal({
     title: '提示',
     content: '确定要放弃当前编辑吗？',
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
         uni.navigateBack()
       }
-    },
+    }
   })
 }
 
@@ -351,7 +349,7 @@ const handleBack = () => {
 }
 
 // 页面加载
-onLoad((options) => {
+onLoad(options => {
   if (options?.id) {
     productId.value = options.id
     loadProduct()

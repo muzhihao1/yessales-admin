@@ -1,11 +1,11 @@
 /**
  * Optimistic Updates Utility
- * 
+ *
  * Provides optimistic UI updates for better user experience during
  * async operations, with automatic rollback on failure.
  */
 
-import { ref, computed, reactive } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { handleStoreError } from './error-handler'
 import { useLoadingState } from './loading-state'
@@ -21,22 +21,22 @@ export interface OptimisticOperation<T = any> {
   store: string
   action: string
   timestamp: number
-  
+
   // Original state backup
   originalData?: T
-  
+
   // Optimistic changes
   optimisticData?: T
-  
+
   // Operation status
   status: 'pending' | 'confirmed' | 'failed' | 'rolled_back'
-  
+
   // Error information if failed
   error?: any
-  
+
   // Rollback function
   rollback?: () => void
-  
+
   // Confirmation function
   confirm?: () => void
 }
@@ -76,46 +76,46 @@ function generateOptimisticId(): string {
 export const useOptimisticStore = defineStore('optimistic', () => {
   // Active optimistic operations
   const operations = reactive<Map<string, OptimisticOperation>>(new Map())
-  
+
   // Computed states
-  const pendingOperations = computed(() => 
+  const pendingOperations = computed(() =>
     Array.from(operations.values()).filter(op => op.status === 'pending')
   )
-  
-  const failedOperations = computed(() => 
+
+  const failedOperations = computed(() =>
     Array.from(operations.values()).filter(op => op.status === 'failed')
   )
-  
+
   const operationsByStore = computed(() => {
     const byStore: Record<string, OptimisticOperation[]> = {}
-    
+
     for (const operation of operations.values()) {
       if (!byStore[operation.store]) {
         byStore[operation.store] = []
       }
       byStore[operation.store].push(operation)
     }
-    
+
     return byStore
   })
-  
+
   const operationsByTarget = computed(() => {
     const byTarget: Record<string, OptimisticOperation[]> = {}
-    
+
     for (const operation of operations.values()) {
       if (!byTarget[operation.target]) {
         byTarget[operation.target] = []
       }
       byTarget[operation.target].push(operation)
     }
-    
+
     return byTarget
   })
-  
+
   // Actions
   function addOperation(operation: OptimisticOperation): void {
     operations.set(operation.id, operation)
-    
+
     // Auto-cleanup with timeout
     if (operation.status === 'pending') {
       setTimeout(() => {
@@ -126,35 +126,35 @@ export const useOptimisticStore = defineStore('optimistic', () => {
       }, DEFAULT_CONFIG.timeout)
     }
   }
-  
+
   function confirmOperation(operationId: string): void {
     const operation = operations.get(operationId)
     if (operation) {
       operation.status = 'confirmed'
-      
+
       // Execute confirmation callback
       if (operation.confirm) {
         operation.confirm()
       }
-      
+
       // Clean up after confirmation
       setTimeout(() => {
         operations.delete(operationId)
       }, 1000)
     }
   }
-  
+
   function rollbackOperation(operationId: string, reason?: string): void {
     const operation = operations.get(operationId)
     if (operation) {
       operation.status = 'rolled_back'
       operation.error = reason
-      
+
       // Execute rollback callback
       if (operation.rollback) {
         operation.rollback()
       }
-      
+
       // Show rollback notification
       if (DEFAULT_CONFIG.showRollbackToast) {
         uni.showToast({
@@ -165,24 +165,24 @@ export const useOptimisticStore = defineStore('optimistic', () => {
       }
     }
   }
-  
+
   function failOperation(operationId: string, error: any): void {
     const operation = operations.get(operationId)
     if (operation) {
       operation.status = 'failed'
       operation.error = error
-      
+
       // Auto-rollback if enabled
       if (DEFAULT_CONFIG.enableRollback) {
         rollbackOperation(operationId, '操作失败，已自动撤销')
       }
     }
   }
-  
+
   function removeOperation(operationId: string): void {
     operations.delete(operationId)
   }
-  
+
   function clearOperations(store?: string): void {
     if (store) {
       // Clear operations for specific store
@@ -196,29 +196,29 @@ export const useOptimisticStore = defineStore('optimistic', () => {
       operations.clear()
     }
   }
-  
+
   function getOperation(operationId: string): OptimisticOperation | undefined {
     return operations.get(operationId)
   }
-  
+
   function getOperationsByTarget(target: string): OptimisticOperation[] {
     return Array.from(operations.values()).filter(op => op.target === target)
   }
-  
+
   function hasPendingOperations(store?: string, target?: string): boolean {
     const pending = pendingOperations.value
-    
+
     if (store) {
       return pending.some(op => op.store === store)
     }
-    
+
     if (target) {
       return pending.some(op => op.target === target)
     }
-    
+
     return pending.length > 0
   }
-  
+
   return {
     // State
     operations: computed(() => Array.from(operations.values())),
@@ -226,7 +226,7 @@ export const useOptimisticStore = defineStore('optimistic', () => {
     failedOperations,
     operationsByStore,
     operationsByTarget,
-    
+
     // Actions
     addOperation,
     confirmOperation,
@@ -246,41 +246,39 @@ export const useOptimisticStore = defineStore('optimistic', () => {
 export function useOptimisticUpdates(store: string) {
   const optimisticStore = useOptimisticStore()
   const { startLoading, stopLoading } = useLoadingState(store)
-  
+
   /**
    * Create optimistic update operation
    */
-  async function withOptimisticUpdate<T, R>(
-    config: {
-      type: OptimisticOperation['type']
-      target: string
-      action: string
-      
-      // Data transformations
-      getOriginalData?: () => T
-      applyOptimisticChange: (original?: T) => T
-      
-      // Operation to perform
-      operation: () => Promise<R>
-      
-      // Callbacks
-      onSuccess?: (result: R, optimisticData: T) => void
-      onFailure?: (error: any, originalData?: T) => void
-      onRollback?: (originalData?: T) => void
-      
-      // Configuration
-      optimisticConfig?: Partial<OptimisticConfig>
-    }
-  ): Promise<R | null> {
+  async function withOptimisticUpdate<T, R>(config: {
+    type: OptimisticOperation['type']
+    target: string
+    action: string
+
+    // Data transformations
+    getOriginalData?: () => T
+    applyOptimisticChange: (original?: T) => T
+
+    // Operation to perform
+    operation: () => Promise<R>
+
+    // Callbacks
+    onSuccess?: (result: R, optimisticData: T) => void
+    onFailure?: (error: any, originalData?: T) => void
+    onRollback?: (originalData?: T) => void
+
+    // Configuration
+    optimisticConfig?: Partial<OptimisticConfig>
+  }): Promise<R | null> {
     const finalConfig = { ...DEFAULT_CONFIG, ...config.optimisticConfig }
     const operationId = generateOptimisticId()
-    
+
     // Get original data before changes
     const originalData = config.getOriginalData?.()
-    
+
     // Apply optimistic changes
     const optimisticData = config.applyOptimisticChange(originalData)
-    
+
     // Create operation record
     const operation: OptimisticOperation<T> = {
       id: operationId,
@@ -292,14 +290,14 @@ export function useOptimisticUpdates(store: string) {
       originalData,
       optimisticData,
       status: 'pending',
-      
+
       // Rollback function
       rollback: () => {
         if (config.onRollback) {
           config.onRollback(originalData)
         }
       },
-      
+
       // Confirmation function
       confirm: () => {
         if (config.onSuccess) {
@@ -307,35 +305,35 @@ export function useOptimisticUpdates(store: string) {
         }
       }
     }
-    
+
     // Add to optimistic store
     optimisticStore.addOperation(operation)
-    
+
     // Start loading state
     const loadingId = startLoading(config.action)
-    
+
     try {
       // Perform the actual operation
       const result = await config.operation()
-      
+
       // Confirm the optimistic update
       optimisticStore.confirmOperation(operationId)
-      
+
       // Call success callback
       if (config.onSuccess) {
         config.onSuccess(result, optimisticData)
       }
-      
+
       return result
     } catch (error) {
       // Handle failure
       optimisticStore.failOperation(operationId, error)
-      
+
       // Call failure callback
       if (config.onFailure) {
         config.onFailure(error, originalData)
       }
-      
+
       // Handle error with standard error handler
       await handleStoreError(error, {
         context: {
@@ -344,13 +342,13 @@ export function useOptimisticUpdates(store: string) {
           target: config.target
         }
       })
-      
+
       return null
     } finally {
       stopLoading(loadingId)
     }
   }
-  
+
   /**
    * Optimistic create operation
    */
@@ -369,26 +367,26 @@ export function useOptimisticUpdates(store: string) {
       type: 'create',
       target,
       action: 'create',
-      
+
       applyOptimisticChange: () => {
         callbacks.addToList(newData)
         return newData
       },
-      
+
       operation,
-      
+
       onSuccess: callbacks.onSuccess,
-      
-      onFailure: (error) => {
+
+      onFailure: error => {
         callbacks.onFailure?.(error)
       },
-      
+
       onRollback: () => {
         callbacks.removeFromList(newData)
       }
     })
   }
-  
+
   /**
    * Optimistic update operation
    */
@@ -408,28 +406,28 @@ export function useOptimisticUpdates(store: string) {
       type: 'update',
       target,
       action: 'update',
-      
+
       getOriginalData: () => originalData,
-      
+
       applyOptimisticChange: () => {
         callbacks.updateInList(originalData, updatedData)
         return { ...originalData, ...updatedData }
       },
-      
+
       operation,
-      
+
       onSuccess: callbacks.onSuccess,
-      
-      onFailure: (error) => {
+
+      onFailure: error => {
         callbacks.onFailure?.(error)
       },
-      
+
       onRollback: () => {
         callbacks.revertInList(originalData)
       }
     })
   }
-  
+
   /**
    * Optimistic delete operation
    */
@@ -448,77 +446,77 @@ export function useOptimisticUpdates(store: string) {
       type: 'delete',
       target,
       action: 'delete',
-      
+
       getOriginalData: () => dataToDelete,
-      
+
       applyOptimisticChange: () => {
         callbacks.removeFromList(dataToDelete)
         return dataToDelete
       },
-      
+
       operation,
-      
+
       onSuccess: callbacks.onSuccess,
-      
-      onFailure: (error) => {
+
+      onFailure: error => {
         callbacks.onFailure?.(error)
       },
-      
+
       onRollback: () => {
         callbacks.addToList(dataToDelete)
       }
     })
   }
-  
+
   /**
    * Check if target has pending operations
    */
   function hasPendingOperations(target?: string): boolean {
     return optimisticStore.hasPendingOperations(store, target)
   }
-  
+
   /**
    * Get pending operations for store
    */
   function getPendingOperations(target?: string): OptimisticOperation[] {
     const storeOperations = optimisticStore.operationsByStore[store] || []
-    
+
     if (target) {
       return storeOperations.filter(op => op.target === target && op.status === 'pending')
     }
-    
+
     return storeOperations.filter(op => op.status === 'pending')
   }
-  
+
   /**
    * Manually rollback operation
    */
   function rollbackOperation(operationId: string, reason?: string): void {
     optimisticStore.rollbackOperation(operationId, reason)
   }
-  
+
   /**
    * Clear all optimistic operations for this store
    */
   function clearOperations(): void {
     optimisticStore.clearOperations(store)
   }
-  
+
   return {
     // Core operations
     withOptimisticUpdate,
     optimisticCreate,
     optimisticUpdate,
     optimisticDelete,
-    
+
     // State queries
     hasPendingOperations,
     getPendingOperations,
-    
+
     // Manual controls
     rollbackOperation,
     clearOperations,
-    
+
     // Access to global store
     global: optimisticStore
   }
@@ -531,11 +529,7 @@ export const optimisticPatterns = {
   /**
    * List item creation pattern
    */
-  createListItem<T>(
-    list: T[],
-    newItem: T,
-    getId: (item: T) => string | number
-  ) {
+  createListItem<T>(list: T[], newItem: T, getId: (item: T) => string | number) {
     return {
       addToList: (data: T) => {
         list.unshift(data) // Add to beginning of list
@@ -549,14 +543,11 @@ export const optimisticPatterns = {
       }
     }
   },
-  
+
   /**
    * List item update pattern
    */
-  updateListItem<T>(
-    list: T[],
-    getId: (item: T) => string | number
-  ) {
+  updateListItem<T>(list: T[], getId: (item: T) => string | number) {
     return {
       updateInList: (original: T, updated: Partial<T>) => {
         const id = getId(original)
@@ -574,14 +565,11 @@ export const optimisticPatterns = {
       }
     }
   },
-  
+
   /**
    * List item deletion pattern
    */
-  deleteListItem<T>(
-    list: T[],
-    getId: (item: T) => string | number
-  ) {
+  deleteListItem<T>(list: T[], getId: (item: T) => string | number) {
     return {
       removeFromList: (data: T) => {
         const id = getId(data)

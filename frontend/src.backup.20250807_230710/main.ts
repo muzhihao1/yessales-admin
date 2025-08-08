@@ -17,25 +17,25 @@ app.component('Modal', Modal)
 const initializeAppSystems = async () => {
   try {
     // 1. Initialize API client
-    initializeApi();
-    
-    // 2. Initialize Stores  
-    await initializeStores();
-    
-    console.log('🎉 应用系统初始化完成');
+    initializeApi()
+
+    // 2. Initialize Stores
+    await initializeStores()
+
+    console.log('🎉 应用系统初始化完成')
   } catch (error) {
-    console.error('💥 应用系统初始化失败:', error);
+    console.error('💥 应用系统初始化失败:', error)
   }
-};
+}
 
 // Initialize on app mount
 app.mixin({
   async mounted() {
     if (this.$el === this.$root.$el) {
-      await initializeAppSystems();
+      await initializeAppSystems()
     }
-  },
-});
+  }
+})
 
 // Mount app for SPA bundle generation
 app.mount('#app')

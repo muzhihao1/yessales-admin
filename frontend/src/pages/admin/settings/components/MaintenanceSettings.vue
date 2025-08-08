@@ -10,7 +10,7 @@
         <!-- 系统维护 -->
         <view class="form-group">
           <text class="group-title">系统维护</text>
-          
+
           <uni-forms-item label="启用维护模式" name="enableMaintenanceMode">
             <switch
               :checked="formData.enableMaintenanceMode"
@@ -19,7 +19,11 @@
             <text class="field-hint">开启后用户将无法访问系统</text>
           </uni-forms-item>
 
-          <uni-forms-item label="维护提示信息" name="maintenanceMessage" v-if="formData.enableMaintenanceMode">
+          <uni-forms-item
+            label="维护提示信息"
+            name="maintenanceMessage"
+            v-if="formData.enableMaintenanceMode"
+          >
             <uni-easyinput
               v-model="formData.maintenanceMessage"
               type="textarea"
@@ -30,7 +34,11 @@
             />
           </uni-forms-item>
 
-          <uni-forms-item label="允许维护期间访问的IP" name="maintenanceAllowedIps" v-if="formData.enableMaintenanceMode">
+          <uni-forms-item
+            label="允许维护期间访问的IP"
+            name="maintenanceAllowedIps"
+            v-if="formData.enableMaintenanceMode"
+          >
             <uni-easyinput
               v-model="formData.maintenanceAllowedIps"
               type="textarea"
@@ -75,7 +83,7 @@
         <!-- 数据清理 -->
         <view class="form-group">
           <text class="group-title">数据清理</text>
-          
+
           <uni-forms-item label="启用自动数据清理" name="enableAutoDataCleanup">
             <switch
               :checked="formData.enableAutoDataCleanup"
@@ -96,9 +104,13 @@
             <uni-forms-item label="清理内容" name="dataCleanupTypes">
               <view class="checkbox-group">
                 <checkbox-group @change="handleDataCleanupTypesChange">
-                  <label class="checkbox-item" v-for="type in dataCleanupTypeOptions" :key="type.value">
-                    <checkbox 
-                      :value="type.value" 
+                  <label
+                    class="checkbox-item"
+                    v-for="type in dataCleanupTypeOptions"
+                    :key="type.value"
+                  >
+                    <checkbox
+                      :value="type.value"
                       :checked="formData.dataCleanupTypes.includes(type.value)"
                     />
                     <text>{{ type.text }}</text>
@@ -143,7 +155,7 @@
         <!-- 性能监控 -->
         <view class="form-group">
           <text class="group-title">性能监控</text>
-          
+
           <uni-forms-item label="启用性能监控" name="enablePerformanceMonitoring">
             <switch
               :checked="formData.enablePerformanceMonitoring"
@@ -207,7 +219,7 @@
         <!-- 健康检查 -->
         <view class="form-group">
           <text class="group-title">健康检查</text>
-          
+
           <uni-forms-item label="启用自动健康检查" name="enableHealthCheck">
             <switch
               :checked="formData.enableHealthCheck"
@@ -229,9 +241,13 @@
             <uni-forms-item label="检查项目" name="healthCheckItems">
               <view class="checkbox-group">
                 <checkbox-group @change="handleHealthCheckItemsChange">
-                  <label class="checkbox-item" v-for="item in healthCheckItemOptions" :key="item.value">
-                    <checkbox 
-                      :value="item.value" 
+                  <label
+                    class="checkbox-item"
+                    v-for="item in healthCheckItemOptions"
+                    :key="item.value"
+                  >
+                    <checkbox
+                      :value="item.value"
                       :checked="formData.healthCheckItems.includes(item.value)"
                     />
                     <text>{{ item.text }}</text>
@@ -265,7 +281,7 @@
         <!-- 更新检查 -->
         <view class="form-group">
           <text class="group-title">系统更新</text>
-          
+
           <uni-forms-item label="启用自动更新检查" name="enableAutoUpdateCheck">
             <switch
               :checked="formData.enableAutoUpdateCheck"
@@ -319,7 +335,7 @@
         <text class="section-title">系统状态</text>
         <text class="section-description">当前系统运行状态监控</text>
       </view>
-      
+
       <view class="status-cards">
         <view class="status-card" v-for="status in systemStatus" :key="status.key">
           <view class="status-header">
@@ -329,8 +345,8 @@
             </view>
           </view>
           <view class="status-bar">
-            <view 
-              class="status-progress" 
+            <view
+              class="status-progress"
               :class="getStatusClass(status.status)"
               :style="{ width: status.percentage + '%' }"
             ></view>
@@ -359,14 +375,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { showToast, showModal } from '@/utils/ui'
+import { showModal, showToast } from '@/utils/ui'
 import type { SystemSettings } from '@/types/settings'
 
 /**
  * 维护设置组件
- * 
+ *
  * 功能说明：
  * - 配置系统维护模式和维护窗口
  * - 设置自动数据清理策略
@@ -374,20 +390,20 @@ import type { SystemSettings } from '@/types/settings'
  * - 配置系统健康检查
  * - 管理系统更新检查和通知
  * - 提供系统维护工具和操作
- * 
+ *
  * 维护类型：
  * - 系统维护：维护模式、IP白名单、通知
  * - 数据清理：临时文件、日志、缓存清理
  * - 性能监控：CPU、内存、磁盘、响应时间
  * - 健康检查：数据库、缓存、服务状态
  * - 系统更新：版本检查、自动更新配置
- * 
+ *
  * 运维特性：
  * - 实时系统状态监控
  * - 自动化维护任务
  * - 性能阈值预警
  * - 一键维护操作
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -399,7 +415,7 @@ interface MaintenanceSettingsForm {
   autoMaintenanceStartTime: string
   autoMaintenanceEndTime: string
   maintenanceNotificationMinutes: number
-  
+
   // 数据清理
   enableAutoDataCleanup: boolean
   dataCleanupFrequency: string
@@ -407,7 +423,7 @@ interface MaintenanceSettingsForm {
   tempFileRetentionDays: number
   systemLogRetentionDays: number
   operationLogRetentionDays: number
-  
+
   // 性能监控
   enablePerformanceMonitoring: boolean
   cpuWarningThreshold: number
@@ -415,14 +431,14 @@ interface MaintenanceSettingsForm {
   diskWarningThreshold: number
   responseTimeWarningThreshold: number
   monitoringDataRetentionDays: number
-  
+
   // 健康检查
   enableHealthCheck: boolean
   healthCheckInterval: number
   healthCheckItems: string[]
   healthCheckTimeout: number
   healthCheckRetryCount: number
-  
+
   // 系统更新
   enableAutoUpdateCheck: boolean
   updateCheckFrequency: string
@@ -447,7 +463,7 @@ const formData = ref<MaintenanceSettingsForm>({
   autoMaintenanceStartTime: '02:00',
   autoMaintenanceEndTime: '04:00',
   maintenanceNotificationMinutes: 30,
-  
+
   // 数据清理
   enableAutoDataCleanup: true,
   dataCleanupFrequency: 'weekly',
@@ -455,7 +471,7 @@ const formData = ref<MaintenanceSettingsForm>({
   tempFileRetentionDays: 3,
   systemLogRetentionDays: 30,
   operationLogRetentionDays: 90,
-  
+
   // 性能监控
   enablePerformanceMonitoring: true,
   cpuWarningThreshold: 80,
@@ -463,14 +479,14 @@ const formData = ref<MaintenanceSettingsForm>({
   diskWarningThreshold: 90,
   responseTimeWarningThreshold: 2000,
   monitoringDataRetentionDays: 30,
-  
+
   // 健康检查
   enableHealthCheck: true,
   healthCheckInterval: 5,
   healthCheckItems: ['database', 'cache', 'storage', 'services'],
   healthCheckTimeout: 30,
   healthCheckRetryCount: 3,
-  
+
   // 系统更新
   enableAutoUpdateCheck: true,
   updateCheckFrequency: 'weekly',
@@ -553,9 +569,7 @@ const updateChannelOptions = [
 // 表单验证规则
 const rules = {
   updateNotificationEmail: {
-    rules: [
-      { format: 'email', errorMessage: '请输入正确的邮箱地址' }
-    ]
+    rules: [{ format: 'email', errorMessage: '请输入正确的邮箱地址' }]
   }
 }
 
@@ -577,15 +591,15 @@ const getStatusClass = (status: string) => {
 
 // 事件处理
 const handleInputChange = (field: keyof MaintenanceSettingsForm, value: any) => {
-  (formData.value as any)[field] = value
+  ;(formData.value as any)[field] = value
 }
 
 const handlePickerChange = (field: keyof MaintenanceSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleSwitchChange = (field: keyof MaintenanceSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleDataCleanupTypesChange = (event: any) => {
@@ -601,7 +615,7 @@ const handleReset = async () => {
     title: '确认重置',
     content: '确定要重置所有维护设置吗？这可能会影响系统监控和维护计划。'
   })
-  
+
   if (result.confirm) {
     formData.value = { ...originalData.value }
     showToast('已重置到上次保存的状态')
@@ -620,21 +634,27 @@ const handleSave = async () => {
     loading.value = true
 
     // 转换为设置格式
-    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(([key, value]) => ({
-      category: 'maintenance' as const,
-      key,
-      value,
-      type: Array.isArray(value) ? 'array' :
-            typeof value === 'boolean' ? 'boolean' : 
-            typeof value === 'number' ? 'number' : 'string'
-    }))
+    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(
+      ([key, value]) => ({
+        category: 'maintenance' as const,
+        key,
+        value,
+        type: Array.isArray(value)
+          ? 'array'
+          : typeof value === 'boolean'
+            ? 'boolean'
+            : typeof value === 'number'
+              ? 'number'
+              : 'string'
+      })
+    )
 
     // 保存设置
     await settingsStore.updateSettings(settings)
-    
+
     // 更新原始数据
     originalData.value = { ...formData.value }
-    
+
     showToast('维护设置保存成功')
   } catch (error) {
     console.error('保存维护设置失败:', error)
@@ -648,10 +668,10 @@ const handleSave = async () => {
 const runSystemCheck = async () => {
   try {
     showToast('正在执行系统检查...')
-    
+
     // 模拟系统检查过程
     await new Promise(resolve => setTimeout(resolve, 3000))
-    
+
     showToast('系统检查完成，一切正常')
   } catch (error) {
     console.error('系统检查失败:', error)
@@ -665,14 +685,14 @@ const cleanupTempFiles = async () => {
       title: '确认清理',
       content: '确定要清理临时文件吗？此操作不可撤销。'
     })
-    
+
     if (!result.confirm) return
 
     showToast('正在清理临时文件...')
-    
+
     // 模拟清理过程
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     showToast('临时文件清理完成，释放了500MB空间')
   } catch (error) {
     console.error('清理临时文件失败:', error)
@@ -686,14 +706,14 @@ const optimizeDatabase = async () => {
       title: '确认优化',
       content: '确定要优化数据库吗？这可能需要几分钟时间。'
     })
-    
+
     if (!result.confirm) return
 
     showToast('正在优化数据库...')
-    
+
     // 模拟优化过程
     await new Promise(resolve => setTimeout(resolve, 4000))
-    
+
     showToast('数据库优化完成')
   } catch (error) {
     console.error('数据库优化失败:', error)
@@ -704,10 +724,10 @@ const optimizeDatabase = async () => {
 const checkForUpdates = async () => {
   try {
     showToast('正在检查系统更新...')
-    
+
     // 模拟更新检查
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // 随机模拟有无更新
     if (Math.random() > 0.5) {
       showToast('发现新版本 v2.1.0，建议更新')
@@ -724,14 +744,14 @@ const checkForUpdates = async () => {
 const loadSettings = async () => {
   try {
     const maintenanceSettings = settingsStore.getSettingsByCategory('maintenance')
-    
+
     // 将设置数据填充到表单
     maintenanceSettings.forEach(setting => {
       if (setting.key in formData.value) {
-        (formData.value as any)[setting.key] = setting.value
+        ;(formData.value as any)[setting.key] = setting.value
       }
     })
-    
+
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -746,22 +766,27 @@ onMounted(() => {
 })
 
 // 监听设置变化
-watch(() => settingsStore.settings, () => {
-  loadSettings()
-}, { deep: true })
+watch(
+  () => settingsStore.settings,
+  () => {
+    loadSettings()
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
 .maintenance-settings {
-  .settings-section, .system-status {
+  .settings-section,
+  .system-status {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .section-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -769,20 +794,20 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .section-description {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .form-group {
       padding: 20px;
-      
+
       &:not(:last-child) {
         border-bottom: 1px solid var(--border-color-light);
       }
-      
+
       .group-title {
         font-size: 16px;
         font-weight: 500;
@@ -790,41 +815,41 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 16px;
       }
-      
+
       .field-hint {
         font-size: 12px;
         color: var(--text-color-tertiary);
         margin-top: 4px;
         display: block;
       }
-      
+
       .time-range {
         display: flex;
         align-items: center;
         gap: 12px;
-        
+
         .time-separator {
           font-size: 14px;
           color: var(--text-color-secondary);
         }
       }
-      
+
       .checkbox-group {
         .checkbox-item {
           display: flex;
           align-items: flex-start;
           margin-bottom: 12px;
-          
+
           checkbox {
             margin-right: 8px;
             margin-top: 2px;
           }
-          
+
           text {
             font-size: 14px;
             color: var(--text-color-primary);
           }
-          
+
           .cleanup-desc {
             font-size: 12px;
             color: var(--text-color-tertiary);
@@ -835,88 +860,88 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .system-status {
     .status-cards {
       padding: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 16px;
-      
+
       .status-card {
         padding: 16px;
         border: 1px solid var(--border-color-light);
         border-radius: 8px;
-        
+
         .status-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 12px;
-          
+
           .status-name {
             font-size: 14px;
             color: var(--text-color-primary);
           }
-          
+
           .status-value {
             font-size: 16px;
             font-weight: 600;
-            
+
             &.status-good {
               color: var(--color-success);
             }
-            
+
             &.status-normal {
               color: var(--color-primary);
             }
-            
+
             &.status-warning {
               color: var(--color-warning);
             }
-            
+
             &.status-error {
               color: var(--color-error);
             }
           }
         }
-        
+
         .status-bar {
           height: 6px;
           background: var(--color-grey-200);
           border-radius: 3px;
           margin-bottom: 8px;
           overflow: hidden;
-          
+
           .status-progress {
             height: 100%;
             transition: width 0.3s ease;
-            
+
             &.status-good {
               background: var(--color-success);
             }
-            
+
             &.status-normal {
               background: var(--color-primary);
             }
-            
+
             &.status-warning {
               background: var(--color-warning);
             }
-            
+
             &.status-error {
               background: var(--color-error);
             }
           }
         }
-        
+
         .status-desc {
           font-size: 12px;
           color: var(--text-color-tertiary);
         }
       }
     }
-    
+
     .maintenance-actions {
       padding: 20px;
       border-top: 1px solid var(--border-color-light);
@@ -924,7 +949,7 @@ watch(() => settingsStore.settings, () => {
       gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
-      
+
       .action-btn {
         padding: 8px 16px;
         background: var(--color-primary);
@@ -934,14 +959,14 @@ watch(() => settingsStore.settings, () => {
         font-size: 13px;
         cursor: pointer;
         transition: all 0.2s;
-        
+
         &:hover {
           background: var(--color-primary-dark);
         }
       }
     }
   }
-  
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -949,34 +974,35 @@ watch(() => settingsStore.settings, () => {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    
-    .btn-secondary, .btn-primary {
+
+    .btn-secondary,
+    .btn-primary {
       padding: 10px 24px;
       border-radius: 6px;
       font-size: 14px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     }
-    
+
     .btn-secondary {
       background: var(--color-grey-100);
       color: var(--text-color-secondary);
-      
+
       &:hover:not(:disabled) {
         background: var(--color-grey-200);
       }
     }
-    
+
     .btn-primary {
       background: var(--color-primary);
       color: #fff;
-      
+
       &:hover:not(:disabled) {
         background: var(--color-primary-dark);
       }
@@ -987,10 +1013,11 @@ watch(() => settingsStore.settings, () => {
 // 响应式设计
 @media (max-width: 768px) {
   .maintenance-settings {
-    .settings-section, .system-status {
+    .settings-section,
+    .system-status {
       margin: 0 -16px 16px;
       border-radius: 0;
-      
+
       .section-header,
       .form-group,
       .status-cards,
@@ -998,12 +1025,12 @@ watch(() => settingsStore.settings, () => {
         padding: 16px;
       }
     }
-    
+
     .system-status {
       .status-cards {
         grid-template-columns: 1fr;
       }
-      
+
       .maintenance-actions {
         .action-btn {
           flex: 1;
@@ -1011,22 +1038,23 @@ watch(() => settingsStore.settings, () => {
         }
       }
     }
-    
+
     .form-group .time-range {
       flex-direction: column;
       align-items: stretch;
-      
+
       .time-separator {
         text-align: center;
       }
     }
-    
+
     .actions {
       margin: 0 -16px;
       border-radius: 0;
       padding: 16px;
-      
-      .btn-secondary, .btn-primary {
+
+      .btn-secondary,
+      .btn-primary {
         flex: 1;
         text-align: center;
       }

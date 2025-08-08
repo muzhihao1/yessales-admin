@@ -1,11 +1,11 @@
 /**
  * Image Optimization Utilities
- * 
+ *
  * Provides comprehensive image optimization including lazy loading,
  * responsive images, compression, and caching strategies.
  */
 
-import { ref, reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 /**
  * Image optimization configuration
@@ -14,26 +14,26 @@ export interface ImageOptimizationConfig {
   // Lazy loading
   enableLazyLoading: boolean
   lazyLoadingThreshold: number // Distance from viewport in pixels
-  
+
   // Quality settings
   defaultQuality: number // 0-100
   retinaQuality: number // Quality for high DPI displays
-  
+
   // Format preferences
   preferWebP: boolean
   preferAvif: boolean
   fallbackFormat: 'jpg' | 'png'
-  
+
   // Resize settings
   maxWidth: number
   maxHeight: number
   enableAutoResize: boolean
-  
+
   // Caching
   enableCaching: boolean
   cacheExpiry: number // milliseconds
   maxCacheSize: number // MB
-  
+
   // Progressive loading
   enableProgressiveLoading: boolean
   lowQualityPlaceholder: boolean
@@ -67,22 +67,22 @@ export interface ImageLoadingState {
 const DEFAULT_CONFIG: ImageOptimizationConfig = {
   enableLazyLoading: true,
   lazyLoadingThreshold: 100,
-  
+
   defaultQuality: 80,
   retinaQuality: 60,
-  
+
   preferWebP: true,
   preferAvif: false,
   fallbackFormat: 'jpg',
-  
+
   maxWidth: 1200,
   maxHeight: 1200,
   enableAutoResize: true,
-  
+
   enableCaching: true,
   cacheExpiry: 24 * 60 * 60 * 1000, // 24 hours
   maxCacheSize: 50, // 50MB
-  
+
   enableProgressiveLoading: true,
   lowQualityPlaceholder: true,
   blurPlaceholderQuality: 10
@@ -103,9 +103,9 @@ function getSupportedFormats(): string[] {
   canvas.width = 1
   canvas.height = 1
   const ctx = canvas.getContext('2d')
-  
+
   const formats: string[] = ['jpg', 'png']
-  
+
   // Check WebP support
   try {
     if (canvas.toDataURL('image/webp').indexOf('image/webp') === 5) {
@@ -114,7 +114,7 @@ function getSupportedFormats(): string[] {
   } catch (e) {
     // WebP not supported
   }
-  
+
   // Check AVIF support (newer browsers)
   try {
     if (canvas.toDataURL('image/avif').indexOf('image/avif') === 5) {
@@ -123,7 +123,7 @@ function getSupportedFormats(): string[] {
   } catch (e) {
     // AVIF not supported
   }
-  
+
   return formats
 }
 
@@ -148,7 +148,7 @@ export function generateOptimizedUrl(
 ): string {
   const supportedFormats = getSupportedFormats()
   const dpr = getDevicePixelRatio()
-  
+
   // Determine optimal format
   let format = options.format
   if (!format) {
@@ -160,28 +160,28 @@ export function generateOptimizedUrl(
       format = config.value.fallbackFormat
     }
   }
-  
+
   // Determine quality based on DPR
   let quality = options.quality || config.value.defaultQuality
   if (dpr > 1.5) {
     quality = config.value.retinaQuality
   }
-  
+
   // Determine dimensions
   let width = options.width
   let height = options.height
-  
+
   if (config.value.enableAutoResize && (!width || !height)) {
     width = width || config.value.maxWidth
     height = height || config.value.maxHeight
-    
+
     // Adjust for device pixel ratio
     if (dpr > 1) {
       width = Math.floor(width * dpr)
       height = Math.floor(height * dpr)
     }
   }
-  
+
   // For Uniapp, we might need to use a specific image processing service
   // This is a placeholder - replace with your actual image service
   const params = new URLSearchParams()
@@ -189,7 +189,7 @@ export function generateOptimizedUrl(
   if (height) params.append('h', height.toString())
   if (quality !== config.value.defaultQuality) params.append('q', quality.toString())
   if (format !== config.value.fallbackFormat) params.append('f', format)
-  
+
   const hasParams = params.toString()
   return hasParams ? `${originalUrl}?${params.toString()}` : originalUrl
 }
@@ -212,10 +212,10 @@ export function generatePlaceholderUrl(originalUrl: string): string {
 export function preloadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
-    
+
     img.onload = () => resolve(img)
     img.onerror = reject
-    
+
     // Check cache first
     const cached = imageCache.get(url)
     if (cached && Date.now() - cached.timestamp < config.value.cacheExpiry) {
@@ -241,11 +241,11 @@ export function loadImageWithProgress(
       resolve(cached.data)
       return
     }
-    
+
     // For Uniapp, use uni.downloadFile for progress tracking
     uni.downloadFile({
       url,
-      success: (res) => {
+      success: res => {
         if (res.statusCode === 200) {
           // Cache the result
           cacheImage(url, res.tempFilePath, 0) // Size unknown in Uniapp
@@ -254,11 +254,11 @@ export function loadImageWithProgress(
           reject(new Error(`Failed to load image: ${res.statusCode}`))
         }
       },
-      fail: (error) => {
+      fail: error => {
         reject(error)
       }
     })
-    
+
     // Progress tracking not directly available in uni.downloadFile
     // This is a simulation
     if (onProgress) {
@@ -280,12 +280,12 @@ export function loadImageWithProgress(
  */
 function cacheImage(url: string, data: string, size: number) {
   if (!config.value.enableCaching) return
-  
+
   // Check cache size limit
   if (currentCacheSize.value + size > config.value.maxCacheSize * 1024 * 1024) {
     evictLeastUsedImages()
   }
-  
+
   const entry: ImageCacheEntry = {
     url,
     data,
@@ -293,7 +293,7 @@ function cacheImage(url: string, data: string, size: number) {
     timestamp: Date.now(),
     hits: 1
   }
-  
+
   imageCache.set(url, entry)
   currentCacheSize.value += size
 }
@@ -304,10 +304,10 @@ function cacheImage(url: string, data: string, size: number) {
 function evictLeastUsedImages() {
   const entries = Array.from(imageCache.entries())
   entries.sort(([, a], [, b]) => a.hits - b.hits || a.timestamp - b.timestamp)
-  
+
   // Remove bottom 25% of entries
   const toRemove = Math.ceil(entries.length * 0.25)
-  
+
   for (let i = 0; i < toRemove; i++) {
     const [url, entry] = entries[i]
     imageCache.delete(url)
@@ -328,20 +328,21 @@ export function clearImageCache() {
  */
 export function getCacheStats() {
   const entries = Array.from(imageCache.values())
-  
+
   return {
     totalEntries: entries.length,
     totalSize: currentCacheSize.value,
-    totalSizeMB: Math.round(currentCacheSize.value / 1024 / 1024 * 100) / 100,
-    hitRate: entries.length > 0 
-      ? Math.round(entries.reduce((sum, entry) => sum + entry.hits, 0) / entries.length * 100) / 100
-      : 0,
-    oldestEntry: entries.length > 0 
-      ? Math.min(...entries.map(entry => entry.timestamp))
-      : 0,
-    mostHitEntry: entries.length > 0
-      ? entries.reduce((max, entry) => entry.hits > max.hits ? entry : max, entries[0])
-      : null
+    totalSizeMB: Math.round((currentCacheSize.value / 1024 / 1024) * 100) / 100,
+    hitRate:
+      entries.length > 0
+        ? Math.round((entries.reduce((sum, entry) => sum + entry.hits, 0) / entries.length) * 100) /
+          100
+        : 0,
+    oldestEntry: entries.length > 0 ? Math.min(...entries.map(entry => entry.timestamp)) : 0,
+    mostHitEntry:
+      entries.length > 0
+        ? entries.reduce((max, entry) => (entry.hits > max.hits ? entry : max), entries[0])
+        : null
   }
 }
 
@@ -361,38 +362,42 @@ export function compressImage(
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     const img = new Image()
-    
+
     img.onload = () => {
       // Calculate dimensions
       let { width, height } = img
       const maxWidth = options.maxWidth || config.value.maxWidth
       const maxHeight = options.maxHeight || config.value.maxHeight
-      
+
       if (width > maxWidth || height > maxHeight) {
         const ratio = Math.min(maxWidth / width, maxHeight / height)
         width *= ratio
         height *= ratio
       }
-      
+
       canvas.width = width
       canvas.height = height
-      
+
       // Draw image
       ctx!.drawImage(img, 0, 0, width, height)
-      
+
       // Convert to blob
       const quality = (options.quality || config.value.defaultQuality) / 100
       const format = options.format || `image/${config.value.fallbackFormat}`
-      
-      canvas.toBlob((blob) => {
-        if (blob) {
-          resolve(blob)
-        } else {
-          reject(new Error('Failed to compress image'))
-        }
-      }, format, quality)
+
+      canvas.toBlob(
+        blob => {
+          if (blob) {
+            resolve(blob)
+          } else {
+            reject(new Error('Failed to compress image'))
+          }
+        },
+        format,
+        quality
+      )
     }
-    
+
     img.onerror = reject
     img.src = URL.createObjectURL(file)
   })
@@ -403,7 +408,7 @@ export function compressImage(
  */
 export function useImageOptimization() {
   const loadingStates = reactive<Map<string, ImageLoadingState>>(new Map())
-  
+
   function createLoadingState(url: string): ImageLoadingState {
     const state = {
       loading: false,
@@ -411,15 +416,15 @@ export function useImageOptimization() {
       error: false,
       progress: 0
     }
-    
+
     loadingStates.set(url, state)
     return state
   }
-  
+
   function getLoadingState(url: string): ImageLoadingState {
     return loadingStates.get(url) || createLoadingState(url)
   }
-  
+
   async function loadOptimizedImage(
     originalUrl: string,
     options: {
@@ -434,21 +439,19 @@ export function useImageOptimization() {
     state: ImageLoadingState
   }> {
     const optimizedUrl = generateOptimizedUrl(originalUrl, options)
-    const placeholderUrl = options.usePlaceholder 
-      ? generatePlaceholderUrl(originalUrl) 
-      : undefined
-    
+    const placeholderUrl = options.usePlaceholder ? generatePlaceholderUrl(originalUrl) : undefined
+
     const state = getLoadingState(optimizedUrl)
-    
+
     if (!state.loaded && !state.loading) {
       state.loading = true
       state.error = false
-      
+
       try {
-        await loadImageWithProgress(optimizedUrl, (progress) => {
+        await loadImageWithProgress(optimizedUrl, progress => {
           state.progress = progress
         })
-        
+
         state.loaded = true
         state.loading = false
         state.progress = 100
@@ -459,16 +462,16 @@ export function useImageOptimization() {
         console.error('Failed to load optimized image:', error)
       }
     }
-    
+
     return {
       optimizedUrl,
       placeholderUrl,
       state
     }
   }
-  
+
   return {
-    loadingStates: loadingStates,
+    loadingStates,
     loadOptimizedImage,
     getLoadingState,
     clearStates: () => loadingStates.clear()
@@ -481,11 +484,11 @@ export function useImageOptimization() {
 class LazyLoadObserver {
   private observer: IntersectionObserver | null = null
   private elements = new WeakMap<Element, () => void>()
-  
+
   constructor(threshold = config.value.lazyLoadingThreshold) {
     if (typeof window !== 'undefined' && 'IntersectionObserver' in window) {
       this.observer = new IntersectionObserver(
-        (entries) => {
+        entries => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
               const callback = this.elements.get(entry.target)
@@ -502,7 +505,7 @@ class LazyLoadObserver {
       )
     }
   }
-  
+
   observe(element: Element, callback: () => void) {
     if (this.observer) {
       this.elements.set(element, callback)
@@ -512,14 +515,14 @@ class LazyLoadObserver {
       callback()
     }
   }
-  
+
   unobserve(element: Element) {
     if (this.observer) {
       this.observer.unobserve(element)
       this.elements.delete(element)
     }
   }
-  
+
   disconnect() {
     if (this.observer) {
       this.observer.disconnect()

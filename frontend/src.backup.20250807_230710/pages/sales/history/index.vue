@@ -1,11 +1,7 @@
 <template>
   <view class="history-page">
-    <SalesHeader
-      title="我的报价"
-      :show-back="false"
-      :fixed="true"
-    />
-    
+    <SalesHeader title="我的报价" :show-back="false" :fixed="true" />
+
     <view class="history-content">
       <!-- Search Section -->
       <view class="search-section">
@@ -22,7 +18,7 @@
               <text class="clear-icon">×</text>
             </view>
           </view>
-          
+
           <SalesButton
             size="small"
             :type="showFilters ? 'primary' : 'default'"
@@ -31,7 +27,7 @@
             筛选
           </SalesButton>
         </view>
-        
+
         <!-- Active Filters -->
         <view v-if="hasActiveFilters" class="active-filters">
           <view
@@ -43,12 +39,10 @@
             <text class="filter-text">{{ filter.label }}</text>
             <text class="filter-remove">×</text>
           </view>
-          <SalesButton size="mini" type="plain" @click="clearAllFilters">
-            清除全部
-          </SalesButton>
+          <SalesButton size="mini" type="plain" @click="clearAllFilters"> 清除全部 </SalesButton>
         </view>
       </view>
-      
+
       <!-- Filter Panel -->
       <view v-if="showFilters" class="filter-panel">
         <!-- Status Filter -->
@@ -66,7 +60,7 @@
             </view>
           </view>
         </view>
-        
+
         <!-- Date Filter -->
         <view class="filter-group">
           <text class="filter-title">创建时间</text>
@@ -82,7 +76,7 @@
             </view>
           </view>
         </view>
-        
+
         <!-- Amount Filter -->
         <view class="filter-group">
           <text class="filter-title">报价金额</text>
@@ -104,7 +98,7 @@
             />
           </view>
         </view>
-        
+
         <!-- Sort Options -->
         <view class="filter-group">
           <text class="filter-title">排序方式</text>
@@ -114,13 +108,13 @@
             @change="handleSortChange"
           />
         </view>
-        
+
         <view class="filter-actions">
           <SalesButton type="default" @click="resetFilters">重置</SalesButton>
           <SalesButton type="primary" @click="applyFilters">应用筛选</SalesButton>
         </view>
       </view>
-      
+
       <!-- Statistics Overview -->
       <view class="stats-section">
         <view class="stats-cards">
@@ -142,7 +136,7 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Quotes List -->
       <view class="quotes-section">
         <!-- Loading State -->
@@ -150,7 +144,7 @@
           <view class="loading-spinner"></view>
           <text class="loading-text">加载中...</text>
         </view>
-        
+
         <!-- Empty State -->
         <view v-else-if="filteredQuotes.length === 0" class="empty-container">
           <image class="empty-icon" src="/static/images/empty-quotes.png" mode="aspectFit" />
@@ -159,7 +153,7 @@
             {{ searchKeyword ? '新建报价' : '创建第一个报价' }}
           </SalesButton>
         </view>
-        
+
         <!-- Quote Cards -->
         <view v-else class="quotes-list">
           <view
@@ -178,67 +172,58 @@
                 <text class="status-text">{{ getStatusText(quote.status) }}</text>
               </view>
             </view>
-            
+
             <!-- Card Content -->
             <view class="card-content">
               <view class="quote-info">
                 <text class="quote-number">{{ quote.quoteNumber }}</text>
                 <text class="quote-date">{{ formatDate(quote.createdAt) }}</text>
               </view>
-              
+
               <view class="quote-details">
                 <text class="item-count">{{ quote.itemCount }} 种产品</text>
                 <text class="quote-amount">¥{{ formatPrice(quote.totalAmount) }}</text>
               </view>
             </view>
-            
+
             <!-- Card Footer -->
             <view class="card-footer">
               <view class="validity-info">
-                <text class="validity-text" :class="{ 'validity-expired': isExpired(quote.validUntil) }">
+                <text
+                  class="validity-text"
+                  :class="{ 'validity-expired': isExpired(quote.validUntil) }"
+                >
                   {{ getValidityText(quote.validUntil) }}
                 </text>
               </view>
-              
+
               <view class="card-actions">
-                <SalesButton
-                  size="mini"
-                  type="plain"
-                  @click.stop="editQuote(quote)"
-                >
+                <SalesButton size="mini" type="plain" @click.stop="editQuote(quote)">
                   编辑
                 </SalesButton>
-                <SalesButton
-                  size="mini"
-                  type="plain"
-                  @click.stop="duplicateQuote(quote)"
-                >
+                <SalesButton size="mini" type="plain" @click.stop="duplicateQuote(quote)">
                   复制
                 </SalesButton>
-                <SalesButton
-                  size="mini"
-                  type="plain"
-                  @click.stop="showQuoteActions(quote)"
-                >
+                <SalesButton size="mini" type="plain" @click.stop="showQuoteActions(quote)">
                   更多
                 </SalesButton>
               </view>
             </view>
           </view>
         </view>
-        
+
         <!-- Load More -->
         <view v-if="hasMore && !loading" class="load-more" @click="loadMore">
           <text class="load-more-text">加载更多</text>
         </view>
       </view>
     </view>
-    
+
     <!-- Floating Action Button -->
     <view class="fab" @click="createNewQuote">
       <text class="fab-icon">+</text>
     </view>
-    
+
     <!-- Footer Navigation -->
     <SalesFooter
       company-name="耶氏台球斗南销售中心"
@@ -254,33 +239,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, reactive } from 'vue';
-import SalesHeader from '@/components/sales/SalesHeader.vue';
-import SalesButton from '@/components/sales/SalesButton.vue';
-import SalesInput from '@/components/sales/SalesInput.vue';
-import SalesSelector from '@/components/sales/SalesSelector.vue';
-import SalesFooter from '@/components/layout/SalesFooter.vue';
+import { computed, onMounted, reactive, ref } from 'vue'
+import SalesHeader from '@/components/sales/SalesHeader.vue'
+import SalesButton from '@/components/sales/SalesButton.vue'
+import SalesInput from '@/components/sales/SalesInput.vue'
+import SalesSelector from '@/components/sales/SalesSelector.vue'
+import SalesFooter from '@/components/layout/SalesFooter.vue'
 
 interface QuoteListItem {
-  id: string;
-  quoteNumber: string;
-  customerName: string;
-  customerPhone: string;
-  status: 'draft' | 'sent' | 'approved' | 'rejected';
-  totalAmount: number;
-  itemCount: number;
-  createdAt: string;
-  updatedAt: string;
-  validUntil: string;
+  id: string
+  quoteNumber: string
+  customerName: string
+  customerPhone: string
+  status: 'draft' | 'sent' | 'approved' | 'rejected'
+  totalAmount: number
+  itemCount: number
+  createdAt: string
+  updatedAt: string
+  validUntil: string
 }
 
 // State
-const loading = ref(true);
-const searchKeyword = ref('');
-const showFilters = ref(false);
-const quotes = ref<QuoteListItem[]>([]);
-const currentPage = ref(1);
-const pageSize = 10;
+const loading = ref(true)
+const searchKeyword = ref('')
+const showFilters = ref(false)
+const quotes = ref<QuoteListItem[]>([])
+const currentPage = ref(1)
+const pageSize = 10
 
 // Filters
 const filters = reactive({
@@ -288,16 +273,16 @@ const filters = reactive({
   datePeriod: 'all' as string,
   minAmount: undefined as number | undefined,
   maxAmount: undefined as number | undefined,
-  sortBy: 'createdAt_desc' as string,
-});
+  sortBy: 'createdAt_desc' as string
+})
 
 // Statistics
 const stats = reactive({
   total: 0,
   thisMonth: 0,
   pending: 0,
-  totalAmount: 0,
-});
+  totalAmount: 0
+})
 
 // Options
 const statusOptions = [
@@ -305,24 +290,24 @@ const statusOptions = [
   { value: 'draft', label: '草稿' },
   { value: 'sent', label: '已发送' },
   { value: 'approved', label: '已确认' },
-  { value: 'rejected', label: '已拒绝' },
-];
+  { value: 'rejected', label: '已拒绝' }
+]
 
 const datePeriods = [
   { value: 'all', label: '全部时间' },
   { value: 'today', label: '今天' },
   { value: 'week', label: '本周' },
   { value: 'month', label: '本月' },
-  { value: 'quarter', label: '本季度' },
-];
+  { value: 'quarter', label: '本季度' }
+]
 
 const sortOptions = [
   { value: 'createdAt_desc', label: '创建时间 (新到旧)' },
   { value: 'createdAt_asc', label: '创建时间 (旧到新)' },
   { value: 'amount_desc', label: '金额 (高到低)' },
   { value: 'amount_asc', label: '金额 (低到高)' },
-  { value: 'customer_asc', label: '客户姓名 (A-Z)' },
-];
+  { value: 'customer_asc', label: '客户姓名 (A-Z)' }
+]
 
 // Bottom navigation
 const bottomBarItems = ref([
@@ -350,124 +335,127 @@ const bottomBarItems = ref([
     activeIcon: '/static/icons/profile-active.png',
     page: '/pages/sales/profile/index'
   }
-]);
+])
 
 // Computed properties
 const filteredQuotes = computed(() => {
-  let result = [...quotes.value];
-  
+  let result = [...quotes.value]
+
   // Search filter
   if (searchKeyword.value) {
-    const keyword = searchKeyword.value.toLowerCase();
-    result = result.filter(quote =>
-      quote.customerName.toLowerCase().includes(keyword) ||
-      quote.quoteNumber.toLowerCase().includes(keyword) ||
-      quote.customerPhone.includes(keyword)
-    );
+    const keyword = searchKeyword.value.toLowerCase()
+    result = result.filter(
+      quote =>
+        quote.customerName.toLowerCase().includes(keyword) ||
+        quote.quoteNumber.toLowerCase().includes(keyword) ||
+        quote.customerPhone.includes(keyword)
+    )
   }
-  
+
   // Status filter
   if (filters.status !== 'all') {
-    result = result.filter(quote => quote.status === filters.status);
+    result = result.filter(quote => quote.status === filters.status)
   }
-  
+
   // Date filter
   if (filters.datePeriod !== 'all') {
-    const now = new Date();
-    const filterDate = getDateFilterRange(filters.datePeriod);
+    const now = new Date()
+    const filterDate = getDateFilterRange(filters.datePeriod)
     result = result.filter(quote => {
-      const quoteDate = new Date(quote.createdAt);
-      return quoteDate >= filterDate;
-    });
+      const quoteDate = new Date(quote.createdAt)
+      return quoteDate >= filterDate
+    })
   }
-  
+
   // Amount filter
   if (filters.minAmount !== undefined) {
-    result = result.filter(quote => quote.totalAmount >= filters.minAmount!);
+    result = result.filter(quote => quote.totalAmount >= filters.minAmount!)
   }
   if (filters.maxAmount !== undefined) {
-    result = result.filter(quote => quote.totalAmount <= filters.maxAmount!);
+    result = result.filter(quote => quote.totalAmount <= filters.maxAmount!)
   }
-  
+
   // Sort
   result.sort((a, b) => {
-    const [field, direction] = filters.sortBy.split('_');
-    let comparison = 0;
-    
+    const [field, direction] = filters.sortBy.split('_')
+    let comparison = 0
+
     switch (field) {
       case 'createdAt':
-        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-        break;
+        comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+        break
       case 'amount':
-        comparison = a.totalAmount - b.totalAmount;
-        break;
+        comparison = a.totalAmount - b.totalAmount
+        break
       case 'customer':
-        comparison = a.customerName.localeCompare(b.customerName);
-        break;
+        comparison = a.customerName.localeCompare(b.customerName)
+        break
     }
-    
-    return direction === 'desc' ? -comparison : comparison;
-  });
-  
-  return result;
-});
+
+    return direction === 'desc' ? -comparison : comparison
+  })
+
+  return result
+})
 
 const paginatedQuotes = computed(() => {
-  return filteredQuotes.value.slice(0, currentPage.value * pageSize);
-});
+  return filteredQuotes.value.slice(0, currentPage.value * pageSize)
+})
 
 const hasMore = computed(() => {
-  return filteredQuotes.value.length > currentPage.value * pageSize;
-});
+  return filteredQuotes.value.length > currentPage.value * pageSize
+})
 
 const hasActiveFilters = computed(() => {
-  return filters.status !== 'all' ||
-         filters.datePeriod !== 'all' ||
-         filters.minAmount !== undefined ||
-         filters.maxAmount !== undefined ||
-         searchKeyword.value !== '';
-});
+  return (
+    filters.status !== 'all' ||
+    filters.datePeriod !== 'all' ||
+    filters.minAmount !== undefined ||
+    filters.maxAmount !== undefined ||
+    searchKeyword.value !== ''
+  )
+})
 
 const activeFilters = computed(() => {
-  const active = [];
-  
+  const active = []
+
   if (searchKeyword.value) {
-    active.push({ key: 'search', label: `搜索: ${searchKeyword.value}` });
+    active.push({ key: 'search', label: `搜索: ${searchKeyword.value}` })
   }
-  
+
   if (filters.status !== 'all') {
-    const statusOption = statusOptions.find(opt => opt.value === filters.status);
-    active.push({ key: 'status', label: `状态: ${statusOption?.label}` });
+    const statusOption = statusOptions.find(opt => opt.value === filters.status)
+    active.push({ key: 'status', label: `状态: ${statusOption?.label}` })
   }
-  
+
   if (filters.datePeriod !== 'all') {
-    const dateOption = datePeriods.find(opt => opt.value === filters.datePeriod);
-    active.push({ key: 'date', label: `时间: ${dateOption?.label}` });
+    const dateOption = datePeriods.find(opt => opt.value === filters.datePeriod)
+    active.push({ key: 'date', label: `时间: ${dateOption?.label}` })
   }
-  
+
   if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
-    const min = filters.minAmount || 0;
-    const max = filters.maxAmount || '无限';
-    active.push({ key: 'amount', label: `金额: ¥${min} - ¥${max}` });
+    const min = filters.minAmount || 0
+    const max = filters.maxAmount || '无限'
+    active.push({ key: 'amount', label: `金额: ¥${min} - ¥${max}` })
   }
-  
-  return active;
-});
+
+  return active
+})
 
 // Lifecycle
 onMounted(() => {
-  loadQuotes();
-  loadStats();
-});
+  loadQuotes()
+  loadStats()
+})
 
 // Methods
 const loadQuotes = async () => {
   try {
-    loading.value = true;
-    
+    loading.value = true
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
+    await new Promise(resolve => setTimeout(resolve, 800))
+
     // Mock data
     const mockQuotes: QuoteListItem[] = [
       {
@@ -480,7 +468,7 @@ const loadQuotes = async () => {
         itemCount: 2,
         createdAt: '2024-12-06T10:30:00Z',
         updatedAt: '2024-12-06T10:30:00Z',
-        validUntil: '2025-01-05T10:30:00Z',
+        validUntil: '2025-01-05T10:30:00Z'
       },
       {
         id: '2',
@@ -492,7 +480,7 @@ const loadQuotes = async () => {
         itemCount: 1,
         createdAt: '2024-12-05T14:20:00Z',
         updatedAt: '2024-12-05T16:45:00Z',
-        validUntil: '2025-01-04T14:20:00Z',
+        validUntil: '2025-01-04T14:20:00Z'
       },
       {
         id: '3',
@@ -504,7 +492,7 @@ const loadQuotes = async () => {
         itemCount: 5,
         createdAt: '2024-12-04T09:15:00Z',
         updatedAt: '2024-12-04T09:15:00Z',
-        validUntil: '2025-01-03T09:15:00Z',
+        validUntil: '2025-01-03T09:15:00Z'
       },
       {
         id: '4',
@@ -516,7 +504,7 @@ const loadQuotes = async () => {
         itemCount: 3,
         createdAt: '2024-12-03T16:45:00Z',
         updatedAt: '2024-12-03T18:20:00Z',
-        validUntil: '2025-01-02T16:45:00Z',
+        validUntil: '2025-01-02T16:45:00Z'
       },
       {
         id: '5',
@@ -528,125 +516,123 @@ const loadQuotes = async () => {
         itemCount: 8,
         createdAt: '2024-12-02T11:30:00Z',
         updatedAt: '2024-12-02T13:15:00Z',
-        validUntil: '2025-01-01T11:30:00Z',
-      },
-    ];
-    
-    quotes.value = mockQuotes;
-    
+        validUntil: '2025-01-01T11:30:00Z'
+      }
+    ]
+
+    quotes.value = mockQuotes
   } catch (error) {
-    console.error('Failed to load quotes:', error);
+    console.error('Failed to load quotes:', error)
     uni.showToast({
       title: '加载失败，请重试',
       icon: 'none'
-    });
+    })
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 const loadStats = async () => {
   try {
     // Calculate stats from quotes
-    stats.total = quotes.value.length;
-    stats.pending = quotes.value.filter(q => q.status === 'sent').length;
-    stats.totalAmount = quotes.value.reduce((sum, q) => sum + q.totalAmount, 0);
-    
+    stats.total = quotes.value.length
+    stats.pending = quotes.value.filter(q => q.status === 'sent').length
+    stats.totalAmount = quotes.value.reduce((sum, q) => sum + q.totalAmount, 0)
+
     // Calculate this month's quotes
-    const thisMonth = new Date();
-    thisMonth.setDate(1);
-    thisMonth.setHours(0, 0, 0, 0);
-    
+    const thisMonth = new Date()
+    thisMonth.setDate(1)
+    thisMonth.setHours(0, 0, 0, 0)
+
     stats.thisMonth = quotes.value.filter(q => {
-      return new Date(q.createdAt) >= thisMonth;
-    }).length;
-    
+      return new Date(q.createdAt) >= thisMonth
+    }).length
   } catch (error) {
-    console.error('Failed to load stats:', error);
+    console.error('Failed to load stats:', error)
   }
-};
+}
 
 const handleSearch = () => {
   // Debounce search in real implementation
-  currentPage.value = 1;
-};
+  currentPage.value = 1
+}
 
 const clearSearch = () => {
-  searchKeyword.value = '';
-  currentPage.value = 1;
-};
+  searchKeyword.value = ''
+  currentPage.value = 1
+}
 
 const toggleFilters = () => {
-  showFilters.value = !showFilters.value;
-};
+  showFilters.value = !showFilters.value
+}
 
 const setStatusFilter = (status: string) => {
-  filters.status = status;
-};
+  filters.status = status
+}
 
 const setDateFilter = (period: string) => {
-  filters.datePeriod = period;
-};
+  filters.datePeriod = period
+}
 
 const handleAmountFilter = () => {
   // Debounce amount filter
-  currentPage.value = 1;
-};
+  currentPage.value = 1
+}
 
 const handleSortChange = () => {
-  currentPage.value = 1;
-};
+  currentPage.value = 1
+}
 
 const resetFilters = () => {
-  filters.status = 'all';
-  filters.datePeriod = 'all';
-  filters.minAmount = undefined;
-  filters.maxAmount = undefined;
-  filters.sortBy = 'createdAt_desc';
-  searchKeyword.value = '';
-  currentPage.value = 1;
-};
+  filters.status = 'all'
+  filters.datePeriod = 'all'
+  filters.minAmount = undefined
+  filters.maxAmount = undefined
+  filters.sortBy = 'createdAt_desc'
+  searchKeyword.value = ''
+  currentPage.value = 1
+}
 
 const applyFilters = () => {
-  showFilters.value = false;
-  currentPage.value = 1;
-};
+  showFilters.value = false
+  currentPage.value = 1
+}
 
 const removeFilter = (filterKey: string) => {
   switch (filterKey) {
     case 'search':
-      searchKeyword.value = '';
-      break;
+      searchKeyword.value = ''
+      break
     case 'status':
-      filters.status = 'all';
-      break;
+      filters.status = 'all'
+      break
     case 'date':
-      filters.datePeriod = 'all';
-      break;
+      filters.datePeriod = 'all'
+      break
     case 'amount':
-      filters.minAmount = undefined;
-      filters.maxAmount = undefined;
-      break;
+      filters.minAmount = undefined
+      filters.maxAmount = undefined
+      break
   }
-  currentPage.value = 1;
-};
+  currentPage.value = 1
+}
 
 const clearAllFilters = () => {
-  resetFilters();
-};
+  resetFilters()
+}
 
 const loadMore = () => {
-  currentPage.value++;
-};
+  currentPage.value++
+}
 
 // Helper functions
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('zh-CN');
-};
+  return new Date(dateString).toLocaleDateString('zh-CN')
+}
 
 const formatPrice = (price: number) => {
-  return price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
+  return price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
 const getStatusText = (status: string) => {
   const statusMap = {
@@ -654,160 +640,160 @@ const getStatusText = (status: string) => {
     sent: '已发送',
     approved: '已确认',
     rejected: '已拒绝'
-  };
-  return statusMap[status] || '未知';
-};
+  }
+  return statusMap[status] || '未知'
+}
 
 const isExpired = (validUntil: string) => {
-  return new Date(validUntil) < new Date();
-};
+  return new Date(validUntil) < new Date()
+}
 
 const getValidityText = (validUntil: string) => {
-  const validDate = new Date(validUntil);
-  const now = new Date();
-  
+  const validDate = new Date(validUntil)
+  const now = new Date()
+
   if (validDate < now) {
-    return '已过期';
+    return '已过期'
   }
-  
-  const diffDays = Math.ceil((validDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-  
+
+  const diffDays = Math.ceil((validDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+
   if (diffDays <= 3) {
-    return `${diffDays}天后过期`;
+    return `${diffDays}天后过期`
   }
-  
-  return `有效至${validDate.toLocaleDateString('zh-CN')}`;
-};
+
+  return `有效至${validDate.toLocaleDateString('zh-CN')}`
+}
 
 const getDateFilterRange = (period: string) => {
-  const now = new Date();
-  
+  const now = new Date()
+
   switch (period) {
     case 'today':
-      return new Date(now.setHours(0, 0, 0, 0));
+      return new Date(now.setHours(0, 0, 0, 0))
     case 'week':
-      return new Date(now.setDate(now.getDate() - 7));
+      return new Date(now.setDate(now.getDate() - 7))
     case 'month':
-      return new Date(now.setMonth(now.getMonth() - 1));
+      return new Date(now.setMonth(now.getMonth() - 1))
     case 'quarter':
-      return new Date(now.setMonth(now.getMonth() - 3));
+      return new Date(now.setMonth(now.getMonth() - 3))
     default:
-      return new Date(0);
+      return new Date(0)
   }
-};
+}
 
 // Action handlers
 const createNewQuote = () => {
   uni.navigateTo({
     url: '/pages/sales/quote/create'
-  });
-};
+  })
+}
 
 const viewQuote = (quote: QuoteListItem) => {
   uni.navigateTo({
     url: `/pages/sales/quote/preview?id=${quote.id}`
-  });
-};
+  })
+}
 
 const editQuote = (quote: QuoteListItem) => {
   uni.navigateTo({
     url: `/pages/sales/quote/create?id=${quote.id}&mode=edit`
-  });
-};
+  })
+}
 
 const duplicateQuote = (quote: QuoteListItem) => {
   uni.navigateTo({
     url: `/pages/sales/quote/create?id=${quote.id}&mode=duplicate`
-  });
-};
+  })
+}
 
 const showQuoteActions = (quote: QuoteListItem) => {
-  const actions = ['删除报价', '分享报价', '导出PDF'];
-  
+  const actions = ['删除报价', '分享报价', '导出PDF']
+
   if (quote.status === 'draft') {
-    actions.unshift('发送给客户');
+    actions.unshift('发送给客户')
   }
-  
+
   uni.showActionSheet({
     itemList: actions,
-    success: (res) => {
+    success: res => {
       switch (res.tapIndex) {
         case 0:
           if (quote.status === 'draft') {
-            sendQuote(quote);
+            sendQuote(quote)
           } else {
-            deleteQuote(quote);
+            deleteQuote(quote)
           }
-          break;
+          break
         case 1:
           if (quote.status === 'draft') {
-            shareQuote(quote);
+            shareQuote(quote)
           } else {
-            shareQuote(quote);
+            shareQuote(quote)
           }
-          break;
+          break
         case 2:
           if (quote.status === 'draft') {
-            exportQuote(quote);
+            exportQuote(quote)
           } else {
-            exportQuote(quote);
+            exportQuote(quote)
           }
-          break;
+          break
         case 3:
-          deleteQuote(quote);
-          break;
+          deleteQuote(quote)
+          break
       }
     }
-  });
-};
+  })
+}
 
 const sendQuote = (quote: QuoteListItem) => {
   uni.showToast({
     title: '发送功能开发中',
     icon: 'none'
-  });
-};
+  })
+}
 
 const shareQuote = (quote: QuoteListItem) => {
   uni.showToast({
     title: '分享功能开发中',
     icon: 'none'
-  });
-};
+  })
+}
 
 const exportQuote = (quote: QuoteListItem) => {
   uni.showToast({
     title: '导出功能开发中',
     icon: 'none'
-  });
-};
+  })
+}
 
 const deleteQuote = (quote: QuoteListItem) => {
   uni.showModal({
     title: '删除确认',
     content: '确定要删除这个报价单吗？此操作不可恢复。',
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
-        const index = quotes.value.findIndex(q => q.id === quote.id);
+        const index = quotes.value.findIndex(q => q.id === quote.id)
         if (index > -1) {
-          quotes.value.splice(index, 1);
+          quotes.value.splice(index, 1)
           uni.showToast({
             title: '删除成功',
             icon: 'success'
-          });
-          loadStats(); // Refresh stats
+          })
+          loadStats() // Refresh stats
         }
       }
     }
-  });
-};
+  })
+}
 
 const handleBottomBarClick = (item: any, index: number) => {
   if (index === 2) {
     // Current page, do nothing
-    return;
+    return
   }
-  
+
   uni.switchTab({
     url: item.page,
     fail: () => {
@@ -817,12 +803,12 @@ const handleBottomBarClick = (item: any, index: number) => {
           uni.showToast({
             title: '页面开发中',
             icon: 'none'
-          });
+          })
         }
-      });
+      })
     }
-  });
-};
+  })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -874,7 +860,7 @@ const handleBottomBarClick = (item: any, index: number) => {
   height: 80rpx;
   font-size: $font-size-base;
   color: $text-color;
-  
+
   &::placeholder {
     color: $text-color-placeholder;
   }
@@ -930,7 +916,7 @@ const handleBottomBarClick = (item: any, index: number) => {
 
 .filter-group {
   margin-bottom: $spacing-lg;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -956,7 +942,7 @@ const handleBottomBarClick = (item: any, index: number) => {
   border-radius: $border-radius-base;
   cursor: pointer;
   transition: $transition-base;
-  
+
   &--active {
     background-color: $primary-color;
     color: $bg-color-white;
@@ -1039,7 +1025,9 @@ const handleBottomBarClick = (item: any, index: number) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {
@@ -1079,7 +1067,7 @@ const handleBottomBarClick = (item: any, index: number) => {
   padding: $spacing-lg;
   cursor: pointer;
   transition: $transition-base;
-  
+
   &:active {
     transform: scale(0.995);
   }
@@ -1112,22 +1100,22 @@ const handleBottomBarClick = (item: any, index: number) => {
   border-radius: 16rpx;
   font-size: $font-size-small;
   font-weight: $font-weight-medium;
-  
+
   &.status-draft {
     background-color: $warning-bg;
     color: $warning-color;
   }
-  
+
   &.status-sent {
     background-color: $info-bg;
     color: $info-color;
   }
-  
+
   &.status-approved {
     background-color: $success-bg;
     color: $success-color;
   }
-  
+
   &.status-rejected {
     background-color: $danger-bg;
     color: $danger-color;
@@ -1182,7 +1170,7 @@ const handleBottomBarClick = (item: any, index: number) => {
 .validity-text {
   font-size: $font-size-small;
   color: $text-color-secondary;
-  
+
   &.validity-expired {
     color: $danger-color;
     font-weight: $font-weight-medium;
@@ -1220,7 +1208,7 @@ const handleBottomBarClick = (item: any, index: number) => {
   z-index: $z-index-floating;
   cursor: pointer;
   transition: $transition-base;
-  
+
   &:active {
     transform: scale(0.95);
   }
@@ -1237,15 +1225,15 @@ const handleBottomBarClick = (item: any, index: number) => {
   .stats-cards {
     grid-template-columns: repeat(4, 1fr);
   }
-  
+
   .filter-options {
     gap: $spacing-base;
   }
-  
+
   .filter-option {
     padding: $spacing-base $spacing-lg;
   }
-  
+
   .amount-filter {
     max-width: 400rpx;
   }

@@ -1,6 +1,6 @@
 /**
  * Permission Composable
- * 
+ *
  * Provides reactive permission checking and role-based access control
  * for Vue components in the admin panel.
  */
@@ -12,11 +12,11 @@ import type { User } from '@/types/models'
 
 export function usePermissions() {
   const authStore = useAuthStore()
-  
+
   // Reactive computed properties for common permission checks
   const permissions = computed(() => {
     const user = authStore.user
-    
+
     return {
       // User authentication status
       isAuthenticated: authStore.isAuthenticated,
@@ -24,7 +24,7 @@ export function usePermissions() {
       isManager: user?.role === 'admin' || user?.role === 'sales_manager',
       isSalesRep: user?.role === 'sales_rep',
       isViewer: user?.role === 'viewer',
-      
+
       // Feature-based permissions
       canManageUsers: canAccessFeature('user_management'),
       canManageProducts: canAccessFeature('product_management'),
@@ -34,26 +34,26 @@ export function usePermissions() {
       canViewLogs: canAccessFeature('system_logs'),
       canAccessSettings: canAccessFeature('system_settings'),
       canManageRoles: canAccessFeature('user_roles'),
-      
+
       // UI element permissions
       showAdminMenu: user?.role === 'admin',
       showUserManagement: canAccessFeature('user_management'),
       showSystemSettings: canAccessFeature('system_settings'),
       showAdvancedFeatures: user?.role === 'admin' || user?.role === 'sales_manager',
-      
+
       // Action permissions
       canEditOwnProfile: !!user,
       canDeleteRecords: user?.role === 'admin' || user?.role === 'sales_manager',
       canBulkOperations: user?.role === 'admin' || user?.role === 'sales_manager',
       canViewAllData: user?.role === 'admin' || user?.role === 'sales_manager',
-      
+
       // Current user info
       currentUser: user,
       userRole: user?.role || null,
-      userName: user?.name || user?.username || '',
+      userName: user?.name || user?.username || ''
     }
   })
-  
+
   // Methods for dynamic permission checking
   const checkPermission = {
     /**
@@ -62,35 +62,35 @@ export function usePermissions() {
     canAccessRoute(routePath: string): boolean {
       return hasRoutePermission(authStore.user, routePath)
     },
-    
+
     /**
      * Check if user can access a specific feature
      */
     canAccessFeature(featureName: string): boolean {
       return canAccessFeature(featureName)
     },
-    
+
     /**
      * Check if user has specific role
      */
     hasRole(role: string): boolean {
       return authStore.user?.role === role
     },
-    
+
     /**
      * Check if user has any of the specified roles
      */
     hasAnyRole(roles: string[]): boolean {
       return roles.includes(authStore.user?.role || '')
     },
-    
+
     /**
      * Check if user can perform action on resource
      */
     canPerformAction(action: string, resource?: string): boolean {
       const user = authStore.user
       if (!user) return false
-      
+
       // Define action-resource permission matrix
       const actionPermissions: Record<string, Record<string, string[]>> = {
         create: {
@@ -124,25 +124,25 @@ export function usePermissions() {
           data: ['admin', 'sales_manager']
         }
       }
-      
+
       const allowedRoles = actionPermissions[action]?.[resource || 'default'] || []
       return allowedRoles.includes(user.role)
     },
-    
+
     /**
      * Check if user can access admin panel
      */
     canAccessAdminPanel(): boolean {
       return this.hasAnyRole(['admin', 'sales_manager', 'sales_rep', 'viewer'])
     },
-    
+
     /**
      * Check if user owns a resource (for edit/delete permissions)
      */
     ownsResource(resourceUserId: string): boolean {
       return authStore.user?.id === resourceUserId
     },
-    
+
     /**
      * Check if user can edit/delete their own content or has admin privileges
      */
@@ -150,7 +150,7 @@ export function usePermissions() {
       return this.ownsResource(resourceUserId) || this.hasAnyRole(['admin', 'sales_manager'])
     }
   }
-  
+
   // Utility functions for UI components
   const uiHelpers = {
     /**
@@ -164,10 +164,10 @@ export function usePermissions() {
         create: '您没有权限创建此内容',
         access: '您没有权限访问此功能'
       }
-      
+
       return messages[action || 'access'] || '权限不足'
     },
-    
+
     /**
      * Show permission denied toast
      */
@@ -178,7 +178,7 @@ export function usePermissions() {
         duration: 2000
       })
     },
-    
+
     /**
      * Get user role display name
      */
@@ -189,10 +189,10 @@ export function usePermissions() {
         sales_rep: '销售代表',
         viewer: '查看者'
       }
-      
+
       return roleNames[role || authStore.user?.role || ''] || '未知角色'
     },
-    
+
     /**
      * Get role badge color
      */
@@ -203,16 +203,16 @@ export function usePermissions() {
         sales_rep: '#3b82f6',
         viewer: '#6b7280'
       }
-      
+
       return colors[role || authStore.user?.role || ''] || '#6b7280'
     }
   }
-  
+
   return {
     permissions,
     checkPermission,
     uiHelpers,
-    
+
     // Direct access to commonly used properties
     isAuthenticated: permissions.value.isAuthenticated,
     isAdmin: permissions.value.isAdmin,

@@ -8,13 +8,15 @@
         </view>
         <text class="header-title">耶氏台球报价系统</text>
       </view>
-      
+
       <view class="header-right">
         <view class="user-info" @click="showUserMenu = !showUserMenu">
           <text class="user-name">{{ authStore.userName }}</text>
-          <text class="user-role">{{ authStore.user?.role === 'admin' ? '管理员' : '销售员' }}</text>
+          <text class="user-role">{{
+            authStore.user?.role === 'admin' ? '管理员' : '销售员'
+          }}</text>
         </view>
-        
+
         <!-- 用户菜单 -->
         <view v-if="showUserMenu" class="user-menu">
           <view class="menu-item" @click="handleProfile">
@@ -57,16 +59,12 @@
     </view>
 
     <!-- 遮罩层（移动端） -->
-    <view 
-      v-if="showSidebarMask" 
-      class="sidebar-mask" 
-      @click="sidebarCollapsed = true"
-    ></view>
+    <view v-if="showSidebarMask" class="sidebar-mask" @click="sidebarCollapsed = true"></view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
@@ -84,38 +82,38 @@ const menuItems = [
   {
     title: '仪表盘',
     icon: '📊',
-    path: '/pages/admin/dashboard/index',
+    path: '/pages/admin/dashboard/index'
   },
   {
     title: '报价单管理',
     icon: '📋',
-    path: '/pages/admin/quotes/index',
+    path: '/pages/admin/quotes/index'
   },
   {
     title: '产品管理',
     icon: '📦',
-    path: '/pages/admin/products/index',
+    path: '/pages/admin/products/index'
   },
   {
     title: '客户管理',
     icon: '👥',
-    path: '/pages/admin/customers/index',
+    path: '/pages/admin/customers/index'
   },
   {
     title: '用户管理',
     icon: '👤',
-    path: '/pages/admin/users/index',
+    path: '/pages/admin/users/index'
   },
   {
     title: '操作日志',
     icon: '📝',
-    path: '/pages/admin/logs/index',
+    path: '/pages/admin/logs/index'
   },
   {
     title: '系统设置',
     icon: '⚙️',
-    path: '/pages/admin/settings/index',
-  },
+    path: '/pages/admin/settings/index'
+  }
 ]
 
 const toggleSidebar = () => {
@@ -124,10 +122,10 @@ const toggleSidebar = () => {
 
 const navigateTo = (path: string) => {
   if (currentPath.value === path) return
-  
+
   currentPath.value = path
   uni.navigateTo({ url: path })
-  
+
   // 移动端导航后自动收起侧边栏
   if (isMobile.value) {
     sidebarCollapsed.value = true
@@ -148,18 +146,18 @@ const handleLogout = () => {
   uni.showModal({
     title: '提示',
     content: '确定要退出登录吗？',
-    success: (res) => {
+    success: res => {
       if (res.confirm) {
         authStore.logout()
       }
-    },
+    }
   })
 }
 
 const checkScreenSize = () => {
   const systemInfo = uni.getSystemInfoSync()
   isMobile.value = systemInfo.windowWidth < 768
-  
+
   // 移动端默认收起侧边栏
   if (isMobile.value) {
     sidebarCollapsed.value = true
@@ -175,17 +173,17 @@ const handleClickOutside = (e: any) => {
 
 onMounted(() => {
   checkScreenSize()
-  
+
   // 获取当前页面路径
   const pages = getCurrentPages()
   if (pages.length > 0) {
     const currentPage = pages[pages.length - 1]
     currentPath.value = '/' + currentPage.route
   }
-  
+
   // 监听窗口大小变化
   uni.onWindowResize(checkScreenSize)
-  
+
   // 监听点击事件
   document.addEventListener('click', handleClickOutside)
 })
@@ -231,7 +229,7 @@ onUnmounted(() => {
       cursor: pointer;
       border-radius: 4px;
       margin-right: 12px;
-      
+
       &:hover {
         background-color: #f5f7fa;
       }
@@ -259,7 +257,7 @@ onUnmounted(() => {
       cursor: pointer;
       padding: 8px 12px;
       border-radius: 4px;
-      
+
       &:hover {
         background-color: #f5f7fa;
       }
@@ -428,7 +426,7 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .admin-sidebar {
     transform: translateX(0);
-    
+
     &.collapsed {
       transform: translateX(-100%);
     }
@@ -436,7 +434,7 @@ onUnmounted(() => {
 
   .admin-content {
     margin-left: 0;
-    
+
     &.sidebar-collapsed {
       margin-left: 0;
     }

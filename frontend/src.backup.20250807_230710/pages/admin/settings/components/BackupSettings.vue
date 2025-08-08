@@ -10,7 +10,7 @@
         <!-- 自动备份 -->
         <view class="form-group">
           <text class="group-title">自动备份</text>
-          
+
           <uni-forms-item label="启用自动备份" name="enableAutoBackup">
             <switch
               :checked="formData.enableAutoBackup"
@@ -41,9 +41,13 @@
             <uni-forms-item label="备份内容" name="backupContent">
               <view class="checkbox-group">
                 <checkbox-group @change="handleBackupContentChange">
-                  <label class="checkbox-item" v-for="content in backupContentOptions" :key="content.value">
-                    <checkbox 
-                      :value="content.value" 
+                  <label
+                    class="checkbox-item"
+                    v-for="content in backupContentOptions"
+                    :key="content.value"
+                  >
+                    <checkbox
+                      :value="content.value"
                       :checked="formData.backupContent.includes(content.value)"
                     />
                     <text>{{ content.text }}</text>
@@ -67,7 +71,11 @@
               />
             </uni-forms-item>
 
-            <uni-forms-item label="加密密码" name="backupEncryptionPassword" v-if="formData.enableBackupEncryption">
+            <uni-forms-item
+              label="加密密码"
+              name="backupEncryptionPassword"
+              v-if="formData.enableBackupEncryption"
+            >
               <uni-easyinput
                 v-model="formData.backupEncryptionPassword"
                 type="password"
@@ -83,7 +91,7 @@
         <!-- 存储配置 -->
         <view class="form-group">
           <text class="group-title">存储配置</text>
-          
+
           <uni-forms-item label="主存储位置" name="primaryStorageType" required>
             <uni-data-picker
               v-model="formData.primaryStorageType"
@@ -106,7 +114,9 @@
           </template>
 
           <!-- 云存储配置 -->
-          <template v-if="['aliyun_oss', 'tencent_cos', 'aws_s3'].includes(formData.primaryStorageType)">
+          <template
+            v-if="['aliyun_oss', 'tencent_cos', 'aws_s3'].includes(formData.primaryStorageType)"
+          >
             <uni-forms-item label="访问密钥ID" name="cloudAccessKeyId" required>
               <uni-easyinput
                 v-model="formData.cloudAccessKeyId"
@@ -219,7 +229,7 @@
         <!-- 保留策略 -->
         <view class="form-group">
           <text class="group-title">保留策略</text>
-          
+
           <uni-forms-item label="备份保留期(天)" name="backupRetentionDays">
             <uni-number-box
               v-model="formData.backupRetentionDays"
@@ -263,7 +273,7 @@
         <!-- 通知配置 -->
         <view class="form-group">
           <text class="group-title">通知配置</text>
-          
+
           <uni-forms-item label="备份完成通知" name="notifyBackupComplete">
             <switch
               :checked="formData.notifyBackupComplete"
@@ -303,7 +313,7 @@
         <text class="section-title">备份状态</text>
         <text class="section-description">当前备份状态和历史记录</text>
       </view>
-      
+
       <view class="status-info">
         <view class="info-card">
           <text class="info-label">最后备份时间</text>
@@ -311,7 +321,9 @@
         </view>
         <view class="info-card">
           <text class="info-label">备份状态</text>
-          <text class="info-value" :class="backupStatus.status">{{ getBackupStatusText(backupStatus.status) }}</text>
+          <text class="info-value" :class="backupStatus.status">{{
+            getBackupStatusText(backupStatus.status)
+          }}</text>
         </view>
         <view class="info-card">
           <text class="info-label">备份大小</text>
@@ -324,7 +336,11 @@
       </view>
 
       <view class="backup-actions">
-        <button class="action-btn primary" @click="createManualBackup" :disabled="backupStatus.isRunning">
+        <button
+          class="action-btn primary"
+          @click="createManualBackup"
+          :disabled="backupStatus.isRunning"
+        >
           <text v-if="backupStatus.isRunning">备份进行中...</text>
           <text v-else>立即备份</text>
         </button>
@@ -345,14 +361,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { showToast, showModal } from '@/utils/ui'
+import { showModal, showToast } from '@/utils/ui'
 import type { SystemSettings } from '@/types/settings'
 
 /**
  * 备份设置组件
- * 
+ *
  * 功能说明：
  * - 配置自动备份计划和频率
  * - 设置多种存储方式（本地、云存储、FTP）
@@ -361,18 +377,18 @@ import type { SystemSettings } from '@/types/settings'
  * - 监控备份状态和历史记录
  * - 提供手动备份和测试功能
  * - 设置备份通知和警告
- * 
+ *
  * 存储类型：
  * - 本地存储：服务器本地磁盘
  * - 云存储：阿里云OSS、腾讯云COS、AWS S3
  * - FTP存储：远程FTP服务器
- * 
+ *
  * 安全特性：
  * - 备份加密保护敏感数据
  * - 多副本冗余存储
  * - 自动清理过期备份
  * - 存储空间监控和预警
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -385,7 +401,7 @@ interface BackupSettingsForm {
   enableBackupCompression: boolean
   enableBackupEncryption: boolean
   backupEncryptionPassword: string
-  
+
   // 存储配置
   primaryStorageType: string
   localStoragePath: string
@@ -400,13 +416,13 @@ interface BackupSettingsForm {
   ftpPassword: string
   ftpDirectory: string
   backupCopies: number
-  
+
   // 保留策略
   backupRetentionDays: number
   maxBackupSize: number
   autoCleanupExpiredBackups: boolean
   storageWarningThreshold: number
-  
+
   // 通知配置
   notifyBackupComplete: boolean
   notifyBackupFailure: boolean
@@ -431,7 +447,7 @@ const formData = ref<BackupSettingsForm>({
   enableBackupCompression: true,
   enableBackupEncryption: false,
   backupEncryptionPassword: '',
-  
+
   // 存储配置
   primaryStorageType: 'local',
   localStoragePath: '/var/backups/yessales',
@@ -446,13 +462,13 @@ const formData = ref<BackupSettingsForm>({
   ftpPassword: '',
   ftpDirectory: '/backups',
   backupCopies: 7,
-  
+
   // 保留策略
   backupRetentionDays: 30,
   maxBackupSize: 10,
   autoCleanupExpiredBackups: true,
   storageWarningThreshold: 80,
-  
+
   // 通知配置
   notifyBackupComplete: false,
   notifyBackupFailure: true,
@@ -495,59 +511,37 @@ const storageTypeOptions = [
 // 表单验证规则
 const rules = {
   backupFrequency: {
-    rules: [
-      { required: true, errorMessage: '请选择备份频率' }
-    ]
+    rules: [{ required: true, errorMessage: '请选择备份频率' }]
   },
   backupTime: {
-    rules: [
-      { required: true, errorMessage: '请设置备份时间' }
-    ]
+    rules: [{ required: true, errorMessage: '请设置备份时间' }]
   },
   primaryStorageType: {
-    rules: [
-      { required: true, errorMessage: '请选择存储类型' }
-    ]
+    rules: [{ required: true, errorMessage: '请选择存储类型' }]
   },
   localStoragePath: {
-    rules: [
-      { required: true, errorMessage: '请输入本地存储路径' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入本地存储路径' }]
   },
   cloudAccessKeyId: {
-    rules: [
-      { required: true, errorMessage: '请输入访问密钥ID' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入访问密钥ID' }]
   },
   cloudAccessKeySecret: {
-    rules: [
-      { required: true, errorMessage: '请输入访问密钥Secret' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入访问密钥Secret' }]
   },
   cloudBucketName: {
-    rules: [
-      { required: true, errorMessage: '请输入存储桶名称' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入存储桶名称' }]
   },
   ftpHost: {
-    rules: [
-      { required: true, errorMessage: '请输入FTP服务器地址' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入FTP服务器地址' }]
   },
   ftpUsername: {
-    rules: [
-      { required: true, errorMessage: '请输入FTP用户名' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入FTP用户名' }]
   },
   ftpPassword: {
-    rules: [
-      { required: true, errorMessage: '请输入FTP密码' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入FTP密码' }]
   },
   notificationEmail: {
-    rules: [
-      { format: 'email', errorMessage: '请输入正确的邮箱地址' }
-    ]
+    rules: [{ format: 'email', errorMessage: '请输入正确的邮箱地址' }]
   }
 }
 
@@ -569,15 +563,15 @@ const getBackupStatusText = (status: string) => {
 
 // 事件处理
 const handleInputChange = (field: keyof BackupSettingsForm, value: any) => {
-  (formData.value as any)[field] = value
+  ;(formData.value as any)[field] = value
 }
 
 const handlePickerChange = (field: keyof BackupSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleSwitchChange = (field: keyof BackupSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleBackupContentChange = (event: any) => {
@@ -589,7 +583,7 @@ const handleReset = async () => {
     title: '确认重置',
     content: '确定要重置所有备份设置吗？这可能会影响数据备份计划。'
   })
-  
+
   if (result.confirm) {
     formData.value = { ...originalData.value }
     showToast('已重置到上次保存的状态')
@@ -600,19 +594,25 @@ const handleSave = async () => {
   try {
     // 表单验证
     let isValid = true
-    
+
     // 根据存储类型验证相应字段
     if (formData.value.primaryStorageType === 'local') {
       const localValid = await formRef.value.validateField(['localStoragePath'])
       isValid = isValid && localValid
-    } else if (['aliyun_oss', 'tencent_cos', 'aws_s3'].includes(formData.value.primaryStorageType)) {
-      const cloudValid = await formRef.value.validateField(['cloudAccessKeyId', 'cloudAccessKeySecret', 'cloudBucketName'])
+    } else if (
+      ['aliyun_oss', 'tencent_cos', 'aws_s3'].includes(formData.value.primaryStorageType)
+    ) {
+      const cloudValid = await formRef.value.validateField([
+        'cloudAccessKeyId',
+        'cloudAccessKeySecret',
+        'cloudBucketName'
+      ])
       isValid = isValid && cloudValid
     } else if (formData.value.primaryStorageType === 'ftp') {
       const ftpValid = await formRef.value.validateField(['ftpHost', 'ftpUsername', 'ftpPassword'])
       isValid = isValid && ftpValid
     }
-    
+
     if (!isValid) {
       showToast('请完善必填字段', 'error')
       return
@@ -627,21 +627,27 @@ const handleSave = async () => {
     loading.value = true
 
     // 转换为设置格式
-    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(([key, value]) => ({
-      category: 'backup' as const,
-      key,
-      value,
-      type: Array.isArray(value) ? 'array' :
-            typeof value === 'boolean' ? 'boolean' : 
-            typeof value === 'number' ? 'number' : 'string'
-    }))
+    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(
+      ([key, value]) => ({
+        category: 'backup' as const,
+        key,
+        value,
+        type: Array.isArray(value)
+          ? 'array'
+          : typeof value === 'boolean'
+            ? 'boolean'
+            : typeof value === 'number'
+              ? 'number'
+              : 'string'
+      })
+    )
 
     // 保存设置
     await settingsStore.updateSettings(settings)
-    
+
     // 更新原始数据
     originalData.value = { ...formData.value }
-    
+
     showToast('备份设置保存成功')
   } catch (error) {
     console.error('保存备份设置失败:', error)
@@ -658,15 +664,15 @@ const createManualBackup = async () => {
       title: '确认备份',
       content: '确定要立即执行手动备份吗？这可能需要一些时间。'
     })
-    
+
     if (!result.confirm) return
 
     backupStatus.value.isRunning = true
     showToast('正在创建备份，请稍候...')
-    
+
     // 模拟备份过程
     await new Promise(resolve => setTimeout(resolve, 5000))
-    
+
     // 更新备份状态
     backupStatus.value = {
       ...backupStatus.value,
@@ -675,7 +681,7 @@ const createManualBackup = async () => {
       lastBackupSize: '2.8 GB',
       isRunning: false
     }
-    
+
     showToast('手动备份创建成功')
   } catch (error) {
     console.error('手动备份失败:', error)
@@ -688,10 +694,10 @@ const createManualBackup = async () => {
 const testBackupConnection = async () => {
   try {
     showToast('正在测试备份连接...')
-    
+
     // 模拟连接测试
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // 随机模拟成功或失败
     if (Math.random() > 0.2) {
       showToast('备份连接测试成功')
@@ -714,14 +720,14 @@ const viewBackupHistory = () => {
 const loadSettings = async () => {
   try {
     const backupSettings = settingsStore.getSettingsByCategory('backup')
-    
+
     // 将设置数据填充到表单
     backupSettings.forEach(setting => {
       if (setting.key in formData.value) {
-        (formData.value as any)[setting.key] = setting.value
+        ;(formData.value as any)[setting.key] = setting.value
       }
     })
-    
+
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -736,22 +742,27 @@ onMounted(() => {
 })
 
 // 监听设置变化
-watch(() => settingsStore.settings, () => {
-  loadSettings()
-}, { deep: true })
+watch(
+  () => settingsStore.settings,
+  () => {
+    loadSettings()
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
 .backup-settings {
-  .settings-section, .backup-status {
+  .settings-section,
+  .backup-status {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .section-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -759,20 +770,20 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .section-description {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .form-group {
       padding: 20px;
-      
+
       &:not(:last-child) {
         border-bottom: 1px solid var(--border-color-light);
       }
-      
+
       .group-title {
         font-size: 16px;
         font-weight: 500;
@@ -780,24 +791,24 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 16px;
       }
-      
+
       .field-hint {
         font-size: 12px;
         color: var(--text-color-tertiary);
         margin-top: 4px;
         display: block;
       }
-      
+
       .checkbox-group {
         .checkbox-item {
           display: flex;
           align-items: center;
           margin-bottom: 8px;
-          
+
           checkbox {
             margin-right: 8px;
           }
-          
+
           text {
             font-size: 14px;
             color: var(--text-color-primary);
@@ -806,54 +817,54 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .backup-status {
     .status-info {
       padding: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
-      
+
       .info-card {
         padding: 16px;
         border: 1px solid var(--border-color-light);
         border-radius: 6px;
         text-align: center;
-        
+
         .info-label {
           font-size: 12px;
           color: var(--text-color-secondary);
           display: block;
           margin-bottom: 8px;
         }
-        
+
         .info-value {
           font-size: 16px;
           font-weight: 500;
           color: var(--text-color-primary);
-          
+
           &.success {
             color: var(--color-success);
           }
-          
+
           &.failed {
             color: var(--color-error);
           }
-          
+
           &.running {
             color: var(--color-warning);
           }
         }
       }
     }
-    
+
     .backup-actions {
       padding: 20px;
       border-top: 1px solid var(--border-color-light);
       display: flex;
       gap: 12px;
       justify-content: center;
-      
+
       .action-btn {
         padding: 10px 20px;
         border-radius: 6px;
@@ -861,26 +872,26 @@ watch(() => settingsStore.settings, () => {
         border: none;
         cursor: pointer;
         transition: all 0.2s;
-        
+
         &:disabled {
           opacity: 0.6;
           cursor: not-allowed;
         }
-        
+
         &.primary {
           background: var(--color-primary);
           color: #fff;
-          
+
           &:hover:not(:disabled) {
             background: var(--color-primary-dark);
           }
         }
-        
+
         &.secondary {
           background: var(--color-grey-100);
           color: var(--text-color-secondary);
           border: 1px solid var(--border-color-light);
-          
+
           &:hover:not(:disabled) {
             background: var(--color-grey-200);
           }
@@ -888,7 +899,7 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -896,34 +907,35 @@ watch(() => settingsStore.settings, () => {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    
-    .btn-secondary, .btn-primary {
+
+    .btn-secondary,
+    .btn-primary {
       padding: 10px 24px;
       border-radius: 6px;
       font-size: 14px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     }
-    
+
     .btn-secondary {
       background: var(--color-grey-100);
       color: var(--text-color-secondary);
-      
+
       &:hover:not(:disabled) {
         background: var(--color-grey-200);
       }
     }
-    
+
     .btn-primary {
       background: var(--color-primary);
       color: #fff;
-      
+
       &:hover:not(:disabled) {
         background: var(--color-primary-dark);
       }
@@ -934,10 +946,11 @@ watch(() => settingsStore.settings, () => {
 // 响应式设计
 @media (max-width: 768px) {
   .backup-settings {
-    .settings-section, .backup-status {
+    .settings-section,
+    .backup-status {
       margin: 0 -16px 16px;
       border-radius: 0;
-      
+
       .section-header,
       .form-group,
       .status-info,
@@ -945,27 +958,28 @@ watch(() => settingsStore.settings, () => {
         padding: 16px;
       }
     }
-    
+
     .backup-status {
       .status-info {
         grid-template-columns: repeat(2, 1fr);
       }
-      
+
       .backup-actions {
         flex-direction: column;
-        
+
         .action-btn {
           text-align: center;
         }
       }
     }
-    
+
     .actions {
       margin: 0 -16px;
       border-radius: 0;
       padding: 16px;
-      
-      .btn-secondary, .btn-primary {
+
+      .btn-secondary,
+      .btn-primary {
         flex: 1;
         text-align: center;
       }

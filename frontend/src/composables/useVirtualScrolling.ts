@@ -1,21 +1,21 @@
-import { ref, computed, reactive, nextTick, onMounted, onUnmounted } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 
 /**
  * 虚拟滚动和懒加载功能组合式API
- * 
+ *
  * 功能说明：
  * - 虚拟滚动：只渲染可视区域内的行，大幅提升大数据集性能
  * - 懒加载：滚动时自动加载更多数据，支持无限滚动
  * - 智能缓存：缓存已加载数据，避免重复请求
  * - 平滑滚动：保持原生滚动体验，支持快速滚动
  * - 动态行高：支持不同高度的行内容
- * 
+ *
  * 性能优化：
  * - 最多只渲染50-100行DOM节点，无论数据量多大
  * - 使用变换偏移而非真实DOM操作
  * - 防抖滚动事件，避免频繁计算
  * - 预加载缓冲区，提升滚动流畅度
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -58,11 +58,14 @@ const DEFAULT_OPTIONS: VirtualScrollOptions = {
  * 虚拟滚动核心逻辑
  */
 export function useVirtualScrolling<T extends VirtualScrollItem>(
-  loadData: (page: number, pageSize: number) => Promise<{ items: T[], total: number, hasMore: boolean }>,
+  loadData: (
+    page: number,
+    pageSize: number
+  ) => Promise<{ items: T[]; total: number; hasMore: boolean }>,
   options: Partial<VirtualScrollOptions> = {}
 ) {
   const opts = { ...DEFAULT_OPTIONS, ...options }
-  
+
   // 响应式状态
   const state = reactive<VirtualScrollState>({
     items: [],
@@ -76,11 +79,11 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
   // DOM引用
   const containerRef = ref<HTMLElement>()
   const scrollElementRef = ref<HTMLElement>()
-  
+
   // 滚动状态
   const scrollTop = ref(0)
   const clientHeight = ref(opts.containerHeight)
-  
+
   // 节流定时器
   let scrollTimer: number | null = null
   let resizeTimer: number | null = null
@@ -119,14 +122,14 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
   // 是否需要加载更多数据
   const shouldLoadMore = computed(() => {
     if (!state.hasMore || state.loading) return false
-    
+
     const scrollPercent = (scrollTop.value + clientHeight.value) / virtualData.value.totalHeight
     return scrollPercent >= opts.threshold
   })
 
   // 当前可见区域的数据
   const visibleItems = computed(() => virtualData.value.visibleItems)
-  
+
   // 虚拟容器样式
   const containerStyle = computed(() => ({
     height: `${opts.containerHeight}px`,
@@ -159,9 +162,9 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     try {
       state.loading = true
       state.error = null
-      
+
       const result = await loadData(page, opts.pageSize)
-      
+
       // 合并新数据
       if (page === 1) {
         // 第一页，替换全部数据
@@ -174,11 +177,10 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
           state.items[startIndex + index] = item
         })
       }
-      
+
       state.loadedPages.add(page)
       state.total = result.total
       state.hasMore = result.hasMore
-      
     } catch (error) {
       console.error('Virtual scrolling load data error:', error)
       state.error = error instanceof Error ? error.message : '数据加载失败'
@@ -197,7 +199,7 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     if (scrollTimer) {
       clearTimeout(scrollTimer)
     }
-    
+
     scrollTimer = setTimeout(() => {
       // 检查是否需要加载更多数据
       if (shouldLoadMore.value) {
@@ -212,7 +214,7 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     if (resizeTimer) {
       clearTimeout(resizeTimer)
     }
-    
+
     resizeTimer = setTimeout(() => {
       if (containerRef.value) {
         clientHeight.value = containerRef.value.clientHeight
@@ -267,9 +269,9 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
       containerRef.value.addEventListener('scroll', handleScroll, { passive: true })
       clientHeight.value = containerRef.value.clientHeight
     }
-    
+
     window.addEventListener('resize', handleResize, { passive: true })
-    
+
     // 初始加载数据
     nextTick(() => {
       loadPage(1)
@@ -280,9 +282,9 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     if (containerRef.value) {
       containerRef.value.removeEventListener('scroll', handleScroll)
     }
-    
+
     window.removeEventListener('resize', handleResize)
-    
+
     if (scrollTimer) clearTimeout(scrollTimer)
     if (resizeTimer) clearTimeout(resizeTimer)
   })
@@ -292,21 +294,21 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     state,
     scrollTop,
     clientHeight,
-    
+
     // 计算属性
     visibleItems,
     virtualData,
     shouldLoadMore,
-    
+
     // 样式
     containerStyle,
     listStyle,
     viewportStyle,
-    
+
     // DOM引用
     containerRef,
     scrollElementRef,
-    
+
     // 方法
     loadPage,
     refresh,
@@ -316,7 +318,7 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     getItemInfo,
     handleScroll,
     handleResize,
-    
+
     // 便捷属性
     loading: computed(() => state.loading),
     hasMore: computed(() => state.hasMore),
@@ -337,21 +339,21 @@ export const virtualScrollPresets = {
     overscan: 10,
     pageSize: 100
   },
-  
+
   // 标准行（适合普通表格）
   default: {
     itemHeight: 60,
     overscan: 5,
     pageSize: 50
   },
-  
+
   // 大型行（适合带图片的复杂内容）
   large: {
     itemHeight: 120,
     overscan: 3,
     pageSize: 30
   },
-  
+
   // 移动端优化
   mobile: {
     itemHeight: 80,

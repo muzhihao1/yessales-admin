@@ -1,37 +1,37 @@
-import { ref, computed, reactive, watch, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { showToast } from '@/utils/ui'
 
 /**
  * 权限缓存系统组合式API
- * 
+ *
  * 功能说明：
  * - 多级权限缓存：内存缓存 + 会话缓存 + 本地存储
  * - 智能失效策略：基于时间、版本和用户行为的失效机制
  * - 背景刷新机制：无感知的权限数据更新
  * - 缓存预热：提前加载关键权限数据
  * - 性能监控：缓存命中率和响应时间统计
- * 
+ *
  * 性能优化：
  * - 权限检查延迟从100ms降低到<5ms
  * - API调用减少80%以上
  * - 内存使用优化，自动清理过期数据
  * - 批量请求减少网络开销
  * - 智能预加载减少用户等待时间
- * 
+ *
  * 应用场景：
  * - 管理员面板的权限验证
  * - 动态菜单和按钮权限控制
  * - 页面访问权限验证
  * - 批量操作权限检查
  * - 多角色权限管理
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
 export interface Permission {
   id: string
   resource: string // 资源标识，如 'customers', 'products', 'quotes'
-  action: string   // 操作类型，如 'read', 'write', 'delete', 'export'
+  action: string // 操作类型，如 'read', 'write', 'delete', 'export'
   granted: boolean // 是否授权
   conditions?: Record<string, any> // 条件限制
   scope?: 'own' | 'department' | 'all' // 权限范围
@@ -111,12 +111,12 @@ const DEFAULT_CONFIG: CacheConfig = {
  */
 export function usePermissionCache(config: Partial<CacheConfig> = {}) {
   const opts = { ...DEFAULT_CONFIG, ...config }
-  
+
   // 多级缓存系统
   const memoryCache = new Map<string, PermissionCacheEntry>()
   const sessionCache = opts.enableSessionStorage ? sessionStorage : null
   const localStorage = opts.enableLocalStorage ? window.localStorage : null
-  
+
   // 性能监控
   const metrics = reactive<CacheMetrics>({
     hits: 0,
@@ -127,7 +127,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
     cacheSize: 0,
     evictions: 0
   })
-  
+
   // 状态管理
   const state = reactive({
     isInitialized: false,
@@ -136,15 +136,19 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
     lastCleanup: null as Date | null,
     criticalPermissions: [] as string[] // 关键权限列表
   })
-  
+
   // 清理定时器
   let cleanupTimer: number | null = null
   let metricsTimer: number | null = null
-  
+
   /**
    * 生成缓存键
    */
-  const generateCacheKey = (type: 'permission' | 'role' | 'user', id: string, ...params: string[]) => {
+  const generateCacheKey = (
+    type: 'permission' | 'role' | 'user',
+    id: string,
+    ...params: string[]
+  ) => {
     const baseKey = `${type}:${id}`
     return params.length > 0 ? `${baseKey}:${params.join(':')}` : baseKey
   }
@@ -171,7 +175,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
   const getCacheEntry = async (key: string): Promise<PermissionCacheEntry | null> => {
     const startTime = performance.now()
     metrics.totalRequests++
-    
+
     try {
       // 1. 内存缓存
       const memoryEntry = memoryCache.get(key)
@@ -181,7 +185,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
         metrics.hits++
         return memoryEntry
       }
-      
+
       // 2. 会话缓存
       if (sessionCache) {
         const sessionData = sessionCache.getItem(`perm_${key}`)
@@ -200,7 +204,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
           }
         }
       }
-      
+
       // 3. 本地存储
       if (localStorage) {
         const localData = localStorage.getItem(`perm_${key}`)
@@ -222,15 +226,16 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
           }
         }
       }
-      
+
       // 缓存未命中
       metrics.misses++
       return null
-      
     } finally {
       // 更新响应时间统计
       const responseTime = performance.now() - startTime
-      metrics.averageResponseTime = (metrics.averageResponseTime * (metrics.totalRequests - 1) + responseTime) / metrics.totalRequests
+      metrics.averageResponseTime =
+        (metrics.averageResponseTime * (metrics.totalRequests - 1) + responseTime) /
+        metrics.totalRequests
     }
   }
 
@@ -248,9 +253,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
           metrics.evictions++
         }
       }
-      
+
       memoryCache.set(key, entry)
-      
+
       // 2. 会话缓存
       if (sessionCache) {
         try {
@@ -262,7 +267,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
           }
         }
       }
-      
+
       // 3. 本地存储
       if (localStorage) {
         try {
@@ -274,7 +279,6 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
           }
         }
       }
-      
     } catch (error) {
       console.error('Cache write error:', error)
     }
@@ -293,7 +297,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
   const findLRUKey = (): string | null => {
     let lruKey: string | null = null
     let lruTime = Infinity
-    
+
     for (const [key, entry] of memoryCache.entries()) {
       const lastUsed = entry.lastAccess || entry.timestamp
       if (lastUsed < lruTime) {
@@ -301,7 +305,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
         lruKey = key
       }
     }
-    
+
     return lruKey
   }
 
@@ -310,9 +314,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const clearExpiredSessionCache = () => {
     if (!sessionCache) return
-    
+
     const keysToRemove: string[] = []
-    
+
     for (let i = 0; i < sessionCache.length; i++) {
       const key = sessionCache.key(i)
       if (key && key.startsWith('perm_')) {
@@ -329,7 +333,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
         }
       }
     }
-    
+
     keysToRemove.forEach(key => sessionCache.removeItem(key))
   }
 
@@ -338,9 +342,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const clearExpiredLocalStorage = () => {
     if (!localStorage) return
-    
+
     const keysToRemove: string[] = []
-    
+
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
       if (key && key.startsWith('perm_')) {
@@ -357,7 +361,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
         }
       }
     }
-    
+
     keysToRemove.forEach(key => localStorage.removeItem(key))
   }
 
@@ -365,7 +369,12 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    * 权限缓存API
    */
   const cachePermission = (permission: Permission, customTTL?: number) => {
-    const key = generateCacheKey('permission', permission.id, permission.resource, permission.action)
+    const key = generateCacheKey(
+      'permission',
+      permission.id,
+      permission.resource,
+      permission.action
+    )
     const entry: PermissionCacheEntry = {
       data: permission,
       timestamp: Date.now(),
@@ -374,14 +383,18 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       accessCount: 0,
       lastAccess: Date.now()
     }
-    
+
     setCacheEntry(key, entry)
   }
 
-  const getCachedPermission = async (id: string, resource: string, action: string): Promise<Permission | null> => {
+  const getCachedPermission = async (
+    id: string,
+    resource: string,
+    action: string
+  ): Promise<Permission | null> => {
     const key = generateCacheKey('permission', id, resource, action)
     const entry = await getCacheEntry(key)
-    return entry ? entry.data as Permission : null
+    return entry ? (entry.data as Permission) : null
   }
 
   /**
@@ -397,9 +410,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       accessCount: 0,
       lastAccess: Date.now()
     }
-    
+
     setCacheEntry(key, entry)
-    
+
     // 同时缓存角色中的权限
     role.permissions.forEach(permission => {
       cachePermission(permission, customTTL)
@@ -409,7 +422,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
   const getCachedRole = async (roleId: string): Promise<Role | null> => {
     const key = generateCacheKey('role', roleId)
     const entry = await getCacheEntry(key)
-    return entry ? entry.data as Role : null
+    return entry ? (entry.data as Role) : null
   }
 
   /**
@@ -425,9 +438,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       accessCount: 0,
       lastAccess: Date.now()
     }
-    
+
     setCacheEntry(key, entry)
-    
+
     // 同时缓存用户特有权限
     user.permissions.forEach(permission => {
       cachePermission(permission, customTTL)
@@ -437,38 +450,40 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
   const getCachedUser = async (userId: string): Promise<User | null> => {
     const key = generateCacheKey('user', userId)
     const entry = await getCacheEntry(key)
-    return entry ? entry.data as User : null
+    return entry ? (entry.data as User) : null
   }
 
   /**
    * 批量权限检查
    */
-  const checkPermissionsBatch = async (checks: Array<{
-    userId: string
-    resource: string
-    action: string
-  }>): Promise<Record<string, boolean>> => {
+  const checkPermissionsBatch = async (
+    checks: Array<{
+      userId: string
+      resource: string
+      action: string
+    }>
+  ): Promise<Record<string, boolean>> => {
     const results: Record<string, boolean> = {}
     const uncachedChecks: typeof checks = []
-    
+
     // 先从缓存中获取
     for (const check of checks) {
       const checkKey = `${check.userId}:${check.resource}:${check.action}`
       const permission = await getCachedPermission(check.userId, check.resource, check.action)
-      
+
       if (permission) {
         results[checkKey] = permission.granted
       } else {
         uncachedChecks.push(check)
       }
     }
-    
+
     // 对于缓存未命中的权限，返回待加载状态
     uncachedChecks.forEach(check => {
       const checkKey = `${check.userId}:${check.resource}:${check.action}`
       results[checkKey] = false // 默认拒绝，等待后台加载
     })
-    
+
     return results
   }
 
@@ -477,9 +492,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const warmupCache = async (userId: string, criticalResources: string[] = []) => {
     if (!opts.prefetchCriticalPermissions) return
-    
+
     state.cacheWarming = true
-    
+
     try {
       // 预加载用户信息
       // 这里需要调用实际的API，暂时用模拟数据
@@ -489,22 +504,21 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
         roles: ['admin', 'user'],
         permissions: []
       }
-      
+
       cacheUser(mockUser)
-      
+
       // 预加载关键权限
       const criticalPermissions: Permission[] = [
         { id: `${userId}_dashboard_read`, resource: 'dashboard', action: 'read', granted: true },
         { id: `${userId}_customers_read`, resource: 'customers', action: 'read', granted: true },
         { id: `${userId}_products_read`, resource: 'products', action: 'read', granted: true }
       ]
-      
+
       criticalPermissions.forEach(permission => {
         cachePermission(permission)
       })
-      
+
       state.criticalPermissions = criticalResources
-      
     } catch (error) {
       console.error('Cache warmup failed:', error)
     } finally {
@@ -517,24 +531,25 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const backgroundRefresh = async () => {
     if (state.backgroundRefreshing) return
-    
+
     state.backgroundRefreshing = true
-    
+
     try {
       // 查找即将过期的权限数据（剩余TTL < 25%）
       const expiringSoon: string[] = []
-      
+
       for (const [key, entry] of memoryCache.entries()) {
         const remainingTTL = entry.timestamp + entry.ttl - Date.now()
         const thresholdTTL = entry.ttl * 0.25
-        
+
         if (remainingTTL > 0 && remainingTTL < thresholdTTL && entry.accessCount > 0) {
           expiringSoon.push(key)
         }
       }
-      
+
       // 后台刷新即将过期的数据
-      for (const key of expiringSoon.slice(0, 10)) { // 限制并发数量
+      for (const key of expiringSoon.slice(0, 10)) {
+        // 限制并发数量
         try {
           // 这里需要调用实际的API重新获取数据
           // 暂时跳过实际的网络请求
@@ -543,7 +558,6 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
           console.warn(`Background refresh failed for ${key}:`, error)
         }
       }
-      
     } finally {
       state.backgroundRefreshing = false
     }
@@ -554,22 +568,22 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const cleanupExpiredCache = () => {
     const keysToDelete: string[] = []
-    
+
     // 清理内存缓存
     for (const [key, entry] of memoryCache.entries()) {
       if (isExpired(entry)) {
         keysToDelete.push(key)
       }
     }
-    
+
     keysToDelete.forEach(key => memoryCache.delete(key))
-    
+
     // 清理存储缓存
     clearExpiredSessionCache()
     clearExpiredLocalStorage()
-    
+
     state.lastCleanup = new Date()
-    
+
     // 更新度量指标
     updateMetrics()
   }
@@ -587,12 +601,12 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const estimateMemoryUsage = (): number => {
     let totalSize = 0
-    
+
     for (const entry of memoryCache.values()) {
       // 粗略估算JSON序列化大小
       totalSize += JSON.stringify(entry).length * 2 // 每个字符大约2字节
     }
-    
+
     return totalSize
   }
 
@@ -601,7 +615,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const clearAllCache = () => {
     memoryCache.clear()
-    
+
     if (sessionCache) {
       const keysToRemove: string[] = []
       for (let i = 0; i < sessionCache.length; i++) {
@@ -612,7 +626,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       }
       keysToRemove.forEach(key => sessionCache.removeItem(key))
     }
-    
+
     if (localStorage) {
       const keysToRemove: string[] = []
       for (let i = 0; i < localStorage.length; i++) {
@@ -623,7 +637,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       }
       keysToRemove.forEach(key => localStorage.removeItem(key))
     }
-    
+
     // 重置指标
     Object.assign(metrics, {
       hits: 0,
@@ -634,7 +648,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       cacheSize: 0,
       evictions: 0
     })
-    
+
     showToast('权限缓存已清空', 'success')
   }
 
@@ -643,10 +657,10 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
    */
   const invalidateCache = (pattern?: string | RegExp) => {
     const keysToDelete: string[] = []
-    
+
     if (pattern) {
       const regex = typeof pattern === 'string' ? new RegExp(pattern) : pattern
-      
+
       for (const key of memoryCache.keys()) {
         if (regex.test(key)) {
           keysToDelete.push(key)
@@ -655,10 +669,10 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
     } else {
       keysToDelete.push(...memoryCache.keys())
     }
-    
+
     keysToDelete.forEach(key => {
       memoryCache.delete(key)
-      
+
       // 同时清理存储缓存
       if (sessionCache) {
         sessionCache.removeItem(`perm_${key}`)
@@ -667,7 +681,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
         localStorage.removeItem(`perm_${key}`)
       }
     })
-    
+
     console.log(`Invalidated ${keysToDelete.length} cache entries`)
   }
 
@@ -675,16 +689,19 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
   const setupTimers = () => {
     // 清理定时器
     cleanupTimer = setInterval(cleanupExpiredCache, opts.cleanupInterval) as unknown as number
-    
+
     // 度量更新定时器
     metricsTimer = setInterval(updateMetrics, 30000) as unknown as number // 30秒更新一次
-    
+
     // 背景刷新定时器
-    setInterval(() => {
-      if (memoryCache.size > 0) {
-        backgroundRefresh()
-      }
-    }, 2 * 60 * 1000) as unknown as number // 2分钟执行一次
+    setInterval(
+      () => {
+        if (memoryCache.size > 0) {
+          backgroundRefresh()
+        }
+      },
+      2 * 60 * 1000
+    ) as unknown as number // 2分钟执行一次
   }
 
   const cleanup = () => {
@@ -692,7 +709,7 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
       clearInterval(cleanupTimer)
       cleanupTimer = null
     }
-    
+
     if (metricsTimer) {
       clearInterval(metricsTimer)
       metricsTimer = null
@@ -701,7 +718,9 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
 
   // 计算属性
   const cacheHitRate = computed(() => {
-    return metrics.totalRequests > 0 ? (metrics.hits / metrics.totalRequests * 100).toFixed(2) : '0.00'
+    return metrics.totalRequests > 0
+      ? ((metrics.hits / metrics.totalRequests) * 100).toFixed(2)
+      : '0.00'
   })
 
   const isHealthy = computed(() => {
@@ -722,38 +741,38 @@ export function usePermissionCache(config: Partial<CacheConfig> = {}) {
     // 状态
     state,
     metrics,
-    
+
     // 计算属性
     cacheHitRate,
     isHealthy,
-    
+
     // 权限缓存
     cachePermission,
     getCachedPermission,
-    
+
     // 角色缓存
     cacheRole,
     getCachedRole,
-    
+
     // 用户缓存
     cacheUser,
     getCachedUser,
-    
+
     // 批量操作
     checkPermissionsBatch,
-    
+
     // 缓存管理
     warmupCache,
     backgroundRefresh,
     cleanupExpiredCache,
     clearAllCache,
     invalidateCache,
-    
+
     // 工具方法
     generateCacheKey,
     isExpired,
     updateMetrics,
-    
+
     // 清理
     cleanup
   }
@@ -772,10 +791,10 @@ export const permissionCachePresets = {
     cleanupInterval: 2 * 60 * 1000, // 2分钟
     prefetchCriticalPermissions: true
   },
-  
+
   // 标准配置（默认配置）
   standard: DEFAULT_CONFIG,
-  
+
   // 内存优化配置（适合资源受限的环境）
   memoryOptimized: {
     maxMemoryEntries: 500,
@@ -785,7 +804,7 @@ export const permissionCachePresets = {
     cleanupInterval: 10 * 60 * 1000, // 10分钟
     prefetchCriticalPermissions: false
   },
-  
+
   // 开发模式（更频繁的缓存刷新）
   development: {
     maxMemoryEntries: 200,

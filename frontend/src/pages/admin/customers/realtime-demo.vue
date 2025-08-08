@@ -8,7 +8,7 @@
           <text class="page-subtitle">展示实时数据同步和冲突解决功能</text>
         </view>
         <view class="header-right">
-          <view class="connection-status" :class="{ 'online': isOnline, 'offline': !isOnline }">
+          <view class="connection-status" :class="{ online: isOnline, offline: !isOnline }">
             <view class="status-indicator"></view>
             <text class="status-text">{{ isOnline ? '实时连接' : '离线模式' }}</text>
           </view>
@@ -45,20 +45,20 @@
             <text class="status-value">{{ lastSyncTime }}</text>
           </view>
         </view>
-        
+
         <!-- 健康检查面板 -->
         <view class="health-check">
           <text class="health-title">系统健康状态</text>
           <view class="health-indicators">
-            <view class="health-item" :class="{ 'healthy': healthCheck.tableReady }">
+            <view class="health-item" :class="{ healthy: healthCheck.tableReady }">
               <text class="indicator">{{ healthCheck.tableReady ? '✅' : '⚠️' }}</text>
               <text>表格就绪</text>
             </view>
-            <view class="health-item" :class="{ 'healthy': healthCheck.realtimeConnected }">
+            <view class="health-item" :class="{ healthy: healthCheck.realtimeConnected }">
               <text class="indicator">{{ healthCheck.realtimeConnected ? '✅' : '⚠️' }}</text>
               <text>实时连接</text>
             </view>
-            <view class="health-item" :class="{ 'healthy': healthCheck.cachingActive }">
+            <view class="health-item" :class="{ healthy: healthCheck.cachingActive }">
               <text class="indicator">{{ healthCheck.cachingActive ? '✅' : '⚠️' }}</text>
               <text>缓存活跃</text>
             </view>
@@ -72,13 +72,15 @@
           <text class="conflict-title">检测到数据冲突</text>
           <text class="conflict-subtitle">请选择如何解决以下冲突</text>
         </view>
-        
+
         <view v-for="(conflict, index) in conflicts" :key="index" class="conflict-item">
           <view class="conflict-info">
             <text class="conflict-id">客户 ID: {{ conflict.local.id }}</text>
-            <text class="conflict-time">冲突时间: {{ formatDate(conflict.local._lastModified) }}</text>
+            <text class="conflict-time"
+              >冲突时间: {{ formatDate(conflict.local._lastModified) }}</text
+            >
           </view>
-          
+
           <view class="conflict-comparison">
             <view class="conflict-version local">
               <text class="version-label">本地版本</text>
@@ -88,7 +90,7 @@
                 <text>状态: {{ conflict.local.status }}</text>
               </view>
             </view>
-            
+
             <view class="conflict-version remote">
               <text class="version-label">远程版本</text>
               <view class="version-data">
@@ -98,24 +100,15 @@
               </view>
             </view>
           </view>
-          
+
           <view class="conflict-actions">
-            <button 
-              class="conflict-btn local-btn"
-              @click="handleResolveConflict(index, 'local')"
-            >
+            <button class="conflict-btn local-btn" @click="handleResolveConflict(index, 'local')">
               使用本地版本
             </button>
-            <button 
-              class="conflict-btn remote-btn"
-              @click="handleResolveConflict(index, 'remote')"
-            >
+            <button class="conflict-btn remote-btn" @click="handleResolveConflict(index, 'remote')">
               使用远程版本
             </button>
-            <button 
-              class="conflict-btn merge-btn"
-              @click="handleResolveConflict(index, 'merge')"
-            >
+            <button class="conflict-btn merge-btn" @click="handleResolveConflict(index, 'merge')">
               智能合并
             </button>
           </view>
@@ -135,7 +128,7 @@
             />
             <button class="search-btn" @click="handleSearch">搜索</button>
           </view>
-          
+
           <view class="filter-item">
             <picker
               mode="selector"
@@ -149,7 +142,7 @@
               </view>
             </picker>
           </view>
-          
+
           <button class="filter-reset" @click="handleReset">重置</button>
         </view>
       </view>
@@ -160,8 +153,8 @@
         <view class="table-header">
           <view class="header-row">
             <view v-if="selectedCount > 0" class="header-selector">
-              <checkbox 
-                :checked="selectAll" 
+              <checkbox
+                :checked="selectAll"
                 :indeterminate="indeterminate"
                 @change="handleSelectAll"
               />
@@ -170,7 +163,7 @@
               v-for="column in tableColumns"
               :key="column.key"
               class="header-cell"
-              :class="[`align-${column.align || 'left'}`, { 'sortable': column.sortable }]"
+              :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
@@ -188,7 +181,7 @@
           :columns="enhancedColumns"
           :actions="customerActions"
           :selectable="true"
-          :is-selected="(id) => isSelected(id)"
+          :is-selected="id => isSelected(id)"
           :preset="'default'"
           :container-height="600"
           :page-size="50"
@@ -214,7 +207,7 @@
               </view>
             </view>
           </template>
-          
+
           <!-- Custom customer info cell -->
           <template #cell-name="{ item }">
             <view class="customer-info">
@@ -228,7 +221,7 @@
               </view>
             </view>
           </template>
-          
+
           <!-- Custom status cell with real-time updates -->
           <template #cell-status="{ item }">
             <view class="status-cell">
@@ -240,16 +233,14 @@
               </view>
             </view>
           </template>
-          
+
           <!-- Empty state -->
           <template #empty>
             <view class="custom-empty-state">
               <text class="empty-icon">👥</text>
               <text class="empty-text">暂无客户数据</text>
               <text class="empty-subtitle">添加客户来开始管理您的客户关系</text>
-              <button class="empty-action" @click="handleCreateCustomer">
-                添加客户
-              </button>
+              <button class="empty-action" @click="handleCreateCustomer">添加客户</button>
             </view>
           </template>
         </VirtualTableContainer>
@@ -276,9 +267,9 @@
           <button class="log-toggle" @click="showActivityLog = false">✕</button>
         </view>
         <view class="log-content">
-          <view 
-            v-for="(activity, index) in realtimeActivities" 
-            :key="index" 
+          <view
+            v-for="(activity, index) in realtimeActivities"
+            :key="index"
             class="log-item"
             :class="`activity-${activity.type}`"
           >
@@ -289,11 +280,7 @@
       </view>
 
       <!-- Floating Activity Log Toggle -->
-      <button 
-        v-if="!showActivityLog" 
-        class="activity-log-btn" 
-        @click="showActivityLog = true"
-      >
+      <button v-if="!showActivityLog" class="activity-log-btn" @click="showActivityLog = true">
         📊 活动日志 ({{ realtimeActivities.length }})
       </button>
 
@@ -330,8 +317,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
-import { useEnhancedTableWithRealtime, enhancedTablePresets } from '@/composables/useEnhancedTableWithRealtime'
+import { computed, onMounted, reactive, ref } from 'vue'
+import {
+  enhancedTablePresets,
+  useEnhancedTableWithRealtime
+} from '@/composables/useEnhancedTableWithRealtime'
 import { type DataItem } from '@/composables/useRealTimeUpdates'
 import VirtualTableContainer from '@/components/admin/table/VirtualTableContainer.vue'
 import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
@@ -339,7 +329,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
 
 /**
  * 客户管理实时更新演示页面
- * 
+ *
  * 功能展示：
  * - 实时数据同步和更新
  * - 智能冲突检测和解决
@@ -347,7 +337,7 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
  * - 乐观更新和回滚机制
  * - 虚拟滚动与实时更新的完美结合
  * - 实时活动日志和调试信息
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -384,11 +374,13 @@ const sortBy = ref('created_at')
 const sortOrder = ref<'asc' | 'desc'>('desc')
 
 // 实时活动日志
-const realtimeActivities = ref<Array<{
-  type: 'create' | 'update' | 'delete' | 'sync' | 'conflict'
-  message: string
-  timestamp: Date
-}>>([])
+const realtimeActivities = ref<
+  Array<{
+    type: 'create' | 'update' | 'delete' | 'sync' | 'conflict'
+    message: string
+    timestamp: Date
+  }>
+>([])
 
 // 表格列配置
 const tableColumns = [
@@ -402,13 +394,17 @@ const tableColumns = [
 ]
 
 // 增强列配置
-const enhancedColumns = computed(() => 
+const enhancedColumns = computed(() =>
   tableColumns.map(col => ({
     ...col,
-    type: col.key === 'avatar' ? 'image'
-          : col.key === 'status' ? 'status'
-          : col.key === 'last_contact' || col.key === 'created_at' ? 'date'
-          : 'text'
+    type:
+      col.key === 'avatar'
+        ? 'image'
+        : col.key === 'status'
+          ? 'status'
+          : col.key === 'last_contact' || col.key === 'created_at'
+            ? 'date'
+            : 'text'
   }))
 )
 
@@ -420,10 +416,10 @@ const customerActions = [
   { key: 'view', label: '查看', icon: '👁', type: 'default' as const },
   { key: 'edit', label: '编辑', icon: '✏️', type: 'primary' as const },
   { key: 'contact', label: '联系', icon: '📞', type: 'default' as const },
-  { 
-    key: 'block', 
-    label: '屏蔽', 
-    icon: '🚫', 
+  {
+    key: 'block',
+    label: '屏蔽',
+    icon: '🚫',
     type: 'danger' as const,
     visible: (item: Customer) => item.status !== 'blocked'
   }
@@ -444,7 +440,7 @@ const realtimeOptions = {
   realtimeOptions: {
     websocketUrl: 'ws://localhost:8080/ws/customers',
     debounceDelay: 300,
-    cacheExpiry: 5 * 60 * 1000, // 5分钟缓存
+    cacheExpiry: 5 * 60 * 1000 // 5分钟缓存
   }
 }
 
@@ -456,7 +452,7 @@ const {
   indeterminate,
   isSelected,
   clearSelection,
-  
+
   // 实时状态
   realtimeState,
   isOnline,
@@ -465,13 +461,13 @@ const {
   conflicts,
   healthCheck,
   syncing,
-  
+
   // 数据操作
   createItem,
   updateItem,
   deleteItem,
   batchOperations: enhancedBatchOps,
-  
+
   // 其他功能
   smartRefresh,
   resolveConflict,
@@ -482,25 +478,25 @@ const {
 } = useEnhancedTableWithRealtime<Customer>({
   dataKey: 'customers',
   ...realtimeOptions,
-  
+
   // 数据加载函数
   loadData: async (page, pageSize, filters, sort) => {
     // 模拟网络延迟
     await new Promise(resolve => setTimeout(resolve, 150))
-    
+
     const startIndex = (page - 1) * pageSize
     const items = generateMockCustomers(startIndex, pageSize, filters, sort)
-    
+
     // 记录活动
     addActivity('sync', `加载第${page}页数据，共${items.length}条`)
-    
+
     return {
       items,
       total: 50000, // 模拟大量客户数据
       hasMore: startIndex + pageSize < 50000
     }
   },
-  
+
   // 数据更新函数
   updateData: async (id, updates) => {
     await new Promise(resolve => setTimeout(resolve, 100))
@@ -508,9 +504,9 @@ const {
     addActivity('update', `更新客户 ${id}`)
     return mockCustomer
   },
-  
+
   // 数据创建函数
-  createData: async (data) => {
+  createData: async data => {
     await new Promise(resolve => setTimeout(resolve, 150))
     const newCustomer = {
       ...data,
@@ -521,20 +517,34 @@ const {
     addActivity('create', `创建客户 ${newCustomer.name}`)
     return newCustomer
   },
-  
+
   // 数据删除函数
-  deleteData: async (id) => {
+  deleteData: async id => {
     await new Promise(resolve => setTimeout(resolve, 100))
     addActivity('delete', `删除客户 ${id}`)
   }
 })
 
 // 生成模拟客户数据
-function generateMockCustomers(startIndex: number, count: number, filters?: any, sort?: any): Customer[] {
+function generateMockCustomers(
+  startIndex: number,
+  count: number,
+  filters?: any,
+  sort?: any
+): Customer[] {
   const statuses: Customer['status'][] = ['active', 'inactive', 'pending', 'blocked']
-  const companies = ['腾讯科技', '阿里巴巴', '字节跳动', '美团', '滴滴出行', '京东', '小米科技', null]
+  const companies = [
+    '腾讯科技',
+    '阿里巴巴',
+    '字节跳动',
+    '美团',
+    '滴滴出行',
+    '京东',
+    '小米科技',
+    null
+  ]
   const customers: Customer[] = []
-  
+
   for (let i = 0; i < count; i++) {
     const index = startIndex + i
     const customer: Customer = {
@@ -545,24 +555,34 @@ function generateMockCustomers(startIndex: number, count: number, filters?: any,
       company: companies[index % companies.length] || undefined,
       status: statuses[index % statuses.length],
       avatar_url: index % 4 === 0 ? `https://picsum.photos/40/40?random=${index}` : undefined,
-      last_contact: new Date(Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000).toISOString(),
-      created_at: new Date(Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000).toISOString(),
+      last_contact: new Date(
+        Date.now() - Math.floor(Math.random() * 30) * 24 * 60 * 60 * 1000
+      ).toISOString(),
+      created_at: new Date(
+        Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000
+      ).toISOString(),
       _version: Math.floor(Math.random() * 5) + 1,
-      _lastModified: new Date(Date.now() - Math.floor(Math.random() * 24) * 60 * 60 * 1000).toISOString(),
+      _lastModified: new Date(
+        Date.now() - Math.floor(Math.random() * 24) * 60 * 60 * 1000
+      ).toISOString(),
       tags: index % 3 === 0 ? ['VIP', '重要客户'] : undefined
     }
-    
+
     // 应用筛选
-    if (filters?.keyword && !customer.name.includes(filters.keyword) && !customer.phone.includes(filters.keyword)) {
+    if (
+      filters?.keyword &&
+      !customer.name.includes(filters.keyword) &&
+      !customer.phone.includes(filters.keyword)
+    ) {
       continue
     }
     if (filters?.status && customer.status !== filters.status) {
       continue
     }
-    
+
     customers.push(customer)
   }
-  
+
   // 应用排序
   if (sort?.by) {
     customers.sort((a, b) => {
@@ -572,7 +592,7 @@ function generateMockCustomers(startIndex: number, count: number, filters?: any,
       return sort.order === 'desc' ? -result : result
     })
   }
-  
+
   return customers
 }
 
@@ -585,13 +605,16 @@ const loadRealtimeData = async (page: number, pageSize: number) => {
 }
 
 // 添加活动记录
-const addActivity = (type: 'create' | 'update' | 'delete' | 'sync' | 'conflict', message: string) => {
+const addActivity = (
+  type: 'create' | 'update' | 'delete' | 'sync' | 'conflict',
+  message: string
+) => {
   realtimeActivities.value.unshift({
     type,
     message,
     timestamp: new Date()
   })
-  
+
   // 限制日志数量
   if (realtimeActivities.value.length > 100) {
     realtimeActivities.value.pop()
@@ -693,10 +716,10 @@ const handleResolveConflict = async (index: number, strategy: 'local' | 'remote'
 // 工具函数
 const getStatusValue = (statusLabel: string): Customer['status'] => {
   const statusMap: Record<string, Customer['status']> = {
-    '活跃': 'active',
-    '未激活': 'inactive',
-    '待审核': 'pending',
-    '已屏蔽': 'blocked'
+    活跃: 'active',
+    未激活: 'inactive',
+    待审核: 'pending',
+    已屏蔽: 'blocked'
   }
   return statusMap[statusLabel] || 'active'
 }
@@ -733,7 +756,7 @@ const formatRelativeTime = (dateString: string) => {
   const date = new Date(dateString)
   const diffMs = now.getTime() - date.getTime()
   const diffMins = Math.floor(diffMs / 60000)
-  
+
   if (diffMins < 1) return '刚刚更新'
   if (diffMins < 60) return `${diffMins}分钟前更新`
   if (diffMins < 1440) return `${Math.floor(diffMins / 60)}小时前更新`
@@ -751,9 +774,7 @@ const hasPendingUpdate = (id: string | number) => {
 
 // 计算属性
 const lastSyncTime = computed(() => {
-  return realtimeState.lastSync 
-    ? formatDate(realtimeState.lastSync.toISOString())
-    : '从未同步'
+  return realtimeState.lastSync ? formatDate(realtimeState.lastSync.toISOString()) : '从未同步'
 })
 
 const virtualScrollingEnabled = computed(() => true)
@@ -778,7 +799,7 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    
+
     .header-left {
       .page-title {
         font-size: 24px;
@@ -787,18 +808,18 @@ onMounted(() => {
         margin-bottom: 4px;
         display: block;
       }
-      
+
       .page-subtitle {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .header-right {
       display: flex;
       align-items: center;
       gap: 12px;
-      
+
       .connection-status {
         display: flex;
         align-items: center;
@@ -806,27 +827,27 @@ onMounted(() => {
         padding: 6px 12px;
         border-radius: 16px;
         font-size: 12px;
-        
+
         .status-indicator {
           width: 8px;
           height: 8px;
           border-radius: 50%;
         }
-        
+
         &.online {
           background: rgba(var(--color-success-rgb), 0.1);
           color: var(--color-success);
-          
+
           .status-indicator {
             background: var(--color-success);
             animation: pulse 2s infinite;
           }
         }
-        
+
         &.offline {
           background: rgba(var(--color-error-rgb), 0.1);
           color: var(--color-error);
-          
+
           .status-indicator {
             background: var(--color-error);
           }
@@ -834,17 +855,17 @@ onMounted(() => {
       }
     }
   }
-  
+
   .realtime-status-panel {
     margin-bottom: 20px;
     padding: 16px 20px;
-    
+
     .status-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
       gap: 20px;
       margin-bottom: 20px;
-      
+
       .status-item {
         .status-label {
           font-size: 12px;
@@ -852,26 +873,26 @@ onMounted(() => {
           display: block;
           margin-bottom: 4px;
         }
-        
+
         .status-value {
           font-size: 14px;
           font-weight: 500;
-          
+
           &.online {
             color: var(--color-success);
           }
-          
+
           &.offline {
             color: var(--color-error);
           }
-          
+
           &.warning {
             color: var(--color-warning);
           }
         }
       }
     }
-    
+
     .health-check {
       .health-title {
         font-size: 14px;
@@ -879,21 +900,21 @@ onMounted(() => {
         margin-bottom: 12px;
         display: block;
       }
-      
+
       .health-indicators {
         display: flex;
         gap: 16px;
-        
+
         .health-item {
           display: flex;
           align-items: center;
           gap: 4px;
           font-size: 12px;
-          
+
           &.healthy {
             color: var(--color-success);
           }
-          
+
           &:not(.healthy) {
             color: var(--color-warning);
           }
@@ -901,16 +922,16 @@ onMounted(() => {
       }
     }
   }
-  
+
   .conflict-resolution {
     margin-bottom: 20px;
     padding: 16px 20px;
     background: rgba(var(--color-warning-rgb), 0.05);
     border: 1px solid rgba(var(--color-warning-rgb), 0.2);
-    
+
     .conflict-header {
       margin-bottom: 16px;
-      
+
       .conflict-title {
         font-size: 16px;
         font-weight: 600;
@@ -918,63 +939,63 @@ onMounted(() => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .conflict-subtitle {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .conflict-item {
       border: 1px solid var(--border-color-light);
       border-radius: 8px;
       padding: 16px;
       margin-bottom: 16px;
       background: white;
-      
+
       .conflict-info {
         margin-bottom: 12px;
-        
+
         .conflict-id {
           font-weight: 600;
           display: block;
           margin-bottom: 4px;
         }
-        
+
         .conflict-time {
           font-size: 12px;
           color: var(--text-color-secondary);
         }
       }
-      
+
       .conflict-comparison {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
         margin-bottom: 16px;
-        
+
         .conflict-version {
           border: 1px solid var(--border-color-light);
           border-radius: 6px;
           padding: 12px;
-          
+
           &.local {
             border-color: var(--color-primary);
             background: rgba(var(--color-primary-rgb), 0.05);
           }
-          
+
           &.remote {
             border-color: var(--color-success);
             background: rgba(var(--color-success-rgb), 0.05);
           }
-          
+
           .version-label {
             font-size: 12px;
             font-weight: 600;
             margin-bottom: 8px;
             display: block;
           }
-          
+
           .version-data text {
             font-size: 13px;
             display: block;
@@ -982,11 +1003,11 @@ onMounted(() => {
           }
         }
       }
-      
+
       .conflict-actions {
         display: flex;
         gap: 8px;
-        
+
         .conflict-btn {
           padding: 6px 12px;
           border: 1px solid var(--border-color);
@@ -994,17 +1015,17 @@ onMounted(() => {
           border-radius: 4px;
           font-size: 12px;
           cursor: pointer;
-          
+
           &.local-btn:hover {
             border-color: var(--color-primary);
             color: var(--color-primary);
           }
-          
+
           &.remote-btn:hover {
             border-color: var(--color-success);
             color: var(--color-success);
           }
-          
+
           &.merge-btn:hover {
             border-color: var(--color-warning);
             color: var(--color-warning);
@@ -1013,7 +1034,7 @@ onMounted(() => {
       }
     }
   }
-  
+
   .activity-log {
     position: fixed;
     top: 20px;
@@ -1021,65 +1042,65 @@ onMounted(() => {
     width: 350px;
     max-height: 400px;
     z-index: 1000;
-    
+
     .log-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .log-title {
         font-weight: 600;
       }
-      
+
       .log-toggle {
         background: none;
         border: none;
         cursor: pointer;
       }
     }
-    
+
     .log-content {
       padding: 0;
       max-height: 300px;
       overflow-y: auto;
-      
+
       .log-item {
         padding: 8px 16px;
         border-bottom: 1px solid var(--border-color-light);
-        
+
         .activity-time {
           font-size: 11px;
           color: var(--text-color-tertiary);
           display: block;
           margin-bottom: 2px;
         }
-        
+
         .activity-message {
           font-size: 12px;
           color: var(--text-color-secondary);
         }
-        
+
         &.activity-create {
           border-left: 3px solid var(--color-success);
         }
-        
+
         &.activity-update {
           border-left: 3px solid var(--color-primary);
         }
-        
+
         &.activity-delete {
           border-left: 3px solid var(--color-error);
         }
-        
+
         &.activity-conflict {
           border-left: 3px solid var(--color-warning);
         }
       }
     }
   }
-  
+
   .activity-log-btn {
     position: fixed;
     bottom: 80px;
@@ -1094,7 +1115,7 @@ onMounted(() => {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1000;
   }
-  
+
   .debug-panel {
     position: fixed;
     bottom: 20px;
@@ -1102,34 +1123,34 @@ onMounted(() => {
     width: 300px;
     max-height: 350px;
     z-index: 1000;
-    
+
     .debug-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .debug-title {
         font-weight: 600;
         font-size: 14px;
       }
-      
+
       .debug-toggle {
         background: none;
         border: none;
         cursor: pointer;
       }
     }
-    
+
     .debug-content {
       padding: 12px 16px;
       max-height: 280px;
       overflow-y: auto;
-      
+
       .debug-section {
         margin-bottom: 16px;
-        
+
         .debug-section-title {
           font-size: 12px;
           font-weight: 600;
@@ -1137,7 +1158,7 @@ onMounted(() => {
           margin-bottom: 8px;
           display: block;
         }
-        
+
         text {
           font-size: 11px;
           font-family: monospace;
@@ -1148,7 +1169,7 @@ onMounted(() => {
       }
     }
   }
-  
+
   .debug-float-btn {
     position: fixed;
     bottom: 20px;
@@ -1163,12 +1184,12 @@ onMounted(() => {
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    
+
     &:hover {
       transform: scale(1.1);
     }
   }
-  
+
   .customer-avatar {
     .avatar-image {
       width: 32px;
@@ -1176,7 +1197,7 @@ onMounted(() => {
       border-radius: 50%;
       object-fit: cover;
     }
-    
+
     .avatar-placeholder {
       width: 32px;
       height: 32px;
@@ -1190,31 +1211,31 @@ onMounted(() => {
       font-weight: 600;
     }
   }
-  
+
   .customer-info {
     .customer-name {
       display: block;
       font-weight: 500;
       margin-bottom: 2px;
     }
-    
+
     .customer-company {
       font-size: 12px;
       color: var(--text-color-secondary);
       display: block;
       margin-bottom: 4px;
     }
-    
+
     .update-indicator {
       display: flex;
       align-items: center;
       gap: 6px;
-      
+
       .update-time {
         font-size: 11px;
         color: var(--text-color-tertiary);
       }
-      
+
       .pending-indicator {
         font-size: 10px;
         color: var(--color-warning);
@@ -1224,12 +1245,12 @@ onMounted(() => {
       }
     }
   }
-  
+
   .status-cell {
     display: flex;
     align-items: center;
     gap: 8px;
-    
+
     .status-tag {
       display: inline-flex;
       align-items: center;
@@ -1237,28 +1258,28 @@ onMounted(() => {
       border-radius: 12px;
       font-size: 11px;
       font-weight: 500;
-      
+
       &.status-success {
         color: var(--color-success);
         background: rgba(var(--color-success-rgb), 0.1);
       }
-      
+
       &.status-warning {
         color: var(--color-warning);
         background: rgba(var(--color-warning-rgb), 0.1);
       }
-      
+
       &.status-danger {
         color: var(--color-error);
         background: rgba(var(--color-error-rgb), 0.1);
       }
-      
+
       &.status-default {
         color: var(--text-color-secondary);
         background: var(--color-grey-100);
       }
     }
-    
+
     .version-info {
       font-size: 10px;
       color: var(--text-color-tertiary);
@@ -1286,40 +1307,40 @@ onMounted(() => {
       flex-direction: column;
       gap: 16px;
       align-items: stretch;
-      
+
       .header-right {
         justify-content: center;
       }
     }
-    
+
     .realtime-status-panel {
       .status-grid {
         grid-template-columns: 1fr 1fr;
       }
-      
+
       .health-indicators {
         flex-direction: column;
         gap: 8px;
       }
     }
-    
+
     .conflict-resolution {
       .conflict-comparison {
         grid-template-columns: 1fr;
       }
-      
+
       .conflict-actions {
         flex-direction: column;
       }
     }
-    
+
     .activity-log {
       top: 10px;
       left: 10px;
       right: 10px;
       width: auto;
     }
-    
+
     .debug-panel {
       bottom: 10px;
       left: 10px;

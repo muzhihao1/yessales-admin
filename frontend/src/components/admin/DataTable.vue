@@ -46,11 +46,7 @@
                 <view
                   v-for="column in columns"
                   :key="column.key"
-                  :class="[
-                    'table-cell',
-                    `cell-${column.key}`,
-                    { sortable: column.sortable }
-                  ]"
+                  :class="['table-cell', `cell-${column.key}`, { sortable: column.sortable }]"
                   :style="getCellStyle(column)"
                   @click="handleSort(column)"
                 >
@@ -62,14 +58,16 @@
                         'arrow-up',
                         { active: sortKey === column.key && sortOrder === 'asc' }
                       ]"
-                    >▲</text>
+                      >▲</text
+                    >
                     <text
                       :class="[
                         'arrow',
                         'arrow-down',
                         { active: sortKey === column.key && sortOrder === 'desc' }
                       ]"
-                    >▼</text>
+                      >▼</text
+                    >
                   </view>
                 </view>
                 <view v-if="showActions" class="table-cell cell-actions">
@@ -94,7 +92,7 @@
                 <view v-if="showSelection" class="table-cell cell-checkbox">
                   <checkbox
                     :checked="isRowSelected(row)"
-                    @change="(e) => handleRowSelect(row, e.detail.value)"
+                    @change="e => handleRowSelect(row, e.detail.value)"
                     @click.stop
                   />
                 </view>
@@ -166,7 +164,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 export interface TableColumn {
   key: string
@@ -213,7 +211,7 @@ const props = withDefaults(defineProps<Props>(), {
   total: 0,
   currentPage: 1,
   pageSize: 20,
-  pageSizeOptions: () => [10, 20, 50, 100],
+  pageSizeOptions: () => [10, 20, 50, 100]
 })
 
 const emit = defineEmits<{
@@ -231,16 +229,16 @@ const sortOrder = ref<'asc' | 'desc' | null>(null)
 const hoveredRow = ref(-1)
 
 const displayData = computed(() => {
-  let result = [...props.data]
+  const result = [...props.data]
 
   // 客户端排序
   if (sortKey.value && sortOrder.value) {
     result.sort((a, b) => {
       const aVal = a[sortKey.value!]
       const bVal = b[sortKey.value!]
-      
+
       if (aVal === bVal) return 0
-      
+
       if (sortOrder.value === 'asc') {
         return aVal > bVal ? 1 : -1
       } else {
@@ -338,7 +336,7 @@ const handleSort = (column: TableColumn) => {
 
   emit('sort-change', {
     key: sortKey.value || '',
-    order: sortOrder.value,
+    order: sortOrder.value
   })
 }
 
@@ -364,16 +362,19 @@ const handlePageSizeChange = (e: any) => {
 }
 
 // 监听数据变化，清空选择
-watch(() => props.data, () => {
-  selectedRows.value = []
-})
+watch(
+  () => props.data,
+  () => {
+    selectedRows.value = []
+  }
+)
 
 // 暴露方法
 defineExpose({
   selectedRows,
   clearSelection: () => {
     selectedRows.value = []
-  },
+  }
 })
 </script>
 

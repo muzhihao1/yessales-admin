@@ -29,7 +29,9 @@
         </view>
         <view class="metric-item">
           <text class="metric-label">DOM节点数:</text>
-          <text class="metric-value">{{ virtualEnabled ? '~50个' : `${Math.min(totalItems, pageSize)}个` }}</text>
+          <text class="metric-value">{{
+            virtualEnabled ? '~50个' : `${Math.min(totalItems, pageSize)}个`
+          }}</text>
         </view>
         <view class="metric-item">
           <text class="metric-label">内存使用:</text>
@@ -50,7 +52,7 @@
             />
             <button class="search-btn" @click="handleSearch">搜索</button>
           </view>
-          
+
           <view class="filter-item">
             <picker
               mode="selector"
@@ -64,7 +66,7 @@
               </view>
             </picker>
           </view>
-          
+
           <button class="filter-reset" @click="handleReset">重置</button>
         </view>
       </view>
@@ -75,8 +77,8 @@
         <view class="table-header">
           <view class="header-row">
             <view v-if="tableEnhancements.selectedCount.value > 0" class="header-selector">
-              <checkbox 
-                :checked="tableEnhancements.selectAll.value" 
+              <checkbox
+                :checked="tableEnhancements.selectAll.value"
                 :indeterminate="tableEnhancements.indeterminate.value"
                 @change="handleSelectAll"
               />
@@ -85,7 +87,7 @@
               v-for="column in tableColumns"
               :key="column.key"
               class="header-cell"
-              :class="[`align-${column.align || 'left'}`, { 'sortable': column.sortable }]"
+              :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
@@ -103,7 +105,7 @@
           :columns="enhancedColumns"
           :actions="productActions"
           :selectable="true"
-          :is-selected="(id) => tableEnhancements.isSelected(id)"
+          :is-selected="id => tableEnhancements.isSelected(id)"
           :preset="'default'"
           :container-height="600"
           :page-size="50"
@@ -127,7 +129,7 @@
               <text>📷</text>
             </view>
           </template>
-          
+
           <!-- Custom product info cell -->
           <template #cell-name="{ item }">
             <view class="product-info">
@@ -135,16 +137,14 @@
               <text class="product-model">型号: {{ item.model }}</text>
             </view>
           </template>
-          
+
           <!-- Empty state -->
           <template #empty>
             <view class="custom-empty-state">
               <text class="empty-icon">📦</text>
               <text class="empty-text">暂无产品数据</text>
               <text class="empty-subtitle">添加产品来开始管理您的库存</text>
-              <button class="empty-action" @click="handleCreate">
-                添加产品
-              </button>
+              <button class="empty-action" @click="handleCreate">添加产品</button>
             </view>
           </template>
         </VirtualTableContainer>
@@ -156,8 +156,8 @@
         <view class="table-header">
           <view class="header-row">
             <view v-if="tableEnhancements.selectedCount.value > 0" class="header-selector">
-              <checkbox 
-                :checked="tableEnhancements.selectAll.value" 
+              <checkbox
+                :checked="tableEnhancements.selectAll.value"
                 :indeterminate="tableEnhancements.indeterminate.value"
                 @change="handleSelectAll"
               />
@@ -166,7 +166,7 @@
               v-for="column in tableColumns"
               :key="column.key"
               class="header-cell"
-              :class="[`align-${column.align || 'left'}`, { 'sortable': column.sortable }]"
+              :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
@@ -188,7 +188,7 @@
             :has-selection="true"
             :show-header="false"
           />
-          
+
           <!-- Data Rows -->
           <template v-else>
             <DataTableRow
@@ -216,7 +216,7 @@
                   <text>📷</text>
                 </view>
               </template>
-              
+
               <template #cell-name="{ item }">
                 <view class="product-info">
                   <text class="product-name">{{ item.name }}</text>
@@ -227,11 +227,12 @@
           </template>
 
           <!-- Empty State -->
-          <view v-if="!tableEnhancements.state.loading && currentPageData.length === 0" class="empty-state">
+          <view
+            v-if="!tableEnhancements.state.loading && currentPageData.length === 0"
+            class="empty-state"
+          >
             <text class="empty-text">暂无产品数据</text>
-            <button class="empty-action" @click="handleCreate">
-              添加产品
-            </button>
+            <button class="empty-action" @click="handleCreate">添加产品</button>
           </view>
         </view>
 
@@ -241,14 +242,14 @@
             共 {{ totalItems.toLocaleString() }} 条，第 {{ currentPage }}/{{ totalPages }} 页
           </view>
           <view class="pagination-controls">
-            <button 
+            <button
               class="pagination-btn"
               :disabled="currentPage <= 1"
               @click="handlePageChange(currentPage - 1)"
             >
               上一页
             </button>
-            <button 
+            <button
               class="pagination-btn"
               :disabled="currentPage >= totalPages"
               @click="handlePageChange(currentPage + 1)"
@@ -304,8 +305,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, reactive, onMounted } from 'vue'
-import { useTableEnhancements, type VirtualScrollingConfig } from '@/composables/useTableEnhancements'
+import { computed, onMounted, reactive, ref } from 'vue'
+import {
+  type VirtualScrollingConfig,
+  useTableEnhancements
+} from '@/composables/useTableEnhancements'
 import VirtualTableContainer from '@/components/admin/table/VirtualTableContainer.vue'
 import DataTableRow from '@/components/admin/DataTableRow.vue'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
@@ -314,14 +318,14 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
 
 /**
  * 虚拟滚动产品管理演示页面
- * 
+ *
  * 功能展示：
  * - 10万+数据的流畅虚拟滚动
  * - 传统分页模式对比
  * - 性能指标实时显示
  * - 完整的表格功能支持
  * - 调试信息和性能监控
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -361,14 +365,19 @@ const tableColumns = [
 ]
 
 // 增强列配置（包含类型信息）
-const enhancedColumns = computed(() => 
+const enhancedColumns = computed(() =>
   tableColumns.map(col => ({
     ...col,
-    type: col.key === 'price' ? 'price' 
-          : col.key === 'created_at' ? 'date'
-          : col.key === 'status' ? 'status'
-          : col.key === 'image' ? 'image'
-          : 'text'
+    type:
+      col.key === 'price'
+        ? 'price'
+        : col.key === 'created_at'
+          ? 'date'
+          : col.key === 'status'
+            ? 'status'
+            : col.key === 'image'
+              ? 'image'
+              : 'text'
   }))
 )
 
@@ -380,10 +389,10 @@ const productActions = [
   { key: 'view', label: '查看', icon: '👁', type: 'default' as const },
   { key: 'edit', label: '编辑', icon: '✏️', type: 'primary' as const },
   { key: 'images', label: '图片管理', icon: '🖼', type: 'default' as const },
-  { 
-    key: 'delete', 
-    label: '删除', 
-    icon: '🗑', 
+  {
+    key: 'delete',
+    label: '删除',
+    icon: '🗑',
     type: 'danger' as const,
     visible: (item: any) => item.status !== 'deleted'
   }
@@ -407,10 +416,10 @@ const virtualScrollingConfig: VirtualScrollingConfig = {
   loadData: async (page: number, pageSize: number, filters?, sort?) => {
     // 模拟数据加载
     await new Promise(resolve => setTimeout(resolve, 100))
-    
+
     const startIndex = (page - 1) * pageSize
     const items = generateMockProducts(startIndex, pageSize, filters, sort)
-    
+
     return {
       items,
       total: totalItems.value,
@@ -434,7 +443,7 @@ function generateMockProducts(startIndex: number, count: number, filters?: any, 
   const categories = ['台球桌', '地毯', '配件']
   const statuses = ['active', 'inactive', 'discontinued']
   const products = []
-  
+
   for (let i = 0; i < count; i++) {
     const index = startIndex + i
     const product = {
@@ -446,17 +455,19 @@ function generateMockProducts(startIndex: number, count: number, filters?: any, 
       stock: Math.floor(Math.random() * 100),
       status: statuses[index % statuses.length],
       image_url: index % 3 === 0 ? `https://picsum.photos/60/60?random=${index}` : null,
-      created_at: new Date(Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)).toISOString()
+      created_at: new Date(
+        Date.now() - Math.floor(Math.random() * 365 * 24 * 60 * 60 * 1000)
+      ).toISOString()
     }
-    
+
     // 应用筛选
     if (filters?.keyword && !product.name.includes(filters.keyword)) continue
     if (filters?.category && product.category !== filters.category) continue
     if (filters?.status && product.status !== filters.status) continue
-    
+
     products.push(product)
   }
-  
+
   // 应用排序
   if (sort?.by) {
     products.sort((a, b) => {
@@ -466,7 +477,7 @@ function generateMockProducts(startIndex: number, count: number, filters?: any, 
       return sort.order === 'desc' ? -result : result
     })
   }
-  
+
   return products
 }
 
@@ -481,7 +492,7 @@ const loadVirtualData = async (page: number, pageSize: number) => {
 // 加载传统分页数据
 async function loadTraditionalData() {
   if (virtualEnabled.value) return
-  
+
   tableEnhancements.setLoading(true)
   try {
     const data = await loadVirtualData(currentPage.value, pageSize.value)
@@ -507,7 +518,7 @@ const handleCategoryChange = (event: any) => {
   categoryIndex.value = event.detail.value
   selectedCategory.value = categoryOptions[categoryIndex.value]
   filters.category = selectedCategory.value === '全部分类' ? '' : selectedCategory.value
-  
+
   if (virtualEnabled.value) {
     tableEnhancements.virtualScrolling?.refresh()
   } else {
@@ -521,7 +532,7 @@ const handleReset = () => {
   selectedCategory.value = ''
   categoryIndex.value = 0
   Object.assign(filters, { keyword: '', category: '', status: '' })
-  
+
   if (virtualEnabled.value) {
     tableEnhancements.virtualScrolling?.refresh()
   } else {
@@ -537,7 +548,7 @@ const handleSort = (column: string) => {
     sortBy.value = column
     sortOrder.value = 'asc'
   }
-  
+
   if (virtualEnabled.value) {
     tableEnhancements.virtualScrolling?.refresh()
   } else {
@@ -557,7 +568,7 @@ const handlePageChange = (page: number) => {
 
 const toggleVirtualMode = () => {
   virtualEnabled.value = !virtualEnabled.value
-  
+
   // 重新初始化表格增强功能
   if (!virtualEnabled.value) {
     loadTraditionalData()
@@ -579,10 +590,10 @@ const handleRowAction = (action: string, item: any) => {
 
 const handleSelectAll = () => {
   // 虚拟滚动模式下选择所有可见项
-  const items = virtualEnabled.value 
+  const items = virtualEnabled.value
     ? tableEnhancements.virtualScrolling?.visibleItems.value || []
     : currentPageData.value
-    
+
   tableEnhancements.toggleSelectAll(items)
 }
 
@@ -620,7 +631,7 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
-    
+
     .header-left {
       .page-title {
         font-size: 24px;
@@ -629,35 +640,35 @@ onMounted(() => {
         margin-bottom: 4px;
         display: block;
       }
-      
+
       .page-subtitle {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .header-right {
       display: flex;
       gap: 12px;
     }
   }
-  
+
   .performance-metrics {
     display: flex;
     gap: 24px;
     margin-bottom: 20px;
     padding: 16px 20px;
-    
+
     .metric-item {
       display: flex;
       flex-direction: column;
       gap: 4px;
-      
+
       .metric-label {
         font-size: 12px;
         color: var(--text-color-secondary);
       }
-      
+
       .metric-value {
         font-size: 16px;
         font-weight: 600;
@@ -665,7 +676,7 @@ onMounted(() => {
       }
     }
   }
-  
+
   .debug-panel {
     position: fixed;
     top: 20px;
@@ -673,28 +684,28 @@ onMounted(() => {
     width: 300px;
     max-height: 400px;
     z-index: 1000;
-    
+
     .debug-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 12px 16px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .debug-title {
         font-weight: 600;
       }
-      
+
       .debug-toggle {
         background: none;
         border: none;
         cursor: pointer;
       }
     }
-    
+
     .debug-content {
       padding: 12px 16px;
-      
+
       .debug-item {
         margin-bottom: 8px;
         font-size: 12px;
@@ -703,7 +714,7 @@ onMounted(() => {
       }
     }
   }
-  
+
   .debug-float-btn {
     position: fixed;
     bottom: 20px;
@@ -718,36 +729,36 @@ onMounted(() => {
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    
+
     &:hover {
       transform: scale(1.1);
     }
   }
-  
+
   .custom-empty-state {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 60px 20px;
-    
+
     .empty-icon {
       font-size: 64px;
       margin-bottom: 16px;
       opacity: 0.5;
     }
-    
+
     .empty-text {
       font-size: 18px;
       font-weight: 600;
       margin-bottom: 8px;
     }
-    
+
     .empty-subtitle {
       font-size: 14px;
       color: var(--text-color-secondary);
       margin-bottom: 20px;
     }
-    
+
     .empty-action {
       padding: 10px 20px;
       background: var(--color-primary);
@@ -766,21 +777,21 @@ onMounted(() => {
     display: flex;
     background: var(--color-grey-25);
     border-bottom: 1px solid var(--border-color);
-    
+
     .header-row {
       display: flex;
       width: 100%;
       align-items: center;
       padding: 0 12px;
       min-height: 48px;
-      
+
       .header-selector {
         width: 40px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
-      
+
       .header-cell {
         display: flex;
         align-items: center;
@@ -788,23 +799,23 @@ onMounted(() => {
         padding: 0 8px;
         font-weight: 600;
         color: var(--text-color-primary);
-        
+
         &.sortable {
           cursor: pointer;
-          
+
           &:hover {
             background: rgba(var(--color-primary-rgb), 0.1);
           }
         }
-        
+
         &.align-center {
           justify-content: center;
         }
-        
+
         &.align-right {
           justify-content: flex-end;
         }
-        
+
         .sort-icon {
           font-size: 12px;
           opacity: 0.7;
@@ -812,39 +823,39 @@ onMounted(() => {
       }
     }
   }
-  
+
   .table-body {
     min-height: 400px;
   }
-  
+
   .table-pagination {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
     border-top: 1px solid var(--border-color-light);
-    
+
     .pagination-info {
       font-size: 14px;
       color: var(--text-color-secondary);
     }
-    
+
     .pagination-controls {
       display: flex;
       gap: 8px;
-      
+
       .pagination-btn {
         padding: 6px 12px;
         border: 1px solid var(--border-color);
         background: white;
         border-radius: 4px;
         cursor: pointer;
-        
+
         &:disabled {
           opacity: 0.5;
           cursor: not-allowed;
         }
-        
+
         &:not(:disabled):hover {
           background: var(--color-grey-25);
         }
@@ -877,7 +888,7 @@ onMounted(() => {
     font-weight: 500;
     margin-bottom: 2px;
   }
-  
+
   .product-model {
     font-size: 12px;
     color: var(--text-color-secondary);
@@ -891,17 +902,17 @@ onMounted(() => {
       flex-direction: column;
       gap: 16px;
       align-items: stretch;
-      
+
       .header-right {
         justify-content: center;
       }
     }
-    
+
     .performance-metrics {
       flex-direction: column;
       gap: 12px;
     }
-    
+
     .debug-panel {
       position: fixed;
       top: 10px;

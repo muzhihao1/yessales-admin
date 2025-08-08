@@ -27,7 +27,7 @@
     <view class="filters-section">
       <view class="filters-row">
         <view class="filter-item">
-          <input 
+          <input
             v-model="searchPhone"
             class="search-input"
             placeholder="搜索手机号码"
@@ -49,11 +49,7 @@
           </picker>
         </view>
         <view class="filter-item">
-          <picker
-            mode="date"
-            :value="startDate"
-            @change="handleStartDateChange"
-          >
+          <picker mode="date" :value="startDate" @change="handleStartDateChange">
             <view class="filter-picker">
               <text>{{ startDate || '开始日期' }}</text>
               <text class="picker-arrow">▼</text>
@@ -61,11 +57,7 @@
           </picker>
         </view>
         <view class="filter-item">
-          <picker
-            mode="date"
-            :value="endDate"
-            @change="handleEndDateChange"
-          >
+          <picker mode="date" :value="endDate" @change="handleEndDateChange">
             <view class="filter-picker">
               <text>{{ endDate || '结束日期' }}</text>
               <text class="picker-arrow">▼</text>
@@ -82,8 +74,8 @@
       <view class="table-header">
         <view class="header-row">
           <view v-if="selectedItems.length > 0" class="header-selector">
-            <checkbox 
-              :checked="selectAllChecked" 
+            <checkbox
+              :checked="selectAllChecked"
               :indeterminate="selectAllIndeterminate"
               @change="handleSelectAll"
             />
@@ -92,7 +84,7 @@
             v-for="column in columns"
             :key="column.key"
             class="header-cell"
-            :class="[`align-${column.align || 'left'}`, { 'sortable': column.sortable }]"
+            :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
             :style="{ width: column.width, flex: column.flex }"
             @click="column.sortable && handleSort(column.key)"
           >
@@ -114,7 +106,7 @@
           :has-selection="true"
           :show-header="false"
         />
-        
+
         <!-- Data Rows -->
         <template v-else>
           <DataTableRow
@@ -164,14 +156,14 @@
           共 {{ quotesStore.totalCount }} 条，第 {{ currentPage }}/{{ totalPages }} 页
         </view>
         <view class="pagination-controls">
-          <button 
+          <button
             class="pagination-btn"
             :disabled="currentPage <= 1"
             @click="handlePageChange(currentPage - 1)"
           >
             上一页
           </button>
-          <button 
+          <button
             class="pagination-btn"
             :disabled="currentPage >= totalPages"
             @click="handlePageChange(currentPage + 1)"
@@ -217,7 +209,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from '@dcloudio/uni-app'
 import { useQuotesStore } from '@/stores/quotes'
 import type { Quote } from '@/types/quote'
@@ -231,14 +223,14 @@ import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
 /**
  * 报价管理页面 - 增强表格版本
- * 
+ *
  * 功能特性：
  * - 使用增强表格组件系统，提供专业的加载状态和交互体验
  * - 支持报价审批流程：查看、批准、拒绝、编辑（根据状态动态显示）
  * - 支持批量操作：导出、批量审批
  * - iPad和移动端触控优化
  * - 集成状态管理和选择功能
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -301,23 +293,26 @@ const enhancedColumns: TableColumn[] = columns.map(col => ({
   width: col.width,
   align: col.align,
   sortable: col.sortable,
-  type: col.key === 'amount' ? 'price' :
-        col.key === 'created_at' ? 'date' :
-        col.key === 'status' ? 'status' : 'text'
+  type:
+    col.key === 'amount'
+      ? 'price'
+      : col.key === 'created_at'
+        ? 'date'
+        : col.key === 'status'
+          ? 'status'
+          : 'text'
 }))
 
 // Dynamic actions based on quote status
 function getQuoteActions(quote: Quote): ActionItem[] {
-  const actions: ActionItem[] = [
-    commonActions.quotes.view
-  ]
-  
+  const actions: ActionItem[] = [commonActions.quotes.view]
+
   if (quote.status === 'submitted') {
     actions.push(commonActions.quotes.approve, commonActions.quotes.reject)
   } else if (quote.status === 'draft') {
     actions.push(commonActions.quotes.edit)
   }
-  
+
   return actions
 }
 
@@ -334,7 +329,7 @@ const batchProgress = ref(0)
 const batchProgressText = ref('')
 
 // Computed properties
-const totalPages = computed(() => Math.ceil(quotesStore.totalCount / pageSize))
+const totalPages = computed(() => Math.ceil(quotesStore.totalCount / pageSize.value))
 
 // Filter states
 const searchPhone = ref('')
@@ -430,7 +425,10 @@ function handleRowAction(actionKey: string, quote: Quote) {
 
 function handleSelectAll(event: any) {
   const checked = event.detail ? event.detail.value : event
-  selectAll(quotesStore.quotes.map(q => q.id), checked)
+  selectAll(
+    quotesStore.quotes.map(q => q.id),
+    checked
+  )
 }
 
 function handleSort(columnKey: string) {
@@ -467,27 +465,27 @@ async function handleBatchExport() {
     batchOperating.value = true
     batchProgress.value = 0
     batchProgressText.value = `导出 ${selectedItems.value.length} 个报价单...`
-    
+
     // Simulate progress
     const progressInterval = setInterval(() => {
       if (batchProgress.value < 90) {
         batchProgress.value += 15
       }
     }, 200)
-    
+
     await quotesStore.exportQuotes({
       quoteIds: selectedItems.value
     })
-    
+
     clearInterval(progressInterval)
     batchProgress.value = 100
     batchProgressText.value = '导出完成'
-    
+
     uni.showToast({
       title: `成功导出 ${selectedItems.value.length} 个报价单`,
       icon: 'success'
     })
-    
+
     clearSelection()
   } catch (error) {
     uni.showToast({
@@ -509,25 +507,25 @@ async function handleBatchApprove() {
     batchOperating.value = true
     batchProgress.value = 0
     batchProgressText.value = `批准 ${selectedItems.value.length} 个报价单...`
-    
+
     // Simulate progress
     const progressInterval = setInterval(() => {
       if (batchProgress.value < 90) {
         batchProgress.value += 10
       }
     }, 300)
-    
+
     await quotesStore.batchApproveQuotes(selectedItems.value)
-    
+
     clearInterval(progressInterval)
     batchProgress.value = 100
     batchProgressText.value = '批准完成'
-    
+
     uni.showToast({
       title: `成功批准 ${selectedItems.value.length} 个报价单`,
       icon: 'success'
     })
-    
+
     clearSelection()
     loadQuotes() // Refresh the table
   } catch (error) {
@@ -600,7 +598,7 @@ async function handleApprove(quote: Quote) {
   uni.showModal({
     title: '确认批准',
     content: `确定要批准报价单 ${quote.quote_number} 吗？`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           await quotesStore.approveQuote(quote.id)
@@ -764,7 +762,7 @@ function getStatusLabel(status: string): string {
           transform: translateY(-1px);
         }
 
-        &[loading="true"] {
+        &[loading='true'] {
           opacity: 0.7;
           pointer-events: none;
         }
@@ -870,7 +868,7 @@ function getStatusLabel(status: string): string {
           display: flex;
           justify-content: center;
           align-items: center;
-          
+
           checkbox {
             transform: scale(1.1);
           }

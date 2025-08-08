@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { ApiService } from '@/api'
-import type { 
-  Customer, 
-  CustomerFilters, 
-  CustomerStatistics, 
-  CustomerDetail,
+import type {
   CreateCustomerData,
-  UpdateCustomerData,
-  CustomerQuoteSummary,
+  Customer,
   CustomerActivity,
-  CustomerExportData
+  CustomerDetail,
+  CustomerExportData,
+  CustomerFilters,
+  CustomerQuoteSummary,
+  CustomerStatistics,
+  UpdateCustomerData
 } from '@/types/customer'
 
 export const useCustomersStore = defineStore('customers', () => {
@@ -281,22 +281,25 @@ export const useCustomersStore = defineStore('customers', () => {
     }
   }
 
-  async function addCustomerActivity(customerId: string, activity: {
-    type: CustomerActivity['type']
-    description: string
-    metadata?: Record<string, any>
-  }) {
+  async function addCustomerActivity(
+    customerId: string,
+    activity: {
+      type: CustomerActivity['type']
+      description: string
+      metadata?: Record<string, any>
+    }
+  ) {
     loading.value = true
     error.value = null
 
     try {
       const response = await ApiService.post(`/api/customers/${customerId}/activities`, activity)
-      
+
       // Update current customer activities if loaded
       if (currentCustomer.value?.id === customerId && currentCustomer.value.recent_activities) {
         currentCustomer.value.recent_activities.unshift(response.data)
       }
-      
+
       return response.data
     } catch (err: any) {
       error.value = err.message || '添加客户活动记录失败'
@@ -321,13 +324,16 @@ export const useCustomersStore = defineStore('customers', () => {
       })
 
       // Create download link
-      const blob = new Blob([response.data], { 
-        type: exportData.format === 'csv' ? 'text/csv' : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      const blob = new Blob([response.data], {
+        type:
+          exportData.format === 'csv'
+            ? 'text/csv'
+            : 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       })
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      
+
       const fileName = `customers_${new Date().toISOString().split('T')[0]}.${exportData.format || 'xlsx'}`
       link.download = fileName
       link.click()

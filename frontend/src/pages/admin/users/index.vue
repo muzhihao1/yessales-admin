@@ -14,7 +14,9 @@
             <text class="stat-label">活跃用户</text>
           </text>
           <text class="stat-item">
-            <text class="stat-value">{{ usersStore.statistics.admin + usersStore.statistics.sales_manager }}</text>
+            <text class="stat-value">{{
+              usersStore.statistics.admin + usersStore.statistics.sales_manager
+            }}</text>
             <text class="stat-label">管理员</text>
           </text>
         </view>
@@ -39,7 +41,7 @@
     <view class="filters-section">
       <view class="filters-row">
         <view class="filter-item">
-          <input 
+          <input
             v-model="searchQuery"
             class="search-input"
             placeholder="搜索姓名、邮箱或手机号"
@@ -75,7 +77,7 @@
           </picker>
         </view>
         <view class="filter-item">
-          <input 
+          <input
             v-model="departmentFilter"
             class="search-input"
             placeholder="部门筛选"
@@ -101,11 +103,7 @@
       <template #user="{ row }">
         <view class="user-cell">
           <view class="user-avatar">
-            <image 
-              v-if="row.avatar" 
-              :src="row.avatar" 
-              class="avatar-img"
-            />
+            <image v-if="row.avatar" :src="row.avatar" class="avatar-img" />
             <text v-else class="avatar-placeholder">
               {{ row.name.charAt(0).toUpperCase() }}
             </text>
@@ -146,20 +144,16 @@
 
       <template #actions="{ row }">
         <view class="actions-cell">
-          <button class="action-btn action-view" @click="handleView(row)">
-            查看
-          </button>
-          <button class="action-btn action-edit" @click="handleEdit(row)">
-            编辑
-          </button>
-          <button 
+          <button class="action-btn action-view" @click="handleView(row)">查看</button>
+          <button class="action-btn action-edit" @click="handleEdit(row)">编辑</button>
+          <button
             v-if="row.status === 'active'"
             class="action-btn action-deactivate"
             @click="handleDeactivate(row)"
           >
             禁用
           </button>
-          <button 
+          <button
             v-else-if="row.status === 'inactive'"
             class="action-btn action-activate"
             @click="handleActivate(row)"
@@ -169,7 +163,7 @@
           <button class="action-btn action-reset" @click="handleResetPassword(row)">
             重置密码
           </button>
-          <button 
+          <button
             v-if="row.role !== 'admin'"
             class="action-btn action-delete"
             @click="handleDelete(row)"
@@ -190,15 +184,11 @@
       <view class="user-form">
         <view class="form-item">
           <text class="form-label">姓名 *</text>
-          <input 
-            v-model="newUser.name"
-            class="form-input"
-            placeholder="请输入用户姓名"
-          />
+          <input v-model="newUser.name" class="form-input" placeholder="请输入用户姓名" />
         </view>
         <view class="form-item">
           <text class="form-label">邮箱 *</text>
-          <input 
+          <input
             v-model="newUser.email"
             class="form-input"
             placeholder="请输入邮箱地址"
@@ -207,11 +197,7 @@
         </view>
         <view class="form-item">
           <text class="form-label">手机号</text>
-          <input 
-            v-model="newUser.phone"
-            class="form-input"
-            placeholder="请输入手机号"
-          />
+          <input v-model="newUser.phone" class="form-input" placeholder="请输入手机号" />
         </view>
         <view class="form-item">
           <text class="form-label">角色 *</text>
@@ -230,25 +216,14 @@
         </view>
         <view class="form-item">
           <text class="form-label">部门</text>
-          <input 
-            v-model="newUser.department"
-            class="form-input"
-            placeholder="请输入部门"
-          />
+          <input v-model="newUser.department" class="form-input" placeholder="请输入部门" />
         </view>
         <view class="form-item">
           <text class="form-label">职位</text>
-          <input 
-            v-model="newUser.position"
-            class="form-input"
-            placeholder="请输入职位"
-          />
+          <input v-model="newUser.position" class="form-input" placeholder="请输入职位" />
         </view>
         <view class="form-checkbox">
-          <checkbox 
-            v-model="newUser.send_invite"
-            color="#007AFF"
-          />
+          <checkbox v-model="newUser.send_invite" color="#007AFF" />
           <text class="checkbox-label">发送邀请邮件</text>
         </view>
       </view>
@@ -264,7 +239,7 @@
       <view class="invite-form">
         <view class="form-item">
           <text class="form-label">邮箱地址 *</text>
-          <input 
+          <input
             v-model="inviteEmail"
             class="form-input"
             placeholder="请输入邀请邮箱"
@@ -295,10 +270,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from '@dcloudio/uni-app'
 import { useUsersStore } from '@/stores/users'
-import type { User, CreateUserData } from '@/types/user'
+import type { CreateUserData, User } from '@/types/user'
 import DataTable from '@/components/admin/DataTable.vue'
 import type { TableColumn } from '@/components/admin/DataTable.vue'
 
@@ -502,7 +477,7 @@ async function handleDeactivate(user: User) {
   uni.showModal({
     title: '确认禁用',
     content: `确定要禁用用户 ${user.name} 吗？`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           await usersStore.deactivateUser(user.id)
@@ -526,7 +501,7 @@ async function handleResetPassword(user: User) {
   uni.showModal({
     title: '重置密码',
     content: `确定要重置用户 ${user.name} 的密码吗？`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           const result = await usersStore.resetUserPassword(user.id)
@@ -550,7 +525,7 @@ async function handleDelete(user: User) {
   uni.showModal({
     title: '确认删除',
     content: `确定要删除用户 ${user.name} 吗？此操作不可撤销。`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           await usersStore.deleteUser(user.id)
@@ -801,7 +776,7 @@ function getStatusLabel(status: string): string {
             background: #f5f5f5;
           }
 
-          &[loading="true"] {
+          &[loading='true'] {
             opacity: 0.7;
             pointer-events: none;
           }

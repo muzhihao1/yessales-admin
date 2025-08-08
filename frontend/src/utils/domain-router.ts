@@ -17,7 +17,7 @@ const DOMAIN_CONFIGS: DomainConfig[] = [
   },
   {
     domain: 'app.yessales.cn',
-    defaultRoute: '/pages/sales/index', 
+    defaultRoute: '/pages/sales/index',
     appType: 'sales'
   },
   {
@@ -49,7 +49,7 @@ export class DomainRouter {
    */
   shouldRedirect(): { redirect: boolean; targetPath?: string } {
     const config = this.getDomainConfig()
-    
+
     if (!config) {
       return { redirect: false }
     }
@@ -62,7 +62,7 @@ export class DomainRouter {
       }
     }
 
-    // 如果是销售端域名但访问的不是销售页面  
+    // 如果是销售端域名但访问的不是销售页面
     if (config.appType === 'sales' && !this.currentPath.startsWith('/pages/sales')) {
       return {
         redirect: true,
@@ -86,10 +86,10 @@ export class DomainRouter {
    */
   autoRedirect(): void {
     const { redirect, targetPath } = this.shouldRedirect()
-    
+
     if (redirect && targetPath) {
       console.log(`[DomainRouter] Redirecting to: ${targetPath}`)
-      
+
       // 使用vue-router进行导航
       if (window.history && window.history.pushState) {
         window.history.pushState({}, '', targetPath)
@@ -106,7 +106,7 @@ export class DomainRouter {
   private getDomainConfig(): DomainConfig | undefined {
     // 优先精确匹配
     let config = DOMAIN_CONFIGS.find(c => c.domain === this.currentDomain)
-    
+
     // 如果没有精确匹配，尝试匹配localhost和vercel域名
     if (!config) {
       if (this.currentDomain.includes('localhost') || this.currentDomain.includes('127.0.0.1')) {
@@ -121,7 +121,7 @@ export class DomainRouter {
         config = DOMAIN_CONFIGS.find(c => c.appType === 'main')
       }
     }
-    
+
     return config
   }
 
@@ -130,7 +130,7 @@ export class DomainRouter {
    */
   getAppTitle(): string {
     const appType = this.getAppType()
-    
+
     switch (appType) {
       case 'admin':
         return '耶氏台球 - 管理后台'
@@ -161,6 +161,6 @@ export const domainRouter = new DomainRouter()
 
 // 开发调试功能
 if (process.env.NODE_ENV === 'development') {
-  (window as any).__domainRouter = domainRouter
+  ;(window as any).__domainRouter = domainRouter
   console.log('[DomainRouter] Debug mode enabled, access via window.__domainRouter')
 }

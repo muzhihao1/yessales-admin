@@ -24,19 +24,19 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from 'vue';
+import { defineEmits, defineProps } from 'vue'
 
 interface Props {
-  modelValue: string;
-  label?: string;
-  placeholder?: string;
-  required?: boolean;
-  maxlength?: number;
-  disabled?: boolean;
-  error?: string;
-  help?: string;
-  autoHeight?: boolean;
-  showCount?: boolean;
+  modelValue: string
+  label?: string
+  placeholder?: string
+  required?: boolean
+  maxlength?: number
+  disabled?: boolean
+  error?: string
+  help?: string
+  autoHeight?: boolean
+  showCount?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -45,27 +45,27 @@ const props = withDefaults(defineProps<Props>(), {
   required: false,
   disabled: false,
   autoHeight: true,
-  showCount: true,
-});
+  showCount: true
+})
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string];
-  blur: [event: Event];
-  focus: [event: Event];
-}>();
+  'update:modelValue': [value: string]
+  blur: [event: Event]
+  focus: [event: Event]
+}>()
 
 const handleInput = (event: Event) => {
-  const target = event.target as HTMLTextAreaElement;
-  emit('update:modelValue', target.value);
-};
+  const target = event.target as HTMLTextAreaElement
+  emit('update:modelValue', target.value)
+}
 
 const handleBlur = (event: Event) => {
-  emit('blur', event);
-};
+  emit('blur', event)
+}
 
 const handleFocus = (event: Event) => {
-  emit('focus', event);
-};
+  emit('focus', event)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -83,7 +83,7 @@ const handleFocus = (event: Event) => {
   font-size: $font-size-base;
   font-weight: 500;
   color: $text-color-secondary;
-  
+
   &.required::before {
     content: '*';
     color: $danger-color;
@@ -96,8 +96,8 @@ const handleFocus = (event: Event) => {
   padding: $spacing-sm $spacing-base;
   line-height: 1.5;
   resize: vertical;
-  
-  &[auto-height="true"] {
+
+  &[auto-height='true'] {
     min-height: 80px;
   }
 }
@@ -120,31 +120,31 @@ const handleFocus = (event: Event) => {
   border: 1px solid $border-color;
   border-radius: $border-radius-base;
   transition: $transition-base;
-  
+
   &::placeholder {
     color: $text-color-placeholder;
   }
-  
+
   &:hover:not(:disabled) {
     border-color: $primary-color;
   }
-  
+
   &:focus {
     outline: none;
     border-color: $primary-color;
     box-shadow: 0 0 0 2px rgba($primary-color, 0.1);
   }
-  
+
   &-error {
     border-color: $danger-color;
-    
+
     &:hover:not(:disabled),
     &:focus {
       border-color: $danger-color;
       box-shadow: 0 0 0 2px rgba($danger-color, 0.1);
     }
   }
-  
+
   &-disabled {
     background-color: $bg-color;
     color: $text-color-placeholder;

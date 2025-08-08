@@ -32,8 +32,8 @@
           <view class="card-header">
             <text class="card-title">销售趋势</text>
             <view class="chart-tabs">
-              <text 
-                v-for="tab in chartTabs" 
+              <text
+                v-for="tab in chartTabs"
                 :key="tab.key"
                 :class="['tab-item', { active: activeChartTab === tab.key }]"
                 @click="activeChartTab = tab.key"
@@ -57,12 +57,12 @@
           <text class="section-title">最近报价单</text>
           <text class="section-link" @click="navigateToQuotes">查看全部 →</text>
         </view>
-        
+
         <view class="quote-list">
           <view v-if="recentQuotes.length === 0" class="empty-state">
             <text class="empty-text">暂无报价单数据</text>
           </view>
-          
+
           <view v-else class="quote-table">
             <view class="table-header">
               <text class="col col-no">报价单号</text>
@@ -72,12 +72,8 @@
               <text class="col col-date">创建时间</text>
               <text class="col col-action">操作</text>
             </view>
-            
-            <view 
-              v-for="quote in recentQuotes" 
-              :key="quote.id"
-              class="table-row"
-            >
+
+            <view v-for="quote in recentQuotes" :key="quote.id" class="table-row">
               <text class="col col-no">{{ quote.quote_no }}</text>
               <text class="col col-customer">{{ quote.customer?.name || '-' }}</text>
               <text class="col col-amount">¥{{ quote.total_price.toFixed(2) }}</text>
@@ -99,8 +95,8 @@
       <view class="quick-actions">
         <text class="section-title">快捷操作</text>
         <view class="action-grid">
-          <view 
-            v-for="action in quickActions" 
+          <view
+            v-for="action in quickActions"
             :key="action.key"
             class="action-item"
             @click="handleQuickAction(action.key)"
@@ -117,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import { useAuthStore } from '@/stores/auth'
 import type { Quote } from '@/types/models'
@@ -135,7 +131,7 @@ const statistics = ref([
     icon: '📋',
     color: '#2563eb',
     bgColor: '#eff6ff',
-    trend: 12.5,
+    trend: 12.5
   },
   {
     key: 'pending',
@@ -144,7 +140,7 @@ const statistics = ref([
     icon: '⏳',
     color: '#f59e0b',
     bgColor: '#fffbeb',
-    trend: -3.2,
+    trend: -3.2
   },
   {
     key: 'approved',
@@ -153,7 +149,7 @@ const statistics = ref([
     icon: '✅',
     color: '#22c55e',
     bgColor: '#f0fdf4',
-    trend: 8.7,
+    trend: 8.7
   },
   {
     key: 'revenue',
@@ -162,14 +158,14 @@ const statistics = ref([
     icon: '💰',
     color: '#6366f1',
     bgColor: '#eef2ff',
-    trend: 15.3,
-  },
+    trend: 15.3
+  }
 ])
 
 const chartTabs = [
   { key: 'week', label: '本周' },
   { key: 'month', label: '本月' },
-  { key: 'year', label: '本年' },
+  { key: 'year', label: '本年' }
 ]
 
 const quickActions = [
@@ -178,29 +174,29 @@ const quickActions = [
     label: '新建报价',
     icon: '➕',
     color: '#2563eb',
-    bgColor: '#eff6ff',
+    bgColor: '#eff6ff'
   },
   {
     key: 'add-product',
     label: '添加产品',
     icon: '📦',
     color: '#22c55e',
-    bgColor: '#f0fdf4',
+    bgColor: '#f0fdf4'
   },
   {
     key: 'view-reports',
     label: '查看报表',
     icon: '📊',
     color: '#6366f1',
-    bgColor: '#eef2ff',
+    bgColor: '#eef2ff'
   },
   {
     key: 'export-data',
     label: '导出数据',
     icon: '📤',
     color: '#f59e0b',
-    bgColor: '#fffbeb',
-  },
+    bgColor: '#fffbeb'
+  }
 ]
 
 const getStatusText = (status: string) => {
@@ -208,7 +204,7 @@ const getStatusText = (status: string) => {
     pending: '待审核',
     approved: '已通过',
     rejected: '已拒绝',
-    completed: '已完成',
+    completed: '已完成'
   }
   return statusMap[status] || status
 }
@@ -254,7 +250,7 @@ const loadDashboardData = async () => {
   statistics.value[1].value = '23'
   statistics.value[2].value = '98'
   statistics.value[3].value = '¥128,560'
-  
+
   // 模拟最近报价单数据
   recentQuotes.value = [
     {
@@ -269,8 +265,8 @@ const loadDashboardData = async () => {
         id: '1',
         name: '张先生',
         phone: '13800138000',
-        created_at: new Date().toISOString(),
-      },
+        created_at: new Date().toISOString()
+      }
     },
     {
       id: '2',
@@ -284,9 +280,9 @@ const loadDashboardData = async () => {
         id: '2',
         name: '李女士',
         phone: '13900139000',
-        created_at: new Date().toISOString(),
-      },
-    },
+        created_at: new Date().toISOString()
+      }
+    }
   ]
 }
 

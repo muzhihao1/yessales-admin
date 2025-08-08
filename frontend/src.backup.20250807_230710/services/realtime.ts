@@ -1,6 +1,6 @@
 /**
  * Real-time Data Service
- * 
+ *
  * Provides real-time data synchronization using Supabase's real-time capabilities.
  * Automatically updates stores when database changes occur.
  */
@@ -28,14 +28,14 @@ class RealtimeService {
    */
   async initialize() {
     console.log('🔄 Initializing real-time service...')
-    
+
     try {
       // Subscribe to all required tables
       await this.subscribeToCustomers()
       await this.subscribeToProducts()
       await this.subscribeToQuotes()
       await this.subscribeToUsers()
-      
+
       this.isConnected = true
       this.reconnectAttempts = 0
       console.log('✅ Real-time service initialized successfully')
@@ -58,9 +58,9 @@ class RealtimeService {
           schema: 'public',
           table: 'customers'
         },
-        (payload) => this.handleCustomersChange(payload)
+        payload => this.handleCustomersChange(payload)
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         console.log('📊 Customers subscription status:', status)
       })
 
@@ -80,9 +80,9 @@ class RealtimeService {
           schema: 'public',
           table: 'products'
         },
-        (payload) => this.handleProductsChange(payload)
+        payload => this.handleProductsChange(payload)
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         console.log('🛍️ Products subscription status:', status)
       })
 
@@ -102,9 +102,9 @@ class RealtimeService {
           schema: 'public',
           table: 'quotes'
         },
-        (payload) => this.handleQuotesChange(payload)
+        payload => this.handleQuotesChange(payload)
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         console.log('📄 Quotes subscription status:', status)
       })
 
@@ -116,7 +116,7 @@ class RealtimeService {
    */
   private async subscribeToUsers() {
     const authStore = useAuthStore()
-    
+
     // Only admins and managers can subscribe to user changes
     if (!authStore.user || !['admin', 'sales_manager'].includes(authStore.user.role)) {
       console.log('⚠️ User subscription skipped - insufficient permissions')
@@ -132,9 +132,9 @@ class RealtimeService {
           schema: 'public',
           table: 'users'
         },
-        (payload) => this.handleUsersChange(payload)
+        payload => this.handleUsersChange(payload)
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         console.log('👥 Users subscription status:', status)
       })
 
@@ -146,9 +146,9 @@ class RealtimeService {
    */
   private handleCustomersChange(payload: RealtimePostgresChangesPayload<any>) {
     console.log('📊 Customer change detected:', payload.eventType, payload.new || payload.old)
-    
+
     const customersStore = useCustomersStore()
-    
+
     switch (payload.eventType) {
       case 'INSERT':
         if (payload.new) {
@@ -157,33 +157,33 @@ class RealtimeService {
           this.showChangeNotification('客户', '新增', payload.new.name)
         }
         break
-        
+
       case 'UPDATE':
         if (payload.new) {
           const index = customersStore.customers.findIndex(c => c.id === payload.new.id)
           if (index !== -1) {
             customersStore.customers[index] = { ...customersStore.customers[index], ...payload.new }
           }
-          
+
           // Update current customer if it's being viewed
           if (customersStore.currentCustomer?.id === payload.new.id) {
             customersStore.currentCustomer = { ...customersStore.currentCustomer, ...payload.new }
           }
-          
+
           this.showChangeNotification('客户', '更新', payload.new.name)
         }
         break
-        
+
       case 'DELETE':
         if (payload.old) {
           customersStore.customers = customersStore.customers.filter(c => c.id !== payload.old.id)
           customersStore.totalCount--
-          
+
           // Clear current customer if it was deleted
           if (customersStore.currentCustomer?.id === payload.old.id) {
             customersStore.currentCustomer = null
           }
-          
+
           this.showChangeNotification('客户', '删除', payload.old.name)
         }
         break
@@ -195,9 +195,9 @@ class RealtimeService {
    */
   private handleProductsChange(payload: RealtimePostgresChangesPayload<any>) {
     console.log('🛍️ Product change detected:', payload.eventType, payload.new || payload.old)
-    
+
     const productsStore = useProductsStore()
-    
+
     switch (payload.eventType) {
       case 'INSERT':
         if (payload.new) {
@@ -206,33 +206,33 @@ class RealtimeService {
           this.showChangeNotification('产品', '新增', payload.new.name)
         }
         break
-        
+
       case 'UPDATE':
         if (payload.new) {
           const index = productsStore.products.findIndex(p => p.id === payload.new.id)
           if (index !== -1) {
             productsStore.products[index] = { ...productsStore.products[index], ...payload.new }
           }
-          
+
           // Update current product if it's being viewed
           if (productsStore.currentProduct?.id === payload.new.id) {
             productsStore.currentProduct = { ...productsStore.currentProduct, ...payload.new }
           }
-          
+
           this.showChangeNotification('产品', '更新', payload.new.name)
         }
         break
-        
+
       case 'DELETE':
         if (payload.old) {
           productsStore.products = productsStore.products.filter(p => p.id !== payload.old.id)
           productsStore.total--
-          
+
           // Clear current product if it was deleted
           if (productsStore.currentProduct?.id === payload.old.id) {
             productsStore.currentProduct = null
           }
-          
+
           this.showChangeNotification('产品', '删除', payload.old.name)
         }
         break
@@ -244,9 +244,9 @@ class RealtimeService {
    */
   private handleQuotesChange(payload: RealtimePostgresChangesPayload<any>) {
     console.log('📄 Quote change detected:', payload.eventType, payload.new || payload.old)
-    
+
     const quotesStore = useQuotesStore()
-    
+
     switch (payload.eventType) {
       case 'INSERT':
         if (payload.new) {
@@ -255,38 +255,43 @@ class RealtimeService {
           this.showChangeNotification('报价单', '新增', payload.new.quote_no)
         }
         break
-        
+
       case 'UPDATE':
         if (payload.new) {
           const index = quotesStore.quotes.findIndex(q => q.id === payload.new.id)
           if (index !== -1) {
             quotesStore.quotes[index] = { ...quotesStore.quotes[index], ...payload.new }
           }
-          
+
           // Update current quote if it's being viewed
           if (quotesStore.currentQuote?.id === payload.new.id) {
             quotesStore.currentQuote = { ...quotesStore.currentQuote, ...payload.new }
           }
-          
+
           // Show special notification for status changes
           if (payload.old && payload.old.status !== payload.new.status) {
-            this.showStatusChangeNotification('报价单', payload.new.quote_no, payload.old.status, payload.new.status)
+            this.showStatusChangeNotification(
+              '报价单',
+              payload.new.quote_no,
+              payload.old.status,
+              payload.new.status
+            )
           } else {
             this.showChangeNotification('报价单', '更新', payload.new.quote_no)
           }
         }
         break
-        
+
       case 'DELETE':
         if (payload.old) {
           quotesStore.quotes = quotesStore.quotes.filter(q => q.id !== payload.old.id)
           quotesStore.totalCount--
-          
+
           // Clear current quote if it was deleted
           if (quotesStore.currentQuote?.id === payload.old.id) {
             quotesStore.currentQuote = null
           }
-          
+
           this.showChangeNotification('报价单', '删除', payload.old.quote_no)
         }
         break
@@ -298,9 +303,9 @@ class RealtimeService {
    */
   private handleUsersChange(payload: RealtimePostgresChangesPayload<any>) {
     console.log('👥 User change detected:', payload.eventType, payload.new || payload.old)
-    
+
     const usersStore = useUsersStore()
-    
+
     switch (payload.eventType) {
       case 'INSERT':
         if (payload.new) {
@@ -309,33 +314,33 @@ class RealtimeService {
           this.showChangeNotification('用户', '新增', payload.new.name || payload.new.username)
         }
         break
-        
+
       case 'UPDATE':
         if (payload.new) {
           const index = usersStore.users.findIndex(u => u.id === payload.new.id)
           if (index !== -1) {
             usersStore.users[index] = { ...usersStore.users[index], ...payload.new }
           }
-          
+
           // Update current user if it's being viewed
           if (usersStore.currentUser?.id === payload.new.id) {
             usersStore.currentUser = { ...usersStore.currentUser, ...payload.new }
           }
-          
+
           this.showChangeNotification('用户', '更新', payload.new.name || payload.new.username)
         }
         break
-        
+
       case 'DELETE':
         if (payload.old) {
           usersStore.users = usersStore.users.filter(u => u.id !== payload.old.id)
           usersStore.totalCount--
-          
+
           // Clear current user if it was deleted
           if (usersStore.currentUser?.id === payload.old.id) {
             usersStore.currentUser = null
           }
-          
+
           this.showChangeNotification('用户', '删除', payload.old.name || payload.old.username)
         }
         break
@@ -349,12 +354,12 @@ class RealtimeService {
     // Only show notifications if user is not actively editing
     const currentPages = getCurrentPages()
     const currentPage = currentPages[currentPages.length - 1]
-    
+
     // Don't show notifications on edit pages to avoid disrupting user input
     if (currentPage?.route?.includes('/edit')) {
       return
     }
-    
+
     uni.showToast({
       title: `${entityType}${action}: ${name}`,
       icon: 'none',
@@ -365,7 +370,12 @@ class RealtimeService {
   /**
    * Show status change notification
    */
-  private showStatusChangeNotification(entityType: string, name: string, oldStatus: string, newStatus: string) {
+  private showStatusChangeNotification(
+    entityType: string,
+    name: string,
+    oldStatus: string,
+    newStatus: string
+  ) {
     const statusMap: Record<string, string> = {
       pending: '待审批',
       approved: '已批准',
@@ -375,10 +385,10 @@ class RealtimeService {
       active: '活跃',
       inactive: '停用'
     }
-    
+
     const oldStatusText = statusMap[oldStatus] || oldStatus
     const newStatusText = statusMap[newStatus] || newStatus
-    
+
     uni.showToast({
       title: `${entityType} ${name} 状态变更: ${oldStatusText} → ${newStatusText}`,
       icon: 'none',
@@ -392,8 +402,10 @@ class RealtimeService {
   private handleConnectionError() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      console.log(`🔄 Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
-      
+      console.log(
+        `🔄 Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`
+      )
+
       setTimeout(() => {
         this.initialize()
       }, this.reconnectDelay * this.reconnectAttempts) // Exponential backoff
@@ -412,12 +424,12 @@ class RealtimeService {
    */
   async disconnect() {
     console.log('🔌 Disconnecting real-time service...')
-    
+
     for (const [name, channel] of this.channels) {
       await supabase.removeChannel(channel)
       console.log(`📡 Unsubscribed from ${name}`)
     }
-    
+
     this.channels.clear()
     this.isConnected = false
     console.log('✅ Real-time service disconnected')
@@ -446,11 +458,11 @@ class RealtimeService {
    * Subscribe to a custom table
    */
   async subscribeToTable(
-    tableName: string, 
+    tableName: string,
     callback: (payload: RealtimePostgresChangesPayload<any>) => void
   ) {
     const channelName = `${tableName}-channel`
-    
+
     if (this.channels.has(channelName)) {
       console.warn(`⚠️ Already subscribed to ${tableName}`)
       return
@@ -467,7 +479,7 @@ class RealtimeService {
         },
         callback
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         console.log(`📡 ${tableName} subscription status:`, status)
       })
 
@@ -480,7 +492,7 @@ class RealtimeService {
   async unsubscribeFromTable(tableName: string) {
     const channelName = `${tableName}-channel`
     const channel = this.channels.get(channelName)
-    
+
     if (channel) {
       await supabase.removeChannel(channel)
       this.channels.delete(channelName)
@@ -498,29 +510,28 @@ export const realtimeService = new RealtimeService()
 export function useRealtime() {
   return {
     realtimeService,
-    
+
     /**
      * Get connection status
      */
     getStatus: () => realtimeService.getConnectionStatus(),
-    
+
     /**
      * Subscribe to table changes
      */
-    subscribe: (tableName: string, callback: (payload: any) => void) => 
+    subscribe: (tableName: string, callback: (payload: any) => void) =>
       realtimeService.subscribeToTable(tableName, callback),
-    
+
     /**
      * Unsubscribe from table changes
      */
-    unsubscribe: (tableName: string) => 
-      realtimeService.unsubscribeFromTable(tableName),
-    
+    unsubscribe: (tableName: string) => realtimeService.unsubscribeFromTable(tableName),
+
     /**
      * Reconnect to real-time service
      */
     reconnect: () => realtimeService.reconnect(),
-    
+
     /**
      * Check if connected
      */

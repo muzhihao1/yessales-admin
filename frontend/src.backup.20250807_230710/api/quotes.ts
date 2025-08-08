@@ -1,7 +1,7 @@
-import ApiClient from './client';
-import { supabase } from './config';
-import type { Quote, QuoteItem, Customer } from '@/types/models';
-import type { ApiResponse, QueryParams, CreateQuoteRequest } from '@/types/api';
+import ApiClient from './client'
+import { supabase } from './config'
+import type { Customer, Quote, QuoteItem } from '@/types/models'
+import type { ApiResponse, CreateQuoteRequest, QueryParams } from '@/types/api'
 
 export class QuotesApi {
   static async getQuotes(params?: QueryParams): Promise<ApiResponse<Quote[]>> {
@@ -12,8 +12,8 @@ export class QuotesApi {
         customer:customers(*),
         sales:users(*),
         items:quote_items(*)
-      `,
-    });
+      `
+    })
   }
 
   static async getQuote(id: string): Promise<ApiResponse<Quote>> {
@@ -24,50 +24,50 @@ export class QuotesApi {
         customer:customers(*),
         sales:users(*),
         items:quote_items(*)
-      `,
-    });
+      `
+    })
   }
 
   static async createQuote(request: CreateQuoteRequest): Promise<ApiResponse<Quote>> {
     try {
       // 1. 创建或查找客户
-      let customerId: string;
+      let customerId: string
       const { data: existingCustomer } = await supabase
         .from('customers')
         .select('id')
         .eq('phone', request.customer.phone)
-        .single();
+        .single()
 
       if (existingCustomer) {
-        customerId = existingCustomer.id;
+        customerId = existingCustomer.id
         // 更新客户信息
         await supabase
           .from('customers')
           .update({
             ...request.customer,
-            updated_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           })
-          .eq('id', customerId);
+          .eq('id', customerId)
       } else {
         // 创建新客户
         const { data: newCustomer, error: customerError } = await supabase
           .from('customers')
           .insert(request.customer)
           .select()
-          .single();
+          .single()
 
-        if (customerError) throw customerError;
-        customerId = newCustomer.id;
+        if (customerError) throw customerError
+        customerId = newCustomer.id
       }
 
       // 2. 生成报价单号
-      const { data: quoteNoData, error: quoteNoError } = await supabase.functions
-        .invoke('generate-quote-no');
+      const { data: quoteNoData, error: quoteNoError } =
+        await supabase.functions.invoke('generate-quote-no')
 
-      if (quoteNoError) throw quoteNoError;
+      if (quoteNoError) throw quoteNoError
 
       // 3. 计算总价
-      const totalPrice = request.items.reduce((sum, item) => sum + item.total_price, 0);
+      const totalPrice = request.items.reduce((sum, item) => sum + item.total_price, 0)
 
       // 4. 创建报价单
       const { data: quote, error: quoteError } = await supabase
@@ -77,29 +77,27 @@ export class QuotesApi {
           customer_id: customerId,
           total_price: totalPrice,
           status: 'pending',
-          remark: request.remark,
+          remark: request.remark
         })
         .select()
-        .single();
+        .single()
 
-      if (quoteError) throw quoteError;
+      if (quoteError) throw quoteError
 
       // 5. 创建报价明细
       const items = request.items.map(item => ({
         ...item,
-        quote_id: quote.id,
-      }));
+        quote_id: quote.id
+      }))
 
-      const { error: itemsError } = await supabase
-        .from('quote_items')
-        .insert(items);
+      const { error: itemsError } = await supabase.from('quote_items').insert(items)
 
-      if (itemsError) throw itemsError;
+      if (itemsError) throw itemsError
 
       // 6. 返回完整的报价单信息
-      return this.getQuote(quote.id);
+      return this.getQuote(quote.id)
     } catch (error) {
-      return ApiClient.handleError(error);
+      return ApiClient.handleError(error)
     }
   }
 
@@ -108,13 +106,13 @@ export class QuotesApi {
       id,
       data: {
         ...quote,
-        updated_at: new Date().toISOString(),
-      },
-    });
+        updated_at: new Date().toISOString()
+      }
+    })
   }
 
   static async deleteQuote(id: string): Promise<ApiResponse> {
-    return ApiClient.request('DELETE', 'quotes', { id });
+    return ApiClient.request('DELETE', 'quotes', { id })
   }
 
   static async getQuotesByPhone(phone: string): Promise<ApiResponse<Quote[]>> {
@@ -123,73 +121,74 @@ export class QuotesApi {
       const { data: customers, error: customerError } = await supabase
         .from('customers')
         .select('id')
-        .eq('phone', phone);
+        .eq('phone', phone)
 
-      if (customerError) throw customerError;
+      if (customerError) throw customerError
       if (!customers || customers.length === 0) {
         return {
           success: true,
-          data: [],
-        };
+          data: []
+        }
       }
 
-      const customerIds = customers.map(c => c.id);
+      const customerIds = customers.map(c => c.id)
 
       // 查询报价单
       const { data: quotes, error: quotesError } = await supabase
         .from('quotes')
-        .select(`
+        .select(
+          `
           *,
           customer:customers(*),
           sales:users(*),
           items:quote_items(*)
-        `)
+        `
+        )
         .in('customer_id', customerIds)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
 
-      if (quotesError) throw quotesError;
+      if (quotesError) throw quotesError
 
       return {
         success: true,
-        data: quotes || [],
-      };
+        data: quotes || []
+      }
     } catch (error) {
-      return ApiClient.handleError(error);
+      return ApiClient.handleError(error)
     }
   }
 
   static async approveQuote(id: string): Promise<ApiResponse<Quote>> {
-    return this.updateQuote(id, { status: 'approved' });
+    return this.updateQuote(id, { status: 'approved' })
   }
 
   static async rejectQuote(id: string, reason?: string): Promise<ApiResponse<Quote>> {
-    return this.updateQuote(id, { 
+    return this.updateQuote(id, {
       status: 'rejected',
-      remark: reason,
-    });
+      remark: reason
+    })
   }
 
   static async exportQuotes(params: {
-    startDate: string;
-    endDate: string;
-    status?: string;
+    startDate: string
+    endDate: string
+    status?: string
   }): Promise<ApiResponse<Blob>> {
     try {
-      const { data, error } = await supabase.functions
-        .invoke('export-quotes', {
-          body: params,
-        });
+      const { data, error } = await supabase.functions.invoke('export-quotes', {
+        body: params
+      })
 
-      if (error) throw error;
+      if (error) throw error
 
       return {
         success: true,
-        data,
-      };
+        data
+      }
     } catch (error) {
-      return ApiClient.handleError(error);
+      return ApiClient.handleError(error)
     }
   }
 }
 
-export default QuotesApi;
+export default QuotesApi

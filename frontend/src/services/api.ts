@@ -1,6 +1,6 @@
 /**
  * API Service Layer - Bridge between Frontend and Terminal 1 APIs
- * 
+ *
  * This service layer provides a unified API interface that bridges the gap between
  * the frontend expectations and Terminal 1's Supabase-based APIs.
  */
@@ -18,7 +18,10 @@ export const api = {
   /**
    * GET request handler
    */
-  async get(endpoint: string, options: { params?: Record<string, any>, responseType?: string } = {}) {
+  async get(
+    endpoint: string,
+    options: { params?: Record<string, any>; responseType?: string } = {}
+  ) {
     const { params = {}, responseType } = options
 
     // Handle different endpoints
@@ -57,7 +60,7 @@ export const api = {
     if (endpoint.startsWith('/api/customers/') && !endpoint.includes('/')) {
       const customerId = endpoint.split('/')[3]
       const response = await customersApi.getCustomer(customerId)
-      
+
       // Transform the response to include additional customer details structure
       if (response.success && response.data) {
         const customerDetail = {
@@ -84,7 +87,10 @@ export const api = {
               status: quote.status
             }))
             customerDetail.total_quotes = quotesResponse.data.length
-            customerDetail.total_amount = quotesResponse.data.reduce((sum: number, q: any) => sum + (q.total_price || 0), 0)
+            customerDetail.total_amount = quotesResponse.data.reduce(
+              (sum: number, q: any) => sum + (q.total_price || 0),
+              0
+            )
             if (quotesResponse.data.length > 0) {
               customerDetail.last_quote_at = quotesResponse.data[0].created_at
             }

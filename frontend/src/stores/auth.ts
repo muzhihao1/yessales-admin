@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { AuthApi } from '@/api/auth'
 import type { User } from '@/types/models'
 import type { LoginRequest } from '@/types/api'
@@ -31,7 +31,7 @@ export const useAuthStore = defineStore('auth', () => {
           role: response.data.user.role,
           name: response.data.user.name,
           is_active: true,
-          created_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
         }
         token.value = response.data.access_token
 
@@ -64,11 +64,11 @@ export const useAuthStore = defineStore('auth', () => {
       // 清除状态
       user.value = null
       token.value = null
-      
+
       // 清除本地存储
       uni.removeStorageSync('auth_token')
       uni.removeStorageSync('auth_user')
-      
+
       isLoading.value = false
 
       // 跳转到登录页
@@ -87,7 +87,7 @@ export const useAuthStore = defineStore('auth', () => {
         uni.setStorageSync('auth_token', response.data.access_token)
         return true
       }
-      
+
       return false
     } catch (err) {
       console.error('Refresh token error:', err)
@@ -106,7 +106,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       // 验证 token 是否有效
       const response = await AuthApi.getCurrentUser()
-      
+
       if (response.success && response.data) {
         user.value = response.data
         return true
@@ -144,12 +144,12 @@ export const useAuthStore = defineStore('auth', () => {
   async function getCurrentUser() {
     try {
       const response = await AuthApi.getCurrentUser()
-      
+
       if (response.success && response.data) {
         user.value = response.data
         uni.setStorageSync('auth_user', response.data)
       }
-      
+
       return response
     } catch (err) {
       console.error('Get current user error:', err)
@@ -175,12 +175,12 @@ export const useAuthStore = defineStore('auth', () => {
     token,
     isLoading,
     error,
-    
+
     // Getters
     isAuthenticated,
     isAdmin,
     userName,
-    
+
     // Actions
     login,
     logout,
@@ -189,6 +189,6 @@ export const useAuthStore = defineStore('auth', () => {
     getCurrentUser,
     initializeAuth,
     checkAuthStatus,
-    updatePassword,
+    updatePassword
   }
 })

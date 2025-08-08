@@ -30,15 +30,9 @@
           </view>
         </view>
         <view class="header-actions">
-          <button class="action-btn action-edit" @click="handleEdit">
-            编辑客户
-          </button>
-          <button class="action-btn action-quote" @click="handleCreateQuote">
-            新建报价
-          </button>
-          <button class="action-btn action-contact" @click="handleAddContact">
-            记录联系
-          </button>
+          <button class="action-btn action-edit" @click="handleEdit">编辑客户</button>
+          <button class="action-btn action-quote" @click="handleCreateQuote">新建报价</button>
+          <button class="action-btn action-contact" @click="handleAddContact">记录联系</button>
         </view>
       </view>
 
@@ -122,7 +116,9 @@
         <view class="info-grid">
           <view class="info-item">
             <text class="info-label">偏好联系方式</text>
-            <text class="info-value">{{ getContactMethodLabel(customer.preferred_contact_method) }}</text>
+            <text class="info-value">{{
+              getContactMethodLabel(customer.preferred_contact_method)
+            }}</text>
           </view>
           <view class="info-item">
             <text class="info-label">联系时间偏好</text>
@@ -143,10 +139,10 @@
           <text class="section-title">报价历史</text>
           <text class="section-count">({{ customer.quotes?.length || 0 }})</text>
         </view>
-        
+
         <view v-if="customer.quotes && customer.quotes.length > 0" class="quotes-list">
-          <view 
-            v-for="quote in customer.quotes" 
+          <view
+            v-for="quote in customer.quotes"
             :key="quote.id"
             class="quote-item"
             @click="handleViewQuote(quote)"
@@ -164,12 +160,10 @@
             </view>
           </view>
         </view>
-        
+
         <view v-else class="empty-state">
           <text class="empty-text">暂无报价记录</text>
-          <button class="empty-action" @click="handleCreateQuote">
-            创建第一个报价
-          </button>
+          <button class="empty-action" @click="handleCreateQuote">创建第一个报价</button>
         </view>
       </view>
 
@@ -179,10 +173,13 @@
           <text class="section-title">最近活动</text>
           <text class="section-count">({{ customer.recent_activities?.length || 0 }})</text>
         </view>
-        
-        <view v-if="customer.recent_activities && customer.recent_activities.length > 0" class="activities-list">
-          <view 
-            v-for="activity in customer.recent_activities" 
+
+        <view
+          v-if="customer.recent_activities && customer.recent_activities.length > 0"
+          class="activities-list"
+        >
+          <view
+            v-for="activity in customer.recent_activities"
             :key="activity.id"
             class="activity-item"
           >
@@ -198,7 +195,7 @@
             </view>
           </view>
         </view>
-        
+
         <view v-else class="empty-state">
           <text class="empty-text">暂无活动记录</text>
         </view>
@@ -216,7 +213,7 @@
               <text class="timeline-user">创建人: {{ customer.created_by_name || '系统' }}</text>
             </view>
           </view>
-          
+
           <view v-if="customer.updated_at !== customer.created_at" class="timeline-item">
             <view class="timeline-dot timeline-dot-info"></view>
             <view class="timeline-content">
@@ -225,7 +222,7 @@
               <text class="timeline-user">更新人: {{ customer.updated_by_name || '系统' }}</text>
             </view>
           </view>
-          
+
           <view v-if="customer.last_quote_at" class="timeline-item">
             <view class="timeline-dot timeline-dot-success"></view>
             <view class="timeline-content">
@@ -260,7 +257,7 @@
             </view>
           </picker>
         </view>
-        
+
         <view class="form-item">
           <text class="form-label">活动描述</text>
           <textarea
@@ -270,14 +267,10 @@
             maxlength="500"
           />
         </view>
-        
+
         <view class="form-item">
           <text class="form-label">联系时间</text>
-          <picker
-            mode="date"
-            :value="contactDate"
-            @change="handleContactDateChange"
-          >
+          <picker mode="date" :value="contactDate" @change="handleContactDateChange">
             <view class="form-picker">
               <text>{{ contactDate || '选择日期' }}</text>
               <text class="picker-arrow">▼</text>
@@ -290,10 +283,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from '@dcloudio/uni-app'
 import { useCustomersStore } from '@/stores/customers'
-import type { CustomerDetail, CustomerQuoteSummary, CustomerActivity } from '@/types/customer'
+import type { CustomerActivity, CustomerDetail, CustomerQuoteSummary } from '@/types/customer'
 import StatCard from '@/components/admin/StatCard.vue'
 
 const route = useRoute()
@@ -329,7 +322,7 @@ onMounted(() => {
 
 // Load customer details
 async function loadCustomer(id?: string) {
-  const customerId = id || route.query.id as string
+  const customerId = id || (route.query.id as string)
   if (!customerId) {
     error.value = '客户ID不存在'
     return
@@ -395,7 +388,8 @@ async function confirmAddContact() {
   }
 
   try {
-    const activityType = contactTypeOptions[contactTypeIndex.value].value as CustomerActivity['type']
+    const activityType = contactTypeOptions[contactTypeIndex.value]
+      .value as CustomerActivity['type']
     await customersStore.addCustomerActivity(customer.value.id, {
       type: activityType,
       description: contactDescription.value,
@@ -403,12 +397,12 @@ async function confirmAddContact() {
         contact_date: contactDate.value
       }
     })
-    
+
     uni.showToast({
       title: '活动记录成功',
       icon: 'success'
     })
-    
+
     showContactModal.value = false
     // Reload customer to get updated activities
     loadCustomer()

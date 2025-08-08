@@ -1,4 +1,4 @@
-import type { Quote, Customer } from '@/types/models';
+import type { Customer, Quote } from '@/types/models'
 
 export const mockCustomers: Customer[] = [
   {
@@ -8,7 +8,7 @@ export const mockCustomers: Customer[] = [
     wechat: 'zhang_wei_2024',
     address: '昆明市斗南花卉市场A区',
     remark: 'VIP客户，经常购买',
-    created_at: '2024-01-15T10:00:00Z',
+    created_at: '2024-01-15T10:00:00Z'
   },
   {
     id: 'c2',
@@ -17,7 +17,7 @@ export const mockCustomers: Customer[] = [
     wechat: 'li_xiaohong',
     address: '昆明市官渡区',
     remark: '新客户',
-    created_at: '2024-01-16T14:30:00Z',
+    created_at: '2024-01-16T14:30:00Z'
   },
   {
     id: 'c3',
@@ -26,9 +26,9 @@ export const mockCustomers: Customer[] = [
     wechat: 'wang_boss',
     address: '昆明市西山区',
     remark: '连锁店客户',
-    created_at: '2024-01-17T09:15:00Z',
-  },
-];
+    created_at: '2024-01-17T09:15:00Z'
+  }
+]
 
 export const mockQuotes: Quote[] = [
   {
@@ -54,7 +54,7 @@ export const mockQuotes: Quote[] = [
         unit_price: 28800,
         quantity: 1,
         total_price: 28800,
-        image_url: '/static/images/products/xp-s9.jpg',
+        image_url: '/static/images/products/xp-s9.jpg'
       },
       {
         id: 'qi2',
@@ -65,7 +65,7 @@ export const mockQuotes: Quote[] = [
         unit_price: 580,
         quantity: 6,
         total_price: 3480,
-        image_url: '/static/images/accessories/cue-001.jpg',
+        image_url: '/static/images/accessories/cue-001.jpg'
       },
       {
         id: 'qi3',
@@ -76,9 +76,9 @@ export const mockQuotes: Quote[] = [
         unit_price: 280,
         quantity: 1,
         total_price: 280,
-        image_url: '/static/images/accessories/balls-001.jpg',
-      },
-    ],
+        image_url: '/static/images/accessories/balls-001.jpg'
+      }
+    ]
   },
   {
     id: 'q2',
@@ -103,7 +103,7 @@ export const mockQuotes: Quote[] = [
         unit_price: 220,
         quantity: 500,
         total_price: 110000,
-        image_url: '/static/images/products/carpet-001.jpg',
+        image_url: '/static/images/products/carpet-001.jpg'
       },
       {
         id: 'qi5',
@@ -115,9 +115,9 @@ export const mockQuotes: Quote[] = [
         unit_price: 35800,
         quantity: 2,
         total_price: 71600,
-        image_url: '/static/images/products/us-pro-9.jpg',
-      },
-    ],
+        image_url: '/static/images/products/us-pro-9.jpg'
+      }
+    ]
   },
   {
     id: 'q3',
@@ -140,13 +140,13 @@ export const mockQuotes: Quote[] = [
         unit_price: 68800,
         quantity: 3,
         total_price: 206400,
-        image_url: '/static/images/products/snk-12.jpg',
-      },
-    ],
-  },
-];
+        image_url: '/static/images/products/snk-12.jpg'
+      }
+    ]
+  }
+]
 
 export default {
   customers: mockCustomers,
-  quotes: mockQuotes,
-};
+  quotes: mockQuotes
+}

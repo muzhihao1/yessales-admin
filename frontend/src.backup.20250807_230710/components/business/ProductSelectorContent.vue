@@ -8,12 +8,12 @@
           <text class="close-icon">×</text>
         </view>
       </view>
-      
+
       <!-- Search bar -->
       <view class="search-container">
         <view class="search-box">
           <image class="search-icon" src="/static/icons/search.png" mode="aspectFit" />
-          <input 
+          <input
             v-model="searchKeyword"
             class="search-input"
             placeholder="搜索产品名称或型号"
@@ -24,22 +24,18 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Category tabs -->
-      <scroll-view 
-        class="category-tabs"
-        scroll-x
-        :show-scrollbar="false"
-      >
+      <scroll-view class="category-tabs" scroll-x :show-scrollbar="false">
         <view class="tabs-content">
-          <view 
+          <view
             class="tab-item"
             :class="{ 'tab-item--active': activeCategoryId === 'all' }"
             @click="selectCategory('all')"
           >
             全部
           </view>
-          <view 
+          <view
             v-for="category in categories"
             :key="category.id"
             class="tab-item"
@@ -53,12 +49,7 @@
     </view>
 
     <!-- Product list -->
-    <scroll-view 
-      class="product-scroll"
-      scroll-y
-      :show-scrollbar="false"
-      @scrolltolower="loadMore"
-    >
+    <scroll-view class="product-scroll" scroll-y :show-scrollbar="false" @scrolltolower="loadMore">
       <!-- Loading state -->
       <view v-if="loading" class="loading-container">
         <view class="loading-spinner"></view>
@@ -67,14 +58,14 @@
 
       <!-- Product grid -->
       <view v-else-if="filteredProducts.length > 0" class="product-grid">
-        <view 
+        <view
           v-for="product in filteredProducts"
           :key="product.id"
           class="product-item"
           @click="handleProductClick(product)"
         >
           <view class="product-image-wrapper">
-            <image 
+            <image
               class="product-image"
               :src="product.image || '/static/images/default-product.png'"
               mode="aspectFill"
@@ -118,25 +109,17 @@
       </view>
       <view class="footer-actions">
         <button class="btn-cancel" @click="handleCancel">取消</button>
-        <button 
-          class="btn-confirm"
-          :disabled="selectedItems.length === 0"
-          @click="handleConfirm"
-        >
+        <button class="btn-confirm" :disabled="selectedItems.length === 0" @click="handleConfirm">
           确定({{ selectedItems.length }})
         </button>
       </view>
     </view>
 
     <!-- SKU/Quantity popup -->
-    <uni-popup
-      ref="skuPopupRef"
-      type="bottom"
-      :mask-click="false"
-    >
+    <uni-popup ref="skuPopupRef" type="bottom" :mask-click="false">
       <view class="sku-popup" v-if="currentProduct">
         <view class="sku-header">
-          <image 
+          <image
             class="sku-image"
             :src="currentProduct.image || '/static/images/default-product.png'"
             mode="aspectFill"
@@ -151,10 +134,13 @@
         </view>
 
         <!-- SKU options -->
-        <view v-if="currentProduct.skuOptions && currentProduct.skuOptions.length > 0" class="sku-options">
+        <view
+          v-if="currentProduct.skuOptions && currentProduct.skuOptions.length > 0"
+          class="sku-options"
+        >
           <text class="sku-label">选择规格</text>
           <view class="sku-list">
-            <view 
+            <view
               v-for="sku in currentProduct.skuOptions"
               :key="sku.id"
               class="sku-item"
@@ -170,25 +156,20 @@
         <view class="quantity-section">
           <text class="quantity-label">购买数量</text>
           <view class="quantity-control">
-            <button 
+            <button
               class="qty-btn qty-btn--minus"
               :disabled="quantity <= 1"
               @click="decreaseQuantity"
             >
               -
             </button>
-            <input 
+            <input
               v-model.number="quantity"
               type="number"
               class="qty-input"
               @blur="validateQuantity"
             />
-            <button 
-              class="qty-btn qty-btn--plus"
-              @click="increaseQuantity"
-            >
-              +
-            </button>
+            <button class="qty-btn qty-btn--plus" @click="increaseQuantity">+</button>
           </view>
         </view>
 
@@ -208,8 +189,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import type { Product, Category } from '@/types/api'
+import { computed, nextTick, ref, watch } from 'vue'
+import type { Category, Product } from '@/types/api'
 import type { SelectedProduct } from './ProductSelector.vue'
 
 interface Props {
@@ -250,12 +231,12 @@ const loadProducts = async (reset = false) => {
     page.value = 1
     products.value = []
   }
-  
+
   loading.value = true
-  
+
   // Simulate API call
   await new Promise(resolve => setTimeout(resolve, 500))
-  
+
   // Mock products
   const mockProducts: Product[] = []
   for (let i = 0; i < pageSize; i++) {
@@ -266,18 +247,22 @@ const loadProducts = async (reset = false) => {
       model: `MODEL-${Math.random().toString(36).substring(7).toUpperCase()}`,
       price: Math.floor(Math.random() * 1000) + 100,
       unit: ['个', '件', '套', '箱'][Math.floor(Math.random() * 4)],
-      categoryId: activeCategoryId.value === 'all' 
-        ? props.categories[Math.floor(Math.random() * props.categories.length)]?.id 
-        : activeCategoryId.value,
+      categoryId:
+        activeCategoryId.value === 'all'
+          ? props.categories[Math.floor(Math.random() * props.categories.length)]?.id
+          : activeCategoryId.value,
       image: `/static/images/product-${(i % 5) + 1}.jpg`,
-      skuOptions: Math.random() > 0.5 ? [
-        { id: `${id}-sku-1`, name: '标准版', price: 0 },
-        { id: `${id}-sku-2`, name: '升级版', price: 100 },
-        { id: `${id}-sku-3`, name: '豪华版', price: 200 }
-      ] : undefined
+      skuOptions:
+        Math.random() > 0.5
+          ? [
+              { id: `${id}-sku-1`, name: '标准版', price: 0 },
+              { id: `${id}-sku-2`, name: '升级版', price: 100 },
+              { id: `${id}-sku-3`, name: '豪华版', price: 200 }
+            ]
+          : undefined
     })
   }
-  
+
   products.value = [...products.value, ...mockProducts]
   hasMore.value = page.value < 5
   loading.value = false
@@ -286,21 +271,20 @@ const loadProducts = async (reset = false) => {
 // Computed
 const filteredProducts = computed(() => {
   let result = products.value
-  
+
   // Filter by category
   if (activeCategoryId.value !== 'all') {
     result = result.filter(p => p.categoryId === activeCategoryId.value)
   }
-  
+
   // Filter by search keyword
   if (searchKeyword.value) {
     const keyword = searchKeyword.value.toLowerCase()
-    result = result.filter(p => 
-      p.name.toLowerCase().includes(keyword) ||
-      p.model?.toLowerCase().includes(keyword)
+    result = result.filter(
+      p => p.name.toLowerCase().includes(keyword) || p.model?.toLowerCase().includes(keyword)
     )
   }
-  
+
   return result
 })
 
@@ -337,7 +321,7 @@ const getSelectedItem = (productId: string) => {
 
 const handleProductClick = (product: Product) => {
   currentProduct.value = product
-  
+
   const existingItem = getSelectedItem(product.id)
   if (existingItem) {
     editingIndex.value = selectedItems.value.indexOf(existingItem)
@@ -348,7 +332,7 @@ const handleProductClick = (product: Product) => {
     quantity.value = 1
     selectedSkuId.value = product.skuOptions?.[0]?.id || ''
   }
-  
+
   skuPopupRef.value?.open()
 }
 
@@ -380,10 +364,10 @@ const validateQuantity = () => {
 
 const confirmSelection = () => {
   if (!currentProduct.value) return
-  
+
   const selectedSku = currentProduct.value.skuOptions?.find(s => s.id === selectedSkuId.value)
   const price = currentProduct.value.price + (selectedSku?.price || 0)
-  
+
   const newItem: SelectedProduct = {
     product: currentProduct.value,
     quantity: quantity.value,
@@ -392,7 +376,7 @@ const confirmSelection = () => {
     price,
     subtotal: price * quantity.value
   }
-  
+
   if (editingIndex.value !== -1) {
     selectedItems.value[editingIndex.value] = newItem
   } else {
@@ -405,7 +389,7 @@ const confirmSelection = () => {
     }
     selectedItems.value.push(newItem)
   }
-  
+
   closeSkuPopup()
 }
 
@@ -421,9 +405,12 @@ const handleCancel = () => {
 loadProducts()
 
 // Watch for prop changes
-watch(() => props.selectedProducts, (newVal) => {
-  selectedItems.value = [...newVal]
-})
+watch(
+  () => props.selectedProducts,
+  newVal => {
+    selectedItems.value = [...newVal]
+  }
+)
 </script>
 
 <style scoped>
@@ -553,7 +540,9 @@ watch(() => props.selectedProducts, (newVal) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {

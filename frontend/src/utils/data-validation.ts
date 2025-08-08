@@ -1,6 +1,6 @@
 /**
  * Data Validation Utilities
- * 
+ *
  * Comprehensive validation functions to ensure data integrity across
  * all business entities and operations.
  */
@@ -260,22 +260,26 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
       if (!item.product_id) {
         errors.push(`第${index + 1}个产品的ID不能为空`)
       }
-      
+
       if (!item.product_name) {
         errors.push(`第${index + 1}个产品的名称不能为空`)
       }
-      
+
       if (item.quantity === undefined || item.quantity === null || item.quantity <= 0) {
         errors.push(`第${index + 1}个产品的数量必须大于0`)
       }
-      
+
       if (item.unit_price === undefined || item.unit_price === null || item.unit_price < 0) {
         errors.push(`第${index + 1}个产品的单价不能为负数`)
       }
-      
+
       if (item.total_price === undefined || item.total_price === null) {
         errors.push(`第${index + 1}个产品的总价不能为空`)
-      } else if (item.quantity && item.unit_price && Math.abs(item.total_price - (item.quantity * item.unit_price)) > 0.01) {
+      } else if (
+        item.quantity &&
+        item.unit_price &&
+        Math.abs(item.total_price - item.quantity * item.unit_price) > 0.01
+      ) {
         errors.push(`第${index + 1}个产品的总价计算不正确`)
       }
     })
@@ -309,7 +313,8 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
 
   // Calculate expected final amount
   if (quote.total_amount !== undefined && quote.final_amount !== undefined) {
-    const expectedFinalAmount = quote.total_amount - (quote.discount_amount || 0) + (quote.tax_amount || 0)
+    const expectedFinalAmount =
+      quote.total_amount - (quote.discount_amount || 0) + (quote.tax_amount || 0)
     if (Math.abs(quote.final_amount - expectedFinalAmount) > 0.01) {
       errors.push('最终金额计算不正确')
     }
@@ -322,7 +327,7 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
     const validUntil = new Date(quote.valid_until)
     const today = new Date()
     const diffDays = Math.ceil((validUntil.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
-    
+
     if (diffDays < BUSINESS_RULES.MIN_QUOTE_VALIDITY_DAYS) {
       errors.push(`报价有效期至少需要${BUSINESS_RULES.MIN_QUOTE_VALIDITY_DAYS}天`)
     } else if (diffDays > BUSINESS_RULES.MAX_QUOTE_VALIDITY_DAYS) {
@@ -430,7 +435,18 @@ export function validateLogEntry(log: Partial<LogEntry>): ValidationResult {
   if (!log.category) {
     errors.push('日志分类不能为空')
   } else {
-    const validCategories = ['auth', 'user', 'customer', 'product', 'quote', 'system', 'security', 'api', 'data', 'export']
+    const validCategories = [
+      'auth',
+      'user',
+      'customer',
+      'product',
+      'quote',
+      'system',
+      'security',
+      'api',
+      'data',
+      'export'
+    ]
     if (!validCategories.includes(log.category)) {
       errors.push('日志分类无效')
     }
@@ -439,7 +455,25 @@ export function validateLogEntry(log: Partial<LogEntry>): ValidationResult {
   if (!log.action) {
     errors.push('日志操作不能为空')
   } else {
-    const validActions = ['create', 'read', 'update', 'delete', 'login', 'logout', 'register', 'approve', 'reject', 'assign', 'export', 'import', 'backup', 'config_change', 'role_change', 'access_denied', 'security_violation']
+    const validActions = [
+      'create',
+      'read',
+      'update',
+      'delete',
+      'login',
+      'logout',
+      'register',
+      'approve',
+      'reject',
+      'assign',
+      'export',
+      'import',
+      'backup',
+      'config_change',
+      'role_change',
+      'access_denied',
+      'security_violation'
+    ]
     if (!validActions.includes(log.action)) {
       errors.push('日志操作无效')
     }
@@ -460,7 +494,8 @@ export function validateLogEntry(log: Partial<LogEntry>): ValidationResult {
 
   if (log.ip_address) {
     // Basic IP address validation
-    const ipPattern = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
+    const ipPattern =
+      /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
     if (!ipPattern.test(log.ip_address)) {
       errors.push('IP地址格式不正确')
     }
@@ -516,7 +551,9 @@ export function validateReferentialIntegrity(entities: {
     // Product reference validation in quote items
     quote.items.forEach((item, itemIndex) => {
       if (!productIds.has(item.product_id)) {
-        errors.push(`报价单 ${quote.quote_number} 第${itemIndex + 1}个产品引用了不存在的产品ID: ${item.product_id}`)
+        errors.push(
+          `报价单 ${quote.quote_number} 第${itemIndex + 1}个产品引用了不存在的产品ID: ${item.product_id}`
+        )
       }
     })
 
@@ -531,7 +568,7 @@ export function validateReferentialIntegrity(entities: {
   })
 
   // Validate customer assignments
-  customers.forEach((customer) => {
+  customers.forEach(customer => {
     if (customer.assigned_to && !userIds.has(customer.assigned_to)) {
       errors.push(`客户 ${customer.name} 的负责人ID不存在: ${customer.assigned_to}`)
     }
@@ -575,13 +612,15 @@ export function validateBusinessLogic(data: {
     const product = products.find(p => p.id === item.product_id)
     if (product) {
       if (product.stock_quantity < item.quantity) {
-        errors.push(`第${index + 1}个产品库存不足：需要${item.quantity}，可用${product.stock_quantity}`)
+        errors.push(
+          `第${index + 1}个产品库存不足：需要${item.quantity}，可用${product.stock_quantity}`
+        )
       }
-      
+
       if (product.status !== 'active') {
         errors.push(`第${index + 1}个产品已停用，无法添加到报价单`)
       }
-      
+
       // Price validation
       if (Math.abs(item.unit_price - product.price) > 0.01) {
         warnings.push(`第${index + 1}个产品价格与系统价格不一致`)
@@ -591,7 +630,9 @@ export function validateBusinessLogic(data: {
 
   // Customer credit limit validation
   if (customer.credit_limit && quote.final_amount > customer.credit_limit) {
-    warnings.push(`报价金额超过客户信用额度：${quote.final_amount.toLocaleString()} > ${customer.credit_limit.toLocaleString()}`)
+    warnings.push(
+      `报价金额超过客户信用额度：${quote.final_amount.toLocaleString()} > ${customer.credit_limit.toLocaleString()}`
+    )
   }
 
   // Customer status validation
@@ -648,10 +689,7 @@ export function validateBatch<T>(
   return {
     isValid: allErrors.length === 0,
     errors: allErrors,
-    warnings: [
-      ...allWarnings,
-      `批量验证完成：${validCount}/${items.length} 条记录通过验证`
-    ]
+    warnings: [...allWarnings, `批量验证完成：${validCount}/${items.length} 条记录通过验证`]
   }
 }
 
@@ -663,26 +701,26 @@ export function sanitizeData<T extends Record<string, any>>(
   allowedFields: string[]
 ): Partial<T> {
   const sanitized: Partial<T> = {}
-  
+
   allowedFields.forEach(field => {
     if (data[field] !== undefined) {
       let value = data[field]
-      
+
       // Basic sanitization
       if (typeof value === 'string') {
         // Remove potential XSS content
         value = value.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
         value = value.replace(/javascript:/gi, '')
         value = value.replace(/on\w+\s*=/gi, '')
-        
+
         // Trim whitespace
         value = value.trim()
       }
-      
+
       sanitized[field as keyof T] = value
     }
   })
-  
+
   return sanitized
 }
 

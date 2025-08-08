@@ -1,4 +1,4 @@
-import type { Product, ProductSku, Accessory } from '@/types/models';
+import type { Accessory, Product, ProductSku } from '@/types/models'
 
 export const mockProducts: Product[] = [
   {
@@ -21,7 +21,7 @@ export const mockProducts: Product[] = [
         price: 28800,
         stock: 10,
         is_active: true,
-        created_at: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z'
       },
       {
         id: '1-2',
@@ -31,9 +31,9 @@ export const mockProducts: Product[] = [
         price: 29800,
         stock: 5,
         is_active: true,
-        created_at: '2024-01-01T00:00:00Z',
-      },
-    ],
+        created_at: '2024-01-01T00:00:00Z'
+      }
+    ]
   },
   {
     id: '2',
@@ -46,7 +46,7 @@ export const mockProducts: Product[] = [
     description: '专业美式九球台球桌，原装进口配件',
     is_active: true,
     created_at: '2024-01-01T00:00:00Z',
-    skus: [],
+    skus: []
   },
   {
     id: '3',
@@ -59,7 +59,7 @@ export const mockProducts: Product[] = [
     description: '标准斯诺克比赛台球桌，12英尺',
     is_active: true,
     created_at: '2024-01-01T00:00:00Z',
-    skus: [],
+    skus: []
   },
   {
     id: '4',
@@ -81,7 +81,7 @@ export const mockProducts: Product[] = [
         price: 180,
         stock: 1000,
         is_active: true,
-        created_at: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z'
       },
       {
         id: '4-2',
@@ -91,7 +91,7 @@ export const mockProducts: Product[] = [
         price: 220,
         stock: 800,
         is_active: true,
-        created_at: '2024-01-01T00:00:00Z',
+        created_at: '2024-01-01T00:00:00Z'
       },
       {
         id: '4-3',
@@ -101,9 +101,9 @@ export const mockProducts: Product[] = [
         price: 200,
         stock: 600,
         is_active: true,
-        created_at: '2024-01-01T00:00:00Z',
-      },
-    ],
+        created_at: '2024-01-01T00:00:00Z'
+      }
+    ]
   },
   {
     id: '5',
@@ -116,9 +116,9 @@ export const mockProducts: Product[] = [
     description: '台球桌专用LED吊灯，三头设计，光线均匀',
     is_active: true,
     created_at: '2024-01-01T00:00:00Z',
-    skus: [],
-  },
-];
+    skus: []
+  }
+]
 
 export const mockAccessories: Accessory[] = [
   {
@@ -129,7 +129,7 @@ export const mockAccessories: Accessory[] = [
     image_url: '/static/images/accessories/cue-001.jpg',
     description: '进口枫木球杆，手感极佳',
     is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: '2024-01-01T00:00:00Z'
   },
   {
     id: 'a2',
@@ -139,7 +139,7 @@ export const mockAccessories: Accessory[] = [
     image_url: '/static/images/accessories/rack-001.jpg',
     description: '实木球杆架，可放置6根球杆',
     is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: '2024-01-01T00:00:00Z'
   },
   {
     id: 'a3',
@@ -149,7 +149,7 @@ export const mockAccessories: Accessory[] = [
     image_url: '/static/images/accessories/balls-001.jpg',
     description: '比赛级水晶球，一套16个',
     is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: '2024-01-01T00:00:00Z'
   },
   {
     id: 'a4',
@@ -159,7 +159,7 @@ export const mockAccessories: Accessory[] = [
     image_url: '/static/images/accessories/chalk-001.jpg',
     description: '进口巧克粉，防滑效果好',
     is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: '2024-01-01T00:00:00Z'
   },
   {
     id: 'a5',
@@ -169,11 +169,11 @@ export const mockAccessories: Accessory[] = [
     image_url: '/static/images/accessories/score-001.jpg',
     description: '电子记分牌，LED显示',
     is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
-  },
-];
+    created_at: '2024-01-01T00:00:00Z'
+  }
+]
 
 export default {
   products: mockProducts,
-  accessories: mockAccessories,
-};
+  accessories: mockAccessories
+}

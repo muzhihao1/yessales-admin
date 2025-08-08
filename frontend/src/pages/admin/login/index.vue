@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import type { LoginRequest } from '@/types/api'
 
@@ -63,7 +63,7 @@ const authStore = useAuthStore()
 
 const formData = ref<LoginRequest>({
   username: '',
-  password: '',
+  password: ''
 })
 
 const isLoading = ref(false)
@@ -104,12 +104,12 @@ const handleLogin = async () => {
       uni.showToast({
         title: '登录成功',
         icon: 'success',
-        duration: 1500,
+        duration: 1500
       })
 
       setTimeout(() => {
         uni.reLaunch({
-          url: '/pages/admin/dashboard/index',
+          url: '/pages/admin/dashboard/index'
         })
       }, 1500)
     } else {
@@ -127,7 +127,7 @@ onMounted(async () => {
   // 检查是否已登录
   if (authStore.isAuthenticated) {
     uni.reLaunch({
-      url: '/pages/admin/dashboard/index',
+      url: '/pages/admin/dashboard/index'
     })
   }
 })

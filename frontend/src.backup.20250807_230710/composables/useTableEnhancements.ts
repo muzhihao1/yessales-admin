@@ -1,23 +1,27 @@
-import { ref, computed, reactive, type Ref } from 'vue'
+import { type Ref, computed, reactive, ref } from 'vue'
 import { showModal, showToast } from '@/utils/ui'
-import { useVirtualScrolling, type VirtualScrollPreset, type VirtualScrollItem } from './useVirtualScrolling'
+import {
+  type VirtualScrollItem,
+  type VirtualScrollPreset,
+  useVirtualScrolling
+} from './useVirtualScrolling'
 
 /**
  * 增强数据表格功能组合式API
- * 
+ *
  * 功能说明：
  * - 提供表格行选择和批量操作功能
  * - 管理表格加载状态和错误处理
  * - 提供排序、筛选和分页支持
  * - 统一的批量操作确认和进度显示
  * - 响应式数据状态管理
- * 
+ *
  * 使用场景：
  * - 客户管理表格
- * - 产品管理表格  
+ * - 产品管理表格
  * - 报价记录表格
  * - 任何需要增强交互的数据表格
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -62,7 +66,12 @@ export interface VirtualScrollingConfig {
   containerHeight?: number
   overscan?: number
   threshold?: number
-  loadData: (page: number, pageSize: number, filters?: Record<string, any>, sort?: { by: string, order: 'asc' | 'desc' }) => Promise<{
+  loadData: (
+    page: number,
+    pageSize: number,
+    filters?: Record<string, any>,
+    sort?: { by: string; order: 'asc' | 'desc' }
+  ) => Promise<{
     items: TableItem[]
     total: number
     hasMore: boolean
@@ -93,7 +102,7 @@ export function useTableSelection() {
     } else {
       selectedIds.value.add(id)
     }
-    
+
     updateSelectAllState()
   }
 
@@ -104,7 +113,7 @@ export function useTableSelection() {
     } else {
       items.forEach(item => selectedIds.value.add(item.id))
     }
-    
+
     updateSelectAllState()
   }
 
@@ -175,9 +184,10 @@ export function useBatchOperations() {
   ) => {
     // 确认操作
     if (operation.requiresConfirmation !== false) {
-      const message = operation.confirmMessage || 
+      const message =
+        operation.confirmMessage ||
         `确定要对选中的 ${selectedItems.length} 个项目执行"${operation.label}"操作吗？`
-      
+
       const result = await showModal({
         title: '确认批量操作',
         content: message,
@@ -197,7 +207,7 @@ export function useBatchOperations() {
         // 分批处理以显示进度
         const batchSize = Math.ceil(selectedItems.length / 10) || 1
         const batches = []
-        
+
         for (let i = 0; i < selectedItems.length; i += batchSize) {
           batches.push(selectedItems.slice(i, i + batchSize))
         }
@@ -318,7 +328,7 @@ export function useTableState(initialState?: Partial<TableState>) {
   return {
     state,
     setLoading,
-    setError, 
+    setError,
     setData,
     updateSort,
     updateFilters,
@@ -346,26 +356,25 @@ export function useVirtualTableEnhancements<T extends TableItem & VirtualScrollI
 
   // 创建数据加载函数，集成筛选和排序
   const loadDataWithFiltersAndSort = async (page: number, pageSize: number) => {
-    const sort = tableState.state.sortBy ? {
-      by: tableState.state.sortBy,
-      order: tableState.state.sortOrder
-    } : undefined
+    const sort = tableState.state.sortBy
+      ? {
+          by: tableState.state.sortBy,
+          order: tableState.state.sortOrder
+        }
+      : undefined
 
     return await virtualConfig.loadData(page, pageSize, tableState.state.filters, sort)
   }
 
   // 使用虚拟滚动
-  const virtualScrolling = useVirtualScrolling<T>(
-    loadDataWithFiltersAndSort,
-    {
-      preset: virtualConfig.preset,
-      itemHeight: virtualConfig.itemHeight,
-      containerHeight: virtualConfig.containerHeight,
-      overscan: virtualConfig.overscan,
-      threshold: virtualConfig.threshold,
-      pageSize: initialState?.pageSize || tableState.state.pageSize
-    }
-  )
+  const virtualScrolling = useVirtualScrolling<T>(loadDataWithFiltersAndSort, {
+    preset: virtualConfig.preset,
+    itemHeight: virtualConfig.itemHeight,
+    containerHeight: virtualConfig.containerHeight,
+    overscan: virtualConfig.overscan,
+    threshold: virtualConfig.threshold,
+    pageSize: initialState?.pageSize || tableState.state.pageSize
+  })
 
   // 同步虚拟滚动数据到表格状态
   const syncedItems = computed(() => virtualScrolling.state.items as T[])
@@ -396,10 +405,10 @@ export function useVirtualTableEnhancements<T extends TableItem & VirtualScrollI
   return {
     // 选择功能
     ...selection,
-    
+
     // 批量操作功能
     ...batchOps,
-    
+
     // 表格状态管理（部分重写以支持虚拟滚动）
     state: {
       ...tableState.state,
@@ -475,10 +484,10 @@ export function useTableEnhancements<T extends TableItem>(
   return {
     // 选择功能
     ...selection,
-    
+
     // 批量操作功能
     ...batchOps,
-    
+
     // 表格状态管理
     ...tableState,
 

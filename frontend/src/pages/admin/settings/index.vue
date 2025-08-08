@@ -291,7 +291,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
 import { usePermissions } from '@/composables/usePermissions'
 import RealtimeIndicator from '@/components/admin/RealtimeIndicator.vue'

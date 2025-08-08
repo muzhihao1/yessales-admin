@@ -1,11 +1,11 @@
 /**
  * Store Validation Middleware
- * 
+ *
  * Provides comprehensive validation for store operations including
  * schema validation, business rules, type safety, and custom validators.
  */
 
-import { reactive, computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { handleStoreError } from './error-handler'
 
@@ -99,22 +99,22 @@ const builtInValidators = {
     if (Array.isArray(value) && value.length === 0) return false
     return true
   },
-  
+
   email: (value: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(value)
   },
-  
+
   phone: (value: string): boolean => {
     const phoneRegex = /^1[3-9]\d{9}$/
     return phoneRegex.test(value.replace(/\s|-/g, ''))
   },
-  
+
   idCard: (value: string): boolean => {
     const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/
     return idCardRegex.test(value)
   },
-  
+
   url: (value: string): boolean => {
     try {
       new URL(value)
@@ -123,28 +123,28 @@ const builtInValidators = {
       return false
     }
   },
-  
+
   positiveNumber: (value: number): boolean => {
     return typeof value === 'number' && value > 0
   },
-  
+
   nonNegativeNumber: (value: number): boolean => {
     return typeof value === 'number' && value >= 0
   },
-  
+
   integer: (value: number): boolean => {
     return Number.isInteger(value)
   },
-  
+
   dateString: (value: string): boolean => {
     return !isNaN(Date.parse(value))
   },
-  
+
   futureDate: (value: string | Date): boolean => {
     const date = typeof value === 'string' ? new Date(value) : value
     return date.getTime() > Date.now()
   },
-  
+
   pastDate: (value: string | Date): boolean => {
     const date = typeof value === 'string' ? new Date(value) : value
     return date.getTime() < Date.now()
@@ -162,7 +162,7 @@ async function validateField(
 ): Promise<{ errors: ValidationError[]; warnings: ValidationWarning[] }> {
   const errors: ValidationError[] = []
   const warnings: ValidationWarning[] = []
-  
+
   // Required validation
   if (schema.required && !builtInValidators.required(value)) {
     errors.push({
@@ -173,17 +173,17 @@ async function validateField(
     })
     return { errors, warnings } // Skip other validations if required fails
   }
-  
+
   // Skip other validations if value is empty and not required
   if (!builtInValidators.required(value)) {
     return { errors, warnings }
   }
-  
+
   // Type validation
   if (schema.type) {
     const expectedType = schema.type
     const actualType = Array.isArray(value) ? 'array' : typeof value
-    
+
     if (expectedType === 'date' && typeof value === 'string') {
       if (!builtInValidators.dateString(value)) {
         errors.push({
@@ -202,7 +202,7 @@ async function validateField(
       })
     }
   }
-  
+
   // String validations
   if (typeof value === 'string') {
     if (schema.minLength && value.length < schema.minLength) {
@@ -213,7 +213,7 @@ async function validateField(
         rule: 'minLength'
       })
     }
-    
+
     if (schema.maxLength && value.length > schema.maxLength) {
       errors.push({
         field,
@@ -222,7 +222,7 @@ async function validateField(
         rule: 'maxLength'
       })
     }
-    
+
     if (schema.pattern && !schema.pattern.test(value)) {
       errors.push({
         field,
@@ -232,7 +232,7 @@ async function validateField(
       })
     }
   }
-  
+
   // Number validations
   if (typeof value === 'number') {
     if (schema.min !== undefined && value < schema.min) {
@@ -243,7 +243,7 @@ async function validateField(
         rule: 'min'
       })
     }
-    
+
     if (schema.max !== undefined && value > schema.max) {
       errors.push({
         field,
@@ -253,7 +253,7 @@ async function validateField(
       })
     }
   }
-  
+
   // Array validations
   if (Array.isArray(value)) {
     if (schema.min !== undefined && value.length < schema.min) {
@@ -264,7 +264,7 @@ async function validateField(
         rule: 'min'
       })
     }
-    
+
     if (schema.max !== undefined && value.length > schema.max) {
       errors.push({
         field,
@@ -274,7 +274,7 @@ async function validateField(
       })
     }
   }
-  
+
   // Enum validation
   if (schema.enum && !schema.enum.includes(value)) {
     errors.push({
@@ -284,7 +284,7 @@ async function validateField(
       rule: 'enum'
     })
   }
-  
+
   // Custom validation rules
   if (schema.custom) {
     for (const rule of schema.custom) {
@@ -309,7 +309,7 @@ async function validateField(
       }
     }
   }
-  
+
   return { errors, warnings }
 }
 
@@ -323,7 +323,7 @@ export async function validateData(
 ): Promise<ValidationResult> {
   const errors: ValidationError[] = []
   const warnings: ValidationWarning[] = []
-  
+
   // Validate each field in schema
   for (const [field, fieldSchema] of Object.entries(schema)) {
     if (typeof fieldSchema === 'object' && !('type' in fieldSchema)) {
@@ -334,14 +334,18 @@ export async function validateData(
           fieldSchema as ValidationSchema,
           context
         )
-        errors.push(...nestedResult.errors.map(error => ({
-          ...error,
-          field: `${field}.${error.field}`
-        })))
-        warnings.push(...nestedResult.warnings.map(warning => ({
-          ...warning,
-          field: `${field}.${warning.field}`
-        })))
+        errors.push(
+          ...nestedResult.errors.map(error => ({
+            ...error,
+            field: `${field}.${error.field}`
+          }))
+        )
+        warnings.push(
+          ...nestedResult.warnings.map(warning => ({
+            ...warning,
+            field: `${field}.${warning.field}`
+          }))
+        )
       }
     } else {
       // Field validation
@@ -355,7 +359,7 @@ export async function validateData(
       warnings.push(...fieldResult.warnings)
     }
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -369,10 +373,10 @@ export async function validateData(
 export const useValidationStore = defineStore('validation', () => {
   // Business rules registry
   const businessRules = reactive<Map<string, BusinessRule[]>>(new Map())
-  
+
   // Validation schemas registry
   const schemas = reactive<Map<string, ValidationSchema>>(new Map())
-  
+
   // Validation statistics
   const stats = reactive({
     totalValidations: 0,
@@ -380,28 +384,27 @@ export const useValidationStore = defineStore('validation', () => {
     failedValidations: 0,
     averageValidationTime: 0
   })
-  
+
   const validationStats = computed(() => ({
     ...stats,
-    successRate: stats.totalValidations > 0 
-      ? (stats.passedValidations / stats.totalValidations) * 100 
-      : 0
+    successRate:
+      stats.totalValidations > 0 ? (stats.passedValidations / stats.totalValidations) * 100 : 0
   }))
-  
+
   /**
    * Register business rules for a store
    */
   function registerBusinessRules(store: string, rules: BusinessRule[]): void {
     businessRules.set(store, rules)
   }
-  
+
   /**
    * Register validation schema for a store
    */
   function registerSchema(key: string, schema: ValidationSchema): void {
     schemas.set(key, schema)
   }
-  
+
   /**
    * Validate data with business rules
    */
@@ -413,11 +416,11 @@ export const useValidationStore = defineStore('validation', () => {
     const rules = businessRules.get(store) || []
     const errors: ValidationError[] = []
     const warnings: ValidationWarning[] = []
-    
+
     for (const rule of rules) {
       try {
         const isValid = await rule.validator(data, context)
-        
+
         if (!isValid) {
           const validationItem = {
             field: 'business',
@@ -425,7 +428,7 @@ export const useValidationStore = defineStore('validation', () => {
             value: data,
             rule: rule.name
           }
-          
+
           if (rule.level === 'error') {
             errors.push(validationItem)
           } else {
@@ -442,14 +445,14 @@ export const useValidationStore = defineStore('validation', () => {
         })
       }
     }
-    
+
     return {
       isValid: errors.length === 0,
       errors,
       warnings
     }
   }
-  
+
   /**
    * Full validation combining schema and business rules
    */
@@ -460,28 +463,28 @@ export const useValidationStore = defineStore('validation', () => {
     context?: ValidationContext
   ): Promise<ValidationResult> {
     const startTime = performance.now()
-    
+
     try {
       const results: ValidationResult[] = []
-      
+
       // Schema validation
       if (schemaKey && schemas.has(schemaKey)) {
         const schema = schemas.get(schemaKey)!
         const schemaResult = await validateData(data, schema, context)
         results.push(schemaResult)
       }
-      
+
       // Business rules validation
       const businessResult = await validateWithBusinessRules(store, data, context)
       results.push(businessResult)
-      
+
       // Combine results
       const combinedResult: ValidationResult = {
         isValid: results.every(r => r.isValid),
         errors: results.flatMap(r => r.errors),
         warnings: results.flatMap(r => r.warnings)
       }
-      
+
       // Update statistics
       stats.totalValidations++
       if (combinedResult.isValid) {
@@ -489,45 +492,47 @@ export const useValidationStore = defineStore('validation', () => {
       } else {
         stats.failedValidations++
       }
-      
+
       const endTime = performance.now()
       const duration = endTime - startTime
-      stats.averageValidationTime = 
-        (stats.averageValidationTime * (stats.totalValidations - 1) + duration) / stats.totalValidations
-      
+      stats.averageValidationTime =
+        (stats.averageValidationTime * (stats.totalValidations - 1) + duration) /
+        stats.totalValidations
+
       return combinedResult
-      
     } catch (error) {
       stats.totalValidations++
       stats.failedValidations++
-      
+
       console.error('Validation error:', error)
       return {
         isValid: false,
-        errors: [{
-          field: 'system',
-          message: '验证系统错误',
-          value: data,
-          rule: 'system'
-        }],
+        errors: [
+          {
+            field: 'system',
+            message: '验证系统错误',
+            value: data,
+            rule: 'system'
+          }
+        ],
         warnings: []
       }
     }
   }
-  
+
   return {
     // State
     validationStats,
-    
+
     // Registry
     registerBusinessRules,
     registerSchema,
-    
+
     // Validation
     validateData,
     validateWithBusinessRules,
     validateComplete,
-    
+
     // Utilities
     getBusinessRules: (store: string) => businessRules.get(store) || [],
     getSchema: (key: string) => schemas.get(key),
@@ -545,7 +550,7 @@ export const useValidationStore = defineStore('validation', () => {
  */
 export function useValidation(store: string) {
   const validationStore = useValidationStore()
-  
+
   /**
    * Validate data for this store
    */
@@ -562,10 +567,10 @@ export function useValidation(store: string) {
       userId,
       timestamp: Date.now()
     }
-    
+
     return await validationStore.validateComplete(store, data, schemaKey, context)
   }
-  
+
   /**
    * Validate and throw error if invalid
    */
@@ -576,36 +581,36 @@ export function useValidation(store: string) {
     userId?: string
   ): Promise<void> {
     const result = await validate(data, schemaKey, operation, userId)
-    
+
     if (!result.isValid) {
       const errorMessage = result.errors.map(e => e.message).join('; ')
       throw new Error(`数据验证失败: ${errorMessage}`)
     }
   }
-  
+
   /**
    * Register schema for this store
    */
   function registerSchema(key: string, schema: ValidationSchema): void {
     validationStore.registerSchema(`${store}:${key}`, schema)
   }
-  
+
   /**
    * Register business rules for this store
    */
   function registerBusinessRules(rules: BusinessRule[]): void {
     validationStore.registerBusinessRules(store, rules)
   }
-  
+
   return {
     validate,
     validateOrThrow,
     registerSchema,
     registerBusinessRules,
-    
+
     // Built-in validators
     validators: builtInValidators,
-    
+
     // Access to global store
     global: validationStore
   }
@@ -627,10 +632,12 @@ export const commonSchemas = {
     email: {
       type: 'string',
       required: true,
-      custom: [{
-        message: '请输入有效的邮箱地址',
-        validator: (value) => builtInValidators.email(value)
-      }]
+      custom: [
+        {
+          message: '请输入有效的邮箱地址',
+          validator: value => builtInValidators.email(value)
+        }
+      ]
     },
     password: {
       type: 'string',
@@ -650,7 +657,7 @@ export const commonSchemas = {
       enum: ['admin', 'sales_manager', 'sales_rep', 'viewer']
     }
   }),
-  
+
   // Customer data validation
   customer: (): ValidationSchema => ({
     name: {
@@ -662,18 +669,22 @@ export const commonSchemas = {
     phone: {
       type: 'string',
       required: true,
-      custom: [{
-        message: '请输入有效的手机号码',
-        validator: (value) => builtInValidators.phone(value)
-      }]
+      custom: [
+        {
+          message: '请输入有效的手机号码',
+          validator: value => builtInValidators.phone(value)
+        }
+      ]
     },
     email: {
       type: 'string',
       required: false,
-      custom: [{
-        message: '请输入有效的邮箱地址',
-        validator: (value) => !value || builtInValidators.email(value)
-      }]
+      custom: [
+        {
+          message: '请输入有效的邮箱地址',
+          validator: value => !value || builtInValidators.email(value)
+        }
+      ]
     },
     address: {
       type: 'string',
@@ -681,7 +692,7 @@ export const commonSchemas = {
       maxLength: 500
     }
   }),
-  
+
   // Product data validation
   product: (): ValidationSchema => ({
     name: {
@@ -704,17 +715,19 @@ export const commonSchemas = {
     price: {
       type: 'number',
       required: true,
-      custom: [{
-        message: '价格必须大于0',
-        validator: (value) => builtInValidators.positiveNumber(value)
-      }]
+      custom: [
+        {
+          message: '价格必须大于0',
+          validator: value => builtInValidators.positiveNumber(value)
+        }
+      ]
     },
     is_active: {
       type: 'boolean',
       required: true
     }
   }),
-  
+
   // Quote data validation
   quote: (): ValidationSchema => ({
     customer_name: {
@@ -726,10 +739,12 @@ export const commonSchemas = {
     customer_phone: {
       type: 'string',
       required: true,
-      custom: [{
-        message: '请输入有效的手机号码',
-        validator: (value) => builtInValidators.phone(value)
-      }]
+      custom: [
+        {
+          message: '请输入有效的手机号码',
+          validator: value => builtInValidators.phone(value)
+        }
+      ]
     },
     items: {
       type: 'array',
@@ -739,10 +754,12 @@ export const commonSchemas = {
     total_price: {
       type: 'number',
       required: true,
-      custom: [{
-        message: '总价必须大于0',
-        validator: (value) => builtInValidators.positiveNumber(value)
-      }]
+      custom: [
+        {
+          message: '总价必须大于0',
+          validator: value => builtInValidators.positiveNumber(value)
+        }
+      ]
     },
     status: {
       type: 'string',

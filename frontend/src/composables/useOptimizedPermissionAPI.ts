@@ -1,9 +1,9 @@
-import { ref, computed, reactive, nextTick } from 'vue'
+import { computed, nextTick, reactive, ref } from 'vue'
 import type { Permission, Role, User } from './usePermissionCache'
 
 /**
  * 优化权限API系统组合式API
- * 
+ *
  * 功能说明：
  * - 请求批处理：将多个权限请求合并为单次API调用
  * - 智能去重：避免重复的网络请求
@@ -11,21 +11,21 @@ import type { Permission, Role, User } from './usePermissionCache'
  * - 智能重试：指数退避算法处理失败请求
  * - 智能预取：基于用户行为预测并预加载权限
  * - 负载优化：压缩传输数据，优化请求头
- * 
+ *
  * 性能优化：
  * - API调用减少80%以上
  * - 网络延迟优化通过批处理和预取
  * - 智能缓存策略减少重复数据传输
  * - 断路器模式保证系统稳定性
  * - 离线模式支持和优雅降级
- * 
+ *
  * 应用场景：
  * - 管理员权限验证API调用优化
  * - 批量权限检查场景
  * - 页面权限预加载
  * - 角色权限同步
  * - 权限变更通知
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -117,7 +117,7 @@ const DEFAULT_CONFIG: APIConfig = {
  */
 export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
   const opts = { ...DEFAULT_CONFIG, ...config }
-  
+
   // API状态
   const state = reactive({
     isOnline: navigator.onLine,
@@ -127,14 +127,14 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     lastError: null as Error | null,
     consecutiveErrors: 0
   })
-  
+
   // 请求队列和缓存
   const requestQueue = new Map<string, APIRequest>()
   const batchQueue: BatchRequest[] = []
   const deduplicationCache = new Map<string, Promise<any>>()
-  const prefetchCache = new Map<string, { data: any, timestamp: number }>()
+  const prefetchCache = new Map<string, { data: any; timestamp: number }>()
   const userBehaviorPatterns = new Map<string, UserBehaviorPattern>()
-  
+
   // 性能指标
   const metrics = reactive<APIMetrics>({
     totalRequests: 0,
@@ -147,10 +147,10 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     currentConcurrency: 0,
     circuitBreakerOpen: false
   })
-  
+
   // 当前活跃请求
   const activeRequests = new Set<string>()
-  
+
   // 定时器
   let batchTimer: number | null = null
   let metricsTimer: number | null = null
@@ -185,7 +185,7 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     state.circuitBreakerOpen = false
     state.consecutiveErrors = 0
     metrics.circuitBreakerOpen = false
-    
+
     if (circuitBreakerTimer) {
       clearTimeout(circuitBreakerTimer)
       circuitBreakerTimer = null
@@ -198,7 +198,7 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
   const triggerCircuitBreaker = () => {
     state.circuitBreakerOpen = true
     metrics.circuitBreakerOpen = true
-    
+
     // 30秒后尝试重置
     circuitBreakerTimer = setTimeout(() => {
       resetCircuitBreaker()
@@ -209,30 +209,30 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    * HTTP请求封装
    */
   const httpRequest = async (
-    endpoint: string, 
-    method: 'GET' | 'POST' = 'GET', 
+    endpoint: string,
+    method: 'GET' | 'POST' = 'GET',
     data?: any,
     options: RequestInit = {}
   ): Promise<any> => {
     const startTime = performance.now()
     const requestId = generateRequestId(endpoint, data || {})
-    
+
     try {
       activeRequests.add(requestId)
       metrics.currentConcurrency = activeRequests.size
-      
+
       const url = `${opts.baseURL}${endpoint}`
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
         ...((options.headers as Record<string, string>) || {})
       }
-      
+
       // 请求压缩
       if (opts.enableCompression && data && JSON.stringify(data).length > 1024) {
         headers['Content-Encoding'] = 'gzip'
         // 实际项目中需要实现数据压缩
       }
-      
+
       const requestOptions: RequestInit = {
         method,
         headers,
@@ -240,15 +240,15 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         signal: AbortSignal.timeout(opts.requestTimeout),
         ...options
       }
-      
+
       const response = await fetch(url, requestOptions)
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
-      
+
       const result = await response.json()
-      
+
       // 成功请求，重置错误计数
       if (state.consecutiveErrors > 0) {
         state.consecutiveErrors = Math.max(0, state.consecutiveErrors - 1)
@@ -256,28 +256,28 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
           resetCircuitBreaker()
         }
       }
-      
+
       return result
-      
     } catch (error) {
       state.consecutiveErrors++
       state.lastError = error as Error
       metrics.errors++
-      
+
       // 检查是否需要触发断路器
       if (state.consecutiveErrors >= 5) {
         triggerCircuitBreaker()
       }
-      
+
       throw error
-      
     } finally {
       activeRequests.delete(requestId)
       metrics.currentConcurrency = activeRequests.size
-      
+
       // 更新响应时间统计
       const responseTime = performance.now() - startTime
-      metrics.averageResponseTime = (metrics.averageResponseTime * (metrics.totalRequests - 1) + responseTime) / metrics.totalRequests
+      metrics.averageResponseTime =
+        (metrics.averageResponseTime * (metrics.totalRequests - 1) + responseTime) /
+        metrics.totalRequests
     }
   }
 
@@ -286,7 +286,7 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    */
   const retryWithBackoff = async (request: APIRequest): Promise<any> => {
     let lastError: Error
-    
+
     for (let attempt = 0; attempt <= request.maxRetries; attempt++) {
       try {
         if (attempt > 0) {
@@ -294,20 +294,19 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
           const delay = opts.retryDelay * Math.pow(2, attempt - 1) + Math.random() * 1000
           await new Promise(resolve => setTimeout(resolve, delay))
         }
-        
+
         return await executeRequest(request)
-        
       } catch (error) {
         lastError = error as Error
         request.retries = attempt + 1
-        
+
         // 对于某些错误类型，不进行重试
         if (error instanceof TypeError || (error as any)?.status === 401) {
           break
         }
       }
     }
-    
+
     throw lastError!
   }
 
@@ -316,22 +315,22 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    */
   const executeRequest = async (request: APIRequest): Promise<any> => {
     const { type, userId, roleId, resource, action, params } = request
-    
+
     switch (type) {
       case 'permission':
-        return httpRequest(`/check`, 'POST', {
+        return httpRequest('/check', 'POST', {
           userId,
           resource,
           action,
           ...params
         })
-        
+
       case 'role':
         return httpRequest(`/roles/${roleId}`)
-        
+
       case 'user':
         return httpRequest(`/users/${userId}/permissions`)
-        
+
       default:
         throw new Error(`Unknown request type: ${type}`)
     }
@@ -342,35 +341,34 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    */
   const processBatch = async (requests: APIRequest[]): Promise<void> => {
     if (requests.length === 0) return
-    
+
     try {
       state.processing = true
       metrics.batchRequests++
-      
+
       // 按类型分组请求
       const grouped = {
         permissions: requests.filter(r => r.type === 'permission'),
         roles: requests.filter(r => r.type === 'role'),
         users: requests.filter(r => r.type === 'user')
       }
-      
+
       // 并行处理不同类型的批量请求
       const promises: Promise<void>[] = []
-      
+
       if (grouped.permissions.length > 0) {
         promises.push(processBatchPermissions(grouped.permissions))
       }
-      
+
       if (grouped.roles.length > 0) {
         promises.push(processBatchRoles(grouped.roles))
       }
-      
+
       if (grouped.users.length > 0) {
         promises.push(processBatchUsers(grouped.users))
       }
-      
+
       await Promise.allSettled(promises)
-      
     } finally {
       state.processing = false
     }
@@ -387,17 +385,16 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         action: req.action!,
         ...req.params
       }))
-      
+
       const results = await httpRequest('/batch-check', 'POST', {
         checks: permissionChecks
       })
-      
+
       // 分发结果到各个请求
       requests.forEach((request, index) => {
         const result = results.permissions[index]
         request.resolve(result)
       })
-      
     } catch (error) {
       // 批量请求失败，回退到单个请求
       for (const request of requests) {
@@ -420,13 +417,13 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
       const results = await httpRequest('/batch-roles', 'POST', {
         roleIds
       })
-      
+
       // 构建角色映射
       const roleMap = new Map<string, Role>()
       results.roles.forEach((role: Role) => {
         roleMap.set(role.id, role)
       })
-      
+
       // 分发结果
       requests.forEach(request => {
         const role = roleMap.get(request.roleId!)
@@ -436,7 +433,6 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
           request.reject(new Error(`Role not found: ${request.roleId}`))
         }
       })
-      
     } catch (error) {
       // 批量失败，回退到单个请求
       for (const request of requests) {
@@ -459,13 +455,13 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
       const results = await httpRequest('/batch-users', 'POST', {
         userIds
       })
-      
+
       // 构建用户映射
       const userMap = new Map<string, User>()
       results.users.forEach((user: User) => {
         userMap.set(user.id, user)
       })
-      
+
       // 分发结果
       requests.forEach(request => {
         const user = userMap.get(request.userId!)
@@ -475,7 +471,6 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
           request.reject(new Error(`User not found: ${request.userId}`))
         }
       })
-      
     } catch (error) {
       // 批量失败，回退到单个请求
       for (const request of requests) {
@@ -496,7 +491,7 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     if (state.processing || requestQueue.size === 0 || isCircuitBreakerOpen()) {
       return
     }
-    
+
     // 按优先级分组
     const requests = Array.from(requestQueue.values())
     const priorityGroups = {
@@ -504,24 +499,24 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
       medium: requests.filter(r => r.priority === 'medium'),
       low: requests.filter(r => r.priority === 'low')
     }
-    
+
     // 优先处理高优先级请求
     for (const priority of ['high', 'medium', 'low'] as const) {
       const group = priorityGroups[priority]
       if (group.length === 0) continue
-      
+
       const batchSize = Math.min(group.length, opts.maxBatchSize)
       const batch = group.slice(0, batchSize)
-      
+
       // 从队列中移除
       batch.forEach(request => requestQueue.delete(request.id))
-      
+
       // 处理批次
       await processBatch(batch)
-      
+
       // 更新队列大小
       state.queueSize = requestQueue.size
-      
+
       // 避免阻塞主线程
       await nextTick()
     }
@@ -532,19 +527,19 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    */
   const prefetchPermissions = async (userId: string, predictedResources: string[]) => {
     if (!opts.enablePrefetching) return
-    
+
     const prefetchRequests: Array<{
       userId: string
       resource: string
       action: string
     }> = []
-    
+
     // 基于预测的资源生成常见权限请求
     for (const resource of predictedResources) {
       const commonActions = ['read', 'write', 'delete'] // 可以根据实际业务调整
       for (const action of commonActions) {
         const cacheKey = `prefetch:${userId}:${resource}:${action}`
-        
+
         // 检查预取缓存
         const cached = prefetchCache.get(cacheKey)
         if (!cached || Date.now() - cached.timestamp > 5 * 60 * 1000) {
@@ -552,13 +547,13 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         }
       }
     }
-    
+
     if (prefetchRequests.length > 0) {
       try {
         const results = await httpRequest('/batch-check', 'POST', {
           checks: prefetchRequests
         })
-        
+
         // 缓存预取结果
         results.permissions.forEach((permission: Permission, index: number) => {
           const request = prefetchRequests[index]
@@ -568,7 +563,6 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
             timestamp: Date.now()
           })
         })
-        
       } catch (error) {
         console.warn('Prefetch failed:', error)
       }
@@ -580,20 +574,18 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    */
   const analyzeUserBehavior = (userId: string, resource: string, action: string) => {
     if (!opts.enablePrefetching) return
-    
+
     const pattern = userBehaviorPatterns.get(userId) || {
       userId,
       commonPaths: [],
       permissionSequences: [],
       roleTransitions: []
     }
-    
+
     // 更新权限序列
     const sequenceKey = `${resource}:${action}`
-    let sequence = pattern.permissionSequences.find(s => 
-      s.resources.includes(sequenceKey)
-    )
-    
+    const sequence = pattern.permissionSequences.find(s => s.resources.includes(sequenceKey))
+
     if (sequence) {
       sequence.frequency++
       sequence.lastAccess = new Date()
@@ -604,20 +596,20 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         lastAccess: new Date()
       })
     }
-    
+
     // 限制序列数量
     pattern.permissionSequences = pattern.permissionSequences
       .sort((a, b) => b.frequency - a.frequency)
       .slice(0, 20)
-    
+
     userBehaviorPatterns.set(userId, pattern)
-    
+
     // 基于行为模式预测下一步权限需求
     const topSequences = pattern.permissionSequences
       .filter(s => s.frequency > 2)
       .slice(0, 5)
       .map(s => s.resources[0].split(':')[0])
-    
+
     if (topSequences.length > 0) {
       // 异步预取，不阻塞当前请求
       setTimeout(() => prefetchPermissions(userId, topSequences), 0)
@@ -628,21 +620,21 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
    * 公共API方法
    */
   const checkPermission = (
-    userId: string, 
-    resource: string, 
+    userId: string,
+    resource: string,
     action: string,
     priority: 'high' | 'medium' | 'low' = 'medium'
   ): Promise<Permission> => {
     return new Promise((resolve, reject) => {
       const requestId = generateRequestId('permission', { userId, resource, action })
-      
+
       // 检查去重缓存
       const existingPromise = checkDuplication(requestId)
       if (existingPromise) {
         metrics.deduplicatedRequests++
         return existingPromise.then(resolve).catch(reject)
       }
-      
+
       // 检查预取缓存
       const prefetchKey = `prefetch:${userId}:${resource}:${action}`
       const prefetched = prefetchCache.get(prefetchKey)
@@ -652,10 +644,10 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         resolve(prefetched.data)
         return
       }
-      
+
       // 分析用户行为
       analyzeUserBehavior(userId, resource, action)
-      
+
       // 创建请求
       const request: APIRequest = {
         id: requestId,
@@ -670,39 +662,42 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         resolve,
         reject
       }
-      
+
       // 加入缓存和队列
       const promise = new Promise<Permission>((res, rej) => {
         request.resolve = res
         request.reject = rej
       })
-      
+
       deduplicationCache.set(requestId, promise)
       requestQueue.set(requestId, request)
       state.queueSize = requestQueue.size
       metrics.totalRequests++
-      
+
       // 设置去重缓存过期
       setTimeout(() => {
         deduplicationCache.delete(requestId)
       }, 5000)
-      
+
       // 触发批处理
       scheduleBatchProcessing()
     })
   }
 
-  const getRole = (roleId: string, priority: 'high' | 'medium' | 'low' = 'medium'): Promise<Role> => {
+  const getRole = (
+    roleId: string,
+    priority: 'high' | 'medium' | 'low' = 'medium'
+  ): Promise<Role> => {
     return new Promise((resolve, reject) => {
       const requestId = generateRequestId('role', { roleId })
-      
+
       // 检查去重缓存
       const existingPromise = checkDuplication(requestId)
       if (existingPromise) {
         metrics.deduplicatedRequests++
         return existingPromise.then(resolve).catch(reject)
       }
-      
+
       const request: APIRequest = {
         id: requestId,
         type: 'role',
@@ -714,35 +709,38 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         resolve,
         reject
       }
-      
+
       const promise = new Promise<Role>((res, rej) => {
         request.resolve = res
         request.reject = rej
       })
-      
+
       deduplicationCache.set(requestId, promise)
       requestQueue.set(requestId, request)
       state.queueSize = requestQueue.size
       metrics.totalRequests++
-      
+
       setTimeout(() => {
         deduplicationCache.delete(requestId)
       }, 5000)
-      
+
       scheduleBatchProcessing()
     })
   }
 
-  const getUser = (userId: string, priority: 'high' | 'medium' | 'low' = 'medium'): Promise<User> => {
+  const getUser = (
+    userId: string,
+    priority: 'high' | 'medium' | 'low' = 'medium'
+  ): Promise<User> => {
     return new Promise((resolve, reject) => {
       const requestId = generateRequestId('user', { userId })
-      
+
       const existingPromise = checkDuplication(requestId)
       if (existingPromise) {
         metrics.deduplicatedRequests++
         return existingPromise.then(resolve).catch(reject)
       }
-      
+
       const request: APIRequest = {
         id: requestId,
         type: 'user',
@@ -754,21 +752,21 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
         resolve,
         reject
       }
-      
+
       const promise = new Promise<User>((res, rej) => {
         request.resolve = res
         request.reject = rej
       })
-      
+
       deduplicationCache.set(requestId, promise)
       requestQueue.set(requestId, request)
       state.queueSize = requestQueue.size
       metrics.totalRequests++
-      
+
       setTimeout(() => {
         deduplicationCache.delete(requestId)
       }, 5000)
-      
+
       scheduleBatchProcessing()
     })
   }
@@ -780,7 +778,7 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     if (batchTimer) {
       clearTimeout(batchTimer)
     }
-    
+
     batchTimer = setTimeout(async () => {
       await processQueue()
       batchTimer = null
@@ -795,7 +793,7 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
       clearTimeout(batchTimer)
       batchTimer = null
     }
-    
+
     await processQueue()
   }
 
@@ -807,17 +805,17 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
       clearTimeout(batchTimer)
       batchTimer = null
     }
-    
+
     if (metricsTimer) {
       clearInterval(metricsTimer)
       metricsTimer = null
     }
-    
+
     if (circuitBreakerTimer) {
       clearTimeout(circuitBreakerTimer)
       circuitBreakerTimer = null
     }
-    
+
     requestQueue.clear()
     batchQueue.length = 0
     deduplicationCache.clear()
@@ -848,16 +846,26 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     size: state.queueSize,
     processing: state.processing,
     highPriorityCount: Array.from(requestQueue.values()).filter(r => r.priority === 'high').length,
-    mediumPriorityCount: Array.from(requestQueue.values()).filter(r => r.priority === 'medium').length,
+    mediumPriorityCount: Array.from(requestQueue.values()).filter(r => r.priority === 'medium')
+      .length,
     lowPriorityCount: Array.from(requestQueue.values()).filter(r => r.priority === 'low').length
   }))
 
   const performanceStats = computed(() => ({
     requestsPerSecond: metrics.totalRequests / ((Date.now() - startTime) / 1000),
     batchEfficiency: metrics.batchRequests > 0 ? metrics.totalRequests / metrics.batchRequests : 0,
-    deduplicationRate: metrics.totalRequests > 0 ? (metrics.deduplicatedRequests / metrics.totalRequests * 100).toFixed(2) : '0.00',
-    prefetchHitRate: metrics.totalRequests > 0 ? (metrics.prefetchHits / metrics.totalRequests * 100).toFixed(2) : '0.00',
-    errorRate: metrics.totalRequests > 0 ? (metrics.errors / metrics.totalRequests * 100).toFixed(2) : '0.00'
+    deduplicationRate:
+      metrics.totalRequests > 0
+        ? ((metrics.deduplicatedRequests / metrics.totalRequests) * 100).toFixed(2)
+        : '0.00',
+    prefetchHitRate:
+      metrics.totalRequests > 0
+        ? ((metrics.prefetchHits / metrics.totalRequests) * 100).toFixed(2)
+        : '0.00',
+    errorRate:
+      metrics.totalRequests > 0
+        ? ((metrics.errors / metrics.totalRequests) * 100).toFixed(2)
+        : '0.00'
   }))
 
   const startTime = Date.now()
@@ -866,31 +874,31 @@ export function useOptimizedPermissionAPI(config: Partial<APIConfig> = {}) {
     // 状态
     state,
     metrics,
-    
+
     // 计算属性
     queueStatus,
     performanceStats,
-    
+
     // 核心API
     checkPermission,
     getRole,
     getUser,
-    
+
     // 队列管理
     flushQueue,
     scheduleBatchProcessing,
-    
+
     // 智能功能
     prefetchPermissions,
     analyzeUserBehavior,
-    
+
     // 断路器控制
     resetCircuitBreaker,
-    
+
     // 工具方法
     generateRequestId,
     isCircuitBreakerOpen,
-    
+
     // 清理
     cleanup
   }
@@ -909,10 +917,10 @@ export const apiOptimizationPresets = {
     enableCompression: true,
     enablePrefetching: true
   },
-  
+
   // 标准配置
   standard: DEFAULT_CONFIG,
-  
+
   // 低延迟配置
   lowLatency: {
     maxBatchSize: 10,
@@ -922,7 +930,7 @@ export const apiOptimizationPresets = {
     enableCompression: false,
     enablePrefetching: true
   },
-  
+
   // 资源受限配置
   resourceConstrained: {
     maxBatchSize: 5,

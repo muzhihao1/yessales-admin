@@ -1,25 +1,25 @@
 /**
  * Store Middleware Index
- * 
+ *
  * Provides unified middleware plugins and store enhancers for Pinia.
  */
 
 import type { PiniaPluginContext } from 'pinia'
-import { 
+import {
+  useCacheStore,
+  useDebugStore,
   useGlobalLoadingStore,
   useOptimisticStore,
-  useCacheStore,
-  useValidationStore,
-  useDebugStore,
-  usePersistenceStore
+  usePersistenceStore,
+  useValidationStore
 } from '../utils'
-import type { 
+import type {
+  DebugConfig,
   ErrorHandlerConfig,
   LoadingConfig,
   OptimisticConfig,
   PersistenceConfig,
-  ValidationSchema,
-  DebugConfig
+  ValidationSchema
 } from '../utils'
 
 /**
@@ -28,35 +28,35 @@ import type {
 export interface StoreMiddlewareConfig {
   // Error handling
   errorHandler?: Partial<ErrorHandlerConfig>
-  
+
   // Loading state
   loading?: Partial<LoadingConfig> & {
     enableGlobal?: boolean
   }
-  
+
   // Optimistic updates
   optimistic?: Partial<OptimisticConfig> & {
     enableAutoRollback?: boolean
   }
-  
+
   // Caching
   cache?: {
     enableAutoCache?: boolean
     defaultTTL?: number
     tags?: string[]
   }
-  
+
   // Persistence
   persistence?: Partial<PersistenceConfig> & {
     enableAutoPersist?: boolean
   }
-  
+
   // Validation
   validation?: {
     schemas?: Record<string, ValidationSchema>
     enableAutoValidation?: boolean
   }
-  
+
   // Debugging
   debug?: Partial<DebugConfig> & {
     enableInProduction?: boolean
@@ -74,10 +74,10 @@ export interface GlobalMiddlewareConfig {
   enablePersistence?: boolean
   enableValidation?: boolean
   enableDebugging?: boolean
-  
+
   // Development mode settings
   developmentOnly?: boolean
-  
+
   // Store-specific overrides
   storeConfigs?: Record<string, StoreMiddlewareConfig>
 }
@@ -105,16 +105,16 @@ export class StoreEnhancer {
     private storeId: string,
     private config: StoreMiddlewareConfig = {}
   ) {}
-  
+
   /**
    * Enhance store with error handling
    */
   withErrorHandling<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('errorHandler')) return store
-    
+
     // Wrap all store methods with error handling
     const enhanced = { ...store }
-    
+
     for (const [key, value] of Object.entries(store)) {
       if (typeof value === 'function') {
         enhanced[key] = async (...args: any[]) => {
@@ -127,76 +127,76 @@ export class StoreEnhancer {
         }
       }
     }
-    
+
     return enhanced
   }
-  
+
   /**
    * Enhance store with loading state management
    */
   withLoadingState<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('loading')) return store
-    
+
     // Loading state will be managed by the loading-state utility
     return store
   }
-  
+
   /**
    * Enhance store with caching
    */
   withCaching<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('cache')) return store
-    
+
     // Caching will be handled by the cache-manager utility
     return store
   }
-  
+
   /**
    * Enhance store with persistence
    */
   withPersistence<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('persistence')) return store
-    
+
     // Persistence will be handled by the persistence utility
     return store
   }
-  
+
   /**
    * Enhance store with validation
    */
   withValidation<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('validation')) return store
-    
+
     // Validation will be handled by the validation utility
     return store
   }
-  
+
   /**
    * Enhance store with debugging
    */
   withDebugging<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('debug')) return store
-    
+
     // Debugging will be handled by the debug utility
     return store
   }
-  
+
   /**
    * Apply all enhancements
    */
   enhance<T extends Record<string, any>>(store: T): T {
     let enhanced = store
-    
+
     enhanced = this.withErrorHandling(enhanced)
     enhanced = this.withLoadingState(enhanced)
     enhanced = this.withCaching(enhanced)
     enhanced = this.withPersistence(enhanced)
     enhanced = this.withValidation(enhanced)
     enhanced = this.withDebugging(enhanced)
-    
+
     return enhanced
   }
-  
+
   /**
    * Check if a feature should be enabled
    */
@@ -210,63 +210,63 @@ export class StoreEnhancer {
  */
 export function createStoreMiddleware(globalConfig: Partial<GlobalMiddlewareConfig> = {}) {
   const config = { ...DEFAULT_GLOBAL_CONFIG, ...globalConfig }
-  
+
   return ({ store, options }: PiniaPluginContext) => {
     // Skip if disabled for this environment
     if (config.developmentOnly && process.env.NODE_ENV !== 'development') {
       return
     }
-    
+
     const storeId = store.$id
     const storeConfig = config.storeConfigs?.[storeId] || {}
-    
+
     // Initialize global stores if enabled
     if (config.enableLoadingState) {
       useGlobalLoadingStore()
     }
-    
+
     if (config.enableOptimisticUpdates) {
       useOptimisticStore()
     }
-    
+
     if (config.enableCaching) {
       useCacheStore()
     }
-    
+
     if (config.enableValidation) {
       useValidationStore()
     }
-    
+
     if (config.enableDebugging) {
       const debugStore = useDebugStore()
-      
+
       // Auto-track store actions in debug mode
       store.$onAction(({ name, args, after, onError }) => {
         const startTime = performance.now()
-        
-        after((result) => {
+
+        after(result => {
           const duration = performance.now() - startTime
           debugStore.logAction(storeId, name, args, duration, result)
           debugStore.recordPerformance(storeId, name, duration)
         })
-        
-        onError((error) => {
+
+        onError(error => {
           const duration = performance.now() - startTime
           debugStore.logAction(storeId, name, args, duration, undefined, error)
         })
       })
-      
+
       // Auto-track state changes
       store.$subscribe((mutation, state) => {
         debugStore.takeStateSnapshot(storeId, state, mutation.type)
         debugStore.trackMemoryUsage(storeId, state)
       })
     }
-    
+
     if (config.enablePersistence) {
       usePersistenceStore()
     }
-    
+
     // Add store enhancer to options for manual use
     ;(store as any).$enhancer = new StoreEnhancer(storeId, storeConfig)
   }
@@ -282,7 +282,7 @@ export function createEnhancedStore<T extends Record<string, any>>(
 ): T {
   const store = storeFactory()
   const enhancer = new StoreEnhancer(storeId, config)
-  
+
   return enhancer.enhance(store)
 }
 
@@ -291,10 +291,10 @@ export function createEnhancedStore<T extends Record<string, any>>(
  */
 export function useStoreMiddleware(storeId: string, config: StoreMiddlewareConfig = {}) {
   const enhancer = new StoreEnhancer(storeId, config)
-  
+
   return {
     enhancer,
-    
+
     // Quick enhancement methods
     withErrorHandling: <T>(store: T) => enhancer.withErrorHandling(store),
     withLoadingState: <T>(store: T) => enhancer.withLoadingState(store),
@@ -322,7 +322,7 @@ export const middlewarePresets = {
     enableValidation: true,
     enableDebugging: true
   }),
-  
+
   /**
    * Production-ready configuration
    */
@@ -335,7 +335,7 @@ export const middlewarePresets = {
     enableValidation: true,
     enableDebugging: false
   }),
-  
+
   /**
    * Development configuration with enhanced debugging
    */
@@ -349,7 +349,7 @@ export const middlewarePresets = {
     enableDebugging: true,
     developmentOnly: false
   }),
-  
+
   /**
    * Minimal configuration for basic stores
    */
@@ -362,7 +362,7 @@ export const middlewarePresets = {
     enableValidation: false,
     enableDebugging: false
   }),
-  
+
   /**
    * Performance-focused configuration
    */
@@ -387,14 +387,14 @@ export const middlewareUtils = {
   hasMiddleware(store: any, middleware: keyof StoreMiddlewareConfig): boolean {
     return store.$enhancer?.shouldEnable(middleware) || false
   },
-  
+
   /**
    * Get middleware configuration for store
    */
   getConfig(store: any): StoreMiddlewareConfig {
     return store.$enhancer?.config || {}
   },
-  
+
   /**
    * Apply middleware to existing store
    */

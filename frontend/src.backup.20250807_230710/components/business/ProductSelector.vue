@@ -35,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import ProductSelectorContent from './ProductSelectorContent.vue'
-import type { Product, Category } from '@/types/api'
+import type { Category, Product } from '@/types/api'
 
 export interface SelectedProduct {
   product: Product
@@ -72,16 +72,19 @@ const emit = defineEmits<{
 
 const popupRef = ref()
 
-watch(() => props.show, async (newVal) => {
-  if (props.mode === 'modal' && popupRef.value) {
-    await nextTick()
-    if (newVal) {
-      popupRef.value.open()
-    } else {
-      popupRef.value.close()
+watch(
+  () => props.show,
+  async newVal => {
+    if (props.mode === 'modal' && popupRef.value) {
+      await nextTick()
+      if (newVal) {
+        popupRef.value.open()
+      } else {
+        popupRef.value.close()
+      }
     }
   }
-})
+)
 
 const handlePopupChange = (e: { show: boolean }) => {
   emit('update:show', e.show)

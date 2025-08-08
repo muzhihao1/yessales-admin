@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { ProductsApi } from '@/api/products'
-import type { Product, ProductSku, Accessory } from '@/types/models'
+import type { Accessory, Product, ProductSku } from '@/types/models'
 import type { QueryParams } from '@/types/api'
 
 export const useProductsStore = defineStore('products', () => {
@@ -12,12 +12,12 @@ export const useProductsStore = defineStore('products', () => {
   const currentAccessory = ref<Accessory | null>(null)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
-  
+
   // Pagination
   const currentPage = ref(1)
   const pageSize = ref(20)
   const total = ref(0)
-  
+
   // Filters
   const searchKeyword = ref('')
   const categoryFilter = ref<string>('')
@@ -25,11 +25,9 @@ export const useProductsStore = defineStore('products', () => {
 
   // Getters
   const totalPages = computed(() => Math.ceil(total.value / pageSize.value))
-  
-  const activeProducts = computed(() => 
-    products.value.filter(p => p.is_active)
-  )
-  
+
+  const activeProducts = computed(() => products.value.filter(p => p.is_active))
+
   const productCategories = computed(() => {
     const categories = new Set<string>()
     products.value.forEach(p => {
@@ -37,30 +35,31 @@ export const useProductsStore = defineStore('products', () => {
     })
     return Array.from(categories).sort()
   })
-  
+
   const filteredProducts = computed(() => {
     let result = [...products.value]
-    
+
     // 关键词搜索
     if (searchKeyword.value) {
       const keyword = searchKeyword.value.toLowerCase()
-      result = result.filter(p => 
-        p.name.toLowerCase().includes(keyword) ||
-        p.model.toLowerCase().includes(keyword) ||
-        p.description?.toLowerCase().includes(keyword)
+      result = result.filter(
+        p =>
+          p.name.toLowerCase().includes(keyword) ||
+          p.model.toLowerCase().includes(keyword) ||
+          p.description?.toLowerCase().includes(keyword)
       )
     }
-    
+
     // 分类筛选
     if (categoryFilter.value) {
       result = result.filter(p => p.category === categoryFilter.value)
     }
-    
+
     // 状态筛选
     if (statusFilter.value !== null) {
       result = result.filter(p => p.is_active === statusFilter.value)
     }
-    
+
     return result
   })
 
@@ -68,16 +67,16 @@ export const useProductsStore = defineStore('products', () => {
   async function fetchProducts(params?: QueryParams) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const queryParams: QueryParams = {
         page: currentPage.value,
         page_size: pageSize.value,
-        ...params,
+        ...params
       }
-      
+
       const response = await ProductsApi.getProducts(queryParams)
-      
+
       if (response.success && response.data) {
         products.value = response.data
         total.value = response.pagination?.total || response.data.length
@@ -91,14 +90,14 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   async function fetchProduct(id: string) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await ProductsApi.getProduct(id)
-      
+
       if (response.success && response.data) {
         currentProduct.value = response.data
         return response.data
@@ -114,14 +113,14 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   async function createProduct(product: Partial<Product>) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await ProductsApi.createProduct(product)
-      
+
       if (response.success && response.data) {
         products.value.unshift(response.data)
         total.value++
@@ -138,14 +137,14 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   async function updateProduct(id: string, product: Partial<Product>) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await ProductsApi.updateProduct(id, product)
-      
+
       if (response.success && response.data) {
         const index = products.value.findIndex(p => p.id === id)
         if (index > -1) {
@@ -167,14 +166,14 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   async function deleteProduct(id: string) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await ProductsApi.deleteProduct(id)
-      
+
       if (response.success) {
         products.value = products.value.filter(p => p.id !== id)
         total.value--
@@ -191,15 +190,15 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   // 配件相关方法
   async function fetchAccessories(params?: QueryParams) {
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await ProductsApi.getAccessories(params)
-      
+
       if (response.success && response.data) {
         accessories.value = response.data
       } else {
@@ -212,18 +211,18 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   async function searchProducts(keyword: string) {
     if (!keyword.trim()) {
       return { success: true, data: [] }
     }
-    
+
     isLoading.value = true
     error.value = null
-    
+
     try {
       const response = await ProductsApi.searchProducts(keyword)
-      
+
       if (response.success) {
         return { success: true, data: response.data || [] }
       } else {
@@ -238,7 +237,7 @@ export const useProductsStore = defineStore('products', () => {
       isLoading.value = false
     }
   }
-  
+
   // 工具方法
   function resetFilters() {
     searchKeyword.value = ''
@@ -246,12 +245,12 @@ export const useProductsStore = defineStore('products', () => {
     statusFilter.value = null
     currentPage.value = 1
   }
-  
+
   function setPage(page: number) {
     currentPage.value = page
     fetchProducts()
   }
-  
+
   function setPageSize(size: number) {
     pageSize.value = size
     currentPage.value = 1
@@ -266,23 +265,23 @@ export const useProductsStore = defineStore('products', () => {
     currentAccessory,
     isLoading,
     error,
-    
+
     // Pagination
     currentPage,
     pageSize,
     total,
     totalPages,
-    
+
     // Filters
     searchKeyword,
     categoryFilter,
     statusFilter,
-    
+
     // Getters
     activeProducts,
     productCategories,
     filteredProducts,
-    
+
     // Actions
     fetchProducts,
     fetchProduct,
@@ -293,6 +292,6 @@ export const useProductsStore = defineStore('products', () => {
     searchProducts,
     resetFilters,
     setPage,
-    setPageSize,
+    setPageSize
   }
 })

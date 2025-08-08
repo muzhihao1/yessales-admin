@@ -1,6 +1,6 @@
 /**
  * Test Setup Configuration
- * 
+ *
  * Global setup for all test files including mocks, utilities, and environment setup.
  */
 
@@ -15,7 +15,7 @@ const mockUni = {
   redirectTo: vi.fn().mockResolvedValue({}),
   reLaunch: vi.fn().mockResolvedValue({}),
   switchTab: vi.fn().mockResolvedValue({}),
-  
+
   // Storage
   getStorageSync: vi.fn().mockReturnValue(''),
   setStorageSync: vi.fn(),
@@ -23,14 +23,14 @@ const mockUni = {
   getStorage: vi.fn().mockResolvedValue({ data: '' }),
   setStorage: vi.fn().mockResolvedValue({}),
   removeStorage: vi.fn().mockResolvedValue({}),
-  
+
   // UI Interactions
   showToast: vi.fn(),
   showModal: vi.fn().mockResolvedValue({ confirm: true, cancel: false }),
   showActionSheet: vi.fn().mockResolvedValue({ tapIndex: 0 }),
   showLoading: vi.fn(),
   hideLoading: vi.fn(),
-  
+
   // System
   getSystemInfoSync: vi.fn().mockReturnValue({
     platform: 'devtools',
@@ -45,7 +45,7 @@ const mockUni = {
     language: 'zh_CN',
     fontSizeSetting: 16
   }),
-  
+
   // Network
   request: vi.fn().mockResolvedValue({
     statusCode: 200,
@@ -53,20 +53,20 @@ const mockUni = {
     header: {},
     cookies: []
   }),
-  
+
   // File operations
   chooseImage: vi.fn().mockResolvedValue({
     tempFilePaths: ['temp://test.jpg'],
     tempFiles: [{ path: 'temp://test.jpg', size: 1024 }]
   }),
-  
+
   // Location
   getLocation: vi.fn().mockResolvedValue({
     latitude: 39.9042,
     longitude: 116.4074,
     accuracy: 20
   }),
-  
+
   // Device
   getDeviceInfo: vi.fn().mockResolvedValue({
     deviceBrand: 'devtools',
@@ -75,27 +75,27 @@ const mockUni = {
     deviceOrientation: 'portrait',
     devicePixelRatio: 1
   }),
-  
+
   // Page lifecycle
   onLoad: vi.fn(),
   onShow: vi.fn(),
   onHide: vi.fn(),
   onUnload: vi.fn(),
   onReady: vi.fn(),
-  
+
   // Utils
   setNavigationBarTitle: vi.fn(),
   setNavigationBarColor: vi.fn(),
-  
+
   // Events
   $on: vi.fn(),
   $off: vi.fn(),
   $emit: vi.fn(),
-  
+
   // Clipboard
   setClipboardData: vi.fn().mockResolvedValue({}),
   getClipboardData: vi.fn().mockResolvedValue({ data: 'test' }),
-  
+
   // Animation
   createAnimation: vi.fn().mockReturnValue({
     translateX: vi.fn().mockReturnThis(),
@@ -430,7 +430,7 @@ export const TestUtils = {
 beforeEach(() => {
   // Reset all mocks before each test
   TestUtils.resetMocks()
-  
+
   // Reset Pinia state
   setActivePinia(createPinia())
 })

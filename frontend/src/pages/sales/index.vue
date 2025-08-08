@@ -220,26 +220,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { ApiService } from '@/api';
-import SalesHeader from '@/components/sales/SalesHeader.vue';
-import SalesButton from '@/components/sales/SalesButton.vue';
-import SalesFooter from '@/components/layout/SalesFooter.vue';
-import LoadingSkeleton from '@/components/common/LoadingSkeleton.vue';
-import type { Product } from '@/types/models';
+import { computed, onMounted, ref } from 'vue'
+import { ApiService } from '@/api'
+import SalesHeader from '@/components/sales/SalesHeader.vue'
+import SalesButton from '@/components/sales/SalesButton.vue'
+import SalesFooter from '@/components/layout/SalesFooter.vue'
+import LoadingSkeleton from '@/components/common/LoadingSkeleton.vue'
+import type { Product } from '@/types/models'
 
 // 页面状态
-const productsLoading = ref(false);
-const productsError = ref('');
-const statsLoading = ref(false);
-const imagesLoaded = ref(0);
+const productsLoading = ref(false)
+const productsError = ref('')
+const statsLoading = ref(false)
+const imagesLoaded = ref(0)
 
 // 热门产品
-const hotProducts = ref<Product[]>([]);
+const hotProducts = ref<Product[]>([])
 
 // 统计数据
-const totalQuotes = ref(0);
-const todayQuotes = ref(0);
+const totalQuotes = ref(0)
+const todayQuotes = ref(0)
 
 // 底部导航配置
 const bottomBarItems = ref([
@@ -267,41 +267,41 @@ const bottomBarItems = ref([
     activeIcon: '/static/icons/settings-active.png',
     page: '/pages/sales/settings/index'
   }
-]);
+])
 
 onMounted(() => {
-  loadProducts();
-  loadStats();
-});
+  loadProducts()
+  loadStats()
+})
 
 // 加载产品数据
 const loadProducts = async () => {
   try {
-    productsLoading.value = true;
-    productsError.value = '';
+    productsLoading.value = true
+    productsError.value = ''
     
     // 调用真实API获取产品数据
-    const response = await ApiService.getProducts({ limit: 6 });
+    const response = await ApiService.getProducts({ limit: 6 })
     
     if (response.success && response.data) {
       // 获取前6个产品作为热门产品，并添加标签
       const products = response.data.map((product, index) => ({
         ...product,
         isHot: index < 2, // 前2个标记为热销
-        isNew: index >= 4, // 后2个标记为新品
-      }));
+        isNew: index >= 4 // 后2个标记为新品
+      }))
       
-      hotProducts.value = products;
+      hotProducts.value = products
     } else {
-      throw new Error(response.error?.message || '获取产品数据失败');
+      throw new Error(response.error?.message || '获取产品数据失败')
     }
   } catch (error) {
-    console.error('Failed to load products:', error);
-    productsError.value = error.message || '加载产品失败，请重试';
+    console.error('Failed to load products:', error)
+    productsError.value = error.message || '加载产品失败，请重试'
   } finally {
-    productsLoading.value = false;
+    productsLoading.value = false
   }
-};
+}
 
 // ========== 增强交互方法 ==========
 
@@ -311,19 +311,19 @@ const viewProductWithFeedback = (product: Product) => {
   try {
     uni.vibrateShort({
       type: 'light'
-    });
+    })
   } catch (error) {
     // 忽略不支持触觉反馈的设备
   }
   
   // 调用原有方法
-  viewProduct(product);
-};
+  viewProduct(product)
+}
 
 // 图片加载完成处理
 const onImageLoad = () => {
-  imagesLoaded.value++;
-};
+  imagesLoaded.value++
+}
 
 // 添加成功提示动画
 const showSuccessToast = (message: string) => {
@@ -331,78 +331,78 @@ const showSuccessToast = (message: string) => {
     title: message,
     icon: 'success',
     duration: 2000
-  });
+  })
   
   // 添加轻微震动反馈
   try {
     uni.vibrateShort({
       type: 'light'
-    });
+    })
   } catch (error) {
     // 忽略不支持的设备
   }
-};
+}
 
 // 加载统计数据（增强版）
 const loadStats = async () => {
-  statsLoading.value = true;
+  statsLoading.value = true
   
   try {
     // 调用真实API获取统计数据
-    const response = await ApiService.getSalesStats();
+    const response = await ApiService.getSalesStats()
     
     if (response.success && response.data) {
-      totalQuotes.value = response.data.totalQuotes;
+      totalQuotes.value = response.data.totalQuotes
       
       // 获取今日报价单数据
-      const today = new Date().toISOString().split('T')[0];
+      const today = new Date().toISOString().split('T')[0]
       const todayResponse = await ApiService.getQuotes({
         startDate: today,
-        endDate: today,
-      });
+        endDate: today
+      })
       
       if (todayResponse.success && todayResponse.data) {
-        todayQuotes.value = todayResponse.data.length;
+        todayQuotes.value = todayResponse.data.length
       } else {
-        todayQuotes.value = 0;
+        todayQuotes.value = 0
       }
       
       // 短暂延迟以显示加载动画
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 300))
       
     } else {
-      console.warn('获取统计数据失败，使用默认值');
-      totalQuotes.value = 0;
-      todayQuotes.value = 0;
+      console.warn('获取统计数据失败，使用默认值')
+      totalQuotes.value = 0
+      todayQuotes.value = 0
     }
   } catch (error) {
-    console.error('Failed to load stats:', error);
+    console.error('Failed to load stats:', error)
     // 使用默认值，不影响页面正常显示
-    totalQuotes.value = 0;
-    todayQuotes.value = 0;
+    totalQuotes.value = 0
+    todayQuotes.value = 0
   } finally {
-    statsLoading.value = false;
+    statsLoading.value = false
   }
-};
+}
 
 // 格式化价格
 const formatPrice = (price: number) => {
-  return price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
+  return price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
 // 导航到新建报价
 const navigateToCreate = () => {
   uni.navigateTo({
-    url: '/pages/sales/quote/create',
-  });
-};
+    url: '/pages/sales/quote/create'
+  })
+}
 
 // 导航到历史报价
 const navigateToHistory = () => {
   uni.navigateTo({
-    url: '/pages/sales/history/index',
-  });
-};
+    url: '/pages/sales/history/index'
+  })
+}
 
 // 导航到产品浏览
 const navigateToProducts = () => {
@@ -413,10 +413,10 @@ const navigateToProducts = () => {
       uni.showToast({
         title: '产品浏览页面开发中',
         icon: 'none'
-      });
+      })
     }
-  });
-};
+  })
+}
 
 // 显示联系信息
 const showContactInfo = () => {
@@ -424,9 +424,9 @@ const showContactInfo = () => {
     title: '联系我们',
     content: '电话：400-888-8888\n地址：昆明市斗南花卉市场\n微信：yessales2024\n营业时间：9:00-18:00',
     showCancel: false,
-    confirmText: '我知道了',
-  });
-};
+    confirmText: '我知道了'
+  })
+}
 
 // 查看产品详情
 const viewProduct = (product: Product) => {
@@ -437,29 +437,29 @@ const viewProduct = (product: Product) => {
       if (res.confirm) {
         // 可以传递产品信息到报价页面
         uni.navigateTo({
-          url: `/pages/sales/quote/create?productId=${product.id}`,
-        });
+          url: `/pages/sales/quote/create?productId=${product.id}`
+        })
       }
-    },
-  });
-};
+    }
+  })
+}
 
 // 处理Logo加载错误
 const handleLogoError = () => {
-  console.warn('Logo failed to load, using fallback');
-};
+  console.warn('Logo failed to load, using fallback')
+}
 
 // 处理产品图片加载错误
 const handleProductImageError = (event: any, product: Product) => {
-  event.target.src = '/static/images/default-product.png';
-  console.warn(`Product image failed to load for ${product.name}`);
-};
+  event.target.src = '/static/images/default-product.png'
+  console.warn(`Product image failed to load for ${product.name}`)
+}
 
 // 底部导航点击处理
 const handleBottomBarClick = (item: any, index: number) => {
   if (index === 0) {
     // 当前就是首页，不需要跳转
-    return;
+    return
   }
   
   uni.switchTab({
@@ -471,12 +471,12 @@ const handleBottomBarClick = (item: any, index: number) => {
           uni.showToast({
             title: '页面开发中',
             icon: 'none'
-          });
+          })
         }
-      });
+      })
     }
-  });
-};
+  })
+}
 </script>
 
 <style lang="scss" scoped>

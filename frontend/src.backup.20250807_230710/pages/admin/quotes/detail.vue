@@ -22,30 +22,28 @@
           </view>
         </view>
         <view class="header-actions">
-          <button 
+          <button
             v-if="quote.status === 'submitted'"
             class="action-btn action-approve"
             @click="handleApprove"
           >
             批准报价
           </button>
-          <button 
+          <button
             v-if="quote.status === 'submitted'"
             class="action-btn action-reject"
             @click="handleReject"
           >
             拒绝报价
           </button>
-          <button 
+          <button
             v-if="quote.status === 'draft'"
             class="action-btn action-edit"
             @click="handleEdit"
           >
             编辑报价
           </button>
-          <button class="action-btn action-print" @click="handlePrint">
-            打印报价单
-          </button>
+          <button class="action-btn action-print" @click="handlePrint">打印报价单</button>
         </view>
       </view>
 
@@ -86,11 +84,7 @@
             <text class="col col-price">单价</text>
             <text class="col col-subtotal">小计</text>
           </view>
-          <view 
-            v-for="item in quote.items" 
-            :key="item.id"
-            class="table-row"
-          >
+          <view v-for="item in quote.items" :key="item.id" class="table-row">
             <view class="col col-product">
               <text class="product-name">{{ item.product_name }}</text>
               <text class="product-sku">SKU: {{ item.product_sku }}</text>
@@ -195,7 +189,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from '@dcloudio/uni-app'
 import { useQuotesStore } from '@/stores/quotes'
 import type { Quote } from '@/types/quote'
@@ -223,7 +217,7 @@ onMounted(() => {
 
 // Load quote details
 async function loadQuote(id?: string) {
-  const quoteId = id || route.query.id as string
+  const quoteId = id || (route.query.id as string)
   if (!quoteId) {
     error.value = '报价单ID不存在'
     return
@@ -257,7 +251,7 @@ async function handleApprove() {
   uni.showModal({
     title: '确认批准',
     content: `确定要批准报价单 ${quote.value.quote_number} 吗？`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           await quotesStore.approveQuote(quote.value!.id)

@@ -8,18 +8,14 @@
 
     <!-- Empty state -->
     <view v-else-if="!quotes || quotes.length === 0" class="empty-container">
-      <image 
-        class="empty-icon" 
-        src="/static/images/empty-quote.png" 
-        mode="aspectFit"
-      />
+      <image class="empty-icon" src="/static/images/empty-quote.png" mode="aspectFit" />
       <text class="empty-text">{{ emptyText || '暂无报价单' }}</text>
     </view>
 
     <!-- Quote list -->
     <view v-else class="quote-items">
-      <view 
-        v-for="quote in quotes" 
+      <view
+        v-for="quote in quotes"
         :key="quote.id"
         class="quote-card"
         @click="handleQuoteClick(quote)"
@@ -27,10 +23,7 @@
         <!-- Quote header -->
         <view class="quote-header">
           <view class="quote-number">{{ quote.quoteNumber }}</view>
-          <view 
-            class="quote-status"
-            :class="`quote-status--${quote.status}`"
-          >
+          <view class="quote-status" :class="`quote-status--${quote.status}`">
             {{ getStatusText(quote.status) }}
           </view>
         </view>
@@ -67,26 +60,21 @@
 
         <!-- Action buttons -->
         <view class="quote-actions" @click.stop>
-          <button 
+          <button
             v-if="showActions && (quote.status === 'draft' || quote.status === 'sent')"
             class="action-btn action-btn--edit"
             @click="handleEdit(quote)"
           >
             编辑
           </button>
-          <button 
+          <button
             v-if="showActions && quote.status === 'draft'"
             class="action-btn action-btn--send"
             @click="handleSend(quote)"
           >
             发送
           </button>
-          <button 
-            class="action-btn action-btn--view"
-            @click="handleView(quote)"
-          >
-            查看
-          </button>
+          <button class="action-btn action-btn--view" @click="handleView(quote)">查看</button>
         </view>
       </view>
     </view>
@@ -202,7 +190,9 @@ const handleLoadMore = () => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {

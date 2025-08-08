@@ -1,13 +1,13 @@
 /**
  * Mobile Testing Store
- * 
+ *
  * Manages mobile adaptation testing state, results, and configuration
  * for comprehensive device compatibility validation.
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed, reactive } from 'vue'
-import { useDeviceDetection, type DeviceInfo } from '@/utils/device-detection'
+import { computed, reactive, ref } from 'vue'
+import { type DeviceInfo, useDeviceDetection } from '@/utils/device-detection'
 import { usePerformanceStore } from '@/utils/performance'
 import { useCache, useLoadingState, usePersistence } from '@/stores/utils'
 
@@ -22,12 +22,12 @@ export interface MobileTestConfig {
   enablePerformanceTest: boolean
   enableAccessibilityTest: boolean
   enableNetworkTest: boolean
-  
+
   // Test targets
   testDevices: TestDevice[]
   testOrientations: ('portrait' | 'landscape')[]
   testNetworkConditions: NetworkCondition[]
-  
+
   // Performance thresholds
   performanceThresholds: {
     maxLoadTime: number // ms
@@ -36,14 +36,14 @@ export interface MobileTestConfig {
     maxCLS: number // Cumulative Layout Shift
     maxFID: number // First Input Delay
   }
-  
+
   // Accessibility thresholds
   accessibilityThresholds: {
     minTouchTargetSize: number // px
     minColorContrast: number
     maxTextSize: number // sp/px
   }
-  
+
   // Test automation
   autoRunTests: boolean
   testSchedule: string // cron expression
@@ -92,9 +92,9 @@ export interface TestResult {
 /**
  * Test types
  */
-export type TestType = 
-  | 'device-detection' 
-  | 'responsive-design' 
+export type TestType =
+  | 'device-detection'
+  | 'responsive-design'
   | 'touch-interaction'
   | 'performance-benchmark'
   | 'accessibility-audit'
@@ -264,11 +264,11 @@ const DEFAULT_CONFIG: MobileTestConfig = {
   enablePerformanceTest: true,
   enableAccessibilityTest: true,
   enableNetworkTest: false,
-  
+
   testDevices: DEFAULT_TEST_DEVICES,
   testOrientations: ['portrait', 'landscape'],
   testNetworkConditions: DEFAULT_NETWORK_CONDITIONS.slice(0, 4), // Exclude offline by default
-  
+
   performanceThresholds: {
     maxLoadTime: 3000, // 3 seconds
     maxMemoryUsage: 100, // 100MB
@@ -276,13 +276,13 @@ const DEFAULT_CONFIG: MobileTestConfig = {
     maxCLS: 0.1,
     maxFID: 100 // 100ms
   },
-  
+
   accessibilityThresholds: {
     minTouchTargetSize: 44, // 44px minimum touch target
     minColorContrast: 4.5, // WCAG AA standard
     maxTextSize: 20 // Maximum text size for readability
   },
-  
+
   autoRunTests: false,
   testSchedule: '0 9 * * 1', // Every Monday at 9 AM
   enableReporting: true
@@ -294,19 +294,19 @@ const DEFAULT_CONFIG: MobileTestConfig = {
 export const useMobileTestingStore = defineStore('mobileTesting', () => {
   // Configuration
   const config = ref<MobileTestConfig>({ ...DEFAULT_CONFIG })
-  
+
   // Test state
   const testResults = reactive<Map<string, TestResult>>(new Map())
   const testSuites = reactive<Map<string, TestSuite>>(new Map())
   const currentTest = ref<TestContext | null>(null)
   const testHistory = reactive<TestResult[]>([])
-  
+
   // Statistics
   const totalTests = ref(0)
   const passedTests = ref(0)
   const failedTests = ref(0)
   const warningTests = ref(0)
-  
+
   // Utilities
   const { isLoading, startLoading, stopLoading } = useLoadingState('mobile-testing')
   const cache = useCache('mobile-testing', { defaultTTL: 30 * 60 * 1000 }) // 30 minutes
@@ -322,7 +322,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     config: config.value,
     testResults: Array.from(testResults.entries()),
     testSuites: Array.from(testSuites.entries()),
-    testHistory: testHistory
+    testHistory
   })
 
   // Computed properties
@@ -341,11 +341,9 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
 
   const availableDevices = computed(() => config.value.testDevices)
 
-  const recentResults = computed(() => 
-    testHistory.slice(-10).reverse()
-  )
+  const recentResults = computed(() => testHistory.slice(-10).reverse())
 
-  const criticalIssues = computed(() => 
+  const criticalIssues = computed(() =>
     testHistory
       .filter(result => result.status === 'fail')
       .flatMap(result => result.details.issues.filter(issue => issue.severity === 'error'))
@@ -359,7 +357,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
    */
   async function initializeTesting() {
     console.log('🚀 初始化移动端测试系统...')
-    
+
     try {
       // Ensure device detection is ready
       if (!deviceDetection.isReady.value) {
@@ -386,10 +384,10 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
    * Run comprehensive mobile test
    */
   async function runMobileTest(testType: TestType, deviceId?: string): Promise<TestResult> {
-    const device = deviceId 
+    const device = deviceId
       ? config.value.testDevices.find(d => d.id === deviceId)
       : getCurrentDevice()
-    
+
     if (!device) {
       throw new Error('测试设备未找到')
     }
@@ -404,10 +402,10 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     currentTest.value = testContext
 
     const testId = `${testType}_${device.id}_${testContext.timestamp}`
-    
+
     try {
       startLoading('mobile-testing', `running-${testType}`)
-      
+
       let result: TestResult
 
       switch (testType) {
@@ -436,7 +434,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
       // Store result
       testResults.set(testId, result)
       testHistory.push(result)
-      
+
       // Update statistics
       totalTests.value++
       if (result.status === 'pass') passedTests.value++
@@ -450,7 +448,6 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
 
       console.log(`✅ ${testType} 测试完成:`, result.status)
       return result
-
     } finally {
       stopLoading('mobile-testing', `running-${testType}`)
       currentTest.value = null
@@ -464,11 +461,11 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const startTime = Date.now()
     const issues: TestIssue[] = []
     const metrics: Record<string, number> = {}
-    
+
     try {
       // Test device detection accuracy
       const detectedInfo = deviceDetection.info.value
-      
+
       if (!detectedInfo) {
         issues.push({
           severity: 'error',
@@ -480,7 +477,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         metrics.screenWidth = detectedInfo.screenWidth
         metrics.screenHeight = detectedInfo.screenHeight
         metrics.pixelRatio = detectedInfo.pixelRatio
-        
+
         // Check for inconsistencies
         if (Math.abs(detectedInfo.screenWidth - context.device.width) > 50) {
           issues.push({
@@ -489,7 +486,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
             message: `检测到的屏幕宽度 (${detectedInfo.screenWidth}px) 与预期设备规格不符 (${context.device.width}px)`
           })
         }
-        
+
         if (Math.abs(detectedInfo.pixelRatio - context.device.pixelRatio) > 0.5) {
           issues.push({
             severity: 'warning',
@@ -497,11 +494,11 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
             message: `检测到的像素密度 (${detectedInfo.pixelRatio}) 与预期不符 (${context.device.pixelRatio})`
           })
         }
-        
+
         // Test capabilities detection
         const capabilityCount = Object.values(detectedInfo.capabilities).filter(Boolean).length
         metrics.capabilitiesDetected = capabilityCount
-        
+
         if (capabilityCount === 0) {
           issues.push({
             severity: 'warning',
@@ -510,7 +507,6 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
           })
         }
       }
-      
     } catch (error) {
       issues.push({
         severity: 'error',
@@ -527,8 +523,11 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
       timestamp: context.timestamp,
       deviceId: context.device.id,
       testType: 'device-detection',
-      status: issues.some(i => i.severity === 'error') ? 'fail' : 
-               issues.some(i => i.severity === 'warning') ? 'warning' : 'pass',
+      status: issues.some(i => i.severity === 'error')
+        ? 'fail'
+        : issues.some(i => i.severity === 'warning')
+          ? 'warning'
+          : 'pass',
       score,
       details: {
         metrics,
@@ -546,17 +545,17 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const startTime = Date.now()
     const issues: TestIssue[] = []
     const metrics: Record<string, number> = {}
-    
+
     // Test viewport adaptation
     metrics.viewportWidth = context.device.width
     metrics.viewportHeight = context.device.height
-    
+
     // Check responsive breakpoints
     const breakpoints = [320, 375, 414, 768, 1024]
     const currentWidth = context.device.width
-    
+
     let responsiveScore = 100
-    
+
     // Simulate different viewport sizes
     for (const breakpoint of breakpoints) {
       if (Math.abs(currentWidth - breakpoint) < 50) {
@@ -564,7 +563,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         metrics[`breakpoint_${breakpoint}_match`] = 1
       }
     }
-    
+
     // Check for common responsive issues
     if (currentWidth < 375 && context.device.platform === 'ios') {
       issues.push({
@@ -574,7 +573,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
       })
       responsiveScore -= 10
     }
-    
+
     if (context.device.isTablet) {
       issues.push({
         severity: 'info',
@@ -609,17 +608,17 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const startTime = Date.now()
     const issues: TestIssue[] = []
     const metrics: Record<string, number> = {}
-    
+
     // Test touch target sizes (simulated)
     const minTouchTarget = config.value.accessibilityThresholds.minTouchTargetSize
-    
+
     // Simulate touch target analysis
     metrics.minTouchTargetSize = minTouchTarget
     metrics.touchTargetsAnalyzed = 10 // Simulated
     metrics.touchTargetsPassed = 8 // Simulated
-    
+
     const passRate = (metrics.touchTargetsPassed / metrics.touchTargetsAnalyzed) * 100
-    
+
     if (passRate < 90) {
       issues.push({
         severity: 'warning',
@@ -627,7 +626,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         message: `${Math.round(100 - passRate)}% 的触摸目标小于推荐的 ${minTouchTarget}px`
       })
     }
-    
+
     // Test gesture support
     if (context.device.platform === 'web') {
       issues.push({
@@ -663,14 +662,14 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const startTime = Date.now()
     const issues: TestIssue[] = []
     const metrics: Record<string, number> = {}
-    
+
     // Get performance metrics from performance store
     const performanceReport = performanceStore.getPerformanceReport()
-    
+
     // Memory usage
     const memoryUsage = performanceReport.memoryStats.current || 0
     metrics.memoryUsage = memoryUsage
-    
+
     if (memoryUsage > config.value.performanceThresholds.maxMemoryUsage) {
       issues.push({
         severity: 'error',
@@ -678,11 +677,11 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         message: `内存使用过高: ${memoryUsage}MB (阈值: ${config.value.performanceThresholds.maxMemoryUsage}MB)`
       })
     }
-    
+
     // Response time
     const avgResponseTime = performanceReport.networkStats.averageResponseTime || 0
     metrics.averageResponseTime = avgResponseTime
-    
+
     if (avgResponseTime > config.value.performanceThresholds.maxLoadTime) {
       issues.push({
         severity: 'warning',
@@ -690,11 +689,12 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         message: `API响应时间过长: ${avgResponseTime}ms`
       })
     }
-    
+
     // Device-specific performance considerations
     const devicePerformanceLevel = deviceDetection.performanceLevel.value
-    metrics.devicePerformanceLevel = devicePerformanceLevel === 'high' ? 3 : devicePerformanceLevel === 'medium' ? 2 : 1
-    
+    metrics.devicePerformanceLevel =
+      devicePerformanceLevel === 'high' ? 3 : devicePerformanceLevel === 'medium' ? 2 : 1
+
     if (devicePerformanceLevel === 'low') {
       issues.push({
         severity: 'info',
@@ -729,13 +729,13 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const startTime = Date.now()
     const issues: TestIssue[] = []
     const metrics: Record<string, number> = {}
-    
+
     // Color contrast testing (simulated)
     metrics.colorContrastChecks = 15 // Simulated
     metrics.colorContrastPassed = 12 // Simulated
-    
+
     const contrastPassRate = (metrics.colorContrastPassed / metrics.colorContrastChecks) * 100
-    
+
     if (contrastPassRate < 90) {
       issues.push({
         severity: 'warning',
@@ -743,7 +743,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         message: `${Math.round(100 - contrastPassRate)}% 的颜色对比度未达到WCAG AA标准`
       })
     }
-    
+
     // Screen reader compatibility
     if (context.device.platform === 'ios' || context.device.platform === 'android') {
       metrics.screenReaderCompatible = 1
@@ -754,7 +754,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         message: 'Web平台建议测试屏幕阅读器兼容性'
       })
     }
-    
+
     // Text size and readability
     const isDarkMode = context.darkMode
     if (isDarkMode) {
@@ -791,11 +791,12 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const startTime = Date.now()
     const issues: TestIssue[] = []
     const metrics: Record<string, number> = {}
-    
+
     // Network type detection
     const networkType = deviceDetection.info.value?.networkType || 'unknown'
-    metrics.networkType = networkType === '5g' ? 5 : networkType === '4g' ? 4 : networkType === '3g' ? 3 : 1
-    
+    metrics.networkType =
+      networkType === '5g' ? 5 : networkType === '4g' ? 4 : networkType === '3g' ? 3 : 1
+
     // Simulate network adaptation tests
     if (networkType === '3g' || networkType === 'slow') {
       issues.push({
@@ -804,10 +805,10 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         message: '检测到慢速网络，建议启用数据节省模式'
       })
     }
-    
+
     // Test offline capability
     metrics.offlineSupported = 1 // Assuming we have offline support
-    
+
     const duration = Date.now() - startTime
     const score = 85 // Base score, adjusted by issues
 
@@ -852,7 +853,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
    */
   function calculateTestScore(issues: TestIssue[]): number {
     let score = 100
-    
+
     for (const issue of issues) {
       switch (issue.severity) {
         case 'error':
@@ -866,7 +867,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
           break
       }
     }
-    
+
     return Math.max(0, score)
   }
 
@@ -875,19 +876,19 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
    */
   function calculatePerformanceScore(metrics: Record<string, number>, issues: TestIssue[]): number {
     let score = 100
-    
+
     // Memory penalty
     const memoryUsage = metrics.memoryUsage || 0
     if (memoryUsage > 100) score -= Math.min(30, (memoryUsage - 100) * 0.3)
-    
+
     // Response time penalty
     const responseTime = metrics.averageResponseTime || 0
     if (responseTime > 1000) score -= Math.min(20, (responseTime - 1000) * 0.01)
-    
+
     // Device performance adjustment
     const deviceLevel = metrics.devicePerformanceLevel || 2
     if (deviceLevel === 1) score -= 10 // Low performance device
-    
+
     // Apply issue penalties
     return Math.max(0, calculateTestScore(issues))
   }
@@ -897,7 +898,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
    */
   function generateRecommendations(issues: TestIssue[], testType: TestType): string[] {
     const recommendations: string[] = []
-    
+
     for (const issue of issues) {
       switch (testType) {
         case 'device-detection':
@@ -932,7 +933,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
           break
       }
     }
-    
+
     return recommendations.length > 0 ? recommendations : ['测试通过，无需特殊优化']
   }
 
@@ -952,17 +953,23 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         enableResponsiveTest: true
       }
     }
-    
+
     // Comprehensive test suite
     const comprehensiveSuite: TestSuite = {
       id: 'comprehensive-mobile',
       name: '全面移动端测试',
       description: '包含所有测试类型的综合测试套件',
-      tests: ['device-detection', 'responsive-design', 'touch-interaction', 'performance-benchmark', 'accessibility-audit'],
+      tests: [
+        'device-detection',
+        'responsive-design',
+        'touch-interaction',
+        'performance-benchmark',
+        'accessibility-audit'
+      ],
       devices: DEFAULT_TEST_DEVICES.map(d => d.id),
       config: { ...DEFAULT_CONFIG }
     }
-    
+
     testSuites.set(basicSuite.id, basicSuite)
     testSuites.set(comprehensiveSuite.id, comprehensiveSuite)
   }
@@ -977,7 +984,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     }
 
     const results: TestResult[] = []
-    
+
     for (const testType of suite.tests) {
       for (const deviceId of suite.devices) {
         try {
@@ -988,7 +995,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
         }
       }
     }
-    
+
     return results
   }
 
@@ -1003,7 +1010,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
       deviceCoverage: availableDevices.value.length,
       timestamp: Date.now()
     }
-    
+
     console.log('📊 Mobile Testing Report Generated:', report)
     return report
   }
@@ -1011,33 +1018,33 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
   return {
     // Configuration
     config,
-    
+
     // State
     testResults,
     testSuites,
     currentTest,
     testHistory,
     isLoading,
-    
+
     // Statistics
     totalTests,
     passedTests,
     failedTests,
     warningTests,
-    
+
     // Computed
     passRate,
     testingSummary,
     availableDevices,
     recentResults,
     criticalIssues,
-    
+
     // Methods
     initializeTesting,
     runMobileTest,
     runTestSuite,
     generateTestReport,
-    
+
     // Test constants
     DEFAULT_TEST_DEVICES,
     DEFAULT_NETWORK_CONDITIONS

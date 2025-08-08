@@ -1,6 +1,6 @@
-import { AuthApi, ProductsApi, QuotesApi, ApiClient } from './index';
-import type { ApiResponse, CreateQuoteRequest, QueryParams } from '@/types/api';
-import type { Product, Quote, Accessory } from '@/types/models';
+import { ApiClient, AuthApi, ProductsApi, QuotesApi } from './index'
+import type { ApiResponse, CreateQuoteRequest, QueryParams } from '@/types/api'
+import type { Accessory, Product, Quote } from '@/types/models'
 
 /**
  * 统一的API服务类
@@ -8,16 +8,15 @@ import type { Product, Quote, Accessory } from '@/types/models';
  * 可以无缝替换MockService，无需修改业务代码
  */
 export class ApiService {
-  
   // ============= 产品相关API =============
-  
+
   /**
    * 获取产品列表
    * @param params 查询参数
    * @returns 产品列表
    */
   static async getProducts(params?: QueryParams): Promise<ApiResponse<Product[]>> {
-    return ProductsApi.getProducts(params);
+    return ProductsApi.getProducts(params)
   }
 
   /**
@@ -26,7 +25,7 @@ export class ApiService {
    * @returns 产品详情
    */
   static async getProduct(id: string): Promise<ApiResponse<Product>> {
-    return ProductsApi.getProduct(id);
+    return ProductsApi.getProduct(id)
   }
 
   /**
@@ -35,7 +34,7 @@ export class ApiService {
    * @returns 配件列表
    */
   static async getAccessories(params?: QueryParams): Promise<ApiResponse<Accessory[]>> {
-    return ProductsApi.getAccessories(params);
+    return ProductsApi.getAccessories(params)
   }
 
   /**
@@ -44,7 +43,7 @@ export class ApiService {
    * @returns 搜索结果
    */
   static async searchProducts(keyword: string): Promise<ApiResponse<Product[]>> {
-    return ProductsApi.searchProducts(keyword);
+    return ProductsApi.searchProducts(keyword)
   }
 
   // ============= 报价单相关API =============
@@ -55,7 +54,7 @@ export class ApiService {
    * @returns 报价单列表
    */
   static async getQuotes(params?: QueryParams): Promise<ApiResponse<Quote[]>> {
-    return QuotesApi.getQuotes(params);
+    return QuotesApi.getQuotes(params)
   }
 
   /**
@@ -64,7 +63,7 @@ export class ApiService {
    * @returns 报价单详情
    */
   static async getQuote(id: string): Promise<ApiResponse<Quote>> {
-    return QuotesApi.getQuote(id);
+    return QuotesApi.getQuote(id)
   }
 
   /**
@@ -73,7 +72,7 @@ export class ApiService {
    * @returns 报价单列表
    */
   static async getQuotesByPhone(phone: string): Promise<ApiResponse<Quote[]>> {
-    return QuotesApi.getQuotesByPhone(phone);
+    return QuotesApi.getQuotesByPhone(phone)
   }
 
   /**
@@ -82,7 +81,7 @@ export class ApiService {
    * @returns 创建结果
    */
   static async createQuote(data: CreateQuoteRequest): Promise<ApiResponse<Quote>> {
-    return QuotesApi.createQuote(data);
+    return QuotesApi.createQuote(data)
   }
 
   /**
@@ -92,7 +91,7 @@ export class ApiService {
    * @returns 更新结果
    */
   static async updateQuote(id: string, data: Partial<Quote>): Promise<ApiResponse<Quote>> {
-    return QuotesApi.updateQuote(id, data);
+    return QuotesApi.updateQuote(id, data)
   }
 
   /**
@@ -101,7 +100,7 @@ export class ApiService {
    * @returns 删除结果
    */
   static async deleteQuote(id: string): Promise<ApiResponse> {
-    return QuotesApi.deleteQuote(id);
+    return QuotesApi.deleteQuote(id)
   }
 
   /**
@@ -110,7 +109,7 @@ export class ApiService {
    * @returns 批准结果
    */
   static async approveQuote(id: string): Promise<ApiResponse<Quote>> {
-    return QuotesApi.approveQuote(id);
+    return QuotesApi.approveQuote(id)
   }
 
   /**
@@ -120,7 +119,7 @@ export class ApiService {
    * @returns 拒绝结果
    */
   static async rejectQuote(id: string, reason?: string): Promise<ApiResponse<Quote>> {
-    return QuotesApi.rejectQuote(id, reason);
+    return QuotesApi.rejectQuote(id, reason)
   }
 
   // ============= 用户认证相关API =============
@@ -131,7 +130,7 @@ export class ApiService {
    * @returns 登录结果
    */
   static async login(credentials: { username: string; password: string }): Promise<ApiResponse> {
-    return AuthApi.login(credentials);
+    return AuthApi.login(credentials)
   }
 
   /**
@@ -139,7 +138,7 @@ export class ApiService {
    * @returns 登出结果
    */
   static async logout(): Promise<ApiResponse> {
-    return AuthApi.logout();
+    return AuthApi.logout()
   }
 
   /**
@@ -147,7 +146,7 @@ export class ApiService {
    * @returns 当前用户信息
    */
   static async getCurrentUser(): Promise<ApiResponse> {
-    return AuthApi.getCurrentUser();
+    return AuthApi.getCurrentUser()
   }
 
   /**
@@ -155,7 +154,7 @@ export class ApiService {
    * @returns 新的令牌信息
    */
   static async refreshToken(): Promise<ApiResponse> {
-    return AuthApi.refreshToken();
+    return AuthApi.refreshToken()
   }
 
   /**
@@ -165,7 +164,7 @@ export class ApiService {
    * @returns 修改结果
    */
   static async changePassword(oldPassword: string, newPassword: string): Promise<ApiResponse> {
-    return AuthApi.changePassword(oldPassword, newPassword);
+    return AuthApi.changePassword(oldPassword, newPassword)
   }
 
   /**
@@ -173,7 +172,7 @@ export class ApiService {
    * @returns 认证状态
    */
   static isAuthenticated(): boolean {
-    return AuthApi.isAuthenticated();
+    return AuthApi.isAuthenticated()
   }
 
   /**
@@ -181,7 +180,7 @@ export class ApiService {
    * @returns 认证令牌
    */
   static getAuthToken(): string | null {
-    return AuthApi.getAuthToken();
+    return AuthApi.getAuthToken()
   }
 
   // ============= 业务统计相关API =============
@@ -192,55 +191,57 @@ export class ApiService {
    * @returns 统计数据
    */
   static async getSalesStats(params?: {
-    startDate?: string;
-    endDate?: string;
-    userId?: string;
-  }): Promise<ApiResponse<{
-    totalQuotes: number;
-    totalAmount: number;
-    approvedQuotes: number;
-    pendingQuotes: number;
-    rejectedQuotes: number;
-  }>> {
+    startDate?: string
+    endDate?: string
+    userId?: string
+  }): Promise<
+    ApiResponse<{
+      totalQuotes: number
+      totalAmount: number
+      approvedQuotes: number
+      pendingQuotes: number
+      rejectedQuotes: number
+    }>
+  > {
     try {
       const { data: quotes, error } = await QuotesApi.getQuotes({
         ...params,
         startDate: params?.startDate,
-        endDate: params?.endDate,
-      });
+        endDate: params?.endDate
+      })
 
       if (!quotes.success || error) {
         return {
           success: false,
           error: {
             code: 'FETCH_ERROR',
-            message: '获取统计数据失败',
-          },
-        };
+            message: '获取统计数据失败'
+          }
+        }
       }
 
-      const quoteList = quotes.data as Quote[];
-      
+      const quoteList = quotes.data as Quote[]
+
       const stats = {
         totalQuotes: quoteList.length,
         totalAmount: quoteList.reduce((sum, quote) => sum + (quote.total_price || 0), 0),
         approvedQuotes: quoteList.filter(q => q.status === 'approved').length,
         pendingQuotes: quoteList.filter(q => q.status === 'pending').length,
-        rejectedQuotes: quoteList.filter(q => q.status === 'rejected').length,
-      };
+        rejectedQuotes: quoteList.filter(q => q.status === 'rejected').length
+      }
 
       return {
         success: true,
-        data: stats,
-      };
+        data: stats
+      }
     } catch (error) {
       return {
         success: false,
         error: {
           code: 'CALCULATION_ERROR',
-          message: '计算统计数据失败',
-        },
-      };
+          message: '计算统计数据失败'
+        }
+      }
     }
   }
 
@@ -250,11 +251,11 @@ export class ApiService {
    * @returns 导出结果
    */
   static async exportQuotes(params: {
-    startDate: string;
-    endDate: string;
-    status?: string;
+    startDate: string
+    endDate: string
+    status?: string
   }): Promise<ApiResponse<Blob>> {
-    return QuotesApi.exportQuotes(params);
+    return QuotesApi.exportQuotes(params)
   }
 
   // ============= 文件上传相关API =============
@@ -271,8 +272,8 @@ export class ApiService {
     bucket: string = 'attachments',
     path?: string
   ): Promise<ApiResponse<{ url: string }>> {
-    const fileName = path || `uploads/${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    return ApiClient.uploadFile(file, bucket, fileName);
+    const fileName = path || `uploads/${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return ApiClient.uploadFile(file, bucket, fileName)
   }
 
   // ============= 健康检查相关API =============
@@ -281,28 +282,30 @@ export class ApiService {
    * API健康检查
    * @returns 健康状态
    */
-  static async healthCheck(): Promise<ApiResponse<{
-    status: 'healthy' | 'unhealthy';
-    timestamp: string;
-    services: {
-      database: boolean;
-      auth: boolean;
-      storage: boolean;
-    };
-  }>> {
+  static async healthCheck(): Promise<
+    ApiResponse<{
+      status: 'healthy' | 'unhealthy'
+      timestamp: string
+      services: {
+        database: boolean
+        auth: boolean
+        storage: boolean
+      }
+    }>
+  > {
     try {
       // 检查数据库连接
-      const dbResult = await ProductsApi.getProducts({ limit: 1 });
-      const dbHealthy = dbResult.success;
+      const dbResult = await ProductsApi.getProducts({ limit: 1 })
+      const dbHealthy = dbResult.success
 
       // 检查认证服务
-      const authResult = await AuthApi.getCurrentUser();
-      const authHealthy = authResult.success || authResult.error?.code !== 'SERVER_ERROR';
+      const authResult = await AuthApi.getCurrentUser()
+      const authHealthy = authResult.success || authResult.error?.code !== 'SERVER_ERROR'
 
       // 存储服务检查（暂时标记为健康）
-      const storageHealthy = true;
+      const storageHealthy = true
 
-      const allHealthy = dbHealthy && authHealthy && storageHealthy;
+      const allHealthy = dbHealthy && authHealthy && storageHealthy
 
       return {
         success: true,
@@ -312,20 +315,20 @@ export class ApiService {
           services: {
             database: dbHealthy,
             auth: authHealthy,
-            storage: storageHealthy,
-          },
-        },
-      };
+            storage: storageHealthy
+          }
+        }
+      }
     } catch (error) {
       return {
         success: false,
         error: {
           code: 'HEALTH_CHECK_FAILED',
-          message: '健康检查失败',
-        },
-      };
+          message: '健康检查失败'
+        }
+      }
     }
   }
 }
 
-export default ApiService;
+export default ApiService

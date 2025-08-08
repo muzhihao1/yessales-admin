@@ -1,8 +1,8 @@
 <template>
-  <view class="operation-progress-modal" :class="{ 'show': visible }" v-if="visible">
+  <view class="operation-progress-modal" :class="{ show: visible }" v-if="visible">
     <!-- Backdrop -->
     <view class="modal-backdrop"></view>
-    
+
     <!-- Modal Container -->
     <view class="modal-container" :class="[`status-${currentStatus}`]">
       <!-- Header -->
@@ -14,15 +14,11 @@
             <text class="modal-subtitle">{{ subtitle }}</text>
           </view>
         </view>
-        <button 
-          v-if="canClose && !processing" 
-          class="close-btn" 
-          @click="handleClose"
-        >
+        <button v-if="canClose && !processing" class="close-btn" @click="handleClose">
           <text>✕</text>
         </button>
       </view>
-      
+
       <!-- Progress Section -->
       <view class="modal-content">
         <!-- Overall Progress -->
@@ -31,31 +27,31 @@
             <text class="progress-title">{{ progressTitle }}</text>
             <text class="progress-stats">{{ progressText }}</text>
           </view>
-          
+
           <!-- Progress Bar -->
           <view class="progress-bar-container">
-            <view 
+            <view
               class="progress-bar"
-              :class="{ 'indeterminate': !determinate }"
+              :class="{ indeterminate: !determinate }"
               :style="{ width: progressPercentage + '%' }"
             ></view>
           </view>
-          
+
           <!-- Current Step -->
           <text v-if="currentStepText" class="current-step">{{ currentStepText }}</text>
         </view>
-        
+
         <!-- Steps List -->
         <view v-if="steps && steps.length > 0" class="steps-section">
           <text class="steps-title">操作步骤:</text>
           <view class="steps-list">
-            <view 
+            <view
               v-for="(step, index) in steps"
               :key="index"
               class="step-item"
               :class="[
                 `status-${step.status || 'pending'}`,
-                { 'current': index === currentStepIndex }
+                { current: index === currentStepIndex }
               ]"
             >
               <view class="step-icon">
@@ -72,7 +68,7 @@
             </view>
           </view>
         </view>
-        
+
         <!-- Results Section -->
         <view v-if="results" class="results-section">
           <!-- Success Results -->
@@ -94,20 +90,16 @@
               <text class="summary-text">跳过: {{ results.skipped }} 项</text>
             </view>
           </view>
-          
+
           <!-- Error Details -->
           <view v-if="results.errors && results.errors.length > 0" class="error-details">
             <text class="error-title">错误详情:</text>
             <view class="error-list">
-              <view 
-                v-for="(error, index) in displayedErrors"
-                :key="index"
-                class="error-item"
-              >
+              <view v-for="(error, index) in displayedErrors" :key="index" class="error-item">
                 <text class="error-message">{{ error.message || error }}</text>
                 <text v-if="error.item" class="error-item-name">项目: {{ error.item }}</text>
               </view>
-              <button 
+              <button
                 v-if="results.errors.length > maxErrorDisplay"
                 class="show-more-errors"
                 @click="showAllErrors = !showAllErrors"
@@ -116,12 +108,12 @@
               </button>
             </view>
           </view>
-          
+
           <!-- Download Links -->
           <view v-if="downloadLinks && downloadLinks.length > 0" class="download-section">
             <text class="download-title">下载文件:</text>
             <view class="download-list">
-              <button 
+              <button
                 v-for="(link, index) in downloadLinks"
                 :key="index"
                 class="download-btn"
@@ -134,16 +126,16 @@
             </view>
           </view>
         </view>
-        
+
         <!-- Custom Content Slot -->
         <slot name="content"></slot>
       </view>
-      
+
       <!-- Actions -->
       <view class="modal-actions">
         <slot name="actions" :close="handleClose" :cancel="handleCancel" :retry="handleRetry">
           <!-- Cancel Button (only when processing) -->
-          <button 
+          <button
             v-if="processing && canCancel"
             class="action-btn secondary"
             @click="handleCancel"
@@ -152,22 +144,18 @@
             <view v-if="cancelling" class="btn-spinner"></view>
             <text>{{ cancelling ? '取消中...' : '取消操作' }}</text>
           </button>
-          
+
           <!-- Retry Button (on error) -->
-          <button 
+          <button
             v-if="currentStatus === 'error' && canRetry"
             class="action-btn retry"
             @click="handleRetry"
           >
             <text>重试操作</text>
           </button>
-          
+
           <!-- Close Button (when done or can close) -->
-          <button 
-            v-if="canClose"
-            class="action-btn primary"
-            @click="handleClose"
-          >
+          <button v-if="canClose" class="action-btn primary" @click="handleClose">
             <text>{{ processing ? '后台运行' : '关闭' }}</text>
           </button>
         </slot>
@@ -177,11 +165,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 /**
  * 操作进度模态框组件
- * 
+ *
  * 功能特性：
  * - 详细的操作进度跟踪和步骤显示
  * - 支持取消操作和错误重试
@@ -189,7 +177,7 @@ import { ref, computed, watch } from 'vue'
  * - 文件下载链接管理
  * - 可自定义的内容和操作按钮
  * - 专业的视觉反馈和状态指示
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -205,11 +193,14 @@ interface OperationResults {
   error?: number
   warning?: number
   skipped?: number
-  errors?: Array<{
-    message: string
-    item?: string
-    code?: string
-  } | string>
+  errors?: Array<
+    | {
+        message: string
+        item?: string
+        code?: string
+      }
+    | string
+  >
 }
 
 interface DownloadLink {
@@ -223,7 +214,7 @@ interface Props {
   visible: boolean
   title: string
   subtitle?: string
-  
+
   // Progress
   showProgress?: boolean
   progress?: number
@@ -231,19 +222,19 @@ interface Props {
   determinate?: boolean
   progressTitle?: string
   currentStepText?: string
-  
+
   // Steps
   steps?: OperationStep[]
   currentStepIndex?: number
-  
+
   // Status
   processing?: boolean
   currentStatus?: 'processing' | 'completed' | 'error' | 'cancelled'
-  
+
   // Results
   results?: OperationResults
   downloadLinks?: DownloadLink[]
-  
+
   // Behavior
   canClose?: boolean
   canCancel?: boolean
@@ -300,20 +291,23 @@ const progressText = computed(() => {
 
 const displayedErrors = computed(() => {
   if (!props.results?.errors) return []
-  
+
   if (showAllErrors.value) {
     return props.results.errors
   }
-  
+
   return props.results.errors.slice(0, props.maxErrorDisplay)
 })
 
 // Watch for status changes
-watch(() => props.currentStatus, (newStatus) => {
-  if (newStatus !== 'processing') {
-    cancelling.value = false
+watch(
+  () => props.currentStatus,
+  newStatus => {
+    if (newStatus !== 'processing') {
+      cancelling.value = false
+    }
   }
-})
+)
 
 // Methods
 function handleClose() {
@@ -336,7 +330,7 @@ function handleRetry() {
 
 function handleDownload(link: DownloadLink) {
   emit('download', link)
-  
+
   // Simulate download trigger (in real implementation, this would handle the actual download)
   if (link.url) {
     console.log('Download file:', link.name, link.url)
@@ -345,16 +339,16 @@ function handleDownload(link: DownloadLink) {
 
 function formatFileSize(size?: number): string {
   if (!size) return ''
-  
+
   const units = ['B', 'KB', 'MB', 'GB']
   let index = 0
   let fileSize = size
-  
+
   while (fileSize >= 1024 && index < units.length - 1) {
     fileSize /= 1024
     index++
   }
-  
+
   return `${fileSize.toFixed(1)} ${units[index]}`
 }
 </script>
@@ -498,7 +492,11 @@ function formatFileSize(size?: number): string {
 
           .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--color-primary, #007aff), var(--color-success, #28a745));
+            background: linear-gradient(
+              90deg,
+              var(--color-primary, #007aff),
+              var(--color-success, #28a745)
+            );
             border-radius: 6px;
             transition: width 0.3s ease;
 
@@ -831,8 +829,12 @@ function formatFileSize(size?: number): string {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes indeterminate {
@@ -851,74 +853,74 @@ function formatFileSize(size?: number): string {
   .operation-progress-modal {
     align-items: flex-end;
     padding: 10px;
-    
+
     .modal-container {
       width: 100%;
       max-width: none;
       max-height: 90vh;
       border-radius: 12px 12px 0 0;
       transform: translateY(100%);
-      
+
       &.show {
         .modal-container {
           transform: translateY(0);
         }
       }
-      
+
       .modal-header {
         @include ipad-spacing('padding', 16px, 20px, 24px);
-        
+
         .header-left {
           gap: 12px;
-          
+
           .status-icon {
             font-size: 24px;
           }
-          
+
           .header-text {
             .modal-title {
               font-size: 18px;
             }
-            
+
             .modal-subtitle {
               font-size: 13px;
             }
           }
         }
-        
+
         .close-btn {
           @include touch-friendly;
         }
       }
-      
+
       .modal-content {
         @include ipad-spacing('padding', 16px, 20px, 24px);
         max-height: 60vh;
-        
+
         .progress-section {
           .progress-bar-container {
             height: 8px;
-            
+
             .progress-bar {
               height: 100%;
             }
           }
-          
+
           .current-step {
             font-size: 13px;
           }
         }
-        
+
         .steps-section {
           .steps-list {
             .step-item {
               padding: 8px;
-              
+
               .step-content {
                 .step-title {
                   font-size: 13px;
                 }
-                
+
                 .step-description,
                 .step-error {
                   font-size: 12px;
@@ -927,45 +929,45 @@ function formatFileSize(size?: number): string {
             }
           }
         }
-        
+
         .results-section {
           .result-summary {
             grid-template-columns: 1fr;
             gap: 8px;
-            
+
             .summary-item {
               padding: 8px;
               font-size: 13px;
             }
           }
-          
+
           .error-details {
             .error-list {
               .error-item {
                 padding: 8px;
-                
+
                 .error-message {
                   font-size: 13px;
                 }
-                
+
                 .error-item-name {
                   font-size: 11px;
                 }
               }
-              
+
               .show-more-errors {
                 @include touch-friendly;
                 font-size: 13px;
               }
             }
           }
-          
+
           .download-section {
             .download-list {
               @include horizontal-scroll;
               display: flex;
               gap: 8px;
-              
+
               .download-btn {
                 @include touch-friendly;
                 flex: none;
@@ -976,12 +978,12 @@ function formatFileSize(size?: number): string {
           }
         }
       }
-      
+
       .modal-actions {
         flex-direction: column-reverse;
         gap: 8px;
         @include ipad-spacing('padding', 16px, 20px, 24px);
-        
+
         .action-btn {
           width: 100%;
           justify-content: center;
@@ -996,36 +998,36 @@ function formatFileSize(size?: number): string {
 @include respond-to('tablet') {
   .operation-progress-modal {
     padding: 40px 20px;
-    
+
     .modal-container {
       width: 85%;
       max-width: 600px;
-      
+
       .modal-header {
         @include ipad-spacing('padding', 20px, 24px, 24px);
-        
+
         .header-left {
           .status-icon {
             font-size: 28px;
           }
         }
       }
-      
+
       .modal-content {
         @include ipad-spacing('padding', 20px, 24px, 24px);
         max-height: 70vh;
-        
+
         .progress-section {
           .progress-bar-container {
             height: 10px;
           }
         }
-        
+
         .results-section {
           .result-summary {
             grid-template-columns: repeat(2, 1fr);
           }
-          
+
           .download-section {
             .download-list {
               .download-btn {
@@ -1036,10 +1038,10 @@ function formatFileSize(size?: number): string {
           }
         }
       }
-      
+
       .modal-actions {
         @include ipad-spacing('padding', 20px, 24px, 24px);
-        
+
         .action-btn {
           @include touch-friendly;
           padding: 12px 24px;
@@ -1053,15 +1055,15 @@ function formatFileSize(size?: number): string {
   .operation-progress-modal {
     .modal-container {
       max-width: 800px;
-      
+
       .modal-content {
         max-height: 75vh;
-        
+
         .results-section {
           .result-summary {
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
           }
-          
+
           .error-details {
             .error-list {
               max-height: 200px;

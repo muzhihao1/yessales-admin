@@ -1,8 +1,8 @@
 <template>
   <view class="offline-indicator-container">
     <!-- Network Status Banner -->
-    <view 
-      v-if="showNetworkBanner" 
+    <view
+      v-if="showNetworkBanner"
       class="network-banner"
       :class="{
         'banner-offline': isOffline,
@@ -23,10 +23,7 @@
         </view>
         <view v-if="showProgress" class="banner-progress">
           <view class="progress-bar">
-            <view 
-              class="progress-fill" 
-              :style="{ width: `${syncProgress}%` }"
-            ></view>
+            <view class="progress-fill" :style="{ width: `${syncProgress}%` }"></view>
           </view>
           <text class="progress-text">{{ syncProgress }}%</text>
         </view>
@@ -34,7 +31,7 @@
     </view>
 
     <!-- Floating Sync Button -->
-    <view 
+    <view
       v-if="showSyncButton"
       class="sync-button"
       :class="{ 'button-syncing': isSyncing }"
@@ -57,7 +54,7 @@
           <text class="modal-title">离线状态详情</text>
           <text class="modal-close" @click="closeStatusModal">✕</text>
         </view>
-        
+
         <view class="modal-content">
           <!-- Network Status -->
           <view class="status-section">
@@ -100,10 +97,7 @@
             <view class="section-title">同步进度</view>
             <view class="progress-container">
               <view class="progress-bar-large">
-                <view 
-                  class="progress-fill-large" 
-                  :style="{ width: `${syncProgress}%` }"
-                ></view>
+                <view class="progress-fill-large" :style="{ width: `${syncProgress}%` }"></view>
               </view>
               <text class="progress-percentage">{{ syncProgress }}%</text>
             </view>
@@ -111,26 +105,17 @@
 
           <!-- Actions -->
           <view class="modal-actions">
-            <button 
-              v-if="!isSyncing && pendingCount > 0" 
+            <button
+              v-if="!isSyncing && pendingCount > 0"
               class="action-button primary"
               @click="triggerSync"
             >
               立即同步
             </button>
-            <button 
-              v-if="failedCount > 0" 
-              class="action-button secondary"
-              @click="clearFailed"
-            >
+            <button v-if="failedCount > 0" class="action-button secondary" @click="clearFailed">
               清除失败
             </button>
-            <button 
-              class="action-button secondary"
-              @click="closeStatusModal"
-            >
-              关闭
-            </button>
+            <button class="action-button secondary" @click="closeStatusModal">关闭</button>
           </view>
         </view>
       </view>
@@ -139,7 +124,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useOfflineSync } from '@/services/offline'
 import { formatDistanceToNow } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
@@ -195,13 +180,13 @@ const networkInfo = computed(() => networkStatus.value)
 const connectionTypeText = computed(() => {
   const type = networkInfo.value.connectionType
   const typeMap: Record<string, string> = {
-    'wifi': 'WiFi',
+    wifi: 'WiFi',
     '2g': '2G',
     '3g': '3G',
-    '4g': '4G', 
+    '4g': '4G',
     '5g': '5G',
-    'ethernet': '以太网',
-    'none': '无连接'
+    ethernet: '以太网',
+    none: '无连接'
   }
   return typeMap[type || ''] || '未知'
 })
@@ -225,7 +210,9 @@ const bannerSubtitle = computed(() => {
   if (isSyncing.value) {
     return `同步中 ${pendingCount.value} 项更改`
   } else if (isOffline.value) {
-    return pendingCount.value > 0 ? `${pendingCount.value} 项更改待同步` : '离线模式，数据将稍后同步'
+    return pendingCount.value > 0
+      ? `${pendingCount.value} 项更改待同步`
+      : '离线模式，数据将稍后同步'
   } else if (wasOffline.value && pendingCount.value === 0) {
     return '所有数据已同步'
   } else {
@@ -234,29 +221,35 @@ const bannerSubtitle = computed(() => {
 })
 
 const showProgress = computed(() => isSyncing.value && syncProgress.value < 100)
-const showSyncButton = computed(() => props.showSyncButton && (pendingCount.value > 0 || failedCount.value > 0))
+const showSyncButton = computed(
+  () => props.showSyncButton && (pendingCount.value > 0 || failedCount.value > 0)
+)
 
 /**
  * Watch network status
  */
-watch(isOffline, (offline) => {
-  if (offline) {
-    // Going offline
-    wasOffline.value = false
-    showNetworkBanner.value = true
-    clearBannerTimer()
-  } else if (wasOffline.value || pendingCount.value > 0) {
-    // Coming back online
-    showNetworkBanner.value = true
-    
-    // Auto-hide banner after delay
-    if (props.autoHide) {
-      setBannerTimer()
-    }
-  }
-}, { immediate: true })
+watch(
+  isOffline,
+  offline => {
+    if (offline) {
+      // Going offline
+      wasOffline.value = false
+      showNetworkBanner.value = true
+      clearBannerTimer()
+    } else if (wasOffline.value || pendingCount.value > 0) {
+      // Coming back online
+      showNetworkBanner.value = true
 
-watch(isSyncing, (syncing) => {
+      // Auto-hide banner after delay
+      if (props.autoHide) {
+        setBannerTimer()
+      }
+    }
+  },
+  { immediate: true }
+)
+
+watch(isSyncing, syncing => {
   if (syncing) {
     showNetworkBanner.value = true
     clearBannerTimer()
@@ -265,7 +258,7 @@ watch(isSyncing, (syncing) => {
     if (props.autoHide && !isOffline.value) {
       setBannerTimer()
     }
-    
+
     // Mark as was offline for recovery banner
     if (!isOffline.value) {
       wasOffline.value = true
@@ -334,11 +327,11 @@ async function triggerSync() {
 
 function formatTime(timestamp: number): string {
   if (timestamp === 0) return '从未'
-  
+
   try {
-    return formatDistanceToNow(new Date(timestamp), { 
-      locale: zhCN, 
-      addSuffix: true 
+    return formatDistanceToNow(new Date(timestamp), {
+      locale: zhCN,
+      addSuffix: true
     })
   } catch {
     return '未知'
@@ -377,17 +370,17 @@ onUnmounted(() => {
   backdrop-filter: blur(10px);
   border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
-  
+
   &.banner-offline {
     background: linear-gradient(90deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.9));
     color: white;
   }
-  
+
   &.banner-online {
     background: linear-gradient(90deg, rgba(34, 197, 94, 0.9), rgba(22, 163, 74, 0.9));
     color: white;
   }
-  
+
   &.banner-syncing {
     background: linear-gradient(90deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
     color: white;
@@ -402,27 +395,32 @@ onUnmounted(() => {
 
 .banner-icon {
   font-size: 32rpx;
-  
+
   text {
     animation: pulse 2s infinite;
   }
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .banner-text {
   flex: 1;
-  
+
   .banner-title {
     display: block;
     font-size: 28rpx;
     font-weight: 600;
     line-height: 1.2;
   }
-  
+
   .banner-subtitle {
     display: block;
     font-size: 24rpx;
@@ -445,7 +443,7 @@ onUnmounted(() => {
   background: rgba(255, 255, 255, 0.3);
   border-radius: 4rpx;
   overflow: hidden;
-  
+
   .progress-fill {
     height: 100%;
     background: white;
@@ -476,19 +474,23 @@ onUnmounted(() => {
   box-shadow: 0 8rpx 24rpx rgba(59, 130, 246, 0.4);
   z-index: 1000;
   transition: all 0.3s ease;
-  
+
   &:active {
     transform: scale(0.95);
   }
-  
+
   &.button-syncing {
     animation: rotate 1s linear infinite;
   }
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .sync-icon {
@@ -530,13 +532,13 @@ onUnmounted(() => {
   padding: 32rpx;
   border-bottom: 1rpx solid #e5e7eb;
   background: #f9fafb;
-  
+
   .modal-title {
     font-size: 32rpx;
     font-weight: 600;
     color: #111827;
   }
-  
+
   .modal-close {
     font-size: 36rpx;
     color: #6b7280;
@@ -551,7 +553,7 @@ onUnmounted(() => {
 
 .status-section {
   margin-bottom: 32rpx;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -569,29 +571,29 @@ onUnmounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: 12rpx 0;
-  
+
   .status-label {
     font-size: 26rpx;
     color: #6b7280;
   }
-  
+
   .status-value {
     font-size: 26rpx;
     color: #111827;
     font-weight: 500;
-    
+
     &.text-primary {
       color: #3b82f6;
     }
-    
+
     &.text-error {
       color: #ef4444;
     }
-    
+
     &.text-warning {
       color: #f59e0b;
     }
-    
+
     &.text-offline {
       color: #ef4444;
     }
@@ -610,7 +612,7 @@ onUnmounted(() => {
   background: #e5e7eb;
   border-radius: 8rpx;
   overflow: hidden;
-  
+
   .progress-fill-large {
     height: 100%;
     background: linear-gradient(90deg, #3b82f6, #1d4ed8);
@@ -643,20 +645,20 @@ onUnmounted(() => {
   font-size: 26rpx;
   font-weight: 500;
   transition: all 0.2s ease;
-  
+
   &.primary {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white;
-    
+
     &:active {
       transform: scale(0.98);
     }
   }
-  
+
   &.secondary {
     background: #f3f4f6;
     color: #374151;
-    
+
     &:active {
       background: #e5e7eb;
     }

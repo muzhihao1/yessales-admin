@@ -1,30 +1,30 @@
 /**
  * System Settings Store
- * 
+ *
  * Manages system configuration settings, business rules, security policies,
  * and user preferences across the admin application.
  */
 
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { 
-  SystemSettings,
-  SettingsGroup,
-  SettingsCategory,
-  SettingsFormData,
-  SettingsValidationResult,
-  SettingsExportData,
-  SettingsImportResult,
-  SettingsChangeHistory,
-  BusinessRuleSettings,
-  SecuritySettings,
-  NotificationSettings,
-  IntegrationSettings,
-  BackupSettings,
+import { computed, ref } from 'vue'
+import type {
   AppearanceSettings,
+  BackupSettings,
+  BusinessRuleSettings,
   DEFAULT_BUSINESS_RULES,
   DEFAULT_SECURITY_SETTINGS,
-  SETTINGS_CATEGORIES
+  IntegrationSettings,
+  NotificationSettings,
+  SETTINGS_CATEGORIES,
+  SecuritySettings,
+  SettingsCategory,
+  SettingsChangeHistory,
+  SettingsExportData,
+  SettingsFormData,
+  SettingsGroup,
+  SettingsImportResult,
+  SettingsValidationResult,
+  SystemSettings
 } from '@/types/settings'
 
 export const useSettingsStore = defineStore('settings', () => {
@@ -36,7 +36,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const saving = ref(false)
   const error = ref<string | null>(null)
   const changeHistory = ref<SettingsChangeHistory[]>([])
-  
+
   // Typed settings objects
   const businessRules = ref<BusinessRuleSettings>(DEFAULT_BUSINESS_RULES)
   const securitySettings = ref<SecuritySettings>(DEFAULT_SECURITY_SETTINGS)
@@ -44,7 +44,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const integrationSettings = ref<IntegrationSettings | null>(null)
   const backupSettings = ref<BackupSettings | null>(null)
   const appearanceSettings = ref<AppearanceSettings | null>(null)
-  
+
   // Computed properties
   const settingsByCategory = computed(() => {
     const grouped: Record<SettingsCategory, SystemSettings[]> = {
@@ -57,34 +57,34 @@ export const useSettingsStore = defineStore('settings', () => {
       backup: [],
       maintenance: []
     }
-    
+
     settings.value.forEach(setting => {
       if (grouped[setting.category]) {
         grouped[setting.category].push(setting)
       }
     })
-    
+
     return grouped
   })
-  
+
   const currentCategorySettings = computed(() => {
     return settingsByCategory.value[currentCategory.value] || []
   })
-  
+
   const hasUnsavedChanges = computed(() => {
     // Check if any settings have been modified but not saved
     return settings.value.some(setting => setting.updated_at === 'pending')
   })
-  
+
   const categoryInfo = computed(() => {
     return SETTINGS_CATEGORIES[currentCategory.value]
   })
-  
+
   // Actions
   async function fetchSettings(category?: SettingsCategory) {
     loading.value = true
     error.value = null
-    
+
     try {
       // Mock API call - replace with actual API integration
       const mockSettings: SystemSettings[] = [
@@ -207,17 +207,16 @@ export const useSettingsStore = defineStore('settings', () => {
           created_at: new Date().toISOString()
         }
       ]
-      
+
       // Filter by category if specified
       if (category) {
         settings.value = mockSettings.filter(s => s.category === category)
       } else {
         settings.value = mockSettings
       }
-      
+
       // Update specialized setting objects
       updateSpecializedSettings()
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '获取设置失败'
       console.error('Failed to fetch settings:', err)
@@ -225,33 +224,33 @@ export const useSettingsStore = defineStore('settings', () => {
       loading.value = false
     }
   }
-  
+
   async function updateSetting(settingKey: string, value: any) {
     saving.value = true
     error.value = null
-    
+
     try {
       const setting = settings.value.find(s => s.key === settingKey)
       if (!setting) {
         throw new Error(`设置项 ${settingKey} 不存在`)
       }
-      
+
       // Validate the new value
       const validation = validateSettingValue(setting, value)
       if (!validation.isValid) {
         throw new Error(validation.errors[settingKey]?.[0] || '设置值无效')
       }
-      
+
       // Store old value for history
       const oldValue = setting.value
-      
+
       // Update the setting
       setting.value = value
       setting.updated_at = new Date().toISOString()
-      
+
       // Mock API call - replace with actual API integration
       await new Promise(resolve => setTimeout(resolve, 500))
-      
+
       // Add to change history
       changeHistory.value.unshift({
         id: `change_${Date.now()}`,
@@ -262,15 +261,14 @@ export const useSettingsStore = defineStore('settings', () => {
         changed_at: new Date().toISOString(),
         reason: '通过设置页面修改'
       })
-      
+
       // Update specialized settings
       updateSpecializedSettings()
-      
+
       uni.showToast({
         title: '设置已保存',
         icon: 'success'
       })
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '保存设置失败'
       uni.showToast({
@@ -282,15 +280,15 @@ export const useSettingsStore = defineStore('settings', () => {
       saving.value = false
     }
   }
-  
+
   async function batchUpdateSettings(updates: Record<string, any>) {
     saving.value = true
     error.value = null
-    
+
     try {
       const updatedSettings: SystemSettings[] = []
       const validationErrors: string[] = []
-      
+
       // Validate all updates first
       for (const [key, value] of Object.entries(updates)) {
         const setting = settings.value.find(s => s.key === key)
@@ -298,27 +296,27 @@ export const useSettingsStore = defineStore('settings', () => {
           validationErrors.push(`设置项 ${key} 不存在`)
           continue
         }
-        
+
         const validation = validateSettingValue(setting, value)
         if (!validation.isValid) {
           validationErrors.push(...(validation.errors[key] || []))
           continue
         }
-        
+
         updatedSettings.push({
           ...setting,
           value,
           updated_at: new Date().toISOString()
         })
       }
-      
+
       if (validationErrors.length > 0) {
         throw new Error(validationErrors.join('; '))
       }
-      
+
       // Mock API call - replace with actual API integration
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       // Apply all updates
       updatedSettings.forEach(updatedSetting => {
         const index = settings.value.findIndex(s => s.id === updatedSetting.id)
@@ -326,15 +324,14 @@ export const useSettingsStore = defineStore('settings', () => {
           settings.value[index] = updatedSetting
         }
       })
-      
+
       // Update specialized settings
       updateSpecializedSettings()
-      
+
       uni.showToast({
         title: `已保存 ${updatedSettings.length} 项设置`,
         icon: 'success'
       })
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '批量保存设置失败'
       uni.showToast({
@@ -346,35 +343,35 @@ export const useSettingsStore = defineStore('settings', () => {
       saving.value = false
     }
   }
-  
+
   async function resetToDefaults(category?: SettingsCategory) {
     try {
       uni.showModal({
         title: '重置设置',
-        content: category 
+        content: category
           ? `确定要将 ${SETTINGS_CATEGORIES[category].title} 重置为默认值吗？`
           : '确定要将所有设置重置为默认值吗？',
-        success: async (res) => {
+        success: async res => {
           if (res.confirm) {
             saving.value = true
-            
+
             // Filter settings to reset
-            const settingsToReset = category 
+            const settingsToReset = category
               ? settings.value.filter(s => s.category === category)
               : settings.value
-            
+
             // Reset to default values
             settingsToReset.forEach(setting => {
               setting.value = setting.default_value
               setting.updated_at = new Date().toISOString()
             })
-            
+
             // Mock API call
             await new Promise(resolve => setTimeout(resolve, 500))
-            
+
             updateSpecializedSettings()
             saving.value = false
-            
+
             uni.showToast({
               title: '设置已重置',
               icon: 'success'
@@ -387,88 +384,90 @@ export const useSettingsStore = defineStore('settings', () => {
       console.error('Failed to reset settings:', err)
     }
   }
-  
+
   async function exportSettings(categories?: SettingsCategory[]): Promise<SettingsExportData> {
     try {
-      const settingsToExport = categories 
+      const settingsToExport = categories
         ? settings.value.filter(s => categories.includes(s.category))
         : settings.value
-      
+
       const exportData: SettingsExportData = {
         version: '1.0.0',
         exported_at: new Date().toISOString(),
         exported_by: 'current_user', // Replace with actual user
-        categories: categories || Object.keys(SETTINGS_CATEGORIES) as SettingsCategory[],
+        categories: categories || (Object.keys(SETTINGS_CATEGORIES) as SettingsCategory[]),
         settings: settingsToExport,
         checksum: generateChecksum(settingsToExport)
       }
-      
+
       return exportData
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '导出设置失败'
       console.error('Failed to export settings:', err)
       throw err
     }
   }
-  
+
   async function importSettings(importData: SettingsExportData): Promise<SettingsImportResult> {
     saving.value = true
     error.value = null
-    
+
     try {
       // Validate import data
       if (!importData.settings || !Array.isArray(importData.settings)) {
         throw new Error('导入数据格式无效')
       }
-      
+
       // Verify checksum
       const calculatedChecksum = generateChecksum(importData.settings)
       if (calculatedChecksum !== importData.checksum) {
         throw new Error('导入数据校验失败，文件可能已损坏')
       }
-      
+
       let importedCount = 0
       let skippedCount = 0
       let errorCount = 0
       const errors: string[] = []
       const warnings: string[] = []
-      
+
       // Process each setting
       for (const importedSetting of importData.settings) {
         try {
           const existingSetting = settings.value.find(s => s.key === importedSetting.key)
-          
+
           if (!existingSetting) {
             warnings.push(`设置项 ${importedSetting.key} 在当前系统中不存在，已跳过`)
             skippedCount++
             continue
           }
-          
+
           // Validate imported value
           const validation = validateSettingValue(existingSetting, importedSetting.value)
           if (!validation.isValid) {
-            errors.push(`设置项 ${importedSetting.key} 的值无效: ${validation.errors[importedSetting.key]?.[0]}`)
+            errors.push(
+              `设置项 ${importedSetting.key} 的值无效: ${validation.errors[importedSetting.key]?.[0]}`
+            )
             errorCount++
             continue
           }
-          
+
           // Update the setting
           existingSetting.value = importedSetting.value
           existingSetting.updated_at = new Date().toISOString()
           importedCount++
-          
         } catch (err) {
-          errors.push(`处理设置项 ${importedSetting.key} 时出错: ${err instanceof Error ? err.message : '未知错误'}`)
+          errors.push(
+            `处理设置项 ${importedSetting.key} 时出错: ${err instanceof Error ? err.message : '未知错误'}`
+          )
           errorCount++
         }
       }
-      
+
       // Mock API call to save changes
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       updateSpecializedSettings()
-      
+
       const result: SettingsImportResult = {
         success: errorCount === 0,
         imported_count: importedCount,
@@ -477,9 +476,8 @@ export const useSettingsStore = defineStore('settings', () => {
         errors,
         warnings
       }
-      
+
       return result
-      
     } catch (err) {
       error.value = err instanceof Error ? err.message : '导入设置失败'
       console.error('Failed to import settings:', err)
@@ -488,18 +486,18 @@ export const useSettingsStore = defineStore('settings', () => {
       saving.value = false
     }
   }
-  
+
   async function fetchChangeHistory(settingKey?: string) {
     loading.value = true
     error.value = null
-    
+
     try {
       // Mock API call - replace with actual API integration
       const mockHistory: SettingsChangeHistory[] = [
         {
           id: 'hist_001',
           setting_key: 'default_tax_rate',
-          old_value: 0.10,
+          old_value: 0.1,
           new_value: 0.13,
           changed_by: 'admin',
           changed_at: new Date(Date.now() - 86400000).toISOString(),
@@ -516,11 +514,10 @@ export const useSettingsStore = defineStore('settings', () => {
           reason: '促销活动调整'
         }
       ]
-      
-      changeHistory.value = settingKey 
+
+      changeHistory.value = settingKey
         ? mockHistory.filter(h => h.setting_key === settingKey)
         : mockHistory
-        
     } catch (err) {
       error.value = err instanceof Error ? err.message : '获取变更历史失败'
       console.error('Failed to fetch change history:', err)
@@ -528,20 +525,20 @@ export const useSettingsStore = defineStore('settings', () => {
       loading.value = false
     }
   }
-  
+
   function setCurrentCategory(category: SettingsCategory) {
     currentCategory.value = category
   }
-  
+
   function validateSettingValue(setting: SystemSettings, value: any): SettingsValidationResult {
     const errors: Record<string, string[]> = {}
     const warnings: Record<string, string[]> = {}
     const settingErrors: string[] = []
-    
+
     if (!setting.validation) {
       return { isValid: true, errors, warnings }
     }
-    
+
     for (const rule of setting.validation) {
       switch (rule.type) {
         case 'required':
@@ -574,65 +571,65 @@ export const useSettingsStore = defineStore('settings', () => {
           break
       }
     }
-    
+
     if (settingErrors.length > 0) {
       errors[setting.key] = settingErrors
     }
-    
+
     return {
       isValid: Object.keys(errors).length === 0,
       errors,
       warnings
     }
   }
-  
+
   function updateSpecializedSettings() {
     // Update business rules
     const businessSettings = settings.value.filter(s => s.category === 'business')
     const updatedBusinessRules = { ...businessRules.value }
-    
+
     businessSettings.forEach(setting => {
       if (setting.key in updatedBusinessRules) {
-        (updatedBusinessRules as any)[setting.key] = setting.value
+        ;(updatedBusinessRules as any)[setting.key] = setting.value
       }
     })
-    
+
     businessRules.value = updatedBusinessRules
-    
+
     // Update security settings
     const securitySettingsData = settings.value.filter(s => s.category === 'security')
     const updatedSecuritySettings = { ...securitySettings.value }
-    
+
     securitySettingsData.forEach(setting => {
       if (setting.key in updatedSecuritySettings) {
-        (updatedSecuritySettings as any)[setting.key] = setting.value
+        ;(updatedSecuritySettings as any)[setting.key] = setting.value
       }
     })
-    
+
     securitySettings.value = updatedSecuritySettings
   }
-  
+
   function generateChecksum(data: any): string {
     // Simple checksum generation - in production, use a proper hash function
     const jsonString = JSON.stringify(data)
     let hash = 0
     for (let i = 0; i < jsonString.length; i++) {
       const char = jsonString.charCodeAt(i)
-      hash = ((hash << 5) - hash) + char
+      hash = (hash << 5) - hash + char
       hash = hash & hash // Convert to 32bit integer
     }
     return Math.abs(hash).toString(16)
   }
-  
+
   function getSetting(key: string): SystemSettings | undefined {
     return settings.value.find(s => s.key === key)
   }
-  
+
   function getSettingValue<T = any>(key: string, defaultValue?: T): T {
     const setting = getSetting(key)
     return setting ? setting.value : defaultValue
   }
-  
+
   return {
     // State
     settings,
@@ -648,13 +645,13 @@ export const useSettingsStore = defineStore('settings', () => {
     integrationSettings,
     backupSettings,
     appearanceSettings,
-    
+
     // Computed
     settingsByCategory,
     currentCategorySettings,
     hasUnsavedChanges,
     categoryInfo,
-    
+
     // Actions
     fetchSettings,
     updateSetting,

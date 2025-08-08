@@ -8,40 +8,33 @@
 
     <!-- Empty state -->
     <view v-else-if="!products || products.length === 0" class="empty-container">
-      <image 
-        class="empty-icon" 
-        src="/static/images/empty-product.png" 
-        mode="aspectFit"
-      />
+      <image class="empty-icon" src="/static/images/empty-product.png" mode="aspectFit" />
       <text class="empty-text">{{ emptyText || '暂无产品' }}</text>
     </view>
 
     <!-- Product list -->
     <view v-else class="product-grid">
-      <view 
-        v-for="product in products" 
+      <view
+        v-for="product in products"
         :key="product.id"
         class="product-card"
-        :class="{ 
+        :class="{
           'product-card--selected': selectable && isSelected(product.id),
-          'product-card--selectable': selectable 
+          'product-card--selectable': selectable
         }"
         @click="handleProductClick(product)"
       >
         <!-- Selection checkbox -->
         <view v-if="selectable" class="product-checkbox">
-          <view 
-            class="checkbox-icon"
-            :class="{ 'checkbox-icon--checked': isSelected(product.id) }"
-          >
+          <view class="checkbox-icon" :class="{ 'checkbox-icon--checked': isSelected(product.id) }">
             <text v-if="isSelected(product.id)" class="checkbox-check">✓</text>
           </view>
         </view>
 
         <!-- Product image -->
         <view class="product-image-container">
-          <image 
-            class="product-image" 
+          <image
+            class="product-image"
             :src="product.image || '/static/images/default-product.png'"
             mode="aspectFill"
             @error="handleImageError($event, product)"
@@ -57,7 +50,7 @@
             <text class="product-price">¥{{ formatPrice(product.price) }}</text>
             <text class="product-unit">/{{ product.unit || '个' }}</text>
           </view>
-          
+
           <!-- SKU options if available -->
           <view v-if="product.skuOptions && product.skuOptions.length > 0" class="product-sku">
             <text class="sku-label">规格：</text>
@@ -152,7 +145,9 @@ const handleImageError = (event: any, product: Product) => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text {

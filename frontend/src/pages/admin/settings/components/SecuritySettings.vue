@@ -10,7 +10,7 @@
         <!-- 密码策略 -->
         <view class="form-group">
           <text class="group-title">密码策略</text>
-          
+
           <uni-forms-item label="最小密码长度" name="minPasswordLength">
             <uni-number-box
               v-model="formData.minPasswordLength"
@@ -25,29 +25,29 @@
             <view class="checkbox-group">
               <checkbox-group @change="handlePasswordComplexityChange">
                 <label class="checkbox-item">
-                  <checkbox 
-                    value="uppercase" 
+                  <checkbox
+                    value="uppercase"
                     :checked="formData.passwordComplexity.includes('uppercase')"
                   />
                   <text>包含大写字母</text>
                 </label>
                 <label class="checkbox-item">
-                  <checkbox 
-                    value="lowercase" 
+                  <checkbox
+                    value="lowercase"
                     :checked="formData.passwordComplexity.includes('lowercase')"
                   />
                   <text>包含小写字母</text>
                 </label>
                 <label class="checkbox-item">
-                  <checkbox 
-                    value="numbers" 
+                  <checkbox
+                    value="numbers"
                     :checked="formData.passwordComplexity.includes('numbers')"
                   />
                   <text>包含数字</text>
                 </label>
                 <label class="checkbox-item">
-                  <checkbox 
-                    value="symbols" 
+                  <checkbox
+                    value="symbols"
                     :checked="formData.passwordComplexity.includes('symbols')"
                   />
                   <text>包含特殊字符</text>
@@ -82,7 +82,7 @@
         <!-- 登录安全 -->
         <view class="form-group">
           <text class="group-title">登录安全</text>
-          
+
           <uni-forms-item label="启用双因子认证" name="enableTwoFactorAuth">
             <switch
               :checked="formData.enableTwoFactorAuth"
@@ -131,7 +131,7 @@
         <!-- 会话管理 -->
         <view class="form-group">
           <text class="group-title">会话管理</text>
-          
+
           <uni-forms-item label="会话超时时间(分钟)" name="sessionTimeout">
             <uni-number-box
               v-model="formData.sessionTimeout"
@@ -171,7 +171,7 @@
         <!-- 数据保护 -->
         <view class="form-group">
           <text class="group-title">数据保护</text>
-          
+
           <uni-forms-item label="强制HTTPS连接" name="enforceHttps">
             <switch
               :checked="formData.enforceHttps"
@@ -208,7 +208,7 @@
         <!-- 审计日志 -->
         <view class="form-group">
           <text class="group-title">审计日志</text>
-          
+
           <uni-forms-item label="启用操作审计" name="enableAuditLogging">
             <switch
               :checked="formData.enableAuditLogging"
@@ -244,7 +244,7 @@
         <!-- IP访问控制 -->
         <view class="form-group">
           <text class="group-title">IP访问控制</text>
-          
+
           <uni-forms-item label="启用IP白名单" name="enableIpWhitelist">
             <switch
               :checked="formData.enableIpWhitelist"
@@ -294,7 +294,10 @@
           <text class="status-icon">{{ securityStatus.httpsEnabled ? '✅' : '⚠️' }}</text>
           <text class="status-text">HTTPS连接</text>
         </view>
-        <view class="status-item" :class="{ 'status-warning': !securityStatus.passwordPolicyStrong }">
+        <view
+          class="status-item"
+          :class="{ 'status-warning': !securityStatus.passwordPolicyStrong }"
+        >
           <text class="status-icon">{{ securityStatus.passwordPolicyStrong ? '✅' : '⚠️' }}</text>
           <text class="status-text">密码策略</text>
         </view>
@@ -321,14 +324,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { showToast, showModal } from '@/utils/ui'
+import { showModal, showToast } from '@/utils/ui'
 import type { SystemSettings } from '@/types/settings'
 
 /**
  * 安全设置组件
- * 
+ *
  * 功能说明：
  * - 管理密码策略和复杂度要求
  * - 配置登录安全和双因子认证
@@ -336,13 +339,13 @@ import type { SystemSettings } from '@/types/settings'
  * - 配置数据保护和加密选项
  * - 管理审计日志和安全监控
  * - 设置IP访问控制（白名单/黑名单）
- * 
+ *
  * 安全最佳实践：
  * - 所有安全配置都在服务端验证
  * - 敏感操作需要额外确认
  * - 遵循最小权限原则
  * - 实时安全状态监控
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -352,32 +355,32 @@ interface SecuritySettingsForm {
   passwordComplexity: string[]
   passwordExpiryDays: number
   passwordHistoryCount: number
-  
+
   // 登录安全
   enableTwoFactorAuth: boolean
   maxLoginAttempts: number
   accountLockoutDuration: number
   forcePasswordChangeOnFirstLogin: boolean
   rememberMeDays: number
-  
+
   // 会话管理
   sessionTimeout: number
   maxConcurrentSessions: number
   enableSessionFixationProtection: boolean
   enableLocationBasedSecurity: boolean
-  
+
   // 数据保护
   enforceHttps: boolean
   enableDataEncryption: boolean
   apiRateLimit: number
   enableApiKeyAuth: boolean
-  
+
   // 审计日志
   enableAuditLogging: boolean
   auditLogRetentionDays: number
   logSensitiveOperations: boolean
   enableSecurityMonitoring: boolean
-  
+
   // IP访问控制
   enableIpWhitelist: boolean
   ipWhitelist: string
@@ -399,32 +402,32 @@ const formData = ref<SecuritySettingsForm>({
   passwordComplexity: ['lowercase', 'numbers'],
   passwordExpiryDays: 90,
   passwordHistoryCount: 5,
-  
+
   // 登录安全
   enableTwoFactorAuth: false,
   maxLoginAttempts: 5,
   accountLockoutDuration: 15,
   forcePasswordChangeOnFirstLogin: true,
   rememberMeDays: 7,
-  
+
   // 会话管理
   sessionTimeout: 30,
   maxConcurrentSessions: 3,
   enableSessionFixationProtection: true,
   enableLocationBasedSecurity: true,
-  
+
   // 数据保护
   enforceHttps: true,
   enableDataEncryption: true,
   apiRateLimit: 100,
   enableApiKeyAuth: true,
-  
+
   // 审计日志
   enableAuditLogging: true,
   auditLogRetentionDays: 90,
   logSensitiveOperations: true,
   enableSecurityMonitoring: true,
-  
+
   // IP访问控制
   enableIpWhitelist: false,
   ipWhitelist: '',
@@ -435,24 +438,16 @@ const formData = ref<SecuritySettingsForm>({
 // 表单验证规则
 const rules = {
   minPasswordLength: {
-    rules: [
-      { type: 'number', min: 6, max: 32, errorMessage: '密码长度应在6-32位之间' }
-    ]
+    rules: [{ type: 'number', min: 6, max: 32, errorMessage: '密码长度应在6-32位之间' }]
   },
   maxLoginAttempts: {
-    rules: [
-      { type: 'number', min: 3, max: 20, errorMessage: '登录失败次数应在3-20次之间' }
-    ]
+    rules: [{ type: 'number', min: 3, max: 20, errorMessage: '登录失败次数应在3-20次之间' }]
   },
   accountLockoutDuration: {
-    rules: [
-      { type: 'number', min: 5, max: 1440, errorMessage: '锁定时间应在5-1440分钟之间' }
-    ]
+    rules: [{ type: 'number', min: 5, max: 1440, errorMessage: '锁定时间应在5-1440分钟之间' }]
   },
   sessionTimeout: {
-    rules: [
-      { type: 'number', min: 5, max: 480, errorMessage: '会话超时时间应在5-480分钟之间' }
-    ]
+    rules: [{ type: 'number', min: 5, max: 480, errorMessage: '会话超时时间应在5-480分钟之间' }]
   },
   apiRateLimit: {
     rules: [
@@ -460,9 +455,7 @@ const rules = {
     ]
   },
   auditLogRetentionDays: {
-    rules: [
-      { type: 'number', min: 30, max: 365, errorMessage: '日志保留期应在30-365天之间' }
-    ]
+    rules: [{ type: 'number', min: 30, max: 365, errorMessage: '日志保留期应在30-365天之间' }]
   }
 }
 
@@ -474,8 +467,8 @@ const hasChanges = computed(() => {
 const securityStatus = computed(() => {
   return {
     httpsEnabled: formData.value.enforceHttps,
-    passwordPolicyStrong: formData.value.minPasswordLength >= 8 && 
-                         formData.value.passwordComplexity.length >= 3,
+    passwordPolicyStrong:
+      formData.value.minPasswordLength >= 8 && formData.value.passwordComplexity.length >= 3,
     twoFactorEnabled: formData.value.enableTwoFactorAuth,
     auditLogEnabled: formData.value.enableAuditLogging
   }
@@ -483,11 +476,11 @@ const securityStatus = computed(() => {
 
 // 事件处理
 const handleInputChange = (field: keyof SecuritySettingsForm, value: any) => {
-  (formData.value as any)[field] = value
+  ;(formData.value as any)[field] = value
 }
 
 const handleSwitchChange = (field: keyof SecuritySettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handlePasswordComplexityChange = (event: any) => {
@@ -499,7 +492,7 @@ const handleReset = async () => {
     title: '确认重置',
     content: '确定要重置所有安全设置吗？这可能会影响系统安全性。'
   })
-  
+
   if (result.confirm) {
     formData.value = { ...originalData.value }
     showToast('已重置到上次保存的状态')
@@ -521,7 +514,7 @@ const handleSave = async () => {
         title: '安全警告',
         content: '您选择了较低的安全设置，这可能会增加安全风险。确定要继续吗？'
       })
-      
+
       if (!result.confirm) {
         return
       }
@@ -530,21 +523,27 @@ const handleSave = async () => {
     loading.value = true
 
     // 转换为设置格式
-    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(([key, value]) => ({
-      category: 'security' as const,
-      key,
-      value,
-      type: Array.isArray(value) ? 'array' :
-            typeof value === 'boolean' ? 'boolean' : 
-            typeof value === 'number' ? 'number' : 'string'
-    }))
+    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(
+      ([key, value]) => ({
+        category: 'security' as const,
+        key,
+        value,
+        type: Array.isArray(value)
+          ? 'array'
+          : typeof value === 'boolean'
+            ? 'boolean'
+            : typeof value === 'number'
+              ? 'number'
+              : 'string'
+      })
+    )
 
     // 保存设置
     await settingsStore.updateSettings(settings)
-    
+
     // 更新原始数据
     originalData.value = { ...formData.value }
-    
+
     showToast('安全设置保存成功')
   } catch (error) {
     console.error('保存安全设置失败:', error)
@@ -558,14 +557,14 @@ const handleSave = async () => {
 const loadSettings = async () => {
   try {
     const securitySettings = settingsStore.getSettingsByCategory('security')
-    
+
     // 将设置数据填充到表单
     securitySettings.forEach(setting => {
       if (setting.key in formData.value) {
-        (formData.value as any)[setting.key] = setting.value
+        ;(formData.value as any)[setting.key] = setting.value
       }
     })
-    
+
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -580,9 +579,13 @@ onMounted(() => {
 })
 
 // 监听设置变化
-watch(() => settingsStore.settings, () => {
-  loadSettings()
-}, { deep: true })
+watch(
+  () => settingsStore.settings,
+  () => {
+    loadSettings()
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -591,11 +594,11 @@ watch(() => settingsStore.settings, () => {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .section-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -603,20 +606,20 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .section-description {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .form-group {
       padding: 20px;
-      
+
       &:not(:last-child) {
         border-bottom: 1px solid var(--border-color-light);
       }
-      
+
       .group-title {
         font-size: 16px;
         font-weight: 500;
@@ -624,24 +627,24 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 16px;
       }
-      
+
       .checkbox-group {
         .checkbox-item {
           display: flex;
           align-items: center;
           margin-bottom: 8px;
-          
+
           checkbox {
             margin-right: 8px;
           }
-          
+
           text {
             font-size: 14px;
             color: var(--text-color-primary);
           }
         }
       }
-      
+
       .field-hint {
         font-size: 12px;
         color: var(--text-color-tertiary);
@@ -650,45 +653,45 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .security-status {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .status-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .status-title {
         font-size: 16px;
         font-weight: 500;
         color: var(--text-color-primary);
       }
     }
-    
+
     .status-items {
       padding: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
-      
+
       .status-item {
         display: flex;
         align-items: center;
         padding: 12px;
         border-radius: 6px;
         background: var(--color-success-light);
-        
+
         &.status-warning {
           background: var(--color-warning-light);
         }
-        
+
         .status-icon {
           font-size: 16px;
           margin-right: 8px;
         }
-        
+
         .status-text {
           font-size: 14px;
           color: var(--text-color-primary);
@@ -696,7 +699,7 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -704,34 +707,35 @@ watch(() => settingsStore.settings, () => {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    
-    .btn-secondary, .btn-primary {
+
+    .btn-secondary,
+    .btn-primary {
       padding: 10px 24px;
       border-radius: 6px;
       font-size: 14px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     }
-    
+
     .btn-secondary {
       background: var(--color-grey-100);
       color: var(--text-color-secondary);
-      
+
       &:hover:not(:disabled) {
         background: var(--color-grey-200);
       }
     }
-    
+
     .btn-primary {
       background: var(--color-primary);
       color: #fff;
-      
+
       &:hover:not(:disabled) {
         background: var(--color-primary-dark);
       }
@@ -742,10 +746,11 @@ watch(() => settingsStore.settings, () => {
 // 响应式设计
 @media (max-width: 768px) {
   .security-settings {
-    .settings-section, .security-status {
+    .settings-section,
+    .security-status {
       margin: 0 -16px 16px;
       border-radius: 0;
-      
+
       .section-header,
       .status-header,
       .form-group,
@@ -753,17 +758,18 @@ watch(() => settingsStore.settings, () => {
         padding: 16px;
       }
     }
-    
+
     .security-status .status-items {
       grid-template-columns: 1fr;
     }
-    
+
     .actions {
       margin: 0 -16px;
       border-radius: 0;
       padding: 16px;
-      
-      .btn-secondary, .btn-primary {
+
+      .btn-secondary,
+      .btn-primary {
         flex: 1;
         text-align: center;
       }

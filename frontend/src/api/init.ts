@@ -1,4 +1,4 @@
-import { ApiClient } from './index';
+import { ApiClient } from './index'
 
 /**
  * 初始化API客户端
@@ -7,53 +7,56 @@ import { ApiClient } from './index';
 export function initializeApi(): void {
   try {
     // 初始化API客户端
-    ApiClient.init();
-    
+    ApiClient.init()
+
     // 设置全局请求拦截器
-    ApiClient.addRequestInterceptor((request) => {
+    ApiClient.addRequestInterceptor(request => {
       // 在请求中添加时间戳（用于避免缓存）
       if (request.method === 'GET') {
-        request.options = request.options || {};
-        request.options.query = request.options.query || {};
-        request.options.query._t = Date.now();
+        request.options = request.options || {}
+        request.options.query = request.options.query || {}
+        request.options.query._t = Date.now()
       }
-      
-      return request;
-    });
-    
+
+      return request
+    })
+
     // 设置全局响应拦截器
-    ApiClient.addResponseInterceptor((response) => {
+    ApiClient.addResponseInterceptor(response => {
       // 统一处理认证失败
       if (!response.success && response.error?.code === 'UNAUTHORIZED') {
         // 清除本地存储的认证信息
-        uni.removeStorageSync('supabase.auth.token');
-        
+        uni.removeStorageSync('supabase.auth.token')
+
         // 可以在这里触发全局事件或跳转到登录页
         uni.showToast({
           title: '登录已过期，请重新登录',
-          icon: 'none',
-        });
-        
+          icon: 'none'
+        })
+
         // 延迟跳转到登录页
         setTimeout(() => {
           uni.reLaunch({
-            url: '/pages/auth/login',
-          });
-        }, 1500);
+            url: '/pages/auth/login'
+          })
+        }, 1500)
       }
-      
-      return response;
-    });
-    
+
+      return response
+    })
+
     // 定期清理过期缓存
-    setInterval(() => {
-      ApiClient.clearExpiredCache();
-    }, 5 * 60 * 1000); // 每5分钟清理一次
-    
-    console.log('✅ API客户端初始化完成');
+    setInterval(
+      () => {
+        ApiClient.clearExpiredCache()
+      },
+      5 * 60 * 1000
+    ) // 每5分钟清理一次
+
+    console.log('✅ API客户端初始化完成')
   } catch (error) {
-    console.error('❌ API客户端初始化失败:', error);
-    throw error;
+    console.error('❌ API客户端初始化失败:', error)
+    throw error
   }
 }
 
@@ -63,23 +66,23 @@ export function initializeApi(): void {
  */
 export async function checkApiHealth(): Promise<boolean> {
   try {
-    const { ApiService } = await import('./service');
-    const result = await ApiService.healthCheck();
-    
+    const { ApiService } = await import('./service')
+    const result = await ApiService.healthCheck()
+
     if (result.success && result.data?.status === 'healthy') {
-      console.log('✅ API健康检查通过');
-      return true;
+      console.log('✅ API健康检查通过')
+      return true
     } else {
-      console.warn('⚠️ API健康检查失败:', result);
-      return false;
+      console.warn('⚠️ API健康检查失败:', result)
+      return false
     }
   } catch (error) {
-    console.error('❌ API健康检查异常:', error);
-    return false;
+    console.error('❌ API健康检查异常:', error)
+    return false
   }
 }
 
 export default {
   initializeApi,
-  checkApiHealth,
-};
+  checkApiHealth
+}

@@ -1,31 +1,42 @@
 /**
  * Operations Log Types and Interfaces
- * 
+ *
  * Defines the structure for system operation logging and audit trails.
  * Used for tracking user actions, system events, and security auditing.
  */
 
 export type LogLevel = 'info' | 'warn' | 'error' | 'debug' | 'critical'
 
-export type LogCategory = 
-  | 'auth'           // Authentication and authorization
-  | 'user'           // User management operations
-  | 'customer'       // Customer management operations
-  | 'product'        // Product management operations
-  | 'quote'          // Quote management operations
-  | 'system'         // System configuration changes
-  | 'security'       // Security events and violations
-  | 'api'            // API requests and responses
-  | 'data'           // Data operations and migrations
-  | 'export'         // Data export operations
+export type LogCategory =
+  | 'auth' // Authentication and authorization
+  | 'user' // User management operations
+  | 'customer' // Customer management operations
+  | 'product' // Product management operations
+  | 'quote' // Quote management operations
+  | 'system' // System configuration changes
+  | 'security' // Security events and violations
+  | 'api' // API requests and responses
+  | 'data' // Data operations and migrations
+  | 'export' // Data export operations
 
-export type LogAction = 
-  | 'create' | 'read' | 'update' | 'delete'  // CRUD operations
-  | 'login' | 'logout' | 'register'          // Authentication
-  | 'approve' | 'reject' | 'assign'          // Workflow actions
-  | 'export' | 'import' | 'backup'           // Data operations
-  | 'config_change' | 'role_change'          // System changes
-  | 'access_denied' | 'security_violation'   // Security events
+export type LogAction =
+  | 'create'
+  | 'read'
+  | 'update'
+  | 'delete' // CRUD operations
+  | 'login'
+  | 'logout'
+  | 'register' // Authentication
+  | 'approve'
+  | 'reject'
+  | 'assign' // Workflow actions
+  | 'export'
+  | 'import'
+  | 'backup' // Data operations
+  | 'config_change'
+  | 'role_change' // System changes
+  | 'access_denied'
+  | 'security_violation' // Security events
 
 export interface LogEntry {
   id: string
@@ -112,7 +123,11 @@ export interface LogExportOptions {
 export interface SecurityEvent {
   id: string
   timestamp: string
-  event_type: 'failed_login' | 'suspicious_activity' | 'permission_violation' | 'data_breach_attempt'
+  event_type:
+    | 'failed_login'
+    | 'suspicious_activity'
+    | 'permission_violation'
+    | 'data_breach_attempt'
   severity: 'low' | 'medium' | 'high' | 'critical'
   user_id?: string
   ip_address: string

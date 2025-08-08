@@ -7,14 +7,19 @@
         <view class="skeleton-title"></view>
         <view v-if="showSubtitle" class="skeleton-subtitle"></view>
         <view v-if="showText" class="skeleton-text">
-          <view v-for="line in textLines" :key="line" class="skeleton-line" :style="getLineWidth(line)"></view>
+          <view
+            v-for="line in textLines"
+            :key="line"
+            class="skeleton-line"
+            :style="getLineWidth(line)"
+          ></view>
         </view>
         <view v-if="showActions" class="skeleton-actions">
           <view v-for="action in actionCount" :key="action" class="skeleton-action"></view>
         </view>
       </view>
     </view>
-    
+
     <!-- 列表骨架 -->
     <view v-else-if="variant === 'list'" class="skeleton-list">
       <view v-for="item in itemCount" :key="item" class="skeleton-list-item">
@@ -30,7 +35,7 @@
         <view v-if="showActions" class="skeleton-list-action"></view>
       </view>
     </view>
-    
+
     <!-- 产品卡片骨架 -->
     <view v-else-if="variant === 'product'" class="skeleton-product">
       <view v-for="product in itemCount" :key="product" class="skeleton-product-item">
@@ -42,7 +47,7 @@
         </view>
       </view>
     </view>
-    
+
     <!-- 表单骨架 -->
     <view v-else-if="variant === 'form'" class="skeleton-form">
       <view v-for="field in itemCount" :key="field" class="skeleton-form-field">
@@ -50,7 +55,7 @@
         <view class="skeleton-form-input" :class="getFormInputType(field)"></view>
       </view>
     </view>
-    
+
     <!-- 统计卡片骨架 -->
     <view v-else-if="variant === 'stats'" class="skeleton-stats">
       <view v-for="stat in itemCount" :key="stat" class="skeleton-stat-item">
@@ -61,10 +66,15 @@
         </view>
       </view>
     </view>
-    
+
     <!-- 通用骨架 -->
     <view v-else class="skeleton-generic">
-      <view v-for="line in itemCount" :key="line" class="skeleton-line" :style="getLineWidth(line)"></view>
+      <view
+        v-for="line in itemCount"
+        :key="line"
+        class="skeleton-line"
+        :style="getLineWidth(line)"
+      ></view>
     </view>
   </view>
 </template>
@@ -130,7 +140,7 @@ function getFormInputType(fieldIndex: number): string {
 
 .loading-skeleton {
   width: 100%;
-  
+
   // 通用骨架样式
   .skeleton-line,
   .skeleton-title,
@@ -163,40 +173,40 @@ function getFormInputType(fieldIndex: number): string {
   border-radius: $border-radius-lg;
   padding: $spacing-md;
   border: 1px solid $border-color;
-  
+
   .skeleton-image {
     width: 100%;
     height: 120px;
     margin-bottom: $spacing-md;
     border-radius: $border-radius-base;
   }
-  
+
   .skeleton-content {
     .skeleton-title {
       height: 20px;
       width: 70%;
       margin-bottom: $spacing-sm;
     }
-    
+
     .skeleton-subtitle {
       height: 16px;
       width: 50%;
       margin-bottom: $spacing-md;
     }
-    
+
     .skeleton-text {
       margin-bottom: $spacing-md;
-      
+
       .skeleton-line {
         height: 14px;
         margin-bottom: $spacing-xs;
       }
     }
-    
+
     .skeleton-actions {
       display: flex;
       gap: $spacing-sm;
-      
+
       .skeleton-action {
         height: 32px;
         width: 80px;
@@ -216,65 +226,65 @@ function getFormInputType(fieldIndex: number): string {
     border-radius: $border-radius-base;
     border: 1px solid $border-color;
     margin-bottom: $spacing-sm;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     .skeleton-avatar {
       border-radius: $border-radius-circle;
       margin-right: $spacing-md;
       flex-shrink: 0;
-      
+
       &.avatar-small {
         width: 32px;
         height: 32px;
       }
-      
+
       &.avatar-medium {
         width: 48px;
         height: 48px;
       }
-      
+
       &.avatar-large {
         width: 64px;
         height: 64px;
       }
     }
-    
+
     .skeleton-list-content {
       flex: 1;
-      
+
       .skeleton-list-title {
         height: 18px;
         width: 60%;
         margin-bottom: $spacing-xs;
       }
-      
+
       .skeleton-list-description {
         height: 14px;
         width: 80%;
         margin-bottom: $spacing-xs;
       }
-      
+
       .skeleton-list-meta {
         display: flex;
         gap: $spacing-md;
-        
+
         .skeleton-meta-item {
           height: 12px;
-          
+
           &:not(.short) {
             width: 60px;
           }
-          
+
           &.short {
             width: 40px;
           }
         }
       }
     }
-    
+
     .skeleton-list-action {
       width: 24px;
       height: 24px;
@@ -289,33 +299,33 @@ function getFormInputType(fieldIndex: number): string {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: $spacing-md;
-  
+
   .skeleton-product-item {
     background: $bg-color-white;
     border-radius: $border-radius-base;
     overflow: hidden;
     border: 1px solid $border-color;
-    
+
     .skeleton-product-image {
       width: 100%;
       height: 120px;
     }
-    
+
     .skeleton-product-info {
       padding: $spacing-sm;
-      
+
       .skeleton-product-name {
         height: 16px;
         width: 85%;
         margin-bottom: $spacing-xs;
       }
-      
+
       .skeleton-product-model {
         height: 12px;
         width: 60%;
         margin-bottom: $spacing-xs;
       }
-      
+
       .skeleton-product-price {
         height: 16px;
         width: 50%;
@@ -328,24 +338,24 @@ function getFormInputType(fieldIndex: number): string {
 .skeleton-form {
   .skeleton-form-field {
     margin-bottom: $spacing-lg;
-    
+
     .skeleton-form-label {
       height: 16px;
       width: 25%;
       margin-bottom: $spacing-sm;
     }
-    
+
     .skeleton-form-input {
       height: 40px;
       border-radius: $border-radius-base;
-      
+
       &.textarea {
         height: 80px;
       }
-      
+
       &.select {
         position: relative;
-        
+
         &::after {
           content: '';
           position: absolute;
@@ -368,7 +378,7 @@ function getFormInputType(fieldIndex: number): string {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: $spacing-md;
-  
+
   .skeleton-stat-item {
     display: flex;
     align-items: center;
@@ -377,23 +387,23 @@ function getFormInputType(fieldIndex: number): string {
     background: $bg-color-white;
     border-radius: $border-radius-lg;
     border: 1px solid $border-color;
-    
+
     .skeleton-stat-icon {
       width: 48px;
       height: 48px;
       border-radius: $border-radius-base;
       flex-shrink: 0;
     }
-    
+
     .skeleton-stat-content {
       flex: 1;
-      
+
       .skeleton-stat-number {
         height: 24px;
         width: 60%;
         margin-bottom: $spacing-xs;
       }
-      
+
       .skeleton-stat-label {
         height: 14px;
         width: 80%;
@@ -408,7 +418,7 @@ function getFormInputType(fieldIndex: number): string {
     height: 16px;
     margin-bottom: $spacing-sm;
     border-radius: $border-radius-sm;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -420,15 +430,15 @@ function getFormInputType(fieldIndex: number): string {
   .skeleton-product {
     grid-template-columns: repeat(2, 1fr);
   }
-  
+
   .skeleton-stats {
     grid-template-columns: 1fr;
   }
-  
+
   .skeleton-list-item {
     flex-direction: column;
     align-items: stretch;
-    
+
     .skeleton-avatar {
       align-self: center;
       margin-right: 0;
@@ -441,7 +451,7 @@ function getFormInputType(fieldIndex: number): string {
   .skeleton-product {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
-  
+
   .skeleton-stats {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -471,16 +481,12 @@ function getFormInputType(fieldIndex: number): string {
     .skeleton-stat-label {
       background: #374151;
     }
-    
+
     .skeleton-loading {
-      background: linear-gradient(90deg, 
-        #374151 25%, 
-        #4b5563 50%, 
-        #374151 75%
-      );
+      background: linear-gradient(90deg, #374151 25%, #4b5563 50%, #374151 75%);
     }
   }
-  
+
   .skeleton-card,
   .skeleton-list-item,
   .skeleton-product-item,
@@ -488,4 +494,5 @@ function getFormInputType(fieldIndex: number): string {
     background: #1f2937;
     border-color: #374151;
   }
-}</style>
+}
+</style>

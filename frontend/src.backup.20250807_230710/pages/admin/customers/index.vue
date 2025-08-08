@@ -18,7 +18,9 @@
             <text class="stat-label">企业客户</text>
           </text>
           <text class="stat-item">
-            <text class="stat-value">¥{{ formatAmount(customersStore.statistics.total_revenue) }}</text>
+            <text class="stat-value"
+              >¥{{ formatAmount(customersStore.statistics.total_revenue) }}</text
+            >
             <text class="stat-label">总成交额</text>
           </text>
         </view>
@@ -43,7 +45,7 @@
     <view class="filters-section">
       <view class="filters-row">
         <view class="filter-item">
-          <input 
+          <input
             v-model="searchQuery"
             class="search-input"
             placeholder="搜索姓名、电话、公司"
@@ -93,7 +95,7 @@
           </picker>
         </view>
         <view class="filter-item">
-          <input 
+          <input
             v-model="cityFilter"
             class="search-input"
             placeholder="城市筛选"
@@ -109,21 +111,13 @@
           <view class="filter-item">
             <text class="filter-label">创建时间</text>
             <view class="date-range">
-              <picker
-                mode="date"
-                :value="startDate"
-                @change="handleStartDateChange"
-              >
+              <picker mode="date" :value="startDate" @change="handleStartDateChange">
                 <view class="date-picker">
                   <text>{{ startDate || '开始日期' }}</text>
                 </view>
               </picker>
               <text class="date-separator">至</text>
-              <picker
-                mode="date"
-                :value="endDate"
-                @change="handleEndDateChange"
-              >
+              <picker mode="date" :value="endDate" @change="handleEndDateChange">
                 <view class="date-picker">
                   <text>{{ endDate || '结束日期' }}</text>
                 </view>
@@ -133,7 +127,7 @@
           <view class="filter-item">
             <text class="filter-label">成交金额</text>
             <view class="amount-range">
-              <input 
+              <input
                 v-model="minAmount"
                 class="amount-input"
                 placeholder="最小金额"
@@ -141,7 +135,7 @@
                 @input="debounceSearch"
               />
               <text class="amount-separator">-</text>
-              <input 
+              <input
                 v-model="maxAmount"
                 class="amount-input"
                 placeholder="最大金额"
@@ -151,20 +145,13 @@
             </view>
           </view>
           <view class="filter-checkbox">
-            <checkbox 
-              v-model="hasQuotesOnly"
-              @change="handleHasQuotesChange"
-              color="#007AFF"
-            />
+            <checkbox v-model="hasQuotesOnly" @change="handleHasQuotesChange" color="#007AFF" />
             <text class="checkbox-label">仅显示有报价记录的客户</text>
           </view>
         </view>
       </view>
 
-      <button 
-        class="advanced-toggle"
-        @click="showAdvancedFilters = !showAdvancedFilters"
-      >
+      <button class="advanced-toggle" @click="showAdvancedFilters = !showAdvancedFilters">
         {{ showAdvancedFilters ? '收起高级筛选' : '展开高级筛选' }}
         <text class="toggle-icon">{{ showAdvancedFilters ? '▲' : '▼' }}</text>
       </button>
@@ -176,8 +163,8 @@
       <view class="table-header">
         <view class="header-row">
           <view v-if="selectedItems.length > 0" class="header-selector">
-            <checkbox 
-              :checked="selectAllChecked" 
+            <checkbox
+              :checked="selectAllChecked"
               :indeterminate="selectAllIndeterminate"
               @change="handleSelectAll"
             />
@@ -186,7 +173,7 @@
             v-for="column in columns"
             :key="column.key"
             class="header-cell"
-            :class="[`align-${column.align || 'left'}`, { 'sortable': column.sortable }]"
+            :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
             :style="{ width: column.width, flex: column.flex }"
             @click="column.sortable && handleSort(column.key)"
           >
@@ -208,7 +195,7 @@
           :has-selection="true"
           :show-header="false"
         />
-        
+
         <!-- Data Rows -->
         <template v-else>
           <DataTableRow
@@ -228,7 +215,9 @@
             <template #cell-customer="{ item }">
               <view class="customer-cell">
                 <view class="customer-main">
-                  <text class="customer-name">{{ customersStore.getCustomerDisplayName(item) }}</text>
+                  <text class="customer-name">{{
+                    customersStore.getCustomerDisplayName(item)
+                  }}</text>
                   <text class="customer-phone">{{ item.phone }}</text>
                 </view>
                 <view class="customer-tags">
@@ -244,7 +233,9 @@
               <view class="contact-cell">
                 <text v-if="item.email" class="contact-item">📧 {{ item.email }}</text>
                 <text v-if="item.wechat_id" class="contact-item">💬 {{ item.wechat_id }}</text>
-                <text v-if="item.address" class="contact-item">📍 {{ item.city }}{{ item.district }}</text>
+                <text v-if="item.address" class="contact-item"
+                  >📍 {{ item.city }}{{ item.district }}</text
+                >
               </view>
             </template>
 
@@ -272,11 +263,12 @@
         </template>
 
         <!-- Empty State -->
-        <view v-if="!customersStore.loading && customersStore.customers.length === 0" class="empty-state">
+        <view
+          v-if="!customersStore.loading && customersStore.customers.length === 0"
+          class="empty-state"
+        >
           <text class="empty-text">暂无客户数据</text>
-          <button class="empty-action" @click="handleAddCustomer">
-            新增客户
-          </button>
+          <button class="empty-action" @click="handleAddCustomer">新增客户</button>
         </view>
       </view>
 
@@ -286,14 +278,14 @@
           共 {{ customersStore.totalCount }} 条，第 {{ currentPage }}/{{ totalPages }} 页
         </view>
         <view class="pagination-controls">
-          <button 
+          <button
             class="pagination-btn"
             :disabled="currentPage <= 1"
             @click="handlePageChange(currentPage - 1)"
           >
             上一页
           </button>
-          <button 
+          <button
             class="pagination-btn"
             :disabled="currentPage >= totalPages"
             @click="handlePageChange(currentPage + 1)"
@@ -329,15 +321,11 @@
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">客户姓名 *</text>
-            <input 
-              v-model="newCustomer.name"
-              class="form-input"
-              placeholder="请输入客户姓名"
-            />
+            <input v-model="newCustomer.name" class="form-input" placeholder="请输入客户姓名" />
           </view>
           <view class="form-item">
             <text class="form-label">联系电话 *</text>
-            <input 
+            <input
               v-model="newCustomer.phone"
               class="form-input"
               placeholder="请输入手机号"
@@ -345,7 +333,7 @@
             />
           </view>
         </view>
-        
+
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">客户类型 *</text>
@@ -357,7 +345,9 @@
               @change="handleNewCustomerTypeChange"
             >
               <view class="form-picker">
-                <text>{{ customerTypeOptions[newCustomerTypeIndex + 1]?.label || '请选择类型' }}</text>
+                <text>{{
+                  customerTypeOptions[newCustomerTypeIndex + 1]?.label || '请选择类型'
+                }}</text>
                 <text class="picker-arrow">▼</text>
               </view>
             </picker>
@@ -381,17 +371,13 @@
 
         <view class="form-item" v-if="newCustomer.customer_type === 'business'">
           <text class="form-label">公司名称</text>
-          <input 
-            v-model="newCustomer.company"
-            class="form-input"
-            placeholder="请输入公司名称"
-          />
+          <input v-model="newCustomer.company" class="form-input" placeholder="请输入公司名称" />
         </view>
 
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">邮箱地址</text>
-            <input 
+            <input
               v-model="newCustomer.email"
               class="form-input"
               placeholder="请输入邮箱"
@@ -400,40 +386,24 @@
           </view>
           <view class="form-item">
             <text class="form-label">微信号</text>
-            <input 
-              v-model="newCustomer.wechat_id"
-              class="form-input"
-              placeholder="请输入微信号"
-            />
+            <input v-model="newCustomer.wechat_id" class="form-input" placeholder="请输入微信号" />
           </view>
         </view>
 
         <view class="form-row">
           <view class="form-item">
             <text class="form-label">城市</text>
-            <input 
-              v-model="newCustomer.city"
-              class="form-input"
-              placeholder="请输入城市"
-            />
+            <input v-model="newCustomer.city" class="form-input" placeholder="请输入城市" />
           </view>
           <view class="form-item">
             <text class="form-label">区域</text>
-            <input 
-              v-model="newCustomer.district"
-              class="form-input"
-              placeholder="请输入区域"
-            />
+            <input v-model="newCustomer.district" class="form-input" placeholder="请输入区域" />
           </view>
         </view>
 
         <view class="form-item">
           <text class="form-label">详细地址</text>
-          <input 
-            v-model="newCustomer.address"
-            class="form-input"
-            placeholder="请输入详细地址"
-          />
+          <input v-model="newCustomer.address" class="form-input" placeholder="请输入详细地址" />
         </view>
 
         <view class="form-item">
@@ -476,17 +446,11 @@
           <text class="form-section-title">包含数据</text>
           <view class="checkbox-group">
             <view class="checkbox-item">
-              <checkbox 
-                v-model="exportOptions.includeQuoteHistory"
-                color="#007AFF"
-              />
+              <checkbox v-model="exportOptions.includeQuoteHistory" color="#007AFF" />
               <text class="checkbox-label">报价历史</text>
             </view>
             <view class="checkbox-item">
-              <checkbox 
-                v-model="exportOptions.includeActivities"
-                color="#007AFF"
-              />
+              <checkbox v-model="exportOptions.includeActivities" color="#007AFF" />
               <text class="checkbox-label">活动记录</text>
             </view>
           </view>
@@ -501,10 +465,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from '@dcloudio/uni-app'
 import { useCustomersStore } from '@/stores/customers'
-import type { Customer, CreateCustomerData, CustomerExportData } from '@/types/customer'
+import type { CreateCustomerData, Customer, CustomerExportData } from '@/types/customer'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
 import DataTableRow from '@/components/admin/DataTableRow.vue'
 import ActionButtonGroup from '@/components/admin/ActionButtonGroup.vue'
@@ -516,14 +480,14 @@ import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
 /**
  * 客户管理页面 - 增强表格版本
- * 
+ *
  * 功能特性：
  * - 使用增强表格组件系统，提供专业的加载状态和交互体验
  * - 符合PRD要求，客户管理操作简化为[查看][导出] (PRD Line 883)
  * - 支持批量导出功能，提升管理效率
  * - iPad和移动端触控优化
  * - 集成状态管理和选择功能
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -593,10 +557,7 @@ const columns: TableColumn[] = [
 ]
 
 // Actions configuration (PRD compliant - only view and export)
-const customerActions: ActionItem[] = [
-  commonActions.customers.view,
-  commonActions.customers.export
-]
+const customerActions: ActionItem[] = [commonActions.customers.view, commonActions.customers.export]
 
 // Batch operations (customers support export only per PRD)
 const batchOperations = commonBatchOperations.customers
@@ -833,7 +794,10 @@ function handleRowAction(actionKey: string, customer: Customer) {
 
 function handleSelectAll(event: any) {
   const checked = event.detail ? event.detail.value : event
-  selectAll(customersStore.customers.map(c => c.id), checked)
+  selectAll(
+    customersStore.customers.map(c => c.id),
+    checked
+  )
 }
 
 function handleSort(columnKey: string) {
@@ -875,17 +839,17 @@ async function handleExportSingle(customer: Customer) {
     batchOperating.value = true
     batchProgress.value = 50
     batchProgressText.value = '导出客户数据...'
-    
+
     const exportData: CustomerExportData = {
       ...exportOptions.value,
       customerIds: [customer.id]
     }
-    
+
     await customersStore.exportCustomers(exportData)
-    
+
     batchProgress.value = 100
     batchProgressText.value = '导出完成'
-    
+
     uni.showToast({
       title: '导出成功',
       icon: 'success'
@@ -910,30 +874,30 @@ async function handleBatchExport() {
     batchOperating.value = true
     batchProgress.value = 0
     batchProgressText.value = `导出 ${selectedItems.value.length} 个客户...`
-    
+
     const exportData: CustomerExportData = {
       ...exportOptions.value,
       customerIds: selectedItems.value
     }
-    
+
     // Simulate progress
     const progressInterval = setInterval(() => {
       if (batchProgress.value < 90) {
         batchProgress.value += 10
       }
     }, 200)
-    
+
     await customersStore.exportCustomers(exportData)
-    
+
     clearInterval(progressInterval)
     batchProgress.value = 100
     batchProgressText.value = '导出完成'
-    
+
     uni.showToast({
       title: `成功导出 ${selectedItems.value.length} 个客户`,
       icon: 'success'
     })
-    
+
     clearSelection()
   } catch (error) {
     uni.showToast({
@@ -989,7 +953,7 @@ async function handleDeactivate(customer: Customer) {
   uni.showModal({
     title: '确认停用',
     content: `确定要停用客户 ${customer.name} 吗？`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           await customersStore.updateCustomerStatus(customer.id, 'inactive')
@@ -1013,7 +977,7 @@ async function handleDelete(customer: Customer) {
   uni.showModal({
     title: '确认删除',
     content: `确定要删除客户 ${customer.name} 吗？此操作不可撤销。`,
-    success: async (res) => {
+    success: async res => {
       if (res.confirm) {
         try {
           await customersStore.deleteCustomer(customer.id)
@@ -1276,7 +1240,7 @@ function getSourceLabel(source: string): string {
             background: #f5f5f5;
           }
 
-          &[loading="true"] {
+          &[loading='true'] {
             opacity: 0.7;
             pointer-events: none;
           }
@@ -1484,7 +1448,7 @@ function getSourceLabel(source: string): string {
           display: flex;
           justify-content: center;
           align-items: center;
-          
+
           checkbox {
             transform: scale(1.1);
           }

@@ -1,6 +1,6 @@
 /**
  * System Settings Types and Interfaces
- * 
+ *
  * Defines the structure for system configuration, user preferences,
  * business rules, and administrative settings.
  */
@@ -23,17 +23,17 @@ export interface SystemSettings {
   created_at: string
 }
 
-export type SettingsCategory = 
-  | 'general'           // 常规设置
-  | 'business'          // 业务规则
-  | 'security'          // 安全设置
-  | 'notification'      // 通知设置
-  | 'integration'       // 集成设置
-  | 'appearance'        // 外观设置
-  | 'backup'            // 备份设置
-  | 'maintenance'       // 维护设置
+export type SettingsCategory =
+  | 'general' // 常规设置
+  | 'business' // 业务规则
+  | 'security' // 安全设置
+  | 'notification' // 通知设置
+  | 'integration' // 集成设置
+  | 'appearance' // 外观设置
+  | 'backup' // 备份设置
+  | 'maintenance' // 维护设置
 
-export type SettingsType = 
+export type SettingsType =
   | 'string'
   | 'number'
   | 'boolean'
@@ -77,20 +77,20 @@ export interface BusinessRuleSettings {
   max_quote_amount: number
   default_currency: string
   price_precision: number
-  
+
   // Quote settings
   quote_validity_days: number
   auto_quote_numbering: boolean
   quote_number_prefix: string
   require_customer_approval: boolean
   max_quote_items: number
-  
+
   // Customer settings
   default_payment_terms: string
   max_credit_limit: number
   customer_approval_required: boolean
   duplicate_customer_check: boolean
-  
+
   // Product settings
   low_stock_threshold: number
   auto_reorder_enabled: boolean
@@ -109,18 +109,18 @@ export interface SecuritySettings {
   password_expiry_days: number
   max_login_attempts: number
   lockout_duration_minutes: number
-  
+
   // Session management
   session_timeout_minutes: number
   remember_me_enabled: boolean
   concurrent_sessions_allowed: number
   force_logout_on_password_change: boolean
-  
+
   // Two-factor authentication
   two_factor_enabled: boolean
   two_factor_required_roles: string[]
   backup_codes_enabled: boolean
-  
+
   // Audit and monitoring
   login_audit_enabled: boolean
   action_audit_enabled: boolean
@@ -139,7 +139,7 @@ export interface NotificationSettings {
   smtp_encryption: 'none' | 'tls' | 'ssl'
   from_email: string
   from_name: string
-  
+
   // Notification types
   quote_created_notification: boolean
   quote_approved_notification: boolean
@@ -147,11 +147,11 @@ export interface NotificationSettings {
   low_stock_notification: boolean
   new_user_notification: boolean
   system_error_notification: boolean
-  
+
   // Recipients
   admin_notification_emails: string[]
   error_notification_emails: string[]
-  
+
   // In-app notifications
   push_notifications_enabled: boolean
   notification_sound_enabled: boolean
@@ -167,17 +167,17 @@ export interface IntegrationSettings {
   webhook_enabled: boolean
   webhook_urls: string[]
   webhook_secret: string
-  
+
   // Third-party integrations
   google_analytics_id?: string
   sentry_dsn?: string
   monitoring_enabled: boolean
-  
+
   // External services
   sms_provider: 'none' | 'twilio' | 'aliyun'
   sms_api_key?: string
   sms_api_secret?: string
-  
+
   // File storage
   file_storage_provider: 'local' | 'supabase' | 'aws' | 'aliyun'
   max_file_size_mb: number
@@ -192,17 +192,17 @@ export interface BackupSettings {
   backup_frequency: 'daily' | 'weekly' | 'monthly'
   backup_time: string
   backup_retention_days: number
-  
+
   // Backup location
   backup_location: 'local' | 'cloud'
   backup_encryption_enabled: boolean
   backup_compression_enabled: boolean
-  
+
   // Backup notifications
   backup_success_notification: boolean
   backup_failure_notification: boolean
   backup_notification_emails: string[]
-  
+
   // Restore settings
   point_in_time_recovery: boolean
   max_restore_points: number
@@ -216,16 +216,16 @@ export interface AppearanceSettings {
   company_favicon_url?: string
   brand_primary_color: string
   brand_secondary_color: string
-  
+
   // Theme
   default_theme: 'light' | 'dark' | 'auto'
   allow_theme_switching: boolean
-  
+
   // Layout
   sidebar_collapsed_default: boolean
   page_size_options: number[]
   default_page_size: number
-  
+
   // Localization
   default_language: string
   supported_languages: string[]
@@ -330,7 +330,10 @@ export const DEFAULT_SECURITY_SETTINGS: SecuritySettings = {
   suspicious_activity_detection: true
 }
 
-export const SETTINGS_CATEGORIES: Record<SettingsCategory, { title: string; description: string; icon: string }> = {
+export const SETTINGS_CATEGORIES: Record<
+  SettingsCategory,
+  { title: string; description: string; icon: string }
+> = {
   general: {
     title: '常规设置',
     description: '系统基本配置和常规选项',

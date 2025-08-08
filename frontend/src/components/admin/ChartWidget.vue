@@ -7,7 +7,7 @@
         <text v-if="subtitle" class="chart-subtitle">{{ subtitle }}</text>
       </view>
       <view class="chart-actions">
-        <button 
+        <button
           v-if="showRefresh"
           class="action-btn refresh-btn"
           @click="handleRefresh"
@@ -15,11 +15,7 @@
         >
           <text class="action-icon">🔄</text>
         </button>
-        <button 
-          v-if="showExport"
-          class="action-btn export-btn"
-          @click="handleExport"
-        >
+        <button v-if="showExport" class="action-btn export-btn" @click="handleExport">
           <text class="action-icon">📊</text>
         </button>
         <picker
@@ -55,7 +51,7 @@
       <!-- Line Chart -->
       <view v-if="type === 'line'" class="line-chart">
         <view class="chart-canvas" ref="chartCanvas">
-          <canvas 
+          <canvas
             v-if="canvasId"
             :canvas-id="canvasId"
             class="chart-canvas-element"
@@ -68,44 +64,37 @@
               <!-- Grid lines -->
               <defs>
                 <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
-                  <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+                  <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="0.5" />
                 </pattern>
               </defs>
-              <rect width="100%" height="100%" fill="url(#grid)"/>
-              
+              <rect width="100%" height="100%" fill="url(#grid)" />
+
               <!-- Sample line -->
-              <path 
-                :d="sampleLinePath" 
-                fill="none" 
-                :stroke="primaryColor" 
+              <path
+                :d="sampleLinePath"
+                fill="none"
+                :stroke="primaryColor"
                 stroke-width="2"
                 stroke-linecap="round"
               />
-              
+
               <!-- Data points -->
-              <circle 
-                v-for="(point, index) in samplePoints" 
+              <circle
+                v-for="(point, index) in samplePoints"
                 :key="index"
-                :cx="point.x" 
-                :cy="point.y" 
-                r="3" 
+                :cx="point.x"
+                :cy="point.y"
+                r="3"
                 :fill="primaryColor"
               />
             </svg>
           </view>
         </view>
-        
+
         <!-- Legend -->
         <view v-if="legend.length > 0" class="chart-legend">
-          <view 
-            v-for="item in legend" 
-            :key="item.key"
-            class="legend-item"
-          >
-            <view 
-              class="legend-color" 
-              :style="{ backgroundColor: item.color }"
-            />
+          <view v-for="item in legend" :key="item.key" class="legend-item">
+            <view class="legend-color" :style="{ backgroundColor: item.color }" />
             <text class="legend-label">{{ item.label }}</text>
           </view>
         </view>
@@ -116,27 +105,27 @@
         <view class="chart-canvas">
           <svg viewBox="0 0 400 200" class="chart-svg">
             <!-- Y-axis -->
-            <line x1="40" y1="20" x2="40" y2="180" stroke="#e0e0e0" stroke-width="1"/>
+            <line x1="40" y1="20" x2="40" y2="180" stroke="#e0e0e0" stroke-width="1" />
             <!-- X-axis -->
-            <line x1="40" y1="180" x2="380" y2="180" stroke="#e0e0e0" stroke-width="1"/>
-            
+            <line x1="40" y1="180" x2="380" y2="180" stroke="#e0e0e0" stroke-width="1" />
+
             <!-- Bars -->
-            <rect 
-              v-for="(bar, index) in barData" 
+            <rect
+              v-for="(bar, index) in barData"
               :key="index"
-              :x="bar.x" 
-              :y="bar.y" 
-              :width="bar.width" 
+              :x="bar.x"
+              :y="bar.y"
+              :width="bar.width"
               :height="bar.height"
               :fill="bar.color || primaryColor"
               rx="2"
             />
-            
+
             <!-- Labels -->
-            <text 
-              v-for="(label, index) in barLabels" 
+            <text
+              v-for="(label, index) in barLabels"
               :key="index"
-              :x="label.x" 
+              :x="label.x"
               :y="label.y"
               text-anchor="middle"
               fill="#666"
@@ -152,42 +141,29 @@
       <view v-else-if="type === 'pie'" class="pie-chart">
         <view class="pie-container">
           <svg viewBox="0 0 200 200" class="pie-svg">
-            <path 
-              v-for="(segment, index) in pieSegments" 
+            <path
+              v-for="(segment, index) in pieSegments"
               :key="index"
-              :d="segment.path" 
+              :d="segment.path"
               :fill="segment.color"
               :stroke="'white'"
               stroke-width="2"
             />
             <!-- Center hole for donut chart -->
-            <circle 
-              v-if="donut"
-              cx="100" 
-              cy="100" 
-              :r="donutInnerRadius" 
-              fill="white"
-            />
+            <circle v-if="donut" cx="100" cy="100" :r="donutInnerRadius" fill="white" />
           </svg>
-          
+
           <!-- Center value for donut -->
           <view v-if="donut && centerValue" class="donut-center">
             <text class="center-value">{{ centerValue.value }}</text>
             <text class="center-label">{{ centerValue.label }}</text>
           </view>
         </view>
-        
+
         <!-- Pie Legend -->
         <view class="pie-legend">
-          <view 
-            v-for="item in pieData" 
-            :key="item.name"
-            class="pie-legend-item"
-          >
-            <view 
-              class="legend-color" 
-              :style="{ backgroundColor: item.color }"
-            />
+          <view v-for="item in pieData" :key="item.name" class="pie-legend-item">
+            <view class="legend-color" :style="{ backgroundColor: item.color }" />
             <text class="legend-label">{{ item.name }}</text>
             <text class="legend-value">{{ item.value }}</text>
             <text class="legend-percentage">{{ getPercentage(item.value) }}%</text>
@@ -197,7 +173,10 @@
 
       <!-- Number Display -->
       <view v-else-if="type === 'number'" class="number-display">
-        <text class="number-value" :class="{ 'trend-up': trend === 'up', 'trend-down': trend === 'down' }">
+        <text
+          class="number-value"
+          :class="{ 'trend-up': trend === 'up', 'trend-down': trend === 'down' }"
+        >
           {{ formatNumber(numberValue) }}
         </text>
         <view v-if="trend" class="trend-indicator">
@@ -214,15 +193,17 @@
             <text class="progress-value">{{ item.value }}/{{ item.total }}</text>
           </view>
           <view class="progress-bar">
-            <view 
-              class="progress-fill" 
-              :style="{ 
+            <view
+              class="progress-fill"
+              :style="{
                 width: `${(item.value / item.total) * 100}%`,
-                backgroundColor: item.color || primaryColor 
+                backgroundColor: item.color || primaryColor
               }"
             />
           </view>
-          <text class="progress-percentage">{{ Math.round((item.value / item.total) * 100) }}%</text>
+          <text class="progress-percentage"
+            >{{ Math.round((item.value / item.total) * 100) }}%</text
+          >
         </view>
       </view>
     </view>
@@ -230,7 +211,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 
 export interface ChartLegendItem {
   key: string
@@ -312,8 +293,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'refresh': []
-  'export': []
+  refresh: []
+  export: []
   'time-range-change': [value: string]
 }>()
 
@@ -329,7 +310,7 @@ const donutInnerRadius = 40
 // Computed
 const sampleLinePath = computed(() => {
   // Sample line chart path for placeholder
-  return "M50,150 Q100,80 150,120 T250,90 T350,110"
+  return 'M50,150 Q100,80 150,120 T250,90 T350,110'
 })
 
 const samplePoints = computed(() => [
@@ -349,13 +330,13 @@ const barData = computed<BarDataPoint[]>(() => {
       { x: 240, y: 90, width: 30, height: 90, color: props.primaryColor }
     ]
   }
-  
+
   const maxValue = Math.max(...props.data.map(d => d.value))
   const chartWidth = 340 // 380 - 40 (left margin)
   const chartHeight = 160 // 180 - 20 (top margin)
-  const barWidth = chartWidth / props.data.length * 0.6
+  const barWidth = (chartWidth / props.data.length) * 0.6
   const spacing = chartWidth / props.data.length
-  
+
   return props.data.map((item, index) => {
     const height = (item.value / maxValue) * chartHeight
     return {
@@ -377,10 +358,10 @@ const barLabels = computed(() => {
       { x: 255, y: 195, text: '四月' }
     ]
   }
-  
+
   const chartWidth = 340
   const spacing = chartWidth / props.data.length
-  
+
   return props.data.map((item, index) => ({
     x: 40 + index * spacing + spacing * 0.5,
     y: 195,
@@ -390,38 +371,38 @@ const barLabels = computed(() => {
 
 const pieSegments = computed(() => {
   if (!props.pieData || props.pieData.length === 0) return []
-  
+
   const total = props.pieData.reduce((sum, item) => sum + item.value, 0)
   const centerX = 100
   const centerY = 100
   const radius = 80
-  
+
   let currentAngle = -90 // Start from top
-  
+
   return props.pieData.map(item => {
     const angle = (item.value / total) * 360
     const startAngle = currentAngle
     const endAngle = currentAngle + angle
-    
+
     const startAngleRad = (startAngle * Math.PI) / 180
     const endAngleRad = (endAngle * Math.PI) / 180
-    
+
     const x1 = centerX + radius * Math.cos(startAngleRad)
     const y1 = centerY + radius * Math.sin(startAngleRad)
     const x2 = centerX + radius * Math.cos(endAngleRad)
     const y2 = centerY + radius * Math.sin(endAngleRad)
-    
+
     const largeArcFlag = angle > 180 ? 1 : 0
-    
+
     const pathData = [
       `M ${centerX} ${centerY}`,
       `L ${x1} ${y1}`,
       `A ${radius} ${radius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
       'Z'
     ].join(' ')
-    
+
     currentAngle += angle
-    
+
     return {
       path: pathData,
       color: item.color
@@ -480,12 +461,15 @@ function handleTouchEnd(e: any) {
 }
 
 // Watch for time range changes
-watch(() => props.selectedTimeRange, (newVal) => {
-  const index = props.timeRanges.findIndex(range => range.value === newVal)
-  if (index !== -1) {
-    selectedTimeRangeIndex.value = index
+watch(
+  () => props.selectedTimeRange,
+  newVal => {
+    const index = props.timeRanges.findIndex(range => range.value === newVal)
+    if (index !== -1) {
+      selectedTimeRangeIndex.value = index
+    }
   }
-})
+)
 
 // Initialize canvas ID for native charts
 onMounted(() => {
@@ -548,7 +532,7 @@ onMounted(() => {
           background: #e8e8e8;
         }
 
-        &[loading="true"] {
+        &[loading='true'] {
           opacity: 0.7;
           pointer-events: none;
         }
@@ -599,12 +583,7 @@ onMounted(() => {
     .loading-skeleton {
       width: 80%;
       height: 120px;
-      background: linear-gradient(
-        90deg,
-        #f0f0f0 25%,
-        #e0e0e0 50%,
-        #f0f0f0 75%
-      );
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
       background-size: 200% 100%;
       animation: loading 1.5s infinite;
       border-radius: 4px;

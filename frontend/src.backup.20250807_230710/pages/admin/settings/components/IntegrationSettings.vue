@@ -10,7 +10,7 @@
         <!-- CRM集成 -->
         <view class="form-group">
           <text class="group-title">CRM系统集成</text>
-          
+
           <uni-forms-item label="启用CRM集成" name="enableCrmIntegration">
             <switch
               :checked="formData.enableCrmIntegration"
@@ -70,7 +70,7 @@
         <!-- ERP集成 -->
         <view class="form-group">
           <text class="group-title">ERP系统集成</text>
-          
+
           <uni-forms-item label="启用ERP集成" name="enableErpIntegration">
             <switch
               :checked="formData.enableErpIntegration"
@@ -101,9 +101,13 @@
             <uni-forms-item label="同步模块" name="erpSyncModules">
               <view class="checkbox-group">
                 <checkbox-group @change="handleErpModulesChange">
-                  <label class="checkbox-item" v-for="module in erpModuleOptions" :key="module.value">
-                    <checkbox 
-                      :value="module.value" 
+                  <label
+                    class="checkbox-item"
+                    v-for="module in erpModuleOptions"
+                    :key="module.value"
+                  >
+                    <checkbox
+                      :value="module.value"
                       :checked="formData.erpSyncModules.includes(module.value)"
                     />
                     <text>{{ module.text }}</text>
@@ -117,7 +121,7 @@
         <!-- 支付网关 -->
         <view class="form-group">
           <text class="group-title">支付网关</text>
-          
+
           <uni-forms-item label="启用在线支付" name="enablePaymentGateway">
             <switch
               :checked="formData.enablePaymentGateway"
@@ -157,9 +161,13 @@
             <uni-forms-item label="支持的支付方式" name="supportedPaymentMethods">
               <view class="checkbox-group">
                 <checkbox-group @change="handlePaymentMethodsChange">
-                  <label class="checkbox-item" v-for="method in paymentMethodOptions" :key="method.value">
-                    <checkbox 
-                      :value="method.value" 
+                  <label
+                    class="checkbox-item"
+                    v-for="method in paymentMethodOptions"
+                    :key="method.value"
+                  >
+                    <checkbox
+                      :value="method.value"
                       :checked="formData.supportedPaymentMethods.includes(method.value)"
                     />
                     <text>{{ method.text }}</text>
@@ -181,7 +189,7 @@
         <!-- 物流配送 -->
         <view class="form-group">
           <text class="group-title">物流配送</text>
-          
+
           <uni-forms-item label="启用物流集成" name="enableShippingIntegration">
             <switch
               :checked="formData.enableShippingIntegration"
@@ -193,9 +201,13 @@
             <uni-forms-item label="物流服务商" name="shippingProviders">
               <view class="checkbox-group">
                 <checkbox-group @change="handleShippingProvidersChange">
-                  <label class="checkbox-item" v-for="provider in shippingProviderOptions" :key="provider.value">
-                    <checkbox 
-                      :value="provider.value" 
+                  <label
+                    class="checkbox-item"
+                    v-for="provider in shippingProviderOptions"
+                    :key="provider.value"
+                  >
+                    <checkbox
+                      :value="provider.value"
                       :checked="formData.shippingProviders.includes(provider.value)"
                     />
                     <text>{{ provider.text }}</text>
@@ -223,7 +235,7 @@
         <!-- 数据分析 -->
         <view class="form-group">
           <text class="group-title">数据分析</text>
-          
+
           <uni-forms-item label="启用Google Analytics" name="enableGoogleAnalytics">
             <switch
               :checked="formData.enableGoogleAnalytics"
@@ -231,7 +243,11 @@
             />
           </uni-forms-item>
 
-          <uni-forms-item label="GA跟踪ID" name="googleAnalyticsId" v-if="formData.enableGoogleAnalytics">
+          <uni-forms-item
+            label="GA跟踪ID"
+            name="googleAnalyticsId"
+            v-if="formData.enableGoogleAnalytics"
+          >
             <uni-easyinput
               v-model="formData.googleAnalyticsId"
               placeholder="GA-XXXXXXXXX-X"
@@ -247,7 +263,11 @@
             />
           </uni-forms-item>
 
-          <uni-forms-item label="百度统计ID" name="baiduAnalyticsId" v-if="formData.enableBaiduAnalytics">
+          <uni-forms-item
+            label="百度统计ID"
+            name="baiduAnalyticsId"
+            v-if="formData.enableBaiduAnalytics"
+          >
             <uni-easyinput
               v-model="formData.baiduAnalyticsId"
               placeholder="请输入百度统计ID"
@@ -260,7 +280,7 @@
         <!-- Webhook配置 -->
         <view class="form-group">
           <text class="group-title">Webhook配置</text>
-          
+
           <uni-forms-item label="启用Webhook" name="enableWebhooks">
             <switch
               :checked="formData.enableWebhooks"
@@ -316,7 +336,7 @@
         <!-- API管理 -->
         <view class="form-group">
           <text class="group-title">API管理</text>
-          
+
           <uni-forms-item label="启用API访问" name="enableApiAccess">
             <switch
               :checked="formData.enableApiAccess"
@@ -373,7 +393,11 @@
           <text class="last-sync">最后同步：{{ integration.lastSync }}</text>
           <view class="status-actions">
             <button class="test-btn" @click="testIntegration(integration.key)">测试连接</button>
-            <button class="sync-btn" @click="syncIntegration(integration.key)" :disabled="integration.status !== 'connected'">
+            <button
+              class="sync-btn"
+              @click="syncIntegration(integration.key)"
+              :disabled="integration.status !== 'connected'"
+            >
               立即同步
             </button>
           </view>
@@ -393,14 +417,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { showToast, showModal } from '@/utils/ui'
+import { showModal, showToast } from '@/utils/ui'
 import type { SystemSettings } from '@/types/settings'
 
 /**
  * 集成设置组件
- * 
+ *
  * 功能说明：
  * - 配置CRM、ERP等第三方系统集成
  * - 设置支付网关和物流服务商
@@ -408,7 +432,7 @@ import type { SystemSettings } from '@/types/settings'
  * - 配置Webhook和API访问
  * - 监控集成状态和连接健康度
  * - 提供集成测试和同步功能
- * 
+ *
  * 集成类型：
  * - CRM系统：客户关系管理
  * - ERP系统：企业资源规划
@@ -417,7 +441,7 @@ import type { SystemSettings } from '@/types/settings'
  * - 数据分析：业务智能和统计
  * - Webhook：事件通知和自动化
  * - API：第三方应用访问
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -429,13 +453,13 @@ interface IntegrationSettingsForm {
   crmApiKey: string
   crmSyncInterval: number
   crmBidirectionalSync: boolean
-  
+
   // ERP集成
   enableErpIntegration: boolean
   erpSystemType: string
   erpConnectionString: string
   erpSyncModules: string[]
-  
+
   // 支付网关
   enablePaymentGateway: boolean
   primaryPaymentGateway: string
@@ -443,26 +467,26 @@ interface IntegrationSettingsForm {
   paymentMerchantKey: string
   supportedPaymentMethods: string[]
   paymentSandboxMode: boolean
-  
+
   // 物流配送
   enableShippingIntegration: boolean
   shippingProviders: string[]
   autoCalculateShipping: boolean
   enableShippingTracking: boolean
-  
+
   // 数据分析
   enableGoogleAnalytics: boolean
   googleAnalyticsId: string
   enableBaiduAnalytics: boolean
   baiduAnalyticsId: string
-  
+
   // Webhook
   enableWebhooks: boolean
   webhookUrls: string
   webhookSecret: string
   webhookRetryCount: number
   webhookTimeout: number
-  
+
   // API管理
   enableApiAccess: boolean
   apiVersion: string
@@ -486,13 +510,13 @@ const formData = ref<IntegrationSettingsForm>({
   crmApiKey: '',
   crmSyncInterval: 60,
   crmBidirectionalSync: false,
-  
+
   // ERP集成
   enableErpIntegration: false,
   erpSystemType: 'sap',
   erpConnectionString: '',
   erpSyncModules: [],
-  
+
   // 支付网关
   enablePaymentGateway: false,
   primaryPaymentGateway: 'alipay',
@@ -500,26 +524,26 @@ const formData = ref<IntegrationSettingsForm>({
   paymentMerchantKey: '',
   supportedPaymentMethods: [],
   paymentSandboxMode: true,
-  
+
   // 物流配送
   enableShippingIntegration: false,
   shippingProviders: [],
   autoCalculateShipping: true,
   enableShippingTracking: true,
-  
+
   // 数据分析
   enableGoogleAnalytics: false,
   googleAnalyticsId: '',
   enableBaiduAnalytics: false,
   baiduAnalyticsId: '',
-  
+
   // Webhook
   enableWebhooks: false,
   webhookUrls: '',
   webhookSecret: '',
   webhookRetryCount: 3,
   webhookTimeout: 30,
-  
+
   // API管理
   enableApiAccess: true,
   apiVersion: 'v1',
@@ -628,19 +652,13 @@ const rules = {
     ]
   },
   crmApiKey: {
-    rules: [
-      { required: true, errorMessage: '请输入CRM API密钥' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入CRM API密钥' }]
   },
   paymentMerchantId: {
-    rules: [
-      { required: true, errorMessage: '请输入商户号' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入商户号' }]
   },
   paymentMerchantKey: {
-    rules: [
-      { required: true, errorMessage: '请输入商户密钥' }
-    ]
+    rules: [{ required: true, errorMessage: '请输入商户密钥' }]
   }
 }
 
@@ -662,15 +680,15 @@ const getStatusText = (status: string) => {
 
 // 事件处理
 const handleInputChange = (field: keyof IntegrationSettingsForm, value: any) => {
-  (formData.value as any)[field] = value
+  ;(formData.value as any)[field] = value
 }
 
 const handlePickerChange = (field: keyof IntegrationSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleSwitchChange = (field: keyof IntegrationSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleErpModulesChange = (event: any) => {
@@ -690,7 +708,7 @@ const handleReset = async () => {
     title: '确认重置',
     content: '确定要重置所有集成设置吗？这可能会断开现有的第三方服务连接。'
   })
-  
+
   if (result.confirm) {
     formData.value = { ...originalData.value }
     showToast('已重置到上次保存的状态')
@@ -701,17 +719,20 @@ const handleSave = async () => {
   try {
     // 表单验证
     let isValid = true
-    
+
     if (formData.value.enableCrmIntegration) {
       const crmValid = await formRef.value.validateField(['crmApiUrl', 'crmApiKey'])
       isValid = isValid && crmValid
     }
-    
+
     if (formData.value.enablePaymentGateway) {
-      const paymentValid = await formRef.value.validateField(['paymentMerchantId', 'paymentMerchantKey'])
+      const paymentValid = await formRef.value.validateField([
+        'paymentMerchantId',
+        'paymentMerchantKey'
+      ])
       isValid = isValid && paymentValid
     }
-    
+
     if (!isValid) {
       showToast('请完善必填字段', 'error')
       return
@@ -720,21 +741,27 @@ const handleSave = async () => {
     loading.value = true
 
     // 转换为设置格式
-    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(([key, value]) => ({
-      category: 'integration' as const,
-      key,
-      value,
-      type: Array.isArray(value) ? 'array' :
-            typeof value === 'boolean' ? 'boolean' : 
-            typeof value === 'number' ? 'number' : 'string'
-    }))
+    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(
+      ([key, value]) => ({
+        category: 'integration' as const,
+        key,
+        value,
+        type: Array.isArray(value)
+          ? 'array'
+          : typeof value === 'boolean'
+            ? 'boolean'
+            : typeof value === 'number'
+              ? 'number'
+              : 'string'
+      })
+    )
 
     // 保存设置
     await settingsStore.updateSettings(settings)
-    
+
     // 更新原始数据
     originalData.value = { ...formData.value }
-    
+
     showToast('集成设置保存成功')
   } catch (error) {
     console.error('保存集成设置失败:', error)
@@ -748,17 +775,17 @@ const handleSave = async () => {
 const testIntegration = async (integrationKey: string) => {
   try {
     showToast(`正在测试${getIntegrationName(integrationKey)}连接...`)
-    
+
     // 模拟API调用
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // 更新状态
     const integration = integrationStatus.value.find(item => item.key === integrationKey)
     if (integration) {
       integration.status = Math.random() > 0.5 ? 'connected' : 'error'
       integration.lastSync = integration.status === 'connected' ? '刚刚' : '连接失败'
     }
-    
+
     if (integration?.status === 'connected') {
       showToast('连接测试成功')
     } else {
@@ -773,16 +800,16 @@ const testIntegration = async (integrationKey: string) => {
 const syncIntegration = async (integrationKey: string) => {
   try {
     showToast(`正在同步${getIntegrationName(integrationKey)}数据...`)
-    
+
     // 模拟同步过程
     await new Promise(resolve => setTimeout(resolve, 3000))
-    
+
     // 更新最后同步时间
     const integration = integrationStatus.value.find(item => item.key === integrationKey)
     if (integration) {
       integration.lastSync = '刚刚'
     }
-    
+
     showToast('数据同步完成')
   } catch (error) {
     console.error('数据同步失败:', error)
@@ -804,14 +831,14 @@ const getIntegrationName = (key: string) => {
 const loadSettings = async () => {
   try {
     const integrationSettings = settingsStore.getSettingsByCategory('integration')
-    
+
     // 将设置数据填充到表单
     integrationSettings.forEach(setting => {
       if (setting.key in formData.value) {
-        (formData.value as any)[setting.key] = setting.value
+        ;(formData.value as any)[setting.key] = setting.value
       }
     })
-    
+
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -826,22 +853,27 @@ onMounted(() => {
 })
 
 // 监听设置变化
-watch(() => settingsStore.settings, () => {
-  loadSettings()
-}, { deep: true })
+watch(
+  () => settingsStore.settings,
+  () => {
+    loadSettings()
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
 .integration-settings {
-  .settings-section, .integration-status {
+  .settings-section,
+  .integration-status {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .section-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -849,20 +881,20 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .section-description {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .form-group {
       padding: 20px;
-      
+
       &:not(:last-child) {
         border-bottom: 1px solid var(--border-color-light);
       }
-      
+
       .group-title {
         font-size: 16px;
         font-weight: 500;
@@ -870,24 +902,24 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 16px;
       }
-      
+
       .field-hint {
         font-size: 12px;
         color: var(--text-color-tertiary);
         margin-top: 4px;
         display: block;
       }
-      
+
       .checkbox-group {
         .checkbox-item {
           display: flex;
           align-items: center;
           margin-bottom: 8px;
-          
+
           checkbox {
             margin-right: 8px;
           }
-          
+
           text {
             font-size: 14px;
             color: var(--text-color-primary);
@@ -896,46 +928,46 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .integration-status {
     .status-grid {
       padding: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 16px;
-      
+
       .status-card {
         padding: 16px;
         border: 1px solid var(--border-color-light);
         border-radius: 8px;
         background: #fff;
-        
+
         .status-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
           margin-bottom: 8px;
-          
+
           .status-name {
             font-weight: 500;
             color: var(--text-color-primary);
           }
-          
+
           .status-indicator {
             display: flex;
             align-items: center;
-            
+
             .status-dot {
               width: 8px;
               height: 8px;
               border-radius: 50%;
               margin-right: 6px;
             }
-            
+
             .status-text {
               font-size: 12px;
             }
-            
+
             &.connected {
               .status-dot {
                 background: var(--color-success);
@@ -944,7 +976,7 @@ watch(() => settingsStore.settings, () => {
                 color: var(--color-success);
               }
             }
-            
+
             &.disconnected {
               .status-dot {
                 background: var(--color-grey-400);
@@ -953,7 +985,7 @@ watch(() => settingsStore.settings, () => {
                 color: var(--color-grey-400);
               }
             }
-            
+
             &.warning {
               .status-dot {
                 background: var(--color-warning);
@@ -962,7 +994,7 @@ watch(() => settingsStore.settings, () => {
                 color: var(--color-warning);
               }
             }
-            
+
             &.error {
               .status-dot {
                 background: var(--color-error);
@@ -973,53 +1005,54 @@ watch(() => settingsStore.settings, () => {
             }
           }
         }
-        
+
         .status-description {
           font-size: 13px;
           color: var(--text-color-secondary);
           margin-bottom: 8px;
           display: block;
         }
-        
+
         .last-sync {
           font-size: 12px;
           color: var(--text-color-tertiary);
           margin-bottom: 12px;
           display: block;
         }
-        
+
         .status-actions {
           display: flex;
           gap: 8px;
-          
-          .test-btn, .sync-btn {
+
+          .test-btn,
+          .sync-btn {
             padding: 6px 12px;
             font-size: 12px;
             border-radius: 4px;
             border: none;
             cursor: pointer;
             transition: all 0.2s;
-            
+
             &:disabled {
               opacity: 0.5;
               cursor: not-allowed;
             }
           }
-          
+
           .test-btn {
             background: var(--color-info-light);
             color: var(--color-info);
-            
+
             &:hover:not(:disabled) {
               background: var(--color-info);
               color: #fff;
             }
           }
-          
+
           .sync-btn {
             background: var(--color-success-light);
             color: var(--color-success);
-            
+
             &:hover:not(:disabled) {
               background: var(--color-success);
               color: #fff;
@@ -1029,7 +1062,7 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -1037,34 +1070,35 @@ watch(() => settingsStore.settings, () => {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    
-    .btn-secondary, .btn-primary {
+
+    .btn-secondary,
+    .btn-primary {
       padding: 10px 24px;
       border-radius: 6px;
       font-size: 14px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     }
-    
+
     .btn-secondary {
       background: var(--color-grey-100);
       color: var(--text-color-secondary);
-      
+
       &:hover:not(:disabled) {
         background: var(--color-grey-200);
       }
     }
-    
+
     .btn-primary {
       background: var(--color-primary);
       color: #fff;
-      
+
       &:hover:not(:disabled) {
         background: var(--color-primary-dark);
       }
@@ -1075,27 +1109,29 @@ watch(() => settingsStore.settings, () => {
 // 响应式设计
 @media (max-width: 768px) {
   .integration-settings {
-    .settings-section, .integration-status {
+    .settings-section,
+    .integration-status {
       margin: 0 -16px 16px;
       border-radius: 0;
-      
+
       .section-header,
       .form-group,
       .status-grid {
         padding: 16px;
       }
     }
-    
+
     .integration-status .status-grid {
       grid-template-columns: 1fr;
     }
-    
+
     .actions {
       margin: 0 -16px;
       border-radius: 0;
       padding: 16px;
-      
-      .btn-secondary, .btn-primary {
+
+      .btn-secondary,
+      .btn-primary {
         flex: 1;
         text-align: center;
       }

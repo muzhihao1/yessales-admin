@@ -1,11 +1,11 @@
 /**
  * Device Detection Utilities
- * 
+ *
  * Provides comprehensive device detection and capability analysis
  * specifically optimized for Uniapp cross-platform development.
  */
 
-import { ref, reactive, computed } from 'vue'
+import { computed, reactive, ref } from 'vue'
 
 /**
  * Device information interface
@@ -16,30 +16,30 @@ export interface DeviceInfo {
   system: string
   model: string
   brand: string
-  
+
   // Screen information
   screenWidth: number
   screenHeight: number
   windowWidth: number
   windowHeight: number
   pixelRatio: number
-  
+
   // Safe area information
   statusBarHeight: number
   safeAreaTop: number
   safeAreaBottom: number
   safeAreaLeft: number
   safeAreaRight: number
-  
+
   // Device capabilities
   capabilities: DeviceCapabilities
-  
+
   // Network information
   networkType: string
-  
+
   // Performance characteristics
   performanceLevel: 'high' | 'medium' | 'low'
-  
+
   // Additional metadata
   isTablet: boolean
   isPhone: boolean
@@ -213,7 +213,7 @@ export async function detectDevice(): Promise<DeviceInfo> {
     })
 
     // Get network information
-    const networkInfo = await new Promise<UniApp.GetNetworkTypeResult>((resolve) => {
+    const networkInfo = await new Promise<UniApp.GetNetworkTypeResult>(resolve => {
       uni.getNetworkType({
         success: resolve,
         fail: () => resolve({ networkType: 'unknown' as any })
@@ -230,9 +230,9 @@ export async function detectDevice(): Promise<DeviceInfo> {
     const category = determineDeviceCategory(systemInfo)
 
     // Check for notch/safe area
-    const hasNotch = systemInfo.safeArea ? 
-      systemInfo.safeArea.top > systemInfo.statusBarHeight : 
-      false
+    const hasNotch = systemInfo.safeArea
+      ? systemInfo.safeArea.top > systemInfo.statusBarHeight
+      : false
 
     // Detect dark mode support
     const supportsDarkMode = systemInfo.theme !== undefined
@@ -242,23 +242,23 @@ export async function detectDevice(): Promise<DeviceInfo> {
       system: systemInfo.system,
       model: systemInfo.model,
       brand: systemInfo.brand,
-      
+
       screenWidth: systemInfo.screenWidth,
       screenHeight: systemInfo.screenHeight,
       windowWidth: systemInfo.windowWidth,
       windowHeight: systemInfo.windowHeight,
       pixelRatio: systemInfo.pixelRatio,
-      
+
       statusBarHeight: systemInfo.statusBarHeight || 0,
       safeAreaTop: systemInfo.safeArea?.top || 0,
       safeAreaBottom: systemInfo.safeArea?.bottom || systemInfo.screenHeight,
       safeAreaLeft: systemInfo.safeArea?.left || 0,
       safeAreaRight: systemInfo.safeArea?.right || systemInfo.screenWidth,
-      
+
       capabilities,
       networkType: networkInfo.networkType,
       performanceLevel,
-      
+
       isTablet: category.isTablet,
       isPhone: !category.isTablet,
       isLandscape: systemInfo.windowWidth > systemInfo.windowHeight,
@@ -272,7 +272,7 @@ export async function detectDevice(): Promise<DeviceInfo> {
     detectionError.value = null
 
     console.log('📱 Device detected:', info)
-    
+
     return info
   } catch (error) {
     console.error('Failed to detect device:', error)
@@ -303,7 +303,7 @@ async function detectCapabilities(): Promise<DeviceCapabilities> {
   try {
     await new Promise((resolve, reject) => {
       uni.getSetting({
-        success: (res) => {
+        success: res => {
           capabilities.camera = res.authSetting['scope.camera'] !== false
           resolve(true)
         },
@@ -318,7 +318,7 @@ async function detectCapabilities(): Promise<DeviceCapabilities> {
   try {
     await new Promise((resolve, reject) => {
       uni.getSetting({
-        success: (res) => {
+        success: res => {
           capabilities.microphone = res.authSetting['scope.record'] !== false
           resolve(true)
         },
@@ -333,7 +333,7 @@ async function detectCapabilities(): Promise<DeviceCapabilities> {
   try {
     await new Promise((resolve, reject) => {
       uni.getSetting({
-        success: (res) => {
+        success: res => {
           capabilities.gps = res.authSetting['scope.userLocation'] !== false
           resolve(true)
         },
@@ -366,24 +366,29 @@ async function detectCapabilities(): Promise<DeviceCapabilities> {
 /**
  * Calculate device performance level
  */
-function calculatePerformanceLevel(systemInfo: UniApp.GetSystemInfoResult): 'high' | 'medium' | 'low' {
+function calculatePerformanceLevel(
+  systemInfo: UniApp.GetSystemInfoResult
+): 'high' | 'medium' | 'low' {
   // Performance scoring based on various factors
   let score = 0
 
   // Screen resolution factor
   const totalPixels = systemInfo.screenWidth * systemInfo.screenHeight * systemInfo.pixelRatio
-  if (totalPixels > 2000000) score += 3 // High resolution
-  else if (totalPixels > 1000000) score += 2 // Medium resolution
+  if (totalPixels > 2000000)
+    score += 3 // High resolution
+  else if (totalPixels > 1000000)
+    score += 2 // Medium resolution
   else score += 1 // Low resolution
 
   // Platform factor
-  if (systemInfo.platform === 'ios') score += 2 // iOS generally performs better
+  if (systemInfo.platform === 'ios')
+    score += 2 // iOS generally performs better
   else if (systemInfo.platform === 'android') score += 1
 
   // Model/brand factor (heuristic)
   const model = systemInfo.model.toLowerCase()
   const brand = systemInfo.brand?.toLowerCase() || ''
-  
+
   if (brand.includes('apple') || model.includes('iphone') || model.includes('ipad')) {
     score += 2
   } else if (brand.includes('samsung') || brand.includes('google') || brand.includes('oneplus')) {
@@ -418,16 +423,21 @@ function determineDeviceCategory(systemInfo: UniApp.GetSystemInfoResult): Device
 
   // Find matching category
   for (const category of DEVICE_CATEGORIES) {
-    if (width >= category.minWidth && width <= category.maxWidth &&
-        height >= category.minHeight && height <= category.maxHeight &&
-        pixelRatio >= category.pixelRatioRange[0] && pixelRatio <= category.pixelRatioRange[1]) {
+    if (
+      width >= category.minWidth &&
+      width <= category.maxWidth &&
+      height >= category.minHeight &&
+      height <= category.maxHeight &&
+      pixelRatio >= category.pixelRatioRange[0] &&
+      pixelRatio <= category.pixelRatioRange[1]
+    ) {
       return category
     }
   }
 
   // Default category based on size
   const isTablet = width >= 600 || height >= 900
-  
+
   return {
     name: isTablet ? 'Unknown Tablet' : 'Unknown Phone',
     minWidth: width,
@@ -459,12 +469,12 @@ export function isDarkMode(): boolean {
       return false
     }
   }
-  
+
   // Fallback for web
   if (typeof window !== 'undefined' && window.matchMedia) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   }
-  
+
   return false
 }
 
@@ -492,13 +502,13 @@ export function supportsFeature(feature: keyof DeviceCapabilities): boolean {
  */
 export function getDeviceCategoryName(): string {
   if (!deviceInfo.windowWidth || !deviceInfo.windowHeight) return 'Unknown'
-  
+
   const systemInfo = {
     windowWidth: deviceInfo.windowWidth,
     windowHeight: deviceInfo.windowHeight,
     pixelRatio: deviceInfo.pixelRatio || 1
   } as UniApp.GetSystemInfoResult
-  
+
   const category = determineDeviceCategory(systemInfo)
   return category.name
 }
@@ -508,34 +518,34 @@ export function getDeviceCategoryName(): string {
  */
 export function useDeviceDetection() {
   const info = computed(() => deviceInfo as DeviceInfo)
-  
+
   const isReady = computed(() => isInitialized.value)
-  
+
   const error = computed(() => detectionError.value)
-  
+
   const isTablet = computed(() => info.value?.isTablet || false)
-  
+
   const isPhone = computed(() => info.value?.isPhone || false)
-  
+
   const performanceLevel = computed(() => info.value?.performanceLevel || 'medium')
-  
+
   const orientation = computed(() => getOrientation())
-  
+
   const safeAreaInsets = computed(() => getSafeAreaInsets())
-  
+
   const deviceCategory = computed(() => getDeviceCategoryName())
-  
+
   // Auto-initialize if not already done
   if (!isInitialized.value && typeof uni !== 'undefined') {
     detectDevice().catch(console.error)
   }
-  
+
   return {
     // State
     info,
     isReady,
     error,
-    
+
     // Computed properties
     isTablet,
     isPhone,
@@ -543,12 +553,12 @@ export function useDeviceDetection() {
     orientation,
     safeAreaInsets,
     deviceCategory,
-    
+
     // Methods
     detectDevice,
     supportsFeature,
     isDarkMode,
-    
+
     // Utilities
     DEVICE_CATEGORIES
   }
@@ -566,7 +576,7 @@ export const deviceDetectionDevTools = {
       console.warn('Device detection not initialized')
       return null
     }
-    
+
     return {
       basicInfo: {
         platform: deviceInfo.platform,
@@ -600,7 +610,7 @@ export const deviceDetectionDevTools = {
       }
     }
   },
-  
+
   /**
    * Log device information to console
    */
@@ -617,20 +627,20 @@ export const deviceDetectionDevTools = {
       console.groupEnd()
     }
   },
-  
+
   /**
    * Test device capabilities
    */
   async testCapabilities() {
     console.log('🧪 Testing device capabilities...')
-    
+
     const tests = Object.keys(deviceInfo.capabilities || {}) as (keyof DeviceCapabilities)[]
     const results: Record<string, boolean> = {}
-    
+
     for (const capability of tests) {
       results[capability] = supportsFeature(capability)
     }
-    
+
     console.table(results)
     return results
   }

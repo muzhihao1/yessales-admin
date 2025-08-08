@@ -10,7 +10,7 @@
         <!-- 报价规则 -->
         <view class="form-group">
           <text class="group-title">报价管理</text>
-          
+
           <uni-forms-item label="报价有效期(天)" name="quoteValidityDays" required>
             <uni-number-box
               v-model="formData.quoteValidityDays"
@@ -68,7 +68,7 @@
         <!-- 定价策略 -->
         <view class="form-group">
           <text class="group-title">定价策略</text>
-          
+
           <uni-forms-item label="默认定价策略" name="defaultPricingStrategy" required>
             <uni-data-picker
               v-model="formData.defaultPricingStrategy"
@@ -117,7 +117,7 @@
         <!-- 客户管理 -->
         <view class="form-group">
           <text class="group-title">客户管理</text>
-          
+
           <uni-forms-item label="默认信用限额" name="defaultCreditLimit">
             <uni-number-box
               v-model="formData.defaultCreditLimit"
@@ -166,7 +166,7 @@
         <!-- 销售流程 -->
         <view class="form-group">
           <text class="group-title">销售流程</text>
-          
+
           <uni-forms-item label="默认销售阶段" name="defaultSalesStage">
             <uni-data-picker
               v-model="formData.defaultSalesStage"
@@ -214,7 +214,7 @@
         <!-- 产品管理 -->
         <view class="form-group">
           <text class="group-title">产品管理</text>
-          
+
           <uni-forms-item label="低库存警告阈值" name="lowStockThreshold">
             <uni-number-box
               v-model="formData.lowStockThreshold"
@@ -257,7 +257,7 @@
         <!-- 佣金和激励 -->
         <view class="form-group">
           <text class="group-title">佣金设置</text>
-          
+
           <uni-forms-item label="默认佣金比例(%)" name="defaultCommissionRate">
             <uni-number-box
               v-model="formData.defaultCommissionRate"
@@ -316,14 +316,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useSettingsStore } from '@/stores/settings'
-import { showToast, showModal } from '@/utils/ui'
+import { showModal, showToast } from '@/utils/ui'
 import type { SystemSettings } from '@/types/settings'
 
 /**
  * 业务规则设置组件
- * 
+ *
  * 功能说明：
  * - 配置报价管理规则和流程
  * - 设置定价策略和利润控制
@@ -331,13 +331,13 @@ import type { SystemSettings } from '@/types/settings'
  * - 配置销售流程和审批规则
  * - 设置产品管理和库存控制
  * - 配置佣金计算和激励机制
- * 
+ *
  * 业务影响：
  * - 直接影响销售流程效率
  * - 控制业务风险和合规性
  * - 影响销售团队激励
  * - 决定客户体验质量
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -349,35 +349,35 @@ interface BusinessRulesSettingsForm {
   discountApprovalThreshold: number
   enableQuoteTemplates: boolean
   allowEditSentQuotes: boolean
-  
+
   // 定价策略
   defaultPricingStrategy: string
   enableBulkPricing: boolean
   dynamicPricingFactor: number
   minimumProfitMargin: number
   enableCompetitorPriceMonitoring: boolean
-  
+
   // 客户管理
   defaultCreditLimit: number
   enableAutoCustomerRating: boolean
   customerRatingCycle: number
   vipCustomerDiscountRate: number
   enableCustomerLifecycleManagement: boolean
-  
+
   // 销售流程
   defaultSalesStage: string
   enableAutoStageProgression: boolean
   opportunityExpiryDays: number
   managerApprovalThreshold: number
   enableSalesForecasting: boolean
-  
+
   // 产品管理
   lowStockThreshold: number
   enableAutoStockReplenishment: boolean
   enableProductLifecycleManagement: boolean
   allowNegativeStockSales: boolean
   enableProductRecommendation: boolean
-  
+
   // 佣金设置
   defaultCommissionRate: number
   commissionCalculationMethod: string
@@ -402,35 +402,35 @@ const formData = ref<BusinessRulesSettingsForm>({
   discountApprovalThreshold: 10,
   enableQuoteTemplates: true,
   allowEditSentQuotes: false,
-  
+
   // 定价策略
   defaultPricingStrategy: 'standard',
   enableBulkPricing: true,
   dynamicPricingFactor: 1.0,
   minimumProfitMargin: 15,
   enableCompetitorPriceMonitoring: false,
-  
+
   // 客户管理
   defaultCreditLimit: 100000,
   enableAutoCustomerRating: true,
   customerRatingCycle: 30,
   vipCustomerDiscountRate: 5,
   enableCustomerLifecycleManagement: true,
-  
+
   // 销售流程
   defaultSalesStage: 'prospect',
   enableAutoStageProgression: true,
   opportunityExpiryDays: 90,
   managerApprovalThreshold: 50000,
   enableSalesForecasting: true,
-  
+
   // 产品管理
   lowStockThreshold: 10,
   enableAutoStockReplenishment: false,
   enableProductLifecycleManagement: true,
   allowNegativeStockSales: false,
   enableProductRecommendation: true,
-  
+
   // 佣金设置
   defaultCommissionRate: 5,
   commissionCalculationMethod: 'net_sales',
@@ -479,24 +479,16 @@ const rules = {
     ]
   },
   maxDiscountPercent: {
-    rules: [
-      { type: 'number', min: 0, max: 100, errorMessage: '折扣比例应在0-100%之间' }
-    ]
+    rules: [{ type: 'number', min: 0, max: 100, errorMessage: '折扣比例应在0-100%之间' }]
   },
   minimumProfitMargin: {
-    rules: [
-      { type: 'number', min: 0, max: 100, errorMessage: '最低利润率应在0-100%之间' }
-    ]
+    rules: [{ type: 'number', min: 0, max: 100, errorMessage: '最低利润率应在0-100%之间' }]
   },
   defaultCreditLimit: {
-    rules: [
-      { type: 'number', min: 0, errorMessage: '信用限额不能为负数' }
-    ]
+    rules: [{ type: 'number', min: 0, errorMessage: '信用限额不能为负数' }]
   },
   defaultCommissionRate: {
-    rules: [
-      { type: 'number', min: 0, max: 50, errorMessage: '佣金比例应在0-50%之间' }
-    ]
+    rules: [{ type: 'number', min: 0, max: 50, errorMessage: '佣金比例应在0-50%之间' }]
   }
 }
 
@@ -507,15 +499,15 @@ const hasChanges = computed(() => {
 
 // 事件处理
 const handleInputChange = (field: keyof BusinessRulesSettingsForm, value: any) => {
-  (formData.value as any)[field] = value
+  ;(formData.value as any)[field] = value
 }
 
 const handlePickerChange = (field: keyof BusinessRulesSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleSwitchChange = (field: keyof BusinessRulesSettingsForm, event: any) => {
-  (formData.value as any)[field] = event.detail.value
+  ;(formData.value as any)[field] = event.detail.value
 }
 
 const handleReset = async () => {
@@ -523,7 +515,7 @@ const handleReset = async () => {
     title: '确认重置',
     content: '确定要重置所有业务规则设置吗？这可能会影响销售流程。'
   })
-  
+
   if (result.confirm) {
     formData.value = { ...originalData.value }
     showToast('已重置到上次保存的状态')
@@ -550,7 +542,7 @@ const handleSave = async () => {
         title: '业务规则警告',
         content: '最低利润率设置高于最大折扣权限，这可能导致销售困难。确定要继续吗？'
       })
-      
+
       if (!result.confirm) {
         return
       }
@@ -559,20 +551,22 @@ const handleSave = async () => {
     loading.value = true
 
     // 转换为设置格式
-    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(([key, value]) => ({
-      category: 'business' as const,
-      key,
-      value,
-      type: typeof value === 'boolean' ? 'boolean' : 
-            typeof value === 'number' ? 'number' : 'string'
-    }))
+    const settings: Partial<SystemSettings>[] = Object.entries(formData.value).map(
+      ([key, value]) => ({
+        category: 'business' as const,
+        key,
+        value,
+        type:
+          typeof value === 'boolean' ? 'boolean' : typeof value === 'number' ? 'number' : 'string'
+      })
+    )
 
     // 保存设置
     await settingsStore.updateSettings(settings)
-    
+
     // 更新原始数据
     originalData.value = { ...formData.value }
-    
+
     showToast('业务规则设置保存成功')
   } catch (error) {
     console.error('保存业务规则设置失败:', error)
@@ -586,14 +580,14 @@ const handleSave = async () => {
 const loadSettings = async () => {
   try {
     const businessSettings = settingsStore.getSettingsByCategory('business')
-    
+
     // 将设置数据填充到表单
     businessSettings.forEach(setting => {
       if (setting.key in formData.value) {
-        (formData.value as any)[setting.key] = setting.value
+        ;(formData.value as any)[setting.key] = setting.value
       }
     })
-    
+
     // 保存原始数据用于重置
     originalData.value = { ...formData.value }
   } catch (error) {
@@ -608,9 +602,13 @@ onMounted(() => {
 })
 
 // 监听设置变化
-watch(() => settingsStore.settings, () => {
-  loadSettings()
-}, { deep: true })
+watch(
+  () => settingsStore.settings,
+  () => {
+    loadSettings()
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -619,11 +617,11 @@ watch(() => settingsStore.settings, () => {
     background: #fff;
     border-radius: 8px;
     margin-bottom: 16px;
-    
+
     .section-header {
       padding: 20px;
       border-bottom: 1px solid var(--border-color-light);
-      
+
       .section-title {
         font-size: 18px;
         font-weight: 600;
@@ -631,20 +629,20 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 4px;
       }
-      
+
       .section-description {
         font-size: 14px;
         color: var(--text-color-secondary);
       }
     }
-    
+
     .form-group {
       padding: 20px;
-      
+
       &:not(:last-child) {
         border-bottom: 1px solid var(--border-color-light);
       }
-      
+
       .group-title {
         font-size: 16px;
         font-weight: 500;
@@ -652,7 +650,7 @@ watch(() => settingsStore.settings, () => {
         display: block;
         margin-bottom: 16px;
       }
-      
+
       .field-hint {
         font-size: 12px;
         color: var(--text-color-tertiary);
@@ -661,7 +659,7 @@ watch(() => settingsStore.settings, () => {
       }
     }
   }
-  
+
   .actions {
     display: flex;
     justify-content: flex-end;
@@ -669,34 +667,35 @@ watch(() => settingsStore.settings, () => {
     padding: 20px;
     background: #fff;
     border-radius: 8px;
-    
-    .btn-secondary, .btn-primary {
+
+    .btn-secondary,
+    .btn-primary {
       padding: 10px 24px;
       border-radius: 6px;
       font-size: 14px;
       border: none;
       cursor: pointer;
       transition: all 0.2s;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
       }
     }
-    
+
     .btn-secondary {
       background: var(--color-grey-100);
       color: var(--text-color-secondary);
-      
+
       &:hover:not(:disabled) {
         background: var(--color-grey-200);
       }
     }
-    
+
     .btn-primary {
       background: var(--color-primary);
       color: #fff;
-      
+
       &:hover:not(:disabled) {
         background: var(--color-primary-dark);
       }
@@ -710,19 +709,20 @@ watch(() => settingsStore.settings, () => {
     .settings-section {
       margin: 0 -16px 16px;
       border-radius: 0;
-      
+
       .section-header,
       .form-group {
         padding: 16px;
       }
     }
-    
+
     .actions {
       margin: 0 -16px;
       border-radius: 0;
       padding: 16px;
-      
-      .btn-secondary, .btn-primary {
+
+      .btn-secondary,
+      .btn-primary {
         flex: 1;
         text-align: center;
       }

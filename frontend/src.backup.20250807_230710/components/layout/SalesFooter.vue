@@ -9,8 +9,8 @@
 
       <!-- Quick links -->
       <view v-if="showLinks" class="footer-section links-section">
-        <view 
-          v-for="link in quickLinks" 
+        <view
+          v-for="link in quickLinks"
           :key="link.text"
           class="footer-link"
           @click="handleLinkClick(link)"
@@ -42,16 +42,16 @@
 
     <!-- Fixed bottom bar (optional) -->
     <view v-if="showBottomBar" class="bottom-bar">
-      <view 
-        v-for="(item, index) in bottomBarItems" 
+      <view
+        v-for="(item, index) in bottomBarItems"
         :key="index"
         class="bar-item"
         :class="{ 'bar-item--active': activeIndex === index }"
         @click="handleBarItemClick(item, index)"
       >
-        <image 
-          v-if="item.icon" 
-          class="bar-icon" 
+        <image
+          v-if="item.icon"
+          class="bar-icon"
           :src="activeIndex === index ? item.activeIcon || item.icon : item.icon"
           mode="aspectFit"
         />
@@ -116,7 +116,7 @@ const currentYear = computed(() => new Date().getFullYear())
 
 const handleLinkClick = (link: QuickLink) => {
   emit('link-click', link)
-  
+
   if (link.page) {
     uni.navigateTo({
       url: link.page
@@ -130,7 +130,7 @@ const handleLinkClick = (link: QuickLink) => {
     uni.showModal({
       title: '提示',
       content: '是否打开外部链接？',
-      success: (res) => {
+      success: res => {
         if (res.confirm) {
           // Handle external link in app
         }
@@ -142,7 +142,7 @@ const handleLinkClick = (link: QuickLink) => {
 
 const handleBarItemClick = (item: BottomBarItem, index: number) => {
   emit('bar-item-click', item, index)
-  
+
   if (item.page) {
     uni.switchTab({
       url: item.page,
@@ -326,28 +326,28 @@ const handleBarItemClick = (item: BottomBarItem, index: number) => {
     gap: 40rpx;
     text-align: left;
   }
-  
+
   .company-section,
   .contact-section,
   .copyright-section {
     text-align: left;
   }
-  
+
   .links-section {
     justify-content: flex-start;
   }
-  
+
   .contact-item {
     justify-content: flex-start;
   }
-  
+
   .copyright-section {
     grid-column: 1 / -1;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
-  
+
   .copyright-text,
   .version-text {
     display: inline;
@@ -359,11 +359,11 @@ const handleBarItemClick = (item: BottomBarItem, index: number) => {
   .footer-content {
     grid-template-columns: repeat(4, 1fr);
   }
-  
+
   .bottom-bar {
     display: none;
   }
-  
+
   .sales-footer:has(.bottom-bar) .footer-content {
     padding-bottom: 40rpx;
   }

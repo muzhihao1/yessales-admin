@@ -12,7 +12,7 @@
           :has-selection="selectable"
           :show-header="false"
         />
-        
+
         <!-- Virtual Row Rendering -->
         <template v-else-if="hasData">
           <DataTableRow
@@ -38,7 +38,7 @@
             </template>
           </DataTableRow>
         </template>
-        
+
         <!-- Empty State -->
         <view v-else-if="isEmpty" class="virtual-empty-state">
           <slot name="empty">
@@ -51,22 +51,20 @@
         </view>
       </view>
     </view>
-    
+
     <!-- Loading More Indicator -->
     <view v-if="loading && hasData" class="virtual-loading-more">
       <view class="loading-spinner"></view>
       <text class="loading-text">{{ loadingText || '加载更多数据...' }}</text>
     </view>
-    
+
     <!-- Error State -->
     <view v-if="error" class="virtual-error-state">
       <text class="error-icon">⚠️</text>
       <text class="error-text">{{ error }}</text>
-      <button class="error-retry" @click="handleRetry">
-        重试
-      </button>
+      <button class="error-retry" @click="handleRetry">重试</button>
     </view>
-    
+
     <!-- Virtual Scrolling Info (Dev Mode) -->
     <view v-if="showDebugInfo" class="virtual-debug-info">
       <text>可见行: {{ visibleItems.length }} / {{ total }}</text>
@@ -79,13 +77,17 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useVirtualScrolling, type VirtualScrollItem, type VirtualScrollPreset } from '@/composables/useVirtualScrolling'
+import {
+  type VirtualScrollItem,
+  type VirtualScrollPreset,
+  useVirtualScrolling
+} from '@/composables/useVirtualScrolling'
 import DataTableRow from './DataTableRow.vue'
 import TableLoadingSkeleton from './TableLoadingSkeleton.vue'
 
 /**
  * 虚拟表格容器组件
- * 
+ *
  * 功能特性：
  * - 高性能虚拟滚动，支持万级数据渲染
  * - 懒加载，自动加载更多数据
@@ -93,20 +95,23 @@ import TableLoadingSkeleton from './TableLoadingSkeleton.vue'
  * - 支持动态行高和自适应容器
  * - 完整的错误处理和加载状态
  * - 开发模式调试信息
- * 
+ *
  * 性能优势：
  * - 只渲染可视区域行，DOM节点数量恒定
  * - 支持10万+行数据流畅滚动
  * - 内存使用优化，避免大数据集内存溢出
  * - 滚动性能优化，60fps流畅体验
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
 interface Props {
   // 数据加载函数
-  loadData: (page: number, pageSize: number) => Promise<{ items: any[], total: number, hasMore: boolean }>
-  
+  loadData: (
+    page: number,
+    pageSize: number
+  ) => Promise<{ items: any[]; total: number; hasMore: boolean }>
+
   // 表格配置
   columns: Array<{
     key: string
@@ -116,7 +121,7 @@ interface Props {
     align?: 'left' | 'center' | 'right'
     sortable?: boolean
   }>
-  
+
   // 行操作配置
   actions?: Array<{
     key: string
@@ -125,11 +130,11 @@ interface Props {
     type?: 'default' | 'primary' | 'danger'
     visible?: (item: any) => boolean
   }>
-  
+
   // 选择功能
   selectable?: boolean
   isSelected?: (id: string | number) => boolean
-  
+
   // 虚拟滚动配置
   preset?: VirtualScrollPreset
   itemHeight?: number
@@ -137,14 +142,14 @@ interface Props {
   pageSize?: number
   overscan?: number
   threshold?: number
-  
+
   // 交互优化
   touchOptimized?: boolean
-  
+
   // 自定义消息
   emptyMessage?: string
   loadingText?: string
-  
+
   // 开发模式
   showDebugInfo?: boolean
 }
@@ -176,7 +181,7 @@ const virtualOptions = computed(() => {
   // 导入预设配置
   const { virtualScrollPresets } = require('@/composables/useVirtualScrolling')
   const preset = virtualScrollPresets[props.preset] || virtualScrollPresets.default
-  
+
   return {
     ...preset,
     itemHeight: props.itemHeight || preset.itemHeight,
@@ -263,17 +268,17 @@ defineExpose({
   background: white;
   border-radius: 8px;
   overflow: hidden;
-  
+
   .virtual-list {
     width: 100%;
     position: relative;
   }
-  
+
   .virtual-viewport {
     width: 100%;
     will-change: transform;
   }
-  
+
   .virtual-table-row {
     position: absolute;
     top: 0;
@@ -281,7 +286,7 @@ defineExpose({
     right: 0;
     will-change: transform;
   }
-  
+
   .virtual-loading-more {
     display: flex;
     align-items: center;
@@ -290,7 +295,7 @@ defineExpose({
     padding: 16px;
     border-top: 1px solid var(--border-color-light, #e9ecef);
     background: var(--color-grey-25, #f8f9fa);
-    
+
     .loading-spinner {
       width: 16px;
       height: 16px;
@@ -299,31 +304,31 @@ defineExpose({
       border-radius: 50%;
       animation: spin 1s linear infinite;
     }
-    
+
     .loading-text {
       font-size: 14px;
       color: var(--text-color-secondary, #6c757d);
     }
   }
-  
+
   .virtual-empty-state {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 300px;
     padding: 40px 20px;
-    
+
     .empty-content {
       text-align: center;
       max-width: 300px;
-      
+
       .empty-icon {
         display: block;
         font-size: 48px;
         margin-bottom: 16px;
         opacity: 0.5;
       }
-      
+
       .empty-text {
         display: block;
         font-size: 18px;
@@ -331,7 +336,7 @@ defineExpose({
         color: var(--text-color-primary, #495057);
         margin-bottom: 8px;
       }
-      
+
       .empty-subtitle {
         font-size: 14px;
         color: var(--text-color-secondary, #6c757d);
@@ -339,7 +344,7 @@ defineExpose({
       }
     }
   }
-  
+
   .virtual-error-state {
     display: flex;
     flex-direction: column;
@@ -348,19 +353,19 @@ defineExpose({
     min-height: 200px;
     padding: 40px 20px;
     background: rgba(var(--color-danger-rgb, 220, 53, 69), 0.05);
-    
+
     .error-icon {
       font-size: 32px;
       margin-bottom: 12px;
     }
-    
+
     .error-text {
       font-size: 16px;
       color: var(--color-danger, #dc3545);
       margin-bottom: 16px;
       text-align: center;
     }
-    
+
     .error-retry {
       padding: 8px 16px;
       background: var(--color-primary, #007aff);
@@ -369,13 +374,13 @@ defineExpose({
       border-radius: 6px;
       cursor: pointer;
       transition: background-color 0.2s;
-      
+
       &:hover {
         background: var(--color-primary-dark, #0056b3);
       }
     }
   }
-  
+
   .virtual-debug-info {
     position: absolute;
     top: 8px;
@@ -387,7 +392,7 @@ defineExpose({
     font-size: 11px;
     font-family: monospace;
     z-index: 100;
-    
+
     text {
       display: block;
       line-height: 1.3;
@@ -396,8 +401,12 @@ defineExpose({
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // 响应式优化
@@ -405,26 +414,26 @@ defineExpose({
   .virtual-table-container {
     .virtual-loading-more {
       padding: 12px;
-      
+
       .loading-text {
         font-size: 13px;
       }
     }
-    
+
     .virtual-empty-state {
       min-height: 250px;
       padding: 30px 16px;
-      
+
       .empty-content {
         .empty-icon {
           font-size: 40px;
           margin-bottom: 12px;
         }
-        
+
         .empty-text {
           font-size: 16px;
         }
-        
+
         .empty-subtitle {
           font-size: 13px;
         }

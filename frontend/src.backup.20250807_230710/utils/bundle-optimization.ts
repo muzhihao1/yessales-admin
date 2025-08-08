@@ -1,11 +1,11 @@
 /**
  * Bundle Optimization Utilities
- * 
+ *
  * Provides code splitting, lazy loading, and bundle analysis utilities
  * for optimal application performance and loading times.
  */
 
-import { defineAsyncComponent, type AsyncComponentLoader, type Component } from 'vue'
+import { type AsyncComponentLoader, type Component, defineAsyncComponent } from 'vue'
 
 /**
  * Bundle optimization configuration
@@ -86,7 +86,7 @@ export function createAsyncComponent<T extends Component>(
   } = {}
 ): T {
   const componentName = options.name || 'AsyncComponent'
-  
+
   // Create loading state
   const state: ChunkLoadingState = {
     loading: false,
@@ -95,36 +95,34 @@ export function createAsyncComponent<T extends Component>(
     retryCount: 0
   }
   chunkStates.set(componentName, state)
-  
+
   // Enhanced loader with retry logic
   const enhancedLoader = async (): Promise<T> => {
     state.loading = true
     state.error = false
-    
+
     const maxRetries = options.retryLimit || config.chunkRetryLimit
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         if (attempt > 0) {
           // Delay before retry
-          await new Promise(resolve => 
-            setTimeout(resolve, config.chunkRetryDelay * attempt)
-          )
+          await new Promise(resolve => setTimeout(resolve, config.chunkRetryDelay * attempt))
           console.log(`🔄 Retrying to load ${componentName} (attempt ${attempt + 1})`)
         }
-        
+
         const component = await loader()
-        
+
         state.loaded = true
         state.loading = false
         loadedChunks.add(componentName)
-        
+
         console.log(`✅ Successfully loaded ${componentName}`)
         return component
       } catch (error) {
         state.retryCount++
         console.warn(`❌ Failed to load ${componentName} (attempt ${attempt + 1}):`, error)
-        
+
         if (attempt === maxRetries) {
           state.error = true
           state.loading = false
@@ -132,10 +130,10 @@ export function createAsyncComponent<T extends Component>(
         }
       }
     }
-    
+
     throw new Error(`Failed to load ${componentName} after ${maxRetries} attempts`)
   }
-  
+
   // Create async component with enhanced options
   return defineAsyncComponent({
     loader: enhancedLoader,
@@ -145,7 +143,7 @@ export function createAsyncComponent<T extends Component>(
     errorComponent: options.errorComponent || createErrorComponent(componentName),
     onError: (error, retry, fail, attempts) => {
       console.error(`Component loading error for ${componentName}:`, error)
-      
+
       if (attempts <= (options.retryLimit || config.chunkRetryLimit)) {
         console.log(`Retrying ${componentName} loading...`)
         retry()
@@ -169,7 +167,8 @@ function createLoadingComponent(componentName: string): Component {
         <text class="loading-text">加载中...</text>
       </view>
     `,
-    styles: [`
+    styles: [
+      `
       .async-component-loading {
         display: flex;
         flex-direction: column;
@@ -197,7 +196,8 @@ function createLoadingComponent(componentName: string): Component {
         color: #6b7280;
         font-size: 26rpx;
       }
-    `]
+    `
+    ]
   }
 }
 
@@ -220,7 +220,8 @@ function createErrorComponent(componentName: string): Component {
         window.location.reload()
       }
     },
-    styles: [`
+    styles: [
+      `
       .async-component-error {
         display: flex;
         flex-direction: column;
@@ -256,7 +257,8 @@ function createErrorComponent(componentName: string): Component {
         padding: 16rpx 32rpx;
         font-size: 26rpx;
       }
-    `]
+    `
+    ]
   }
 }
 
@@ -268,19 +270,19 @@ export function preloadChunks(chunkNames: string[]): Promise<void[]> {
     if (loadedChunks.has(chunkName)) {
       return // Already loaded
     }
-    
+
     try {
       // For Vite/Webpack, we can use dynamic imports to preload
       const chunkPath = `/src/pages/${chunkName}.vue` // Adjust path as needed
       await import(/* webpackPreload: true */ chunkPath)
-      
+
       loadedChunks.add(chunkName)
       console.log(`📦 Preloaded chunk: ${chunkName}`)
     } catch (error) {
       console.warn(`Failed to preload chunk ${chunkName}:`, error)
     }
   })
-  
+
   return Promise.all(preloadPromises)
 }
 
@@ -289,17 +291,17 @@ export function preloadChunks(chunkNames: string[]): Promise<void[]> {
  */
 export function prefetchChunks(chunkNames: string[]): void {
   if (!config.enablePrefetching) return
-  
+
   chunkNames.forEach(chunkName => {
     if (loadedChunks.has(chunkName)) return
-    
+
     try {
       // Use link rel="prefetch" for better resource hints
       const link = document.createElement('link')
       link.rel = 'prefetch'
       link.href = `/src/pages/${chunkName}.vue` // Adjust path as needed
       document.head.appendChild(link)
-      
+
       console.log(`🔮 Prefetching chunk: ${chunkName}`)
     } catch (error) {
       console.warn(`Failed to prefetch chunk ${chunkName}:`, error)
@@ -310,10 +312,7 @@ export function prefetchChunks(chunkNames: string[]): void {
 /**
  * Route-based code splitting utility
  */
-export function createRouteComponent(
-  routeName: string,
-  importFn: () => Promise<any>
-): Component {
+export function createRouteComponent(routeName: string, importFn: () => Promise<any>): Component {
   return createAsyncComponent(importFn, {
     name: routeName,
     enablePreload: true,
@@ -332,9 +331,9 @@ export function createFeatureComponent(
     preloadCondition?: () => boolean
   } = {}
 ): Component {
-  const shouldPreload = options.criticalFeature || 
-    (options.preloadCondition && options.preloadCondition())
-  
+  const shouldPreload =
+    options.criticalFeature || (options.preloadCondition && options.preloadCondition())
+
   return createAsyncComponent(importFn, {
     name: featureName,
     enablePreload: shouldPreload,
@@ -349,7 +348,7 @@ export function analyzeBundleComposition(): BundleAnalysis | null {
   if (!config.enableBundleAnalysis || process.env.NODE_ENV !== 'development') {
     return null
   }
-  
+
   try {
     // This would integrate with webpack-bundle-analyzer or similar
     // For now, we'll provide a mock analysis
@@ -360,7 +359,7 @@ export function analyzeBundleComposition(): BundleAnalysis | null {
       dependencies: {},
       duplicates: []
     }
-    
+
     // In a real implementation, this would analyze the webpack stats
     console.log('📊 Bundle analysis:', analysis)
     return analysis
@@ -375,22 +374,21 @@ export function analyzeBundleComposition(): BundleAnalysis | null {
  */
 export function getChunkStats() {
   const states = Array.from(chunkStates.entries())
-  
+
   return {
     totalChunks: states.length,
     loadedChunks: Array.from(loadedChunks),
-    failedChunks: states
-      .filter(([, state]) => state.error)
-      .map(([name]) => name),
-    loadingChunks: states
-      .filter(([, state]) => state.loading)
-      .map(([name]) => name),
-    retryStats: states.reduce((acc, [name, state]) => {
-      if (state.retryCount > 0) {
-        acc[name] = state.retryCount
-      }
-      return acc
-    }, {} as Record<string, number>)
+    failedChunks: states.filter(([, state]) => state.error).map(([name]) => name),
+    loadingChunks: states.filter(([, state]) => state.loading).map(([name]) => name),
+    retryStats: states.reduce(
+      (acc, [name, state]) => {
+        if (state.retryCount > 0) {
+          acc[name] = state.retryCount
+        }
+        return acc
+      },
+      {} as Record<string, number>
+    )
   }
 }
 
@@ -399,40 +397,35 @@ export function getChunkStats() {
  */
 export const pageComponents = {
   // Admin pages (heavy, load on demand)
-  AdminDashboard: () => createRouteComponent('admin-dashboard', () => 
-    import('../pages/admin/dashboard/index.vue')
-  ),
-  
-  AdminProducts: () => createRouteComponent('admin-products', () =>
-    import('../pages/admin/products/index.vue')
-  ),
-  
-  AdminQuotes: () => createRouteComponent('admin-quotes', () =>
-    import('../pages/admin/quotes/index.vue')
-  ),
-  
-  AdminCustomers: () => createRouteComponent('admin-customers', () =>
-    import('../pages/admin/customers/index.vue')
-  ),
-  
-  AdminUsers: () => createRouteComponent('admin-users', () =>
-    import('../pages/admin/users/index.vue')
-  ),
-  
+  AdminDashboard: () =>
+    createRouteComponent('admin-dashboard', () => import('../pages/admin/dashboard/index.vue')),
+
+  AdminProducts: () =>
+    createRouteComponent('admin-products', () => import('../pages/admin/products/index.vue')),
+
+  AdminQuotes: () =>
+    createRouteComponent('admin-quotes', () => import('../pages/admin/quotes/index.vue')),
+
+  AdminCustomers: () =>
+    createRouteComponent('admin-customers', () => import('../pages/admin/customers/index.vue')),
+
+  AdminUsers: () =>
+    createRouteComponent('admin-users', () => import('../pages/admin/users/index.vue')),
+
   // Sales pages (critical, preload)
-  SalesHome: () => createRouteComponent('sales-home', () =>
-    import('../pages/sales/index.vue')
-  ),
-  
-  SalesQuoteCreate: () => createFeatureComponent('sales-quote-create', () =>
-    import('../pages/sales/quote/create.vue'),
-    { criticalFeature: true }
-  ),
-  
-  SalesQuotePreview: () => createFeatureComponent('sales-quote-preview', () =>
-    import('../pages/sales/quote/preview.vue'),
-    { criticalFeature: true }
-  )
+  SalesHome: () => createRouteComponent('sales-home', () => import('../pages/sales/index.vue')),
+
+  SalesQuoteCreate: () =>
+    createFeatureComponent('sales-quote-create', () => import('../pages/sales/quote/create.vue'), {
+      criticalFeature: true
+    }),
+
+  SalesQuotePreview: () =>
+    createFeatureComponent(
+      'sales-quote-preview',
+      () => import('../pages/sales/quote/preview.vue'),
+      { criticalFeature: true }
+    )
 }
 
 /**
@@ -440,25 +433,24 @@ export const pageComponents = {
  */
 export const featureComponents = {
   // Charts and analytics (load when needed)
-  ChartWidget: () => createFeatureComponent('chart-widget', () =>
-    import('../components/admin/ChartWidget.vue')
-  ),
-  
+  ChartWidget: () =>
+    createFeatureComponent('chart-widget', () => import('../components/admin/ChartWidget.vue')),
+
   // Data table (heavy, lazy load)
-  DataTable: () => createFeatureComponent('data-table', () =>
-    import('../components/admin/DataTable.vue')
-  ),
-  
+  DataTable: () =>
+    createFeatureComponent('data-table', () => import('../components/admin/DataTable.vue')),
+
   // Image upload (load when needed)
-  ImageUpload: () => createFeatureComponent('image-upload', () =>
-    import('../components/sales/ImageUpload.vue')
-  ),
-  
+  ImageUpload: () =>
+    createFeatureComponent('image-upload', () => import('../components/sales/ImageUpload.vue')),
+
   // Product selector (critical for sales)
-  ProductSelector: () => createFeatureComponent('product-selector', () =>
-    import('../components/business/ProductSelector.vue'),
-    { criticalFeature: true }
-  )
+  ProductSelector: () =>
+    createFeatureComponent(
+      'product-selector',
+      () => import('../components/business/ProductSelector.vue'),
+      { criticalFeature: true }
+    )
 }
 
 /**
@@ -467,7 +459,7 @@ export const featureComponents = {
 export class SmartPreloader {
   private userPatterns = new Map<string, number>()
   private preloadQueue = new Set<string>()
-  
+
   /**
    * Track user navigation patterns
    */
@@ -475,13 +467,13 @@ export class SmartPreloader {
     const pattern = `${from}->${to}`
     const count = this.userPatterns.get(pattern) || 0
     this.userPatterns.set(pattern, count + 1)
-    
+
     // If pattern is frequent, preload related components
     if (count >= 3) {
       this.suggestPreload(to)
     }
   }
-  
+
   /**
    * Suggest components to preload based on patterns
    */
@@ -492,7 +484,7 @@ export class SmartPreloader {
       'admin-dashboard': ['admin-products', 'admin-quotes'],
       'admin-products': ['admin-quotes', 'admin-customers']
     }
-    
+
     const componentsToPreload = suggestions[currentRoute] || []
     componentsToPreload.forEach(component => {
       if (!this.preloadQueue.has(component)) {
@@ -501,7 +493,7 @@ export class SmartPreloader {
       }
     })
   }
-  
+
   /**
    * Schedule preloading with idle time
    */
@@ -517,7 +509,7 @@ export class SmartPreloader {
       }, 100)
     }
   }
-  
+
   /**
    * Execute the preload
    */
@@ -530,7 +522,7 @@ export class SmartPreloader {
       this.preloadQueue.delete(component)
     }
   }
-  
+
   /**
    * Get preloading statistics
    */
@@ -574,7 +566,7 @@ export const bundleDevTools = {
       console.warn('Bundle dev tools should only be enabled in development')
       return
     }
-    
+
     ;(window as any).__YESSALES_BUNDLE__ = {
       config,
       chunkStates,
@@ -585,10 +577,10 @@ export const bundleDevTools = {
       preload: preloadChunks,
       prefetch: prefetchChunks
     }
-    
+
     console.log('🔧 YesSales bundle optimization tools enabled')
   },
-  
+
   /**
    * Generate bundle report
    */
@@ -596,13 +588,13 @@ export const bundleDevTools = {
     const stats = getChunkStats()
     const analysis = analyzeBundleComposition()
     const smartStats = smartPreloader.getStats()
-    
+
     console.group('📦 Bundle Optimization Report')
     console.table(stats)
     console.table(smartStats)
     if (analysis) console.table(analysis)
     console.groupEnd()
-    
+
     return { stats, analysis, smartStats }
   }
 }

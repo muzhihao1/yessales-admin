@@ -13,14 +13,14 @@ import { realtimeService } from '@/services/realtime'
 // Standard Vue 3 lifecycle hooks instead of UniApp lifecycle
 onMounted(async () => {
   console.log('App Mounted')
-  
+
   // Initialize route guards
   setupRouteGuards()
-  
+
   // Initialize auth store and check for existing session
   const authStore = useAuthStore()
   await authStore.initializeAuth()
-  
+
   // Initialize real-time service if user is authenticated
   if (authStore.isAuthenticated) {
     await realtimeService.initialize()
@@ -30,7 +30,7 @@ onMounted(async () => {
 // Handle window visibility changes instead of UniApp show/hide
 document.addEventListener('visibilitychange', async () => {
   const authStore = useAuthStore()
-  
+
   if (document.hidden) {
     console.log('App Hidden')
     // Disconnect real-time service to save resources
@@ -41,7 +41,7 @@ document.addEventListener('visibilitychange', async () => {
     console.log('App Shown')
     // Check auth status when app becomes active
     await authStore.checkAuthStatus()
-    
+
     // Reconnect real-time service if user is authenticated
     if (authStore.isAuthenticated && !realtimeService.getConnectionStatus().isConnected) {
       await realtimeService.reconnect()

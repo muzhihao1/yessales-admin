@@ -1,10 +1,13 @@
 <template>
-  <view class="enhanced-confirmation-dialog" :class="{ 'show': visible }" v-if="visible">
+  <view class="enhanced-confirmation-dialog" :class="{ show: visible }" v-if="visible">
     <!-- Backdrop -->
     <view class="dialog-backdrop" @click="handleBackdropClick"></view>
-    
+
     <!-- Dialog Container -->
-    <view class="dialog-container" :class="[`severity-${severity}`, { 'input-mode': inputRequired }]">
+    <view
+      class="dialog-container"
+      :class="[`severity-${severity}`, { 'input-mode': inputRequired }]"
+    >
       <!-- Header -->
       <view class="dialog-header">
         <view class="header-icon" v-if="icon || severityIcon">
@@ -15,15 +18,15 @@
           <text>✕</text>
         </button>
       </view>
-      
+
       <!-- Content -->
       <view class="dialog-content">
         <!-- Main Message -->
         <text v-if="message" class="dialog-message">{{ message }}</text>
-        
+
         <!-- Custom Content Slot -->
         <slot name="content"></slot>
-        
+
         <!-- Warning Section -->
         <view v-if="warning" class="warning-section">
           <view class="warning-header">
@@ -32,21 +35,17 @@
           </view>
           <text class="warning-text">{{ warning }}</text>
         </view>
-        
+
         <!-- Details List -->
         <view v-if="details && details.length > 0" class="details-section">
           <text class="details-title">详细信息：</text>
           <view class="details-list">
-            <text 
-              v-for="(detail, index) in details"
-              :key="index"
-              class="detail-item"
-            >
+            <text v-for="(detail, index) in details" :key="index" class="detail-item">
               • {{ detail }}
             </text>
           </view>
         </view>
-        
+
         <!-- Input Section -->
         <view v-if="inputRequired" class="input-section">
           <text class="input-label">{{ inputLabel || '请输入以确认操作' }}</text>
@@ -72,20 +71,18 @@
             />
             <text class="checkbox-label">{{ inputPlaceholder || '我已确认此操作' }}</text>
           </view>
-          
+
           <!-- Input Validation Error -->
           <text v-if="inputError" class="input-error">{{ inputError }}</text>
         </view>
-        
+
         <!-- Affected Items Preview -->
         <view v-if="affectedItems && affectedItems.length > 0" class="affected-items">
-          <text class="affected-title">将要{{ operationText }}的项目 ({{ affectedItems.length }}个)：</text>
+          <text class="affected-title"
+            >将要{{ operationText }}的项目 ({{ affectedItems.length }}个)：</text
+          >
           <view class="affected-list">
-            <text 
-              v-for="(item, index) in displayedItems"
-              :key="index"
-              class="affected-item"
-            >
+            <text v-for="(item, index) in displayedItems" :key="index" class="affected-item">
               {{ item }}
             </text>
             <text v-if="affectedItems.length > maxDisplayItems" class="more-items">
@@ -94,26 +91,22 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Actions -->
       <view class="dialog-actions">
         <!-- Custom Actions Slot -->
         <slot name="actions" :confirm="handleConfirm" :cancel="handleCancel">
-          <button 
-            class="dialog-btn secondary" 
-            @click="handleCancel"
-            :disabled="processing"
-          >
+          <button class="dialog-btn secondary" @click="handleCancel" :disabled="processing">
             {{ cancelText || '取消' }}
           </button>
-          <button 
+          <button
             class="dialog-btn primary"
             :class="[`severity-${severity}`]"
             @click="handleConfirm"
             :disabled="!canConfirm || processing"
           >
             <view v-if="processing" class="btn-spinner"></view>
-            <text>{{ processing ? processingText : (confirmText || '确认') }}</text>
+            <text>{{ processing ? processingText : confirmText || '确认' }}</text>
           </button>
         </slot>
       </view>
@@ -122,11 +115,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 /**
  * 增强确认对话框组件
- * 
+ *
  * 功能特性：
  * - 多种严重级别的确认对话框（info, warning, danger, success）
  * - 支持输入验证的确认操作
@@ -134,7 +127,7 @@ import { ref, computed, watch } from 'vue'
  * - 可自定义的操作按钮和内容
  * - 专业的视觉设计和动画效果
  * - iPad友好的触控交互
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -151,11 +144,11 @@ interface Props {
   severity?: 'info' | 'warning' | 'danger' | 'success'
   icon?: string
   showClose?: boolean
-  
+
   // Warning and details
   warning?: string
   details?: string[]
-  
+
   // Input validation
   inputRequired?: boolean
   inputType?: 'text' | 'textarea' | 'checkbox'
@@ -163,18 +156,18 @@ interface Props {
   inputPlaceholder?: string
   inputValidation?: (value: string) => string | null
   confirmationText?: string // Required text to type for confirmation
-  
+
   // Affected items preview
   affectedItems?: (string | AffectedItem)[]
   maxDisplayItems?: number
   operationText?: string
-  
+
   // Button customization
   confirmText?: string
   cancelText?: string
   processing?: boolean
   processingText?: string
-  
+
   // Behavior
   closeOnBackdrop?: boolean
 }
@@ -213,49 +206,52 @@ const severityIcon = computed(() => {
 
 const displayedItems = computed(() => {
   if (!props.affectedItems) return []
-  
+
   const items = props.affectedItems.slice(0, props.maxDisplayItems)
-  return items.map(item => 
+  return items.map(item =>
     typeof item === 'string' ? item : item.name || item.id?.toString() || '未知项目'
   )
 })
 
 const canConfirm = computed(() => {
   if (props.processing) return false
-  
+
   if (props.inputRequired) {
     if (props.inputType === 'checkbox') {
       return checkboxValue.value
     }
-    
+
     if (props.confirmationText) {
       return inputValue.value.toLowerCase().trim() === props.confirmationText.toLowerCase().trim()
     }
-    
+
     if (props.inputValidation) {
       return !props.inputValidation(inputValue.value)
     }
-    
+
     return inputValue.value.trim().length > 0
   }
-  
+
   return true
 })
 
 // Watch for visibility changes
-watch(() => props.visible, (newVal) => {
-  if (newVal) {
-    // Reset input when dialog opens
-    inputValue.value = ''
-    checkboxValue.value = false
-    inputError.value = ''
+watch(
+  () => props.visible,
+  newVal => {
+    if (newVal) {
+      // Reset input when dialog opens
+      inputValue.value = ''
+      checkboxValue.value = false
+      inputError.value = ''
+    }
   }
-})
+)
 
 // Methods
 function handleConfirm() {
   if (!canConfirm.value) return
-  
+
   // Validate input if required
   if (props.inputRequired && props.inputValidation) {
     const error = props.inputValidation(inputValue.value)
@@ -264,7 +260,7 @@ function handleConfirm() {
       return
     }
   }
-  
+
   emit('confirm', inputValue.value)
 }
 
@@ -281,7 +277,7 @@ function handleBackdropClick() {
 
 function handleInputChange() {
   inputError.value = ''
-  
+
   if (props.inputValidation) {
     const error = props.inputValidation(inputValue.value)
     if (error) {
@@ -595,7 +591,7 @@ function handleCheckboxChange(event: any) {
 
           &.severity-info {
             background: var(--color-primary, #007aff);
-            
+
             &:hover:not(:disabled) {
               background: var(--color-primary-dark, #0056b3);
             }
@@ -603,7 +599,7 @@ function handleCheckboxChange(event: any) {
 
           &.severity-success {
             background: var(--color-success, #28a745);
-            
+
             &:hover:not(:disabled) {
               background: var(--color-success-dark, #1e7e34);
             }
@@ -612,7 +608,7 @@ function handleCheckboxChange(event: any) {
           &.severity-warning {
             background: var(--color-warning, #ffc107);
             color: var(--color-warning-dark, #856404);
-            
+
             &:hover:not(:disabled) {
               background: var(--color-warning-dark, #e0a800);
               color: white;
@@ -621,7 +617,7 @@ function handleCheckboxChange(event: any) {
 
           &.severity-danger {
             background: var(--color-danger, #dc3545);
-            
+
             &:hover:not(:disabled) {
               background: var(--color-danger-dark, #c82333);
             }
@@ -655,8 +651,12 @@ function handleCheckboxChange(event: any) {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // Responsive design - Enhanced with new mixins
@@ -664,41 +664,41 @@ function handleCheckboxChange(event: any) {
   .enhanced-confirmation-dialog {
     align-items: flex-end;
     padding: 10px;
-    
+
     .dialog-container {
       width: 100%;
       max-width: none;
       max-height: 90vh;
       border-radius: 12px 12px 0 0;
       transform: translateY(100%);
-      
+
       &.show {
         .dialog-container {
           transform: translateY(0);
         }
       }
-      
+
       .dialog-header {
         @include ipad-spacing('padding', 16px, 20px, 24px);
-        
+
         .dialog-title {
           font-size: 16px;
         }
-        
+
         .close-btn {
           @include touch-friendly;
         }
       }
-      
+
       .dialog-content {
         @include ipad-spacing('padding', 16px, 20px, 24px);
         max-height: 60vh;
-        
+
         .dialog-message {
           font-size: 15px;
           line-height: 1.6;
         }
-        
+
         .input-section {
           .confirmation-input,
           .confirmation-textarea {
@@ -708,12 +708,12 @@ function handleCheckboxChange(event: any) {
           }
         }
       }
-      
+
       .dialog-actions {
         flex-direction: column-reverse;
         gap: 8px;
         @include ipad-spacing('padding', 16px, 20px, 24px);
-        
+
         .dialog-btn {
           width: 100%;
           justify-content: center;
@@ -728,22 +728,22 @@ function handleCheckboxChange(event: any) {
 @include respond-to('tablet') {
   .enhanced-confirmation-dialog {
     padding: 40px 20px;
-    
+
     .dialog-container {
       width: 90%;
       max-width: 500px;
-      
+
       .dialog-header {
         @include ipad-spacing('padding', 20px, 24px, 24px);
       }
-      
+
       .dialog-content {
         @include ipad-spacing('padding', 20px, 24px, 24px);
-        
+
         .affected-items {
           .affected-list {
             @include horizontal-scroll;
-            
+
             .affected-item {
               display: inline-block;
               margin-right: 16px;
@@ -752,10 +752,10 @@ function handleCheckboxChange(event: any) {
           }
         }
       }
-      
+
       .dialog-actions {
         @include ipad-spacing('padding', 20px, 24px, 24px);
-        
+
         .dialog-btn {
           @include touch-friendly;
           padding: 12px 24px;
@@ -769,11 +769,11 @@ function handleCheckboxChange(event: any) {
   .enhanced-confirmation-dialog {
     .dialog-container {
       max-width: 600px;
-      
+
       &.input-mode {
         max-width: 700px;
       }
-      
+
       .dialog-content {
         max-height: 70vh;
       }

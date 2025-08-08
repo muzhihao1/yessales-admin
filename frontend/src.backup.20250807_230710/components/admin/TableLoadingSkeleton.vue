@@ -2,9 +2,9 @@
   <view class="table-loading-skeleton">
     <view class="skeleton-row skeleton-header" v-if="showHeader">
       <view class="skeleton-checkbox" v-if="hasSelection"></view>
-      <view 
-        class="skeleton-cell" 
-        v-for="column in columns" 
+      <view
+        class="skeleton-cell"
+        v-for="column in columns"
         :key="column"
         :style="{ width: getColumnWidth(column) }"
       >
@@ -14,18 +14,14 @@
         <view class="skeleton-text skeleton-text-small"></view>
       </view>
     </view>
-    
-    <view 
-      class="skeleton-row skeleton-body" 
-      v-for="row in rows" 
-      :key="row"
-    >
+
+    <view class="skeleton-row skeleton-body" v-for="row in rows" :key="row">
       <view class="skeleton-checkbox" v-if="hasSelection">
         <view class="skeleton-checkbox-box"></view>
       </view>
-      <view 
-        class="skeleton-cell" 
-        v-for="column in columns" 
+      <view
+        class="skeleton-cell"
+        v-for="column in columns"
         :key="column"
         :style="{ width: getColumnWidth(column) }"
       >
@@ -43,20 +39,20 @@ import { computed } from 'vue'
 
 /**
  * 数据表格加载骨架屏组件
- * 
+ *
  * 功能说明：
  * - 为数据表格提供优雅的加载状态展示
  * - 支持自定义行数、列数和布局配置
  * - 提供流畅的加载动画效果
  * - 响应式设计，适配不同屏幕尺寸
  * - 支持选择框和操作按钮区域
- * 
+ *
  * 使用场景：
  * - 客户列表加载时
  * - 产品列表加载时
  * - 报价记录加载时
  * - 任何需要表格数据加载状态的页面
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -105,7 +101,7 @@ const getColumnWidth = (column: string) => {
 const getSkeletonTextClass = (column: string) => {
   const classMap: Record<string, string> = {
     name: 'skeleton-text-long',
-    email: 'skeleton-text-long', 
+    email: 'skeleton-text-long',
     company: 'skeleton-text-long',
     status: 'skeleton-text-short',
     date: 'skeleton-text-medium',
@@ -122,38 +118,38 @@ const getSkeletonTextClass = (column: string) => {
 <style lang="scss" scoped>
 .table-loading-skeleton {
   width: 100%;
-  
+
   .skeleton-row {
     display: flex;
     align-items: center;
     padding: 12px;
     border-bottom: 1px solid var(--border-color-light);
-    
+
     &.skeleton-header {
       background: var(--color-grey-50);
       font-weight: 500;
-      
+
       .skeleton-text-header {
         height: 16px;
         background: var(--color-grey-200);
       }
     }
-    
+
     &.skeleton-body {
       background: #fff;
-      
+
       &:hover {
         background: var(--color-grey-25);
       }
     }
   }
-  
+
   .skeleton-checkbox {
     width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     .skeleton-checkbox-box {
       width: 16px;
       height: 16px;
@@ -161,20 +157,20 @@ const getSkeletonTextClass = (column: string) => {
       background: var(--color-grey-200);
     }
   }
-  
+
   .skeleton-cell {
     padding: 0 8px;
     display: flex;
     align-items: center;
   }
-  
+
   .skeleton-text {
     height: 14px;
     border-radius: 4px;
     background: var(--color-grey-200);
     position: relative;
     overflow: hidden;
-    
+
     // 动画效果
     &::after {
       content: '';
@@ -183,45 +179,40 @@ const getSkeletonTextClass = (column: string) => {
       left: -100%;
       width: 100%;
       height: 100%;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 255, 255, 0.6),
-        transparent
-      );
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
       animation: skeleton-loading 1.5s infinite;
     }
-    
+
     &.skeleton-text-short {
       width: 60px;
     }
-    
+
     &.skeleton-text-medium {
       width: 100px;
     }
-    
+
     &.skeleton-text-long {
       width: 140px;
     }
-    
+
     &.skeleton-text-header {
       width: 80px;
       height: 16px;
     }
-    
+
     &.skeleton-text-small {
       width: 40px;
       height: 12px;
     }
   }
-  
+
   .skeleton-actions {
     width: 120px;
     display: flex;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
-    
+
     .skeleton-action-btn {
       width: 28px;
       height: 28px;
@@ -229,7 +220,7 @@ const getSkeletonTextClass = (column: string) => {
       background: var(--color-grey-200);
       position: relative;
       overflow: hidden;
-      
+
       &::after {
         content: '';
         position: absolute;
@@ -237,12 +228,7 @@ const getSkeletonTextClass = (column: string) => {
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.6),
-          transparent
-        );
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
         animation: skeleton-loading 1.5s infinite;
       }
     }
@@ -265,34 +251,34 @@ const getSkeletonTextClass = (column: string) => {
     .skeleton-row {
       padding: 8px;
     }
-    
+
     .skeleton-text {
       height: 12px;
-      
+
       &.skeleton-text-header {
         height: 14px;
       }
     }
-    
+
     .skeleton-actions .skeleton-action-btn {
       width: 24px;
       height: 24px;
     }
   }
-  
+
   &.size-large {
     .skeleton-row {
       padding: 16px;
     }
-    
+
     .skeleton-text {
       height: 16px;
-      
+
       &.skeleton-text-header {
         height: 18px;
       }
     }
-    
+
     .skeleton-actions .skeleton-action-btn {
       width: 32px;
       height: 32px;
@@ -306,34 +292,34 @@ const getSkeletonTextClass = (column: string) => {
     .skeleton-row {
       padding: 8px;
     }
-    
+
     .skeleton-cell {
       padding: 0 4px;
-      
+
       // 在移动端隐藏部分列
-      &:nth-child(n+4) {
+      &:nth-child(n + 4) {
         display: none;
       }
     }
-    
+
     .skeleton-actions {
       width: 80px;
-      
+
       .skeleton-action-btn {
         width: 24px;
         height: 24px;
-        
-        &:nth-child(n+3) {
+
+        &:nth-child(n + 3) {
           display: none;
         }
       }
     }
-    
+
     .skeleton-text {
       &.skeleton-text-long {
         width: 100px;
       }
-      
+
       &.skeleton-text-medium {
         width: 80px;
       }
@@ -345,7 +331,7 @@ const getSkeletonTextClass = (column: string) => {
   .table-loading-skeleton {
     .skeleton-cell {
       // 移动端只显示前两列
-      &:nth-child(n+3) {
+      &:nth-child(n + 3) {
         display: none;
       }
     }

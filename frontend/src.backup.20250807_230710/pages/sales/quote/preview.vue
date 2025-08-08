@@ -1,23 +1,19 @@
 <template>
   <view class="quote-preview">
-    <SalesHeader
-      title="报价单预览"
-      :show-back="true"
-      :fixed="true"
-    />
-    
+    <SalesHeader title="报价单预览" :show-back="true" :fixed="true" />
+
     <!-- Loading State -->
     <view v-if="loading" class="loading-container">
       <view class="loading-spinner"></view>
       <text class="loading-text">加载报价单...</text>
     </view>
-    
+
     <!-- Error State -->
     <view v-else-if="error" class="error-container">
       <text class="error-text">{{ error }}</text>
       <SalesButton @click="loadQuoteData">重试</SalesButton>
     </view>
-    
+
     <!-- Quote Document -->
     <view v-else-if="quoteData" class="quote-document">
       <!-- Document Header -->
@@ -37,7 +33,7 @@
               <text class="company-address">地址：昆明市斗南花卉市场</text>
             </view>
           </view>
-          
+
           <view class="quote-info">
             <text class="quote-title">报价单</text>
             <text class="quote-number">{{ quoteData.quote.quoteNumber }}</text>
@@ -51,7 +47,7 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Customer & Company Info -->
       <view class="info-section">
         <view class="info-card">
@@ -76,7 +72,8 @@
             <view v-if="quoteData.customer.address" class="info-row">
               <text class="info-label">地址</text>
               <text class="info-value">
-                {{ quoteData.customer.province }}{{ quoteData.customer.city }}{{ quoteData.customer.address }}
+                {{ quoteData.customer.province }}{{ quoteData.customer.city
+                }}{{ quoteData.customer.address }}
               </text>
             </view>
             <view class="info-row">
@@ -90,11 +87,11 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Products Table -->
       <view class="products-section">
         <text class="section-title">产品明细</text>
-        
+
         <view class="products-table">
           <!-- Table Header -->
           <view class="table-header">
@@ -104,13 +101,9 @@
             <text class="header-cell product-price">单价</text>
             <text class="header-cell product-total">小计</text>
           </view>
-          
+
           <!-- Table Rows -->
-          <view
-            v-for="(item, index) in quoteData.items"
-            :key="index"
-            class="table-row"
-          >
+          <view v-for="(item, index) in quoteData.items" :key="index" class="table-row">
             <view class="table-cell product-name">
               <text class="cell-title">{{ item.product_name }}</text>
             </view>
@@ -130,91 +123,115 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Price Summary -->
       <view class="summary-section">
         <view class="summary-card">
           <text class="summary-title">价格汇总</text>
-          
+
           <view class="summary-rows">
             <view class="summary-row">
               <text class="summary-label">产品小计</text>
               <text class="summary-value">¥{{ formatPrice(quoteData.pricing.subtotal) }}</text>
             </view>
-            
+
             <view v-if="quoteData.pricing.discount.amount > 0" class="summary-row discount-row">
               <text class="summary-label">
                 折扣优惠
                 <text class="discount-detail">
-                  ({{ quoteData.pricing.discount.type === 'percentage' ? `${quoteData.pricing.discount.value}%` : `¥${formatPrice(quoteData.pricing.discount.value)}` }})
+                  ({{
+                    quoteData.pricing.discount.type === 'percentage'
+                      ? `${quoteData.pricing.discount.value}%`
+                      : `¥${formatPrice(quoteData.pricing.discount.value)}`
+                  }})
                 </text>
               </text>
-              <text class="summary-value discount-value">-¥{{ formatPrice(quoteData.pricing.discount.amount) }}</text>
+              <text class="summary-value discount-value"
+                >-¥{{ formatPrice(quoteData.pricing.discount.amount) }}</text
+              >
             </view>
-            
+
             <view class="summary-row subtotal-row">
               <text class="summary-label">折扣后小计</text>
-              <text class="summary-value">¥{{ formatPrice(quoteData.pricing.subtotal - quoteData.pricing.discount.amount) }}</text>
+              <text class="summary-value"
+                >¥{{
+                  formatPrice(quoteData.pricing.subtotal - quoteData.pricing.discount.amount)
+                }}</text
+              >
             </view>
-            
+
             <view v-if="quoteData.pricing.additionalCharges.deliveryFee > 0" class="summary-row">
               <text class="summary-label">配送费</text>
-              <text class="summary-value">+¥{{ formatPrice(quoteData.pricing.additionalCharges.deliveryFee) }}</text>
+              <text class="summary-value"
+                >+¥{{ formatPrice(quoteData.pricing.additionalCharges.deliveryFee) }}</text
+              >
             </view>
-            
-            <view v-if="quoteData.pricing.additionalCharges.installationFee > 0" class="summary-row">
+
+            <view
+              v-if="quoteData.pricing.additionalCharges.installationFee > 0"
+              class="summary-row"
+            >
               <text class="summary-label">安装费</text>
-              <text class="summary-value">+¥{{ formatPrice(quoteData.pricing.additionalCharges.installationFee) }}</text>
+              <text class="summary-value"
+                >+¥{{ formatPrice(quoteData.pricing.additionalCharges.installationFee) }}</text
+              >
             </view>
-            
-            <view v-if="quoteData.pricing.additionalCharges.otherCharges.length > 0" class="summary-row">
+
+            <view
+              v-if="quoteData.pricing.additionalCharges.otherCharges.length > 0"
+              class="summary-row"
+            >
               <text class="summary-label">其他费用</text>
               <text class="summary-value">+¥{{ formatPrice(getOtherChargesTotal()) }}</text>
             </view>
-            
+
             <view v-if="quoteData.pricing.tax.amount > 0" class="summary-row">
               <text class="summary-label">税费 ({{ quoteData.pricing.tax.rate }}%)</text>
               <text class="summary-value">+¥{{ formatPrice(quoteData.pricing.tax.amount) }}</text>
             </view>
-            
+
             <view class="summary-row total-row">
               <text class="summary-label">合计金额</text>
-              <text class="summary-value total-value">¥{{ formatPrice(quoteData.pricing.finalTotal) }}</text>
+              <text class="summary-value total-value"
+                >¥{{ formatPrice(quoteData.pricing.finalTotal) }}</text
+              >
             </view>
           </view>
         </view>
       </view>
-      
+
       <!-- Terms & Conditions -->
       <view class="terms-section">
         <text class="section-title">付款条件与说明</text>
-        
+
         <view class="terms-content">
           <view class="terms-row">
             <text class="terms-label">付款条件：</text>
             <text class="terms-value">{{ getPaymentTermsText(quoteData.quote.paymentTerms) }}</text>
           </view>
-          
+
           <view v-if="quoteData.quote.specialTerms" class="terms-row">
             <text class="terms-label">特殊条款：</text>
             <text class="terms-value">{{ quoteData.quote.specialTerms }}</text>
           </view>
-          
+
           <view v-if="quoteData.quote.notes" class="terms-row">
             <text class="terms-label">备注说明：</text>
             <text class="terms-value">{{ quoteData.quote.notes }}</text>
           </view>
-          
+
           <view class="standard-terms">
             <text class="terms-title">标准条款：</text>
-            <text class="terms-text">1. 本报价单有效期为 {{ quoteData.quote.validityDays }} 天。</text>
+            <text class="terms-text"
+              >1. 本报价单有效期为 {{ quoteData.quote.validityDays }} 天。</text
+            >
             <text class="terms-text">2. 产品价格以报价单确认时为准，如有变动以书面通知为准。</text>
             <text class="terms-text">3. 配送及安装服务需提前预约，具体时间双方协商确定。</text>
             <text class="terms-text">4. 产品质量保证按照国家相关标准执行。</text>
           </view>
         </view>
       </view>
-      
+
       <!-- Document Footer -->
       <view class="document-footer">
         <view class="signature-section">
@@ -223,156 +240,136 @@
             <view class="signature-line"></view>
             <text class="signature-date">日期：________________</text>
           </view>
-          
+
           <view class="signature-block">
             <text class="signature-label">客户确认：</text>
             <view class="signature-line"></view>
             <text class="signature-date">日期：________________</text>
           </view>
         </view>
-        
+
         <view class="footer-info">
-          <text class="footer-text">感谢您选择耶氏台球设备，我们将为您提供最优质的产品和服务！</text>
+          <text class="footer-text"
+            >感谢您选择耶氏台球设备，我们将为您提供最优质的产品和服务！</text
+          >
         </view>
       </view>
     </view>
-    
+
     <!-- Action Buttons -->
     <view v-if="quoteData && !loading" class="quote-actions">
       <view class="actions-row">
-        <SalesButton
-          type="default"
-          @click="editQuote"
-        >
-          编辑报价
-        </SalesButton>
-        
-        <SalesButton
-          type="plain"
-          @click="printQuote"
-        >
-          打印报价
-        </SalesButton>
-        
-        <SalesButton
-          type="primary"
-          @click="saveQuote"
-          :loading="saving"
-        >
-          保存报价
-        </SalesButton>
+        <SalesButton type="default" @click="editQuote"> 编辑报价 </SalesButton>
+
+        <SalesButton type="plain" @click="printQuote"> 打印报价 </SalesButton>
+
+        <SalesButton type="primary" @click="saveQuote" :loading="saving"> 保存报价 </SalesButton>
       </view>
-      
+
       <view class="actions-row">
-        <SalesButton
-          type="success"
-          :block="true"
-          @click="sendQuote"
-        >
-          发送给客户
-        </SalesButton>
+        <SalesButton type="success" :block="true" @click="sendQuote"> 发送给客户 </SalesButton>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import SalesHeader from '@/components/sales/SalesHeader.vue';
-import SalesButton from '@/components/sales/SalesButton.vue';
-import { QuotesApi } from '@/api';
+import { computed, onMounted, ref } from 'vue'
+import SalesHeader from '@/components/sales/SalesHeader.vue'
+import SalesButton from '@/components/sales/SalesButton.vue'
+import { QuotesApi } from '@/api'
 
 interface QuoteData {
-  id: string;
-  status: 'draft' | 'sent' | 'approved' | 'rejected';
-  createdAt: string;
+  id: string
+  status: 'draft' | 'sent' | 'approved' | 'rejected'
+  createdAt: string
   customer: {
-    name: string;
-    phone: string;
-    wechat: string;
-    email: string;
-    province: string;
-    city: string;
-    address: string;
-    type: string;
-    remark: string;
-  };
+    name: string
+    phone: string
+    wechat: string
+    email: string
+    province: string
+    city: string
+    address: string
+    type: string
+    remark: string
+  }
   items: Array<{
-    product_id: string;
-    product_name: string;
-    product_model: string;
-    sku_id?: string;
-    sku_name?: string;
-    quantity: number;
-    unit_price: number;
-    total_price: number;
-  }>;
+    product_id: string
+    product_name: string
+    product_model: string
+    sku_id?: string
+    sku_name?: string
+    quantity: number
+    unit_price: number
+    total_price: number
+  }>
   pricing: {
-    subtotal: number;
+    subtotal: number
     discount: {
-      type: 'percentage' | 'fixed';
-      value: number;
-      amount: number;
-    };
+      type: 'percentage' | 'fixed'
+      value: number
+      amount: number
+    }
     tax: {
-      rate: number;
-      amount: number;
-      included: boolean;
-    };
+      rate: number
+      amount: number
+      included: boolean
+    }
     additionalCharges: {
-      deliveryFee: number;
-      installationFee: number;
+      deliveryFee: number
+      installationFee: number
       otherCharges: Array<{
-        name: string;
-        amount: number;
-        type: 'fixed' | 'percentage';
-      }>;
-      total: number;
-    };
-    finalTotal: number;
-  };
+        name: string
+        amount: number
+        type: 'fixed' | 'percentage'
+      }>
+      total: number
+    }
+    finalTotal: number
+  }
   quote: {
-    quoteNumber: string;
-    validityDays: number;
-    paymentTerms: string;
-    specialTerms: string;
-    notes: string;
-  };
+    quoteNumber: string
+    validityDays: number
+    paymentTerms: string
+    specialTerms: string
+    notes: string
+  }
 }
 
 // State
-const loading = ref(true);
-const saving = ref(false);
-const error = ref('');
-const quoteData = ref<QuoteData | null>(null);
-const quoteId = ref('');
+const loading = ref(true)
+const saving = ref(false)
+const error = ref('')
+const quoteData = ref<QuoteData | null>(null)
+const quoteId = ref('')
 
 // Get quote ID from URL parameters
 onMounted(() => {
-  const pages = getCurrentPages();
-  const currentPage = pages[pages.length - 1];
-  const options = currentPage.options;
-  
+  const pages = getCurrentPages()
+  const currentPage = pages[pages.length - 1]
+  const options = currentPage.options
+
   if (options.id) {
-    quoteId.value = options.id;
-    loadQuoteData();
+    quoteId.value = options.id
+    loadQuoteData()
   } else {
-    error.value = '缺少报价单ID参数';
+    error.value = '缺少报价单ID参数'
   }
-});
+})
 
 // Load quote data
 const loadQuoteData = async () => {
   try {
-    loading.value = true;
-    error.value = '';
-    
+    loading.value = true
+    error.value = ''
+
     // For development, use mock data
     // In production, this would call: const response = await QuotesApi.getQuote(quoteId.value);
-    
+
     // Mock quote data
-    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
-    
+    await new Promise(resolve => setTimeout(resolve, 800)) // Simulate API delay
+
     quoteData.value = {
       id: quoteId.value,
       status: 'draft',
@@ -434,42 +431,41 @@ const loadQuoteData = async () => {
         specialTerms: '需要提前预约安装时间',
         notes: '所有产品均为全新正品，提供质保服务'
       }
-    };
-    
+    }
   } catch (err) {
-    console.error('Failed to load quote data:', err);
-    error.value = '加载报价单失败，请重试';
+    console.error('Failed to load quote data:', err)
+    error.value = '加载报价单失败，请重试'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 // Computed properties
 const getValidUntilDate = () => {
-  if (!quoteData.value) return '';
-  const validUntil = new Date(quoteData.value.createdAt);
-  validUntil.setDate(validUntil.getDate() + quoteData.value.quote.validityDays);
-  return validUntil.toLocaleDateString('zh-CN');
-};
+  if (!quoteData.value) return ''
+  const validUntil = new Date(quoteData.value.createdAt)
+  validUntil.setDate(validUntil.getDate() + quoteData.value.quote.validityDays)
+  return validUntil.toLocaleDateString('zh-CN')
+}
 
 const getOtherChargesTotal = () => {
-  if (!quoteData.value) return 0;
+  if (!quoteData.value) return 0
   return quoteData.value.pricing.additionalCharges.otherCharges.reduce((sum, charge) => {
     if (charge.type === 'percentage') {
-      return sum + (quoteData.value!.pricing.subtotal * charge.amount / 100);
+      return sum + (quoteData.value!.pricing.subtotal * charge.amount) / 100
     }
-    return sum + charge.amount;
-  }, 0);
-};
+    return sum + charge.amount
+  }, 0)
+}
 
 // Helper functions
 const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('zh-CN');
-};
+  return new Date(dateString).toLocaleDateString('zh-CN')
+}
 
 const formatPrice = (price: number) => {
-  return price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-};
+  return price.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
 
 const getStatusText = (status: string) => {
   const statusMap = {
@@ -477,9 +473,9 @@ const getStatusText = (status: string) => {
     sent: '已发送',
     approved: '已确认',
     rejected: '已拒绝'
-  };
-  return statusMap[status] || '未知状态';
-};
+  }
+  return statusMap[status] || '未知状态'
+}
 
 const getCustomerTypeText = (type: string) => {
   const typeMap = {
@@ -487,9 +483,9 @@ const getCustomerTypeText = (type: string) => {
     company: '企业客户',
     dealer: '经销商',
     club: '俱乐部'
-  };
-  return typeMap[type] || '未知类型';
-};
+  }
+  return typeMap[type] || '未知类型'
+}
 
 const getPaymentTermsText = (terms: string) => {
   const termsMap = {
@@ -497,73 +493,72 @@ const getPaymentTermsText = (terms: string) => {
     '30days': '30天账期',
     '60days': '60天账期',
     cod: '货到付款'
-  };
-  return termsMap[terms] || '其他';
-};
+  }
+  return termsMap[terms] || '其他'
+}
 
 // Action handlers
 const editQuote = () => {
-  uni.navigateBack();
-};
+  uni.navigateBack()
+}
 
 const printQuote = () => {
   // #ifdef H5
-  window.print();
+  window.print()
   // #endif
-  
+
   // #ifndef H5
   uni.showToast({
     title: '请使用浏览器打开进行打印',
     icon: 'none'
-  });
+  })
   // #endif
-};
+}
 
 const saveQuote = async () => {
   try {
-    saving.value = true;
-    
+    saving.value = true
+
     // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise(resolve => setTimeout(resolve, 1000))
+
     uni.showToast({
       title: '报价单保存成功',
       icon: 'success'
-    });
-    
+    })
+
     // Navigate to quote list or home
     setTimeout(() => {
       uni.navigateTo({
         url: '/pages/sales/history/index'
-      });
-    }, 1500);
-    
+      })
+    }, 1500)
   } catch (err) {
     uni.showToast({
       title: '保存失败，请重试',
       icon: 'none'
-    });
+    })
   } finally {
-    saving.value = false;
+    saving.value = false
   }
-};
+}
 
 const sendQuote = () => {
   uni.showActionSheet({
     itemList: ['微信发送', '邮件发送', '短信发送', '复制链接'],
-    success: (res) => {
-      const actions = ['微信', '邮件', '短信', '链接'];
+    success: res => {
+      const actions = ['微信', '邮件', '短信', '链接']
       uni.showToast({
         title: `通过${actions[res.tapIndex]}发送`,
         icon: 'success'
-      });
+      })
     }
-  });
-};
+  })
+}
 
 const handleLogoError = () => {
-  console.warn('Company logo failed to load');
-};
+  console.warn('Company logo failed to load')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -596,7 +591,9 @@ const handleLogoError = () => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-text,
@@ -701,22 +698,22 @@ const handleLogoError = () => {
   font-weight: $font-weight-medium;
   text-align: center;
   margin-top: $spacing-xs;
-  
+
   &.status-draft {
     background-color: $warning-bg;
     color: $warning-color;
   }
-  
+
   &.status-sent {
     background-color: $info-bg;
     color: $info-color;
   }
-  
+
   &.status-approved {
     background-color: $success-bg;
     color: $success-color;
   }
-  
+
   &.status-rejected {
     background-color: $danger-bg;
     color: $danger-color;
@@ -805,7 +802,7 @@ const handleLogoError = () => {
   font-weight: $font-weight-semibold;
   color: $text-color;
   text-align: center;
-  
+
   &.product-name {
     text-align: left;
   }
@@ -817,11 +814,11 @@ const handleLogoError = () => {
   padding: $spacing-base $spacing-sm;
   gap: $spacing-base;
   border-bottom: 1px solid $border-color-lighter;
-  
+
   &:last-child {
     border-bottom: none;
   }
-  
+
   &:nth-child(even) {
     background-color: rgba(0, 0, 0, 0.02);
   }
@@ -832,7 +829,7 @@ const handleLogoError = () => {
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  
+
   &.product-name {
     text-align: left;
   }
@@ -893,24 +890,24 @@ const handleLogoError = () => {
 .summary-row {
   @include flex-between;
   padding: $spacing-sm 0;
-  
+
   &.discount-row {
     .summary-value {
       color: $success-color;
     }
   }
-  
+
   &.subtotal-row {
     padding-top: $spacing-base;
     border-top: 1px solid $border-color-lighter;
     margin-top: $spacing-xs;
   }
-  
+
   &.total-row {
     padding: $spacing-base 0;
     border-top: 2px solid $primary-color;
     margin-top: $spacing-base;
-    
+
     .summary-label,
     .summary-value {
       font-size: $font-size-large;
@@ -928,11 +925,11 @@ const handleLogoError = () => {
   font-size: $font-size-base;
   font-weight: $font-weight-semibold;
   color: $text-color;
-  
+
   &.discount-value {
     color: $success-color;
   }
-  
+
   &.total-value {
     color: $danger-color;
   }
@@ -961,7 +958,7 @@ const handleLogoError = () => {
   align-items: flex-start;
   gap: $spacing-base;
   margin-bottom: $spacing-base;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -1000,7 +997,7 @@ const handleLogoError = () => {
   color: $text-color-secondary;
   line-height: 1.6;
   margin-bottom: $spacing-sm;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -1071,7 +1068,7 @@ const handleLogoError = () => {
   display: flex;
   gap: $spacing-sm;
   margin-bottom: $spacing-sm;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -1083,25 +1080,25 @@ const handleLogoError = () => {
     background-color: white;
     padding-bottom: 0;
   }
-  
+
   .quote-document {
     margin: 0;
     box-shadow: none;
     border-radius: 0;
   }
-  
+
   .quote-actions {
     display: none;
   }
-  
+
   .document-header {
     page-break-after: avoid;
   }
-  
+
   .products-section {
     page-break-inside: avoid;
   }
-  
+
   .summary-section {
     page-break-before: avoid;
   }
@@ -1113,28 +1110,28 @@ const handleLogoError = () => {
     flex-direction: column;
     gap: $spacing-base;
   }
-  
+
   .quote-info {
     text-align: left;
   }
-  
+
   .table-header,
   .table-row {
     grid-template-columns: 1fr;
     gap: $spacing-sm;
   }
-  
+
   .header-cell,
   .table-cell {
     text-align: left;
     border-bottom: 1px solid $border-color-lighter;
     padding-bottom: $spacing-xs;
-    
+
     &:last-child {
       border-bottom: none;
     }
   }
-  
+
   .table-cell {
     &::before {
       content: attr(data-label);
@@ -1144,7 +1141,7 @@ const handleLogoError = () => {
       margin-bottom: 4rpx;
     }
   }
-  
+
   .signature-section {
     flex-direction: column;
     gap: $spacing-lg;

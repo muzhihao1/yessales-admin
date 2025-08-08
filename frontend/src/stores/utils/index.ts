@@ -1,6 +1,6 @@
 /**
  * Store Utilities Index
- * 
+ *
  * Centralized export for all store utilities and helper functions.
  */
 
@@ -14,32 +14,15 @@ export * from './validation'
 export * from './debug'
 
 // Re-export commonly used types and interfaces
-export type {
-  StoreError,
-  ErrorCategory,
-  ErrorSeverity,
-  ErrorHandlerConfig
-} from './error-handler'
+export type { StoreError, ErrorCategory, ErrorSeverity, ErrorHandlerConfig } from './error-handler'
 
-export type {
-  LoadingOperation,
-  LoadingConfig
-} from './loading-state'
+export type { LoadingOperation, LoadingConfig } from './loading-state'
 
-export type {
-  CacheEntry,
-  CacheConfig,
-  CacheStats
-} from './cache-manager'
+export type { CacheEntry, CacheConfig, CacheStats } from './cache-manager'
 
-export type {
-  OptimisticOperation,
-  OptimisticConfig
-} from './optimistic-updates'
+export type { OptimisticOperation, OptimisticConfig } from './optimistic-updates'
 
-export type {
-  PersistenceConfig
-} from './persistence'
+export type { PersistenceConfig } from './persistence'
 
 export type {
   ValidationSchema,
@@ -49,12 +32,7 @@ export type {
   FieldSchema
 } from './validation'
 
-export type {
-  ActionLogEntry,
-  StateSnapshot,
-  PerformanceMetrics,
-  DebugConfig
-} from './debug'
+export type { ActionLogEntry, StateSnapshot, PerformanceMetrics, DebugConfig } from './debug'
 
 // Utility function collections
 export { cachePatterns, globalCache } from './cache-manager'

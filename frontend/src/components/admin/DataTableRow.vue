@@ -1,9 +1,9 @@
 <template>
-  <view 
+  <view
     ref="rowRef"
-    class="data-table-row" 
+    class="data-table-row"
     :class="[
-      { 
+      {
         'row-selected': selected,
         'row-hover': !disabled,
         'row-disabled': disabled,
@@ -17,8 +17,8 @@
   >
     <!-- 选择框 -->
     <view v-if="selectable" class="row-cell row-selector" @click.stop>
-      <checkbox 
-        :checked="selected" 
+      <checkbox
+        :checked="selected"
         :disabled="disabled"
         @change="handleSelectionChange"
         :class="{ 'checkbox-touch': touchOptimized }"
@@ -38,65 +38,60 @@
       :style="{ width: column.width, flex: column.flex }"
     >
       <!-- 自定义单元格内容插槽 -->
-      <slot 
-        :name="`cell-${column.key}`" 
-        :item="item" 
-        :column="column" 
+      <slot
+        :name="`cell-${column.key}`"
+        :item="item"
+        :column="column"
         :value="getColumnValue(column.key)"
       >
         <!-- 默认单元格内容 -->
         <view class="cell-content">
           <!-- 状态标签 -->
-          <view 
-            v-if="isStatusColumn(column.key)" 
+          <view
+            v-if="isStatusColumn(column.key)"
             class="status-tag"
             :class="`status-${getStatusType(getColumnValue(column.key))}`"
           >
             {{ getStatusLabel(getColumnValue(column.key)) }}
           </view>
-          
+
           <!-- 图片显示 -->
-          <image 
-            v-else-if="isImageColumn(column.key)" 
+          <image
+            v-else-if="isImageColumn(column.key)"
             :src="getColumnValue(column.key)"
             class="cell-image"
             :class="{ 'image-placeholder': !getColumnValue(column.key) }"
             mode="aspectFit"
             @error="handleImageError"
           />
-          
+
           <!-- 价格显示 -->
-          <text 
-            v-else-if="isPriceColumn(column.key)"
-            class="cell-price"
-          >
+          <text v-else-if="isPriceColumn(column.key)" class="cell-price">
             ¥{{ formatPrice(getColumnValue(column.key)) }}
           </text>
-          
+
           <!-- 日期显示 -->
-          <text 
-            v-else-if="isDateColumn(column.key)"
-            class="cell-date"
-          >
+          <text v-else-if="isDateColumn(column.key)" class="cell-date">
             {{ formatDate(getColumnValue(column.key)) }}
           </text>
-          
+
           <!-- 长文本截断 -->
-          <text 
+          <text
             v-else-if="isLongTextColumn(column.key)"
             class="cell-long-text"
             :class="{ 'text-expanded': expandedTexts.has(column.key) }"
             @click.stop="toggleTextExpansion(column.key)"
           >
-            {{ expandedTexts.has(column.key) 
-              ? getColumnValue(column.key) 
-              : truncateText(getColumnValue(column.key), 50) 
+            {{
+              expandedTexts.has(column.key)
+                ? getColumnValue(column.key)
+                : truncateText(getColumnValue(column.key), 50)
             }}
             <text v-if="needsTruncation(column.key)" class="expand-toggle">
               {{ expandedTexts.has(column.key) ? '收起' : '展开' }}
             </text>
           </text>
-          
+
           <!-- 默认文本显示 -->
           <text v-else class="cell-text">
             {{ getColumnValue(column.key) || '-' }}
@@ -120,26 +115,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, inject, onMounted, onUnmounted } from 'vue'
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import ActionButtonGroup from './ActionButtonGroup.vue'
 import type { ActionItem } from './ActionButtonGroup.vue'
 
 /**
  * 增强数据表格行组件
- * 
+ *
  * 功能说明：
  * - 提供统一的表格行展示和交互体验
  * - 支持行选择、状态显示、操作按钮等功能
  * - 自动处理不同数据类型的格式化显示
  * - iPad和移动端触控优化
  * - 符合PRD的品牌视觉和交互要求
- * 
+ *
  * PRD要求对应：
  * - 状态标签颜色区分 (PRD Line 763, 839)
  * - 列表行悬停高亮 (PRD Line 737)
  * - iPad适配优化 (PRD Line 111, 179)
  * - 品牌视觉统一 (PRD Line 189, 261)
- * 
+ *
  * @author Terminal 3 (Admin Frontend Team)
  */
 
@@ -174,7 +169,7 @@ interface Props {
   actionButtonSize?: 'small' | 'medium' | 'large'
   /** 最大可见操作按钮数 */
   maxVisibleActions?: number
-  
+
   // 虚拟滚动支持
   /** 虚拟滚动索引 */
   virtualIndex?: number
@@ -212,10 +207,13 @@ const isVirtualMode = computed(() => props.virtualIndex !== undefined)
 // 虚拟滚动样式
 const virtualRowStyle = computed(() => {
   if (!isVirtualMode.value) return {}
-  
+
   return {
     height: props.virtualHeight ? `${props.virtualHeight}px` : 'auto',
-    transform: props.virtualIndex !== undefined ? `translateY(${props.virtualIndex * (props.virtualHeight || 60)}px)` : 'none',
+    transform:
+      props.virtualIndex !== undefined
+        ? `translateY(${props.virtualIndex * (props.virtualHeight || 60)}px)`
+        : 'none',
     position: 'absolute',
     top: 0,
     left: 0,
@@ -239,15 +237,28 @@ const isStatusColumn = (key: string) => {
 }
 
 const isImageColumn = (key: string) => {
-  return key.toLowerCase().includes('image') || key.toLowerCase().includes('avatar') || key.toLowerCase().includes('photo')
+  return (
+    key.toLowerCase().includes('image') ||
+    key.toLowerCase().includes('avatar') ||
+    key.toLowerCase().includes('photo')
+  )
 }
 
 const isPriceColumn = (key: string) => {
-  return key.toLowerCase().includes('price') || key.toLowerCase().includes('amount') || key.toLowerCase().includes('cost')
+  return (
+    key.toLowerCase().includes('price') ||
+    key.toLowerCase().includes('amount') ||
+    key.toLowerCase().includes('cost')
+  )
 }
 
 const isDateColumn = (key: string) => {
-  return key.toLowerCase().includes('time') || key.toLowerCase().includes('date') || key.toLowerCase().includes('created') || key.toLowerCase().includes('updated')
+  return (
+    key.toLowerCase().includes('time') ||
+    key.toLowerCase().includes('date') ||
+    key.toLowerCase().includes('created') ||
+    key.toLowerCase().includes('updated')
+  )
 }
 
 const isLongTextColumn = (key: string) => {
@@ -260,29 +271,29 @@ const getStatusType = (status: string) => {
   const statusMap: Record<string, string> = {
     // 报价状态
     pending: 'warning',
-    approved: 'success', 
+    approved: 'success',
     rejected: 'danger',
     draft: 'default',
-    
+
     // 用户状态
     active: 'success',
     inactive: 'default',
     disabled: 'danger',
-    
+
     // 产品状态
     available: 'success',
     unavailable: 'warning',
     discontinued: 'danger',
-    
+
     // 通用状态
     success: 'success',
     warning: 'warning',
     error: 'danger',
     info: 'info',
-    
+
     ...statusConfig
   }
-  
+
   return statusMap[status] || 'default'
 }
 
@@ -291,26 +302,26 @@ const getStatusLabel = (status: string) => {
     // 报价状态
     pending: '待处理',
     approved: '已通过',
-    rejected: '已拒绝', 
+    rejected: '已拒绝',
     draft: '草稿',
-    
+
     // 用户状态
     active: '启用',
     inactive: '未激活',
     disabled: '禁用',
-    
+
     // 产品状态
     available: '可用',
     unavailable: '不可用',
     discontinued: '停产',
-    
+
     // 通用状态
     success: '成功',
     warning: '警告',
     error: '错误',
     info: '信息'
   }
-  
+
   return labelMap[status] || status
 }
 
@@ -326,14 +337,14 @@ const formatDate = (date: string | Date) => {
   if (!date) return '-'
   const d = new Date(date)
   if (isNaN(d.getTime())) return date
-  
+
   // 简单的日期格式化
   const year = d.getFullYear()
   const month = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   const hour = String(d.getHours()).padStart(2, '0')
   const minute = String(d.getMinutes()).padStart(2, '0')
-  
+
   return `${year}-${month}-${day} ${hour}:${minute}`
 }
 
@@ -380,7 +391,7 @@ const handleImageError = (event: any) => {
 const observeHeight = () => {
   if (!isVirtualMode.value || !rowRef.value) return
 
-  const resizeObserver = new ResizeObserver((entries) => {
+  const resizeObserver = new ResizeObserver(entries => {
     for (const entry of entries) {
       const height = entry.contentRect.height
       if (height && props.item.id) {
@@ -390,7 +401,7 @@ const observeHeight = () => {
   })
 
   resizeObserver.observe(rowRef.value)
-  
+
   return () => {
     resizeObserver.disconnect()
   }
@@ -426,99 +437,99 @@ onUnmounted(() => {
     width: 100%;
     contain: layout style paint;
     will-change: transform;
-    
+
     // 优化渲染性能
     backface-visibility: hidden;
     transform-style: preserve-3d;
   }
-  
+
   &.row-hover {
     cursor: pointer;
-    
+
     &:hover {
       background: var(--color-grey-25);
       transform: translateY(-1px);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     }
   }
-  
+
   &.row-selected {
     background: rgba(var(--color-primary-rgb), 0.05);
     border-left: 3px solid var(--color-primary);
   }
-  
+
   &.row-disabled {
     opacity: 0.6;
     cursor: not-allowed;
     background: var(--color-grey-50);
   }
-  
+
   // 尺寸变体
   &.size-small {
     min-height: 40px;
     padding: 0 8px;
   }
-  
+
   &.size-large {
     min-height: 56px;
     padding: 0 16px;
   }
-  
+
   // 触控优化
   &.touch-optimized {
     min-height: 52px;
     padding: 0 16px;
-    
+
     &.size-small {
       min-height: 48px;
     }
-    
+
     &.size-large {
       min-height: 60px;
     }
   }
-  
+
   .row-cell {
     display: flex;
     align-items: center;
     padding: 8px;
     min-height: 32px;
-    
+
     &.row-selector {
       flex: none;
       width: 48px;
       justify-content: center;
-      
+
       checkbox {
         transform: scale(1.1);
-        
+
         &.checkbox-touch {
           transform: scale(1.3);
         }
       }
     }
-    
+
     &.row-actions {
       flex: none;
       width: auto;
       justify-content: flex-end;
       min-width: 120px;
     }
-    
+
     &.align-center {
       justify-content: center;
     }
-    
+
     &.align-right {
       justify-content: flex-end;
     }
-    
+
     .cell-content {
       width: 100%;
       display: flex;
       align-items: center;
     }
-    
+
     // 状态标签
     .status-tag {
       display: inline-flex;
@@ -528,38 +539,38 @@ onUnmounted(() => {
       font-size: 12px;
       font-weight: 500;
       white-space: nowrap;
-      
+
       &.status-success {
         color: var(--color-success);
         background: rgba(var(--color-success-rgb), 0.1);
         border: 1px solid rgba(var(--color-success-rgb), 0.2);
       }
-      
+
       &.status-warning {
         color: var(--color-warning);
         background: rgba(var(--color-warning-rgb), 0.1);
         border: 1px solid rgba(var(--color-warning-rgb), 0.2);
       }
-      
+
       &.status-danger {
         color: var(--color-error);
         background: rgba(var(--color-error-rgb), 0.1);
         border: 1px solid rgba(var(--color-error-rgb), 0.2);
       }
-      
+
       &.status-info {
         color: var(--color-primary);
         background: rgba(var(--color-primary-rgb), 0.1);
         border: 1px solid rgba(var(--color-primary-rgb), 0.2);
       }
-      
+
       &.status-default {
         color: var(--text-color-secondary);
         background: var(--color-grey-100);
         border: 1px solid var(--border-color-light);
       }
     }
-    
+
     // 图片显示
     .cell-image {
       width: 32px;
@@ -567,48 +578,48 @@ onUnmounted(() => {
       border-radius: 4px;
       border: 1px solid var(--border-color-light);
       object-fit: cover;
-      
+
       &.image-placeholder {
         background: var(--color-grey-100);
         color: var(--text-color-tertiary);
       }
     }
-    
+
     // 价格显示
     .cell-price {
       font-weight: 500;
       color: var(--color-primary);
       font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
     }
-    
+
     // 日期显示
     .cell-date {
       color: var(--text-color-secondary);
       font-size: 13px;
       font-family: 'SF Mono', 'Monaco', 'Menlo', monospace;
     }
-    
+
     // 长文本
     .cell-long-text {
       color: var(--text-color-primary);
       cursor: pointer;
-      
+
       .expand-toggle {
         color: var(--color-primary);
         font-size: 12px;
         margin-left: 4px;
-        
+
         &:hover {
           text-decoration: underline;
         }
       }
-      
+
       &.text-expanded {
         white-space: pre-wrap;
         word-break: break-all;
       }
     }
-    
+
     // 默认文本
     .cell-text {
       color: var(--text-color-primary);
@@ -623,28 +634,28 @@ onUnmounted(() => {
 @media (max-width: 768px) {
   .data-table-row {
     padding: 0 8px;
-    
+
     .row-cell {
       padding: 4px;
-      
+
       // 移动端隐藏部分列
-      &:nth-child(n+4):not(.row-actions) {
+      &:nth-child(n + 4):not(.row-actions) {
         display: none;
       }
-      
+
       &.row-actions {
         min-width: 80px;
       }
-      
+
       .cell-image {
         width: 28px;
         height: 28px;
       }
-      
+
       .cell-text {
         font-size: 13px;
       }
-      
+
       .status-tag {
         font-size: 11px;
         padding: 3px 6px;
@@ -657,7 +668,7 @@ onUnmounted(() => {
   .data-table-row {
     .row-cell {
       // 更小屏幕只显示前两列和操作
-      &:nth-child(n+3):not(.row-actions) {
+      &:nth-child(n + 3):not(.row-actions) {
         display: none;
       }
     }
@@ -670,7 +681,7 @@ onUnmounted(() => {
     &.touch-optimized {
       .row-cell {
         padding: 10px;
-        
+
         .cell-image {
           width: 36px;
           height: 36px;

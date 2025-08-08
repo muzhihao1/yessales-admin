@@ -1,4 +1,4 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient, createClient } from '@supabase/supabase-js'
 
 /**
  * API 配置接口
@@ -23,17 +23,17 @@ const getApiConfig = (): ApiConfig => {
     retryAttempts: parseInt(import.meta.env.VITE_API_RETRY_ATTEMPTS || '3'),
     retryDelay: parseInt(import.meta.env.VITE_API_RETRY_DELAY || '1000'),
     enableCache: import.meta.env.VITE_ENABLE_API_CACHE !== 'false'
-  };
-};
+  }
+}
 
-export const apiConfig = getApiConfig();
+export const apiConfig = getApiConfig()
 
 /**
  * 创建增强的 Supabase 客户端
  */
 export const supabase: SupabaseClient = createClient(
-  apiConfig.supabaseUrl, 
-  apiConfig.supabaseAnonKey, 
+  apiConfig.supabaseUrl,
+  apiConfig.supabaseAnonKey,
   {
     auth: {
       autoRefreshToken: true,
@@ -41,15 +41,15 @@ export const supabase: SupabaseClient = createClient(
       detectSessionInUrl: false,
       storage: {
         getItem: (key: string) => {
-          return uni.getStorageSync(key);
+          return uni.getStorageSync(key)
         },
         setItem: (key: string, value: string) => {
-          uni.setStorageSync(key, value);
+          uni.setStorageSync(key, value)
         },
         removeItem: (key: string) => {
-          uni.removeStorageSync(key);
-        },
-      },
+          uni.removeStorageSync(key)
+        }
+      }
     },
     // 全局配置
     global: {
@@ -59,27 +59,27 @@ export const supabase: SupabaseClient = createClient(
       }
     }
   }
-);
+)
 
 /**
  * 验证 API 配置
  */
 export const validateApiConfig = (): boolean => {
   if (!apiConfig.supabaseUrl) {
-    console.error('❌ VITE_SUPABASE_URL 环境变量未配置');
-    return false;
+    console.error('❌ VITE_SUPABASE_URL 环境变量未配置')
+    return false
   }
-  
-  if (!apiConfig.supabaseAnonKey) {
-    console.error('❌ VITE_SUPABASE_ANON_KEY 环境变量未配置');
-    return false;
-  }
-  
-  console.log('✅ API 配置验证通过');
-  return true;
-};
 
-export const API_TIMEOUT = apiConfig.timeout;
+  if (!apiConfig.supabaseAnonKey) {
+    console.error('❌ VITE_SUPABASE_ANON_KEY 环境变量未配置')
+    return false
+  }
+
+  console.log('✅ API 配置验证通过')
+  return true
+}
+
+export const API_TIMEOUT = apiConfig.timeout
 
 export const ERROR_CODES = {
   UNAUTHORIZED: 'UNAUTHORIZED',
@@ -87,8 +87,8 @@ export const ERROR_CODES = {
   NOT_FOUND: 'NOT_FOUND',
   INVALID_INPUT: 'INVALID_INPUT',
   DUPLICATE_ENTRY: 'DUPLICATE_ENTRY',
-  SERVER_ERROR: 'SERVER_ERROR',
-} as const;
+  SERVER_ERROR: 'SERVER_ERROR'
+} as const
 
 export const HTTP_STATUS = {
   OK: 200,
@@ -98,5 +98,5 @@ export const HTTP_STATUS = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
-  SERVER_ERROR: 500,
-} as const;
+  SERVER_ERROR: 500
+} as const
