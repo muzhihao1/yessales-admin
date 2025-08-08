@@ -22,6 +22,75 @@
             color: #666;
         }
     </style>
+    <!-- UniApp Compatibility Layer - Initialize before any modules -->
+    <script>
+    (function() {
+        if (typeof window !== 'undefined' && !window.uni) {
+            // Early initialization of UniApp compatibility layer
+            window.uni = {
+                // Storage methods
+                getStorageSync: function(key) {
+                    try {
+                        var item = localStorage.getItem(key);
+                        if (item === null) return undefined;
+                        try {
+                            return JSON.parse(item);
+                        } catch (e) {
+                            return item;
+                        }
+                    } catch (error) {
+                        console.warn('Failed to get storage item:', key, error);
+                        return undefined;
+                    }
+                },
+                setStorageSync: function(key, data) {
+                    try {
+                        var value = typeof data === 'string' ? data : JSON.stringify(data);
+                        localStorage.setItem(key, value);
+                    } catch (error) {
+                        console.warn('Failed to set storage item:', key, error);
+                        throw error;
+                    }
+                },
+                removeStorageSync: function(key) {
+                    try {
+                        localStorage.removeItem(key);
+                    } catch (error) {
+                        console.warn('Failed to remove storage item:', key, error);
+                        throw error;
+                    }
+                },
+                
+                // Basic UI methods (will be enhanced by full compatibility layer)
+                showModal: function(options) {
+                    var result = confirm(
+                        (options.title && options.content) 
+                            ? options.title + '\n\n' + options.content
+                            : (options.content || options.title || '确认操作?')
+                    );
+                    if (options.success) {
+                        options.success({ confirm: result, cancel: !result });
+                    }
+                },
+                showToast: function(options) {
+                    console.log('[Toast]', options.title);
+                },
+                navigateTo: function(options) {
+                    console.log('[Navigate]', options.url);
+                },
+                navigateBack: function(options) {
+                    if (window.history && window.history.length > 1) {
+                        window.history.back();
+                    }
+                },
+                setNavigationBarTitle: function(options) {
+                    document.title = options.title;
+                }
+            };
+            console.log('Early UniApp compatibility layer initialized');
+        }
+    })();
+    </script>
 </head>
 <body>
     <div id="app">

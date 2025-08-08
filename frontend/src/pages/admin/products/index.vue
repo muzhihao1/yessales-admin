@@ -239,7 +239,7 @@ import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
 import EnhancedConfirmationDialog from '@/components/admin/EnhancedConfirmationDialog.vue'
 import OperationProgressModal from '@/components/admin/OperationProgressModal.vue'
 import { useTableEnhancements } from '@/composables/useTableEnhancements'
-import { commonActions, commonBatchOperations } from '@/components/admin/ActionButtonGroup.vue'
+import { commonActions, commonBatchOperations } from '@/utils/common-actions'
 import type { TableColumn } from '@/components/admin/DataTableRow.vue'
 import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 

@@ -576,7 +576,7 @@ const handleLogoError = () => {
 .error-container {
   @include flex-center;
   flex-direction: column;
-  padding: $spacing-xxl 0;
+  padding: $spacing-xl 0;
   margin-top: calc(44px + var(--status-bar-height, 0) + #{$spacing-base});
 }
 
@@ -606,9 +606,9 @@ const handleLogoError = () => {
 // Quote Document
 .quote-document {
   background-color: $bg-color-white;
-  border-radius: $border-radius-large;
+  border-radius: $border-radius-lg;
   margin: calc(44px + var(--status-bar-height, 0) + #{$spacing-base}) $spacing-base $spacing-base;
-  box-shadow: $box-shadow-large;
+  box-shadow: $box-shadow-light;
   overflow: hidden;
 }
 

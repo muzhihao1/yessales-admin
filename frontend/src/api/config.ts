@@ -29,6 +29,76 @@ const getApiConfig = (): ApiConfig => {
 export const apiConfig = getApiConfig()
 
 /**
+ * 智能存储适配器 - 运行时检测UniApp环境
+ * 支持UniApp和标准Web环境的存储API
+ */
+const createStorageAdapter = () => {
+  return {
+    getItem: (key: string) => {
+      try {
+        // 优先使用UniApp API（如果可用）
+        if (typeof window !== 'undefined' && window.uni && window.uni.getStorageSync) {
+          const result = window.uni.getStorageSync(key)
+          return result || null
+        }
+        
+        // 回退到标准localStorage
+        if (typeof window !== 'undefined' && window.localStorage) {
+          return localStorage.getItem(key)
+        }
+        
+        return null
+      } catch (error) {
+        console.warn('[Storage] Failed to get item:', key, error)
+        return null
+      }
+    },
+    
+    setItem: (key: string, value: string) => {
+      try {
+        // 优先使用UniApp API（如果可用）
+        if (typeof window !== 'undefined' && window.uni && window.uni.setStorageSync) {
+          window.uni.setStorageSync(key, value)
+          return
+        }
+        
+        // 回退到标准localStorage
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem(key, value)
+          return
+        }
+        
+        console.warn('[Storage] No storage method available')
+      } catch (error) {
+        console.warn('[Storage] Failed to set item:', key, error)
+        throw error
+      }
+    },
+    
+    removeItem: (key: string) => {
+      try {
+        // 优先使用UniApp API（如果可用）
+        if (typeof window !== 'undefined' && window.uni && window.uni.removeStorageSync) {
+          window.uni.removeStorageSync(key)
+          return
+        }
+        
+        // 回退到标准localStorage
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.removeItem(key)
+          return
+        }
+        
+        console.warn('[Storage] No storage method available')
+      } catch (error) {
+        console.warn('[Storage] Failed to remove item:', key, error)
+        throw error
+      }
+    }
+  }
+}
+
+/**
  * 创建增强的 Supabase 客户端
  */
 export const supabase: SupabaseClient = createClient(
@@ -39,17 +109,7 @@ export const supabase: SupabaseClient = createClient(
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: false,
-      storage: {
-        getItem: (key: string) => {
-          return uni.getStorageSync(key)
-        },
-        setItem: (key: string, value: string) => {
-          uni.setStorageSync(key, value)
-        },
-        removeItem: (key: string) => {
-          uni.removeStorageSync(key)
-        }
-      }
+      storage: createStorageAdapter()
     },
     // 全局配置
     global: {

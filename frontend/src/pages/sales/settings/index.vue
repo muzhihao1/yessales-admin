@@ -620,7 +620,7 @@ onMounted(() => {
 
 .settings-page {
   min-height: 100vh;
-  background: $color-bg-light;
+  background: $bg-color;
 }
 
 .settings-container {
@@ -638,14 +638,14 @@ onMounted(() => {
     align-items: center;
     gap: $spacing-md;
     padding: $spacing-md $spacing-lg;
-    background: $color-bg-white;
+    background: $bg-color-white;
     border-radius: $border-radius-lg;
     border: 2px solid transparent;
     cursor: pointer;
     transition: all $animation-duration-base $ease-out-smooth;
     position: relative;
     @include button-press-feedback;
-    @include ripple-effect(rgba($color-primary, 0.2));
+    @include ripple-effect(rgba($primary-color, 0.2));
 
     &:hover {
       transform: translateY(-2px);
@@ -653,11 +653,11 @@ onMounted(() => {
     }
 
     &.active {
-      border-color: $color-primary;
-      background: rgba($color-primary, 0.05);
+      border-color: $primary-color;
+      background: rgba($primary-color, 0.05);
 
       .card-title {
-        color: $color-primary;
+        color: $primary-color;
         font-weight: 600;
       }
     }
@@ -669,24 +669,24 @@ onMounted(() => {
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba($color-primary, 0.1);
-      border-radius: $border-radius-md;
+      background: rgba($primary-color, 0.1);
+      border-radius: $border-radius-base;
     }
 
     .card-content {
       flex: 1;
 
       .card-title {
-        font-size: $font-size-md;
+        font-size: $font-size-medium;
         font-weight: 500;
-        color: $color-text-primary;
+        color: $text-color;
         display: block;
         margin-bottom: $spacing-xs;
       }
 
       .card-desc {
-        font-size: $font-size-sm;
-        color: $color-text-secondary;
+        font-size: $font-size-small;
+        color: $text-color-secondary;
         line-height: 1.4;
       }
     }
@@ -697,7 +697,7 @@ onMounted(() => {
       right: $spacing-sm;
 
       .indicator-dot {
-        color: $color-warning;
+        color: $warning-color;
         font-size: 12px;
       }
     }
@@ -711,31 +711,31 @@ onMounted(() => {
     padding: $spacing-xl;
 
     .loading-text {
-      font-size: $font-size-md;
-      color: $color-text-secondary;
+      font-size: $font-size-medium;
+      color: $text-color-secondary;
     }
   }
 
   .settings-section {
-    background: $color-bg-white;
+    background: $bg-color-white;
     border-radius: $border-radius-lg;
     overflow: hidden;
 
     .section-header {
       padding: $spacing-lg;
-      border-bottom: 1px solid $color-border;
+      border-bottom: 1px solid $border-color;
 
       .section-title {
-        font-size: $font-size-lg;
+        font-size: $font-size-large;
         font-weight: 600;
-        color: $color-text-primary;
+        color: $text-color;
         display: block;
         margin-bottom: $spacing-xs;
       }
 
       .section-desc {
-        font-size: $font-size-sm;
-        color: $color-text-secondary;
+        font-size: $font-size-small;
+        color: $text-color-secondary;
       }
     }
 
@@ -745,7 +745,7 @@ onMounted(() => {
         align-items: center;
         justify-content: space-between;
         padding: $spacing-lg;
-        border-bottom: 1px solid $color-border;
+        border-bottom: 1px solid $border-color;
 
         &:last-child {
           border-bottom: none;
@@ -756,16 +756,16 @@ onMounted(() => {
           margin-right: $spacing-md;
 
           .label-text {
-            font-size: $font-size-md;
+            font-size: $font-size-medium;
             font-weight: 500;
-            color: $color-text-primary;
+            color: $text-color;
             display: block;
             margin-bottom: $spacing-xs;
           }
 
           .label-desc {
-            font-size: $font-size-sm;
-            color: $color-text-secondary;
+            font-size: $font-size-small;
+            color: $text-color-secondary;
             line-height: 1.4;
           }
         }
@@ -778,7 +778,7 @@ onMounted(() => {
         align-items: center;
         gap: $spacing-md;
         padding: $spacing-lg;
-        border-bottom: 1px solid $color-border;
+        border-bottom: 1px solid $border-color;
         cursor: pointer;
         transition: background-color 0.3s ease;
 
@@ -787,7 +787,7 @@ onMounted(() => {
         }
 
         &:hover {
-          background: rgba($color-primary, 0.03);
+          background: rgba($primary-color, 0.03);
         }
 
         .help-icon {
@@ -797,7 +797,7 @@ onMounted(() => {
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba($color-primary, 0.1);
+          background: rgba($primary-color, 0.1);
           border-radius: $border-radius-sm;
         }
 
@@ -805,22 +805,22 @@ onMounted(() => {
           flex: 1;
 
           .help-title {
-            font-size: $font-size-md;
+            font-size: $font-size-medium;
             font-weight: 500;
-            color: $color-text-primary;
+            color: $text-color;
             display: block;
             margin-bottom: $spacing-xs;
           }
 
           .help-desc {
-            font-size: $font-size-sm;
-            color: $color-text-secondary;
+            font-size: $font-size-small;
+            color: $text-color-secondary;
           }
         }
 
         .help-arrow {
           font-size: 20px;
-          color: $color-text-tertiary;
+          color: $text-color-placeholder;
         }
       }
     }
@@ -831,24 +831,24 @@ onMounted(() => {
         justify-content: space-between;
         align-items: center;
         padding: $spacing-lg;
-        border-bottom: 1px solid $color-border;
+        border-bottom: 1px solid $border-color;
 
         &:last-child {
           border-bottom: none;
         }
 
         .info-label {
-          font-size: $font-size-md;
-          color: $color-text-primary;
+          font-size: $font-size-medium;
+          color: $text-color;
           font-weight: 500;
         }
 
         .info-value {
-          font-size: $font-size-sm;
-          color: $color-text-secondary;
+          font-size: $font-size-small;
+          color: $text-color-secondary;
 
           &.link {
-            color: $color-primary;
+            color: $primary-color;
             cursor: pointer;
           }
         }
@@ -866,22 +866,22 @@ onMounted(() => {
       grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
       gap: $spacing-md;
       padding: $spacing-lg;
-      border-bottom: 1px solid $color-border;
+      border-bottom: 1px solid $border-color;
 
       .stat-item {
         text-align: center;
 
         .stat-number {
-          font-size: $font-size-xl;
+          font-size: $font-size-extra-large;
           font-weight: 600;
-          color: $color-primary;
+          color: $primary-color;
           display: block;
           margin-bottom: $spacing-xs;
         }
 
         .stat-label {
-          font-size: $font-size-sm;
-          color: $color-text-secondary;
+          font-size: $font-size-small;
+          color: $text-color-secondary;
         }
       }
     }
@@ -899,8 +899,8 @@ onMounted(() => {
   bottom: 0;
   left: 0;
   right: 0;
-  background: $color-bg-white;
-  border-top: 1px solid $color-border;
+  background: $bg-color-white;
+  border-top: 1px solid $border-color;
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
 
@@ -911,8 +911,8 @@ onMounted(() => {
     padding: $spacing-md $spacing-lg;
 
     .save-text {
-      font-size: $font-size-sm;
-      color: $color-warning;
+      font-size: $font-size-small;
+      color: $warning-color;
       font-weight: 500;
     }
 

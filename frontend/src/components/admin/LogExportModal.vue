@@ -511,7 +511,7 @@ watch([startDate, endDate], () => {
   .form-section {
     margin-bottom: $spacing-lg;
     padding-bottom: $spacing-md;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid $border-color;
 
     &:last-child {
       border-bottom: none;
@@ -521,9 +521,9 @@ watch([startDate, endDate], () => {
 
     .section-title {
       display: block;
-      font-size: $font-size-lg;
+      font-size: $font-size-large;
       font-weight: 600;
-      color: $color-text-primary;
+      color: $text-color;
       margin-bottom: $spacing-md;
     }
   }
@@ -539,19 +539,19 @@ watch([startDate, endDate], () => {
     align-items: center;
     gap: $spacing-md;
     padding: $spacing-md;
-    border: 1px solid $color-border;
-    border-radius: $border-radius-md;
+    border: 1px solid $border-color;
+    border-radius: $border-radius-lg;
     cursor: pointer;
     transition: all 0.3s ease;
 
     &:hover {
-      border-color: $color-primary;
-      background: rgba($color-primary, 0.05);
+      border-color: $primary-color;
+      background: rgba($primary-color, 0.05);
     }
 
     &.active {
-      border-color: $color-primary;
-      background: rgba($color-primary, 0.1);
+      border-color: $primary-color;
+      background: rgba($primary-color, 0.1);
     }
 
     .format-radio {
@@ -566,14 +566,14 @@ watch([startDate, endDate], () => {
       gap: $spacing-xs;
 
       .format-name {
-        font-size: $font-size-md;
+        font-size: $font-size-medium;
         font-weight: 500;
-        color: $color-text-primary;
+        color: $text-color;
       }
 
       .format-desc {
-        font-size: $font-size-sm;
-        color: $color-text-secondary;
+        font-size: $font-size-small;
+        color: $text-color-secondary;
       }
     }
 
@@ -592,22 +592,22 @@ watch([startDate, endDate], () => {
 
     .quick-range {
       padding: 6px 12px;
-      border: 1px solid $color-border;
+      border: 1px solid $border-color;
       border-radius: $border-radius-sm;
-      background: $color-bg-white;
-      color: $color-text-primary;
-      font-size: $font-size-sm;
+      background: $bg-color-white;
+      color: $text-color;
+      font-size: $font-size-small;
       cursor: pointer;
       transition: all 0.3s ease;
 
       &:hover {
-        border-color: $color-primary;
+        border-color: $primary-color;
       }
 
       &.active {
-        background: $color-primary;
+        background: $primary-color;
         color: white;
-        border-color: $color-primary;
+        border-color: $primary-color;
       }
     }
   }
@@ -624,22 +624,22 @@ watch([startDate, endDate], () => {
         gap: $spacing-xs;
 
         .input-label {
-          font-size: $font-size-sm;
+          font-size: $font-size-small;
           font-weight: 500;
-          color: $color-text-secondary;
+          color: $text-color-secondary;
         }
 
         .date-picker {
           padding: 8px 12px;
-          border: 1px solid $color-border;
+          border: 1px solid $border-color;
           border-radius: $border-radius-sm;
-          background: $color-bg-white;
-          font-size: $font-size-sm;
-          color: $color-text-primary;
+          background: $bg-color-white;
+          font-size: $font-size-small;
+          color: $text-color;
           cursor: pointer;
 
           &:hover {
-            border-color: $color-primary;
+            border-color: $primary-color;
           }
         }
       }
@@ -656,9 +656,9 @@ watch([startDate, endDate], () => {
     .filter-group {
       .filter-label {
         display: block;
-        font-size: $font-size-sm;
+        font-size: $font-size-small;
         font-weight: 500;
-        color: $color-text-secondary;
+        color: $text-color-secondary;
         margin-bottom: $spacing-sm;
       }
 
@@ -691,8 +691,8 @@ watch([startDate, endDate], () => {
             }
 
             text {
-              font-size: $font-size-sm;
-              color: $color-text-primary;
+              font-size: $font-size-small;
+              color: $text-color;
             }
           }
         }
@@ -725,14 +725,14 @@ watch([startDate, endDate], () => {
       gap: $spacing-xs;
 
       .option-title {
-        font-size: $font-size-sm;
+        font-size: $font-size-small;
         font-weight: 500;
-        color: $color-text-primary;
+        color: $text-color;
       }
 
       .option-desc {
-        font-size: $font-size-xs;
-        color: $color-text-secondary;
+        font-size: $font-size-extra-small;
+        color: $text-color-secondary;
       }
     }
   }
@@ -743,27 +743,27 @@ watch([startDate, endDate], () => {
     gap: $spacing-xs;
 
     .input-label {
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       font-weight: 500;
-      color: $color-text-secondary;
+      color: $text-color-secondary;
     }
 
     .number-input {
       padding: 8px 12px;
-      border: 1px solid $color-border;
+      border: 1px solid $border-color;
       border-radius: $border-radius-sm;
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       width: 200px;
 
       &:focus {
-        border-color: $color-primary;
+        border-color: $primary-color;
         outline: none;
       }
     }
 
     .input-hint {
-      font-size: $font-size-xs;
-      color: $color-text-placeholder;
+      font-size: $font-size-extra-small;
+      color: $text-color-placeholder;
     }
   }
 }
@@ -779,18 +779,18 @@ watch([startDate, endDate], () => {
     justify-content: space-between;
     align-items: center;
     padding: $spacing-sm;
-    background: $color-bg-light;
+    background: $bg-color;
     border-radius: $border-radius-sm;
 
     .preview-label {
-      font-size: $font-size-sm;
-      color: $color-text-secondary;
+      font-size: $font-size-small;
+      color: $text-color-secondary;
       font-weight: 500;
     }
 
     .preview-value {
-      font-size: $font-size-sm;
-      color: $color-text-primary;
+      font-size: $font-size-small;
+      color: $text-color;
       font-weight: 600;
     }
   }
@@ -799,9 +799,9 @@ watch([startDate, endDate], () => {
 .applied-filters {
   .filters-title {
     display: block;
-    font-size: $font-size-sm;
+    font-size: $font-size-small;
     font-weight: 500;
-    color: $color-text-secondary;
+    color: $text-color-secondary;
     margin-bottom: $spacing-xs;
   }
 
@@ -812,10 +812,10 @@ watch([startDate, endDate], () => {
 
     .filter-tag {
       padding: 4px 8px;
-      background: rgba($color-primary, 0.1);
-      color: $color-primary;
+      background: rgba($primary-color, 0.1);
+      color: $primary-color;
       border-radius: $border-radius-sm;
-      font-size: $font-size-xs;
+      font-size: $font-size-extra-small;
     }
   }
 }
@@ -830,7 +830,7 @@ watch([startDate, endDate], () => {
   .cancel-btn {
     padding: 8px 16px;
     border-radius: $border-radius-sm;
-    font-size: $font-size-sm;
+    font-size: $font-size-small;
     cursor: pointer;
     transition: all 0.3s ease;
 
@@ -841,32 +841,32 @@ watch([startDate, endDate], () => {
   }
 
   .preview-btn {
-    background: $color-bg-light;
-    color: $color-text-primary;
-    border: 1px solid $color-border;
+    background: $bg-color;
+    color: $text-color;
+    border: 1px solid $border-color;
 
     &:hover:not(:disabled) {
-      background: $color-bg-white;
+      background: $bg-color-white;
     }
   }
 
   .export-btn {
-    background: $color-primary;
+    background: $primary-color;
     color: white;
-    border: 1px solid $color-primary;
+    border: 1px solid $primary-color;
 
     &:hover:not(:disabled) {
-      background: darken($color-primary, 10%);
+      background: darken($primary-color, 10%);
     }
   }
 
   .cancel-btn {
-    background: $color-bg-white;
-    color: $color-text-secondary;
-    border: 1px solid $color-border;
+    background: $bg-color-white;
+    color: $text-color-secondary;
+    border: 1px solid $border-color;
 
     &:hover:not(:disabled) {
-      background: $color-bg-light;
+      background: $bg-color;
     }
   }
 }

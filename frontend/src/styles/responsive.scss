@@ -30,19 +30,27 @@
 
 // 预定义设备断点
 @mixin mobile-only {
-  @include media-max($breakpoint-md);
+  @include media-max($breakpoint-md) {
+    @content;
+  }
 }
 
 @mixin tablet-up {
-  @include media-min($breakpoint-lg);
+  @include media-min($breakpoint-lg) {
+    @content;
+  }
 }
 
 @mixin desktop-up {
-  @include media-min($breakpoint-xl);
+  @include media-min($breakpoint-xl) {
+    @content;
+  }
 }
 
 @mixin large-desktop-up {
-  @include media-min($breakpoint-2xl);
+  @include media-min($breakpoint-2xl) {
+    @content;
+  }
 }
 
 // 设备方向
@@ -263,6 +271,7 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    @content;
   }
 }
 

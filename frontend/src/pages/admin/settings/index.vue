@@ -729,24 +729,24 @@ onMounted(async () => {
   justify-content: space-between;
   align-items: flex-start;
   padding: $spacing-lg;
-  background: $color-bg-white;
-  border-bottom: 1px solid $color-border;
+  background: $bg-color-white;
+  border-bottom: 1px solid $border-color;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   .header-left {
     flex: 1;
 
     .page-title {
-      font-size: $font-size-xl;
+      font-size: $font-size-extra-large;
       font-weight: 600;
-      color: $color-text-primary;
+      color: $text-color;
       display: block;
       margin-bottom: $spacing-xs;
     }
 
     .page-subtitle {
-      font-size: $font-size-sm;
-      color: $color-text-secondary;
+      font-size: $font-size-small;
+      color: $text-color-secondary;
     }
   }
 
@@ -766,8 +766,8 @@ onMounted(async () => {
       align-items: center;
       gap: $spacing-xs;
       padding: 8px 16px;
-      border-radius: $border-radius-md;
-      font-size: $font-size-sm;
+      border-radius: $border-radius-base;
+      font-size: $font-size-small;
       cursor: pointer;
       transition: all 0.3s ease;
 
@@ -776,52 +776,52 @@ onMounted(async () => {
       }
 
       &.export {
-        background: $color-bg-light;
-        color: $color-text-primary;
-        border: 1px solid $color-border;
+        background: $bg-color;
+        color: $text-color;
+        border: 1px solid $border-color;
 
         &:hover {
-          background: $color-bg-white;
+          background: $bg-color-white;
         }
       }
 
       &.import {
-        background: $color-info;
+        background: $info-color;
         color: white;
-        border: 1px solid $color-info;
+        border: 1px solid $info-color;
 
         &:hover {
-          background: darken($color-info, 10%);
+          background: darken($info-color, 10%);
         }
       }
 
       &.reset {
-        background: $color-bg-light;
-        color: $color-text-secondary;
-        border: 1px solid $color-border;
+        background: $bg-color;
+        color: $text-color-secondary;
+        border: 1px solid $border-color;
 
         &:hover {
-          background: $color-warning;
+          background: $warning-color;
           color: white;
-          border-color: $color-warning;
+          border-color: $warning-color;
         }
       }
 
       &.save {
-        background: $color-success;
+        background: $success-color;
         color: white;
-        border: 1px solid $color-success;
+        border: 1px solid $success-color;
 
         &:hover {
-          background: darken($color-success, 10%);
+          background: darken($success-color, 10%);
         }
 
         &.primary {
-          background: $color-primary;
-          border-color: $color-primary;
+          background: $primary-color;
+          border-color: $primary-color;
 
           &:hover {
-            background: darken($color-primary, 10%);
+            background: darken($primary-color, 10%);
           }
         }
       }
@@ -848,18 +848,18 @@ onMounted(async () => {
 
 .settings-sidebar {
   width: 280px;
-  background: $color-bg-white;
-  border-right: 1px solid $color-border;
+  background: $bg-color-white;
+  border-right: 1px solid $border-color;
   overflow-y: auto;
 
   .sidebar-header {
     padding: $spacing-md;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid $border-color;
 
     .sidebar-title {
-      font-size: $font-size-md;
+      font-size: $font-size-medium;
       font-weight: 600;
-      color: $color-text-primary;
+      color: $text-color;
     }
   }
 
@@ -871,22 +871,22 @@ onMounted(async () => {
       align-items: center;
       gap: $spacing-sm;
       padding: $spacing-md;
-      border-radius: $border-radius-md;
+      border-radius: $border-radius-base;
       cursor: pointer;
       transition: all 0.3s ease;
       margin-bottom: $spacing-xs;
       position: relative;
 
       &:hover {
-        background: rgba($color-primary, 0.05);
+        background: rgba($primary-color, 0.05);
       }
 
       &.active {
-        background: rgba($color-primary, 0.1);
-        border-left: 3px solid $color-primary;
+        background: rgba($primary-color, 0.1);
+        border-left: 3px solid $primary-color;
 
         .category-title {
-          color: $color-primary;
+          color: $primary-color;
           font-weight: 600;
         }
       }
@@ -901,23 +901,23 @@ onMounted(async () => {
         flex: 1;
 
         .category-title {
-          font-size: $font-size-sm;
+          font-size: $font-size-small;
           font-weight: 500;
-          color: $color-text-primary;
+          color: $text-color;
           display: block;
           margin-bottom: 2px;
         }
 
         .category-desc {
-          font-size: $font-size-xs;
-          color: $color-text-secondary;
+          font-size: $font-size-extra-small;
+          color: $text-color-secondary;
           line-height: 1.3;
         }
       }
 
       .category-indicator {
         .indicator-dot {
-          color: $color-warning;
+          color: $warning-color;
           font-size: 12px;
         }
       }
@@ -928,7 +928,7 @@ onMounted(async () => {
 .settings-content {
   flex: 1;
   overflow-y: auto;
-  background: $color-bg-light;
+  background: $bg-color;
 
   .loading-container,
   .error-container {
@@ -940,17 +940,17 @@ onMounted(async () => {
 
     .loading-text,
     .error-text {
-      font-size: $font-size-md;
-      color: $color-text-secondary;
+      font-size: $font-size-medium;
+      color: $text-color-secondary;
       margin-bottom: $spacing-md;
     }
 
     .retry-btn {
       padding: 8px 16px;
-      background: $color-primary;
+      background: $primary-color;
       color: white;
       border: none;
-      border-radius: $border-radius-md;
+      border-radius: $border-radius-base;
       cursor: pointer;
     }
   }
@@ -965,8 +965,8 @@ onMounted(async () => {
       justify-content: space-between;
       align-items: center;
       padding: $spacing-lg;
-      background: $color-bg-white;
-      border-bottom: 1px solid $color-border;
+      background: $bg-color-white;
+      border-bottom: 1px solid $border-color;
 
       .category-info {
         display: flex;
@@ -986,15 +986,15 @@ onMounted(async () => {
           }
 
           .category-title {
-            font-size: $font-size-lg;
+            font-size: $font-size-large;
             font-weight: 600;
-            color: $color-text-primary;
+            color: $text-color;
             display: block;
           }
 
           .category-description {
-            font-size: $font-size-sm;
-            color: $color-text-secondary;
+            font-size: $font-size-small;
+            color: $text-color-secondary;
           }
         }
       }
@@ -1005,15 +1005,15 @@ onMounted(async () => {
           align-items: center;
           gap: $spacing-xs;
           padding: 8px 16px;
-          background: $color-bg-light;
-          color: $color-text-primary;
-          border: 1px solid $color-border;
-          border-radius: $border-radius-md;
-          font-size: $font-size-sm;
+          background: $bg-color;
+          color: $text-color;
+          border: 1px solid $border-color;
+          border-radius: $border-radius-base;
+          font-size: $font-size-small;
           cursor: pointer;
 
           &:hover {
-            background: $color-bg-white;
+            background: $bg-color-white;
           }
 
           .btn-icon {
@@ -1029,9 +1029,9 @@ onMounted(async () => {
       overflow-y: auto;
 
       .settings-group {
-        background: $color-bg-white;
+        background: $bg-color-white;
         border-radius: $border-radius-lg;
-        border: 1px solid $color-border;
+        border: 1px solid $border-color;
         overflow: hidden;
       }
     }
@@ -1041,18 +1041,18 @@ onMounted(async () => {
       justify-content: space-between;
       align-items: center;
       padding: $spacing-md $spacing-lg;
-      background: $color-bg-white;
-      border-top: 1px solid $color-border;
+      background: $bg-color-white;
+      border-top: 1px solid $border-color;
 
       .footer-info {
         .info-text {
-          font-size: $font-size-sm;
-          color: $color-text-secondary;
+          font-size: $font-size-small;
+          color: $text-color-secondary;
         }
 
         .unsaved-indicator {
-          font-size: $font-size-sm;
-          color: $color-warning;
+          font-size: $font-size-small;
+          color: $warning-color;
           font-weight: 500;
           margin-left: $spacing-md;
         }
@@ -1064,28 +1064,28 @@ onMounted(async () => {
 
         .footer-btn {
           padding: 8px 16px;
-          border-radius: $border-radius-md;
-          font-size: $font-size-sm;
+          border-radius: $border-radius-base;
+          font-size: $font-size-small;
           cursor: pointer;
           transition: all 0.3s ease;
 
           &.secondary {
-            background: $color-bg-light;
-            color: $color-text-secondary;
-            border: 1px solid $color-border;
+            background: $bg-color;
+            color: $text-color-secondary;
+            border: 1px solid $border-color;
 
             &:hover {
-              background: $color-bg-white;
+              background: $bg-color-white;
             }
           }
 
           &.primary {
-            background: $color-primary;
+            background: $primary-color;
             color: white;
-            border: 1px solid $color-primary;
+            border: 1px solid $primary-color;
 
             &:hover {
-              background: darken($color-primary, 10%);
+              background: darken($primary-color, 10%);
             }
           }
 

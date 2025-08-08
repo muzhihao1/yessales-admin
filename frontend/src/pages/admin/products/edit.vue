@@ -156,15 +156,16 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { onLoad } from '@dcloudio/uni-app'
+import { useRoute } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import type { Product } from '@/types/models'
 
 const productsStore = useProductsStore()
+const route = useRoute()
 
 // 页面参数
-const productId = ref<string>('')
+const productId = ref<string>(route.params.id as string || route.query.id as string || '')
 const isEditMode = computed(() => !!productId.value)
 
 // 表单数据
@@ -349,9 +350,8 @@ const handleBack = () => {
 }
 
 // 页面加载
-onLoad(options => {
-  if (options?.id) {
-    productId.value = options.id
+onMounted(() => {
+  if (productId.value) {
     loadProduct()
   }
 })

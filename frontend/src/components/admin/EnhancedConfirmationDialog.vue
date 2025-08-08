@@ -659,8 +659,8 @@ function handleCheckboxChange(event: any) {
   }
 }
 
-// Responsive design - Enhanced with new mixins
-@include respond-to('phone') {
+// Responsive design - Using standard media queries
+@media (max-width: 480px) {
   .enhanced-confirmation-dialog {
     align-items: flex-end;
     padding: 10px;
@@ -679,19 +679,20 @@ function handleCheckboxChange(event: any) {
       }
 
       .dialog-header {
-        @include ipad-spacing('padding', 16px, 20px, 24px);
+        padding: 16px 20px;
 
         .dialog-title {
           font-size: 16px;
         }
 
         .close-btn {
-          @include touch-friendly;
+          min-width: 44px;
+          min-height: 44px;
         }
       }
 
       .dialog-content {
-        @include ipad-spacing('padding', 16px, 20px, 24px);
+        padding: 16px 20px;
         max-height: 60vh;
 
         .dialog-message {
@@ -702,7 +703,7 @@ function handleCheckboxChange(event: any) {
         .input-section {
           .confirmation-input,
           .confirmation-textarea {
-            @include touch-friendly;
+            min-height: 44px;
             font-size: 16px; // 防止iOS缩放
             padding: 12px 16px;
           }
@@ -712,12 +713,12 @@ function handleCheckboxChange(event: any) {
       .dialog-actions {
         flex-direction: column-reverse;
         gap: 8px;
-        @include ipad-spacing('padding', 16px, 20px, 24px);
+        padding: 16px 20px;
 
         .dialog-btn {
           width: 100%;
           justify-content: center;
-          @include touch-friendly;
+          min-height: 44px;
           font-size: 16px;
         }
       }
@@ -725,7 +726,7 @@ function handleCheckboxChange(event: any) {
   }
 }
 
-@include respond-to('tablet') {
+@media (min-width: 481px) and (max-width: 768px) {
   .enhanced-confirmation-dialog {
     padding: 40px 20px;
 
@@ -734,15 +735,16 @@ function handleCheckboxChange(event: any) {
       max-width: 500px;
 
       .dialog-header {
-        @include ipad-spacing('padding', 20px, 24px, 24px);
+        padding: 20px 24px;
       }
 
       .dialog-content {
-        @include ipad-spacing('padding', 20px, 24px, 24px);
+        padding: 20px 24px;
 
         .affected-items {
           .affected-list {
-            @include horizontal-scroll;
+            overflow-x: auto;
+            white-space: nowrap;
 
             .affected-item {
               display: inline-block;
@@ -754,10 +756,10 @@ function handleCheckboxChange(event: any) {
       }
 
       .dialog-actions {
-        @include ipad-spacing('padding', 20px, 24px, 24px);
+        padding: 20px 24px;
 
         .dialog-btn {
-          @include touch-friendly;
+          min-height: 44px;
           padding: 12px 24px;
         }
       }
@@ -765,7 +767,7 @@ function handleCheckboxChange(event: any) {
   }
 }
 
-@include respond-to('ipad-pro') {
+@media (min-width: 1024px) {
   .enhanced-confirmation-dialog {
     .dialog-container {
       max-width: 600px;

@@ -603,7 +603,7 @@ uni.setNavigationBarTitle({
 
 .logs-page {
   padding: $spacing-md;
-  background: $color-bg-light;
+  background: $bg-color;
   min-height: 100vh;
 }
 
@@ -617,9 +617,9 @@ uni.setNavigationBarTitle({
     flex: 1;
     
     .page-title {
-      font-size: $font-size-xl;
+      font-size: $font-size-extra-large;
       font-weight: 600;
-      color: $color-text-primary;
+      color: $text-color;
       margin-bottom: $spacing-sm;
       display: block;
     }
@@ -629,16 +629,16 @@ uni.setNavigationBarTitle({
       gap: $spacing-md;
       
       .stat-item {
-        font-size: $font-size-sm;
-        color: $color-text-secondary;
+        font-size: $font-size-small;
+        color: $text-color-secondary;
         
         &.error-count {
-          color: $color-error;
+          color: $danger-color;
           font-weight: 500;
         }
         
         &.security-count {
-          color: $color-warning;
+          color: $warning-color;
           font-weight: 500;
         }
       }
@@ -655,16 +655,16 @@ uni.setNavigationBarTitle({
       align-items: center;
       gap: 4px;
       padding: 6px 12px;
-      border-radius: $border-radius-md;
-      border: 1px solid $color-border;
-      background: $color-bg-white;
+      border-radius: $border-radius-base;
+      border: 1px solid $border-color;
+      background: $bg-color-white;
       cursor: pointer;
       transition: all 0.3s ease;
       
       &.active {
-        background: $color-primary;
+        background: $primary-color;
         color: white;
-        border-color: $color-primary;
+        border-color: $primary-color;
       }
       
       .refresh-icon {
@@ -672,23 +672,23 @@ uni.setNavigationBarTitle({
       }
       
       .refresh-text {
-        font-size: $font-size-sm;
+        font-size: $font-size-small;
       }
     }
     
     .export-btn,
     .refresh-btn {
       padding: 8px 16px;
-      border-radius: $border-radius-md;
-      border: 1px solid $color-border;
-      background: $color-bg-white;
-      color: $color-text-primary;
-      font-size: $font-size-sm;
+      border-radius: $border-radius-base;
+      border: 1px solid $border-color;
+      background: $bg-color-white;
+      color: $text-color;
+      font-size: $font-size-small;
       cursor: pointer;
       transition: all 0.3s ease;
       
       &:hover {
-        background: $color-bg-light;
+        background: $bg-color;
       }
       
       &:disabled {
@@ -698,23 +698,23 @@ uni.setNavigationBarTitle({
     }
     
     .export-btn {
-      background: $color-primary;
+      background: $primary-color;
       color: white;
-      border-color: $color-primary;
+      border-color: $primary-color;
       
       &:hover {
-        background: darken($color-primary, 10%);
+        background: darken($primary-color, 10%);
       }
     }
   }
 }
 
 .filters-section {
-  background: $color-bg-white;
+  background: $bg-color-white;
   border-radius: $border-radius-lg;
   padding: $spacing-md;
   margin-bottom: $spacing-lg;
-  border: 1px solid $color-border;
+  border: 1px solid $border-color;
   
   .filter-row {
     display: flex;
@@ -730,12 +730,12 @@ uni.setNavigationBarTitle({
       .search-input {
         width: 100%;
         padding: 8px 12px 8px 36px;
-        border: 1px solid $color-border;
-        border-radius: $border-radius-md;
-        font-size: $font-size-sm;
+        border: 1px solid $border-color;
+        border-radius: $border-radius-base;
+        font-size: $font-size-small;
         
         &:focus {
-          border-color: $color-primary;
+          border-color: $primary-color;
           outline: none;
         }
       }
@@ -745,7 +745,7 @@ uni.setNavigationBarTitle({
         left: 12px;
         top: 50%;
         transform: translateY(-50%);
-        color: $color-text-placeholder;
+        color: $text-color-placeholder;
         font-size: 14px;
       }
     }
@@ -759,17 +759,17 @@ uni.setNavigationBarTitle({
         align-items: center;
         gap: 4px;
         padding: 4px 8px;
-        border: 1px solid $color-border;
+        border: 1px solid $border-color;
         border-radius: $border-radius-sm;
-        background: $color-bg-white;
-        font-size: $font-size-sm;
+        background: $bg-color-white;
+        font-size: $font-size-small;
         cursor: pointer;
         transition: all 0.3s ease;
         
         &.active {
-          background: $color-primary;
+          background: $primary-color;
           color: white;
-          border-color: $color-primary;
+          border-color: $primary-color;
         }
         
         .filter-dot {
@@ -785,11 +785,11 @@ uni.setNavigationBarTitle({
       align-items: center;
       gap: 4px;
       padding: 6px 12px;
-      border: 1px solid $color-border;
-      border-radius: $border-radius-md;
-      background: $color-bg-white;
-      color: $color-text-secondary;
-      font-size: $font-size-sm;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-base;
+      background: $bg-color-white;
+      color: $text-color-secondary;
+      font-size: $font-size-small;
       cursor: pointer;
       
       .toggle-icon {
@@ -799,7 +799,7 @@ uni.setNavigationBarTitle({
   }
   
   .advanced-filters {
-    border-top: 1px solid $color-border;
+    border-top: 1px solid $border-color;
     padding-top: $spacing-md;
     
     .filter-group {
@@ -810,18 +810,18 @@ uni.setNavigationBarTitle({
       
       .filter-label {
         min-width: 60px;
-        font-size: $font-size-sm;
+        font-size: $font-size-small;
         font-weight: 500;
-        color: $color-text-primary;
+        color: $text-color;
       }
       
       .picker-display {
         padding: 6px 12px;
-        border: 1px solid $color-border;
+        border: 1px solid $border-color;
         border-radius: $border-radius-sm;
-        background: $color-bg-white;
-        font-size: $font-size-sm;
-        color: $color-text-secondary;
+        background: $bg-color-white;
+        font-size: $font-size-small;
+        color: $text-color-secondary;
         min-width: 150px;
       }
       
@@ -832,17 +832,17 @@ uni.setNavigationBarTitle({
         
         .date-picker {
           padding: 6px 12px;
-          border: 1px solid $color-border;
+          border: 1px solid $border-color;
           border-radius: $border-radius-sm;
-          background: $color-bg-white;
-          font-size: $font-size-sm;
-          color: $color-text-secondary;
+          background: $bg-color-white;
+          font-size: $font-size-small;
+          color: $text-color-secondary;
           min-width: 120px;
         }
         
         .date-separator {
-          color: $color-text-placeholder;
-          font-size: $font-size-sm;
+          color: $text-color-placeholder;
+          font-size: $font-size-small;
         }
       }
     }
@@ -856,19 +856,19 @@ uni.setNavigationBarTitle({
       .apply-btn {
         padding: 6px 16px;
         border-radius: $border-radius-sm;
-        font-size: $font-size-sm;
+        font-size: $font-size-small;
         cursor: pointer;
       }
       
       .clear-btn {
-        border: 1px solid $color-border;
-        background: $color-bg-white;
-        color: $color-text-secondary;
+        border: 1px solid $border-color;
+        background: $bg-color-white;
+        color: $text-color-secondary;
       }
       
       .apply-btn {
-        border: 1px solid $color-primary;
-        background: $color-primary;
+        border: 1px solid $primary-color;
+        background: $primary-color;
         color: white;
       }
     }
@@ -882,18 +882,18 @@ uni.setNavigationBarTitle({
   margin-bottom: $spacing-lg;
   
   .stat-card {
-    background: $color-bg-white;
+    background: $bg-color-white;
     border-radius: $border-radius-lg;
     padding: $spacing-md;
-    border: 1px solid $color-border;
+    border: 1px solid $border-color;
     
     .stat-header {
       margin-bottom: $spacing-sm;
       
       .stat-title {
-        font-size: $font-size-md;
+        font-size: $font-size-medium;
         font-weight: 600;
-        color: $color-text-primary;
+        color: $text-color;
       }
     }
     
@@ -915,14 +915,14 @@ uni.setNavigationBarTitle({
         
         .level-name {
           flex: 1;
-          font-size: $font-size-sm;
-          color: $color-text-primary;
+          font-size: $font-size-small;
+          color: $text-color;
         }
         
         .level-count {
-          font-size: $font-size-sm;
+          font-size: $font-size-small;
           font-weight: 500;
-          color: $color-text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -938,14 +938,14 @@ uni.setNavigationBarTitle({
         align-items: center;
         
         .user-name {
-          font-size: $font-size-sm;
-          color: $color-text-primary;
+          font-size: $font-size-small;
+          color: $text-color;
         }
         
         .user-count {
-          font-size: $font-size-sm;
+          font-size: $font-size-small;
           font-weight: 500;
-          color: $color-text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -962,20 +962,20 @@ uni.setNavigationBarTitle({
         
         .error-code {
           flex: 1;
-          font-size: $font-size-sm;
-          color: $color-error;
+          font-size: $font-size-small;
+          color: $danger-color;
           font-family: monospace;
         }
         
         .error-count {
-          font-size: $font-size-sm;
+          font-size: $font-size-small;
           font-weight: 500;
-          color: $color-text-secondary;
+          color: $text-color-secondary;
         }
         
         .error-time {
-          font-size: $font-size-xs;
-          color: $color-text-placeholder;
+          font-size: $font-size-extra-small;
+          color: $text-color-placeholder;
         }
       }
     }
@@ -988,33 +988,33 @@ uni.setNavigationBarTitle({
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: $color-bg-white;
+  background: $bg-color-white;
   border-radius: $border-radius-lg;
   padding: $spacing-xl;
-  border: 1px solid $color-border;
+  border: 1px solid $border-color;
   
   .loading-text,
   .error-text {
-    font-size: $font-size-md;
-    color: $color-text-secondary;
+    font-size: $font-size-medium;
+    color: $text-color-secondary;
     margin-bottom: $spacing-md;
   }
   
   .retry-btn {
     padding: 8px 16px;
-    background: $color-primary;
+    background: $primary-color;
     color: white;
     border: none;
-    border-radius: $border-radius-md;
-    font-size: $font-size-sm;
+    border-radius: $border-radius-base;
+    font-size: $font-size-small;
     cursor: pointer;
   }
 }
 
 .logs-table-container {
-  background: $color-bg-white;
+  background: $bg-color-white;
   border-radius: $border-radius-lg;
-  border: 1px solid $color-border;
+  border: 1px solid $border-color;
   overflow: hidden;
   margin-bottom: $spacing-lg;
   
@@ -1025,32 +1025,32 @@ uni.setNavigationBarTitle({
     gap: 4px;
     padding: 2px 6px;
     border-radius: $border-radius-sm;
-    font-size: $font-size-xs;
+    font-size: $font-size-extra-small;
     font-weight: 500;
     
     &.level-info {
-      background: rgba($color-info, 0.1);
-      color: $color-info;
+      background: rgba($info-color, 0.1);
+      color: $info-color;
     }
     
     &.level-warn {
-      background: rgba($color-warning, 0.1);
-      color: $color-warning;
+      background: rgba($warning-color, 0.1);
+      color: $warning-color;
     }
     
     &.level-error {
-      background: rgba($color-error, 0.1);
-      color: $color-error;
+      background: rgba($danger-color, 0.1);
+      color: $danger-color;
     }
     
     &.level-critical {
-      background: rgba($color-error, 0.2);
-      color: darken($color-error, 10%);
+      background: rgba($danger-color, 0.2);
+      color: darken($danger-color, 10%);
     }
     
     &.level-debug {
-      background: rgba($color-text-secondary, 0.1);
-      color: $color-text-secondary;
+      background: rgba($text-color-secondary, 0.1);
+      color: $text-color-secondary;
     }
     
     .level-dot {
@@ -1065,20 +1065,20 @@ uni.setNavigationBarTitle({
     flex-direction: column;
     
     .user-name {
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       font-weight: 500;
-      color: $color-text-primary;
+      color: $text-color;
     }
     
     .user-role {
-      font-size: $font-size-xs;
-      color: $color-text-secondary;
+      font-size: $font-size-extra-small;
+      color: $text-color-secondary;
     }
   }
   
   :deep(.system-user) {
-    font-size: $font-size-sm;
-    color: $color-text-placeholder;
+    font-size: $font-size-small;
+    color: $text-color-placeholder;
     font-style: italic;
   }
   
@@ -1087,14 +1087,14 @@ uni.setNavigationBarTitle({
     flex-direction: column;
     
     .category {
-      font-size: $font-size-xs;
-      color: $color-text-secondary;
+      font-size: $font-size-extra-small;
+      color: $text-color-secondary;
       text-transform: uppercase;
     }
     
     .action {
-      font-size: $font-size-sm;
-      color: $color-text-primary;
+      font-size: $font-size-small;
+      color: $text-color;
       font-weight: 500;
     }
   }
@@ -1104,19 +1104,19 @@ uni.setNavigationBarTitle({
     flex-direction: column;
     
     .resource-name {
-      font-size: $font-size-sm;
-      color: $color-text-primary;
+      font-size: $font-size-small;
+      color: $text-color;
       font-weight: 500;
     }
     
     .resource-type {
-      font-size: $font-size-xs;
-      color: $color-text-secondary;
+      font-size: $font-size-extra-small;
+      color: $text-color-secondary;
     }
   }
   
   :deep(.no-resource) {
-    color: $color-text-placeholder;
+    color: $text-color-placeholder;
     font-style: italic;
   }
   
@@ -1125,14 +1125,14 @@ uni.setNavigationBarTitle({
     flex-direction: column;
     
     .time {
-      font-size: $font-size-sm;
-      color: $color-text-primary;
+      font-size: $font-size-small;
+      color: $text-color;
       font-weight: 500;
     }
     
     .date {
-      font-size: $font-size-xs;
-      color: $color-text-secondary;
+      font-size: $font-size-extra-small;
+      color: $text-color-secondary;
     }
   }
   
@@ -1143,19 +1143,19 @@ uni.setNavigationBarTitle({
     .action-btn {
       padding: 2px 8px;
       border-radius: $border-radius-sm;
-      font-size: $font-size-xs;
+      font-size: $font-size-extra-small;
       cursor: pointer;
       
       &.view {
-        background: rgba($color-info, 0.1);
-        color: $color-info;
-        border: 1px solid rgba($color-info, 0.3);
+        background: rgba($info-color, 0.1);
+        color: $info-color;
+        border: 1px solid rgba($info-color, 0.3);
       }
       
       &.resolve {
-        background: rgba($color-success, 0.1);
-        color: $color-success;
-        border: 1px solid rgba($color-success, 0.3);
+        background: rgba($success-color, 0.1);
+        color: $success-color;
+        border: 1px solid rgba($success-color, 0.3);
       }
     }
   }

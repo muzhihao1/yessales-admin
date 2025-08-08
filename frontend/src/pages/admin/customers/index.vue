@@ -466,7 +466,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from '@dcloudio/uni-app'
+import { useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import type { CreateCustomerData, Customer, CustomerExportData } from '@/types/customer'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
@@ -474,7 +474,7 @@ import DataTableRow from '@/components/admin/DataTableRow.vue'
 import ActionButtonGroup from '@/components/admin/ActionButtonGroup.vue'
 import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
 import { useTableEnhancements } from '@/composables/useTableEnhancements'
-import { commonActions, commonBatchOperations } from '@/components/admin/ActionButtonGroup.vue'
+import { commonActions, commonBatchOperations } from '@/utils/common-actions'
 import type { TableColumn } from '@/components/admin/DataTableRow.vue'
 import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
@@ -1152,7 +1152,7 @@ function getSourceLabel(source: string): string {
 
 .customers-page {
   padding: 20px;
-  background-color: $background-color;
+  background-color: $bg-color;
   min-height: 100vh;
 
   .page-header {
@@ -1169,7 +1169,7 @@ function getSourceLabel(source: string): string {
       .page-title {
         font-size: 24px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         margin-bottom: 12px;
         display: block;
       }
@@ -1191,7 +1191,7 @@ function getSourceLabel(source: string): string {
 
           .stat-label {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -1233,7 +1233,7 @@ function getSourceLabel(source: string): string {
 
         &.export-btn {
           background: white;
-          color: $text-primary;
+          color: $text-color;
           border: 1px solid $border-color;
 
           &:hover {
@@ -1301,7 +1301,7 @@ function getSourceLabel(source: string): string {
 
           .picker-arrow {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -1309,7 +1309,7 @@ function getSourceLabel(source: string): string {
       .filter-reset {
         padding: 10px 20px;
         background: white;
-        color: $text-secondary;
+        color: $text-color-secondary;
         border: 1px solid $border-color;
         border-radius: 6px;
         font-size: 14px;
@@ -1339,7 +1339,7 @@ function getSourceLabel(source: string): string {
             display: block;
             margin-bottom: 8px;
             font-size: 14px;
-            color: $text-primary;
+            color: $text-color;
             font-weight: 500;
           }
 
@@ -1359,7 +1359,7 @@ function getSourceLabel(source: string): string {
 
             .date-separator {
               font-size: 14px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
           }
 
@@ -1383,7 +1383,7 @@ function getSourceLabel(source: string): string {
 
             .amount-separator {
               font-size: 14px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
           }
         }
@@ -1395,7 +1395,7 @@ function getSourceLabel(source: string): string {
 
           .checkbox-label {
             font-size: 14px;
-            color: $text-primary;
+            color: $text-color;
           }
         }
       }
@@ -1582,13 +1582,13 @@ function getSourceLabel(source: string): string {
 
       .customer-name {
         font-weight: 500;
-        color: $text-primary;
+        color: $text-color;
         font-size: 15px;
       }
 
       .customer-phone {
         font-size: 13px;
-        color: $text-secondary;
+        color: $text-color-secondary;
       }
     }
 
@@ -1620,7 +1620,7 @@ function getSourceLabel(source: string): string {
 
     .contact-item {
       font-size: 12px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
   }
 
@@ -1674,20 +1674,20 @@ function getSourceLabel(source: string): string {
 
       .metric-value {
         font-weight: 500;
-        color: $text-primary;
+        color: $text-color;
         font-size: 13px;
       }
 
       .metric-label {
         font-size: 11px;
-        color: $text-secondary;
+        color: $text-color-secondary;
       }
     }
   }
 
   .date-cell {
     font-size: 13px;
-    color: $text-secondary;
+    color: $text-color-secondary;
   }
 
   .actions-cell {
@@ -1778,7 +1778,7 @@ function getSourceLabel(source: string): string {
         display: block;
         margin-bottom: 8px;
         font-size: 14px;
-        color: $text-primary;
+        color: $text-color;
         font-weight: 500;
       }
 
@@ -1826,7 +1826,7 @@ function getSourceLabel(source: string): string {
 
         .picker-arrow {
           font-size: 12px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -1838,7 +1838,7 @@ function getSourceLabel(source: string): string {
       margin-bottom: 12px;
       font-size: 14px;
       font-weight: 600;
-      color: $text-primary;
+      color: $text-color;
     }
 
     .checkbox-group {
@@ -1853,7 +1853,7 @@ function getSourceLabel(source: string): string {
 
         .checkbox-label {
           font-size: 14px;
-          color: $text-primary;
+          color: $text-color;
         }
       }
     }
@@ -1864,7 +1864,7 @@ function getSourceLabel(source: string): string {
       background: #f8f9fa;
       border-radius: 6px;
       font-size: 13px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
   }
 }

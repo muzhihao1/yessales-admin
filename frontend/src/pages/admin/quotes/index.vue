@@ -210,14 +210,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from '@dcloudio/uni-app'
+import { useRouter } from 'vue-router'
 import { useQuotesStore } from '@/stores/quotes'
 import type { Quote } from '@/types/quote'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
 import DataTableRow from '@/components/admin/DataTableRow.vue'
 import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
 import { useTableEnhancements } from '@/composables/useTableEnhancements'
-import { commonActions, commonBatchOperations } from '@/components/admin/ActionButtonGroup.vue'
+import { commonActions, commonBatchOperations } from '@/utils/common-actions'
 import type { TableColumn } from '@/components/admin/DataTableRow.vue'
 import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
@@ -697,7 +697,7 @@ function getStatusLabel(status: string): string {
 
 .quotes-page {
   padding: 20px;
-  background-color: $background-color;
+  background-color: $bg-color;
   min-height: 100vh;
 
   .page-header {
@@ -714,7 +714,7 @@ function getStatusLabel(status: string): string {
       .page-title {
         font-size: 24px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         margin-bottom: 12px;
         display: block;
       }
@@ -736,7 +736,7 @@ function getStatusLabel(status: string): string {
 
           .stat-label {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -822,7 +822,7 @@ function getStatusLabel(status: string): string {
 
           .picker-arrow {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -830,7 +830,7 @@ function getStatusLabel(status: string): string {
       .filter-reset {
         padding: 10px 20px;
         background: white;
-        color: $text-secondary;
+        color: $text-color-secondary;
         border: 1px solid $border-color;
         border-radius: 6px;
         font-size: 14px;
@@ -981,19 +981,19 @@ function getStatusLabel(status: string): string {
 
     .customer-name {
       font-weight: 500;
-      color: $text-primary;
+      color: $text-color;
     }
 
     .customer-phone {
       font-size: 12px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
   }
 
   .products-cell {
     .product-count {
       font-size: 14px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
   }
 
@@ -1033,7 +1033,7 @@ function getStatusLabel(status: string): string {
 
   .date-cell {
     font-size: 13px;
-    color: $text-secondary;
+    color: $text-color-secondary;
   }
 
   .actions-cell {
@@ -1095,7 +1095,7 @@ function getStatusLabel(status: string): string {
       display: block;
       margin-bottom: 12px;
       font-size: 14px;
-      color: $text-primary;
+      color: $text-color;
     }
 
     .reject-textarea {

@@ -110,12 +110,12 @@ $touch-target-comfortable: 48px;  // 舒适触摸目标
 $touch-target-large: 56px;        // 大触摸目标
 
 // 响应式字体大小 (使用clamp)
-$font-size-xs-responsive: clamp(10px, 2vw, 12px);
-$font-size-sm-responsive: clamp(11px, 2.2vw, 13px);
+$font-size-extra-small-responsive: clamp(10px, 2vw, 12px);
+$font-size-small-responsive: clamp(11px, 2.2vw, 13px);
 $font-size-base-responsive: clamp(12px, 2.5vw, 14px);
-$font-size-md-responsive: clamp(14px, 3vw, 16px);
+$font-size-medium-responsive: clamp(14px, 3vw, 16px);
 $font-size-lg-responsive: clamp(16px, 3.5vw, 18px);
-$font-size-xl-responsive: clamp(18px, 4vw, 20px);
+$font-size-extra-large-responsive: clamp(18px, 4vw, 20px);
 
 // 响应式间距 (使用clamp)
 $spacing-xs-responsive: clamp(3px, 1vw, 5px);

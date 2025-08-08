@@ -499,14 +499,14 @@ onMounted(() => {
       .chart-title {
         font-size: 18px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         display: block;
         margin-bottom: 4px;
       }
 
       .chart-subtitle {
         font-size: 14px;
-        color: $text-secondary;
+        color: $text-color-secondary;
         display: block;
       }
     }
@@ -559,7 +559,7 @@ onMounted(() => {
 
         .picker-arrow {
           font-size: 12px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -577,7 +577,7 @@ onMounted(() => {
     .loading-text,
     .error-text {
       font-size: 16px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
 
     .loading-skeleton {
@@ -643,7 +643,7 @@ onMounted(() => {
 
           .legend-label {
             font-size: 14px;
-            color: $text-primary;
+            color: $text-color;
           }
         }
       }
@@ -689,13 +689,13 @@ onMounted(() => {
             display: block;
             font-size: 24px;
             font-weight: 600;
-            color: $text-primary;
+            color: $text-color;
             margin-bottom: 4px;
           }
 
           .center-label {
             font-size: 14px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -721,19 +721,19 @@ onMounted(() => {
           .legend-label {
             flex: 1;
             font-size: 14px;
-            color: $text-primary;
+            color: $text-color;
           }
 
           .legend-value {
             font-size: 14px;
             font-weight: 500;
-            color: $text-primary;
+            color: $text-color;
             margin-right: 8px;
           }
 
           .legend-percentage {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
             min-width: 40px;
             text-align: right;
           }
@@ -748,7 +748,7 @@ onMounted(() => {
       .number-value {
         font-size: 48px;
         font-weight: 700;
-        color: $text-primary;
+        color: $text-color;
         display: block;
         margin-bottom: 12px;
 
@@ -774,7 +774,7 @@ onMounted(() => {
 
         .trend-text {
           font-size: 14px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -798,12 +798,12 @@ onMounted(() => {
           .progress-name {
             font-size: 14px;
             font-weight: 500;
-            color: $text-primary;
+            color: $text-color;
           }
 
           .progress-value {
             font-size: 14px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
 
@@ -823,7 +823,7 @@ onMounted(() => {
 
         .progress-percentage {
           font-size: 12px;
-          color: $text-secondary;
+          color: $text-color-secondary;
           text-align: right;
           display: block;
         }

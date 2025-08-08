@@ -271,7 +271,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from '@dcloudio/uni-app'
+import { useRouter } from 'vue-router'
 import { useUsersStore } from '@/stores/users'
 import type { CreateUserData, User } from '@/types/user'
 import DataTable from '@/components/admin/DataTable.vue'
@@ -688,7 +688,7 @@ function getStatusLabel(status: string): string {
 
 .users-page {
   padding: 20px;
-  background-color: $background-color;
+  background-color: $bg-color;
   min-height: 100vh;
 
   .page-header {
@@ -705,7 +705,7 @@ function getStatusLabel(status: string): string {
       .page-title {
         font-size: 24px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         margin-bottom: 12px;
         display: block;
       }
@@ -727,7 +727,7 @@ function getStatusLabel(status: string): string {
 
           .stat-label {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -769,7 +769,7 @@ function getStatusLabel(status: string): string {
 
         &.export-btn {
           background: white;
-          color: $text-primary;
+          color: $text-color;
           border: 1px solid $border-color;
 
           &:hover {
@@ -837,7 +837,7 @@ function getStatusLabel(status: string): string {
 
           .picker-arrow {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
         }
       }
@@ -845,7 +845,7 @@ function getStatusLabel(status: string): string {
       .filter-reset {
         padding: 10px 20px;
         background: white;
-        color: $text-secondary;
+        color: $text-color-secondary;
         border: 1px solid $border-color;
         border-radius: 6px;
         font-size: 14px;
@@ -895,17 +895,17 @@ function getStatusLabel(status: string): string {
 
       .user-name {
         font-weight: 500;
-        color: $text-primary;
+        color: $text-color;
       }
 
       .user-email {
         font-size: 12px;
-        color: $text-secondary;
+        color: $text-color-secondary;
       }
 
       .user-phone {
         font-size: 12px;
-        color: $text-secondary;
+        color: $text-color-secondary;
       }
     }
   }
@@ -965,12 +965,12 @@ function getStatusLabel(status: string): string {
 
   .department-cell {
     font-size: 14px;
-    color: $text-secondary;
+    color: $text-color-secondary;
   }
 
   .date-cell {
     font-size: 13px;
-    color: $text-secondary;
+    color: $text-color-secondary;
   }
 
   .actions-cell {
@@ -1053,7 +1053,7 @@ function getStatusLabel(status: string): string {
         display: block;
         margin-bottom: 8px;
         font-size: 14px;
-        color: $text-primary;
+        color: $text-color;
         font-weight: 500;
       }
 
@@ -1086,7 +1086,7 @@ function getStatusLabel(status: string): string {
 
         .picker-arrow {
           font-size: 12px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -1099,7 +1099,7 @@ function getStatusLabel(status: string): string {
 
       .checkbox-label {
         font-size: 14px;
-        color: $text-primary;
+        color: $text-color;
       }
     }
 
@@ -1109,7 +1109,7 @@ function getStatusLabel(status: string): string {
       background: #f8f9fa;
       border-radius: 6px;
       font-size: 13px;
-      color: $text-secondary;
+      color: $text-color-secondary;
       line-height: 1.5;
     }
   }

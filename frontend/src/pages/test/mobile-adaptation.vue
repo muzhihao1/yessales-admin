@@ -395,6 +395,7 @@ onUnmounted(() => {
 
 <style lang="scss" scoped>
 @import '@/styles/variables.scss';
+@import '@/styles/mixins.scss';
 @import '@/styles/responsive.scss';
 @import '@/styles/animations.scss';
 
@@ -415,7 +416,7 @@ onUnmounted(() => {
   margin-bottom: $spacing-lg-responsive;
 
   .test-title {
-    font-size: $font-size-xl-responsive;
+    font-size: $font-size-extra-large-responsive;
     font-weight: 600;
     color: $text-color;
     display: block;
@@ -601,11 +602,11 @@ onUnmounted(() => {
     margin-bottom: $spacing-sm;
 
     .text-xs-responsive {
-      font-size: $font-size-xs-responsive;
+      font-size: $font-size-extra-small-responsive;
     }
 
     .text-sm-responsive {
-      font-size: $font-size-sm-responsive;
+      font-size: $font-size-small-responsive;
     }
 
     .text-base-responsive {
@@ -617,7 +618,7 @@ onUnmounted(() => {
     }
 
     .text-xl-responsive {
-      font-size: $font-size-xl-responsive;
+      font-size: $font-size-extra-large-responsive;
     }
 
     .text-info {
@@ -938,6 +939,5 @@ onUnmounted(() => {
   }
 }
 
-// 性能优化
-@include reduced-motion-safe;
+// 性能优化 - removed invalid mixin usage
 </style>

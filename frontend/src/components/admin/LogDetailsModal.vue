@@ -439,7 +439,7 @@ function handleEscalate() {
 
   .details-section {
     margin-bottom: $spacing-lg;
-    border-bottom: 1px solid $color-border;
+    border-bottom: 1px solid $border-color;
     padding-bottom: $spacing-md;
 
     &:last-child {
@@ -455,9 +455,9 @@ function handleEscalate() {
       margin-bottom: $spacing-md;
 
       .section-title {
-        font-size: $font-size-lg;
+        font-size: $font-size-large;
         font-weight: 600;
-        color: $color-text-primary;
+        color: $text-color;
       }
 
       .log-level-badge {
@@ -465,33 +465,33 @@ function handleEscalate() {
         align-items: center;
         gap: 6px;
         padding: 4px 10px;
-        border-radius: $border-radius-md;
-        font-size: $font-size-sm;
+        border-radius: $border-radius-lg;
+        font-size: $font-size-small;
         font-weight: 500;
 
         &.level-info {
-          background: rgba($color-info, 0.1);
-          color: $color-info;
+          background: rgba($info-color, 0.1);
+          color: $info-color;
         }
 
         &.level-warn {
-          background: rgba($color-warning, 0.1);
-          color: $color-warning;
+          background: rgba($warning-color, 0.1);
+          color: $warning-color;
         }
 
         &.level-error {
-          background: rgba($color-error, 0.1);
-          color: $color-error;
+          background: rgba($danger-color, 0.1);
+          color: $danger-color;
         }
 
         &.level-critical {
-          background: rgba($color-error, 0.2);
-          color: darken($color-error, 10%);
+          background: rgba($danger-color, 0.2);
+          color: $danger-dark;
         }
 
         &.level-debug {
-          background: rgba($color-text-secondary, 0.1);
-          color: $color-text-secondary;
+          background: rgba($text-color-secondary, 0.1);
+          color: $text-color-secondary;
         }
 
         .level-dot {
@@ -503,15 +503,15 @@ function handleEscalate() {
 
       .toggle-json {
         padding: 4px 8px;
-        border: 1px solid $color-border;
+        border: 1px solid $border-color;
         border-radius: $border-radius-sm;
-        background: $color-bg-light;
-        color: $color-text-secondary;
-        font-size: $font-size-sm;
+        background: $bg-color;
+        color: $text-color-secondary;
+        font-size: $font-size-small;
         cursor: pointer;
 
         &:hover {
-          background: $color-bg-white;
+          background: $bg-color-white;
         }
       }
     }
@@ -531,28 +531,28 @@ function handleEscalate() {
         }
 
         .detail-label {
-          font-size: $font-size-sm;
+          font-size: $font-size-small;
           font-weight: 500;
-          color: $color-text-secondary;
+          color: $text-color-secondary;
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
 
         .detail-value {
-          font-size: $font-size-md;
-          color: $color-text-primary;
+          font-size: $font-size-medium;
+          color: $text-color;
           word-break: break-word;
 
           &.code-text {
             font-family: 'Monaco', 'Consolas', monospace;
-            background: $color-bg-light;
+            background: $bg-color;
             padding: 2px 6px;
             border-radius: $border-radius-sm;
-            font-size: $font-size-sm;
+            font-size: $font-size-small;
           }
 
           &.error-code {
-            color: $color-error;
+            color: $danger-color;
             font-weight: 500;
             font-family: 'Monaco', 'Consolas', monospace;
           }
@@ -562,13 +562,13 @@ function handleEscalate() {
 
     .message-content {
       padding: $spacing-md;
-      background: $color-bg-light;
-      border-radius: $border-radius-md;
-      border-left: 4px solid $color-primary;
+      background: $bg-color;
+      border-radius: $border-radius-base;
+      border-left: 4px solid $primary-color;
 
       .message-text {
-        font-size: $font-size-md;
-        color: $color-text-primary;
+        font-size: $font-size-medium;
+        color: $text-color;
         line-height: 1.5;
         word-break: break-word;
       }
@@ -579,9 +579,9 @@ function handleEscalate() {
 
       .stack-label {
         display: block;
-        font-size: $font-size-sm;
+        font-size: $font-size-small;
         font-weight: 500;
-        color: $color-text-secondary;
+        color: $text-color-secondary;
         margin-bottom: $spacing-xs;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -590,15 +590,15 @@ function handleEscalate() {
 
     .code-block {
       background: #f8f9fa;
-      border: 1px solid $color-border;
-      border-radius: $border-radius-md;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-base;
       padding: $spacing-md;
       overflow-x: auto;
 
       .code-text {
         font-family: 'Monaco', 'Consolas', monospace;
-        font-size: $font-size-sm;
-        color: $color-text-primary;
+        font-size: $font-size-small;
+        color: $text-color;
         line-height: 1.4;
         white-space: pre-wrap;
       }
@@ -630,27 +630,27 @@ function handleEscalate() {
     .escalate-btn {
       padding: 6px 12px;
       border-radius: $border-radius-sm;
-      font-size: $font-size-sm;
+      font-size: $font-size-small;
       cursor: pointer;
     }
 
     .resolve-btn {
-      background: $color-success;
+      background: $success-color;
       color: white;
-      border: 1px solid $color-success;
+      border: 1px solid $success-color;
 
       &:hover {
-        background: darken($color-success, 10%);
+        background: darken($success-color, 10%);
       }
     }
 
     .escalate-btn {
-      background: $color-warning;
+      background: $warning-color;
       color: white;
-      border: 1px solid $color-warning;
+      border: 1px solid $warning-color;
 
       &:hover {
-        background: darken($color-warning, 10%);
+        background: darken($warning-color, 10%);
       }
     }
   }
@@ -660,28 +660,28 @@ function handleEscalate() {
   .close-btn {
     padding: 8px 16px;
     border-radius: $border-radius-sm;
-    font-size: $font-size-sm;
+    font-size: $font-size-small;
     cursor: pointer;
   }
 
   .copy-btn,
   .export-btn {
-    background: $color-bg-light;
-    color: $color-text-primary;
-    border: 1px solid $color-border;
+    background: $bg-color;
+    color: $text-color;
+    border: 1px solid $border-color;
 
     &:hover {
-      background: $color-bg-white;
+      background: $bg-color-white;
     }
   }
 
   .close-btn {
-    background: $color-primary;
+    background: $primary-color;
     color: white;
-    border: 1px solid $color-primary;
+    border: 1px solid $primary-color;
 
     &:hover {
-      background: darken($color-primary, 10%);
+      background: darken($primary-color, 10%);
     }
   }
 }

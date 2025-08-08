@@ -190,7 +190,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from '@dcloudio/uni-app'
+import { useRoute, useRouter } from 'vue-router'
 import { useQuotesStore } from '@/stores/quotes'
 import type { Quote } from '@/types/quote'
 
@@ -336,7 +336,7 @@ function getStatusLabel(status: string): string {
 
 .quote-detail-page {
   min-height: 100vh;
-  background-color: $background-color;
+  background-color: $bg-color;
   padding: 20px;
 
   .loading-container,
@@ -350,7 +350,7 @@ function getStatusLabel(status: string): string {
 
     .loading-text {
       font-size: 16px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
 
     .error-text {
@@ -393,7 +393,7 @@ function getStatusLabel(status: string): string {
         .quote-number {
           font-size: 24px;
           font-weight: 600;
-          color: $text-primary;
+          color: $text-color;
         }
 
         .status-badge {
@@ -468,7 +468,7 @@ function getStatusLabel(status: string): string {
 
           &.action-print {
             background: white;
-            color: $text-primary;
+            color: $text-color;
             border: 1px solid $border-color;
 
             &:hover {
@@ -489,7 +489,7 @@ function getStatusLabel(status: string): string {
       .section-title {
         font-size: 18px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         margin-bottom: 20px;
         display: block;
       }
@@ -506,12 +506,12 @@ function getStatusLabel(status: string): string {
 
           .info-label {
             font-size: 13px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
 
           .info-value {
             font-size: 15px;
-            color: $text-primary;
+            color: $text-color;
             font-weight: 500;
           }
         }
@@ -525,7 +525,7 @@ function getStatusLabel(status: string): string {
           border-radius: 6px 6px 0 0;
           font-weight: 600;
           font-size: 14px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
 
         .table-row {
@@ -548,12 +548,12 @@ function getStatusLabel(status: string): string {
 
             .product-name {
               font-weight: 500;
-              color: $text-primary;
+              color: $text-color;
             }
 
             .product-sku {
               font-size: 12px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
           }
 
@@ -565,13 +565,13 @@ function getStatusLabel(status: string): string {
           }
 
           &.col-quantity {
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
 
           &.col-price,
           &.col-subtotal {
             font-weight: 500;
-            color: $text-primary;
+            color: $text-color;
           }
         }
       }
@@ -590,13 +590,13 @@ function getStatusLabel(status: string): string {
 
           .summary-label {
             font-size: 14px;
-            color: $text-secondary;
+            color: $text-color-secondary;
           }
 
           .summary-value {
             font-size: 16px;
             font-weight: 500;
-            color: $text-primary;
+            color: $text-color;
           }
 
           &.summary-total {
@@ -606,7 +606,7 @@ function getStatusLabel(status: string): string {
             .summary-label {
               font-size: 16px;
               font-weight: 600;
-              color: $text-primary;
+              color: $text-color;
             }
 
             .summary-value {
@@ -622,7 +622,7 @@ function getStatusLabel(status: string): string {
       .terms-content {
         font-size: 14px;
         line-height: 1.6;
-        color: $text-primary;
+        color: $text-color;
         white-space: pre-wrap;
       }
 
@@ -674,17 +674,17 @@ function getStatusLabel(status: string): string {
 
             .timeline-title {
               font-weight: 500;
-              color: $text-primary;
+              color: $text-color;
             }
 
             .timeline-date {
               font-size: 14px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
 
             .timeline-user {
               font-size: 13px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
 
             .timeline-reason {
@@ -706,7 +706,7 @@ function getStatusLabel(status: string): string {
       display: block;
       margin-bottom: 12px;
       font-size: 14px;
-      color: $text-primary;
+      color: $text-color;
     }
 
     .reject-textarea {

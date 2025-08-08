@@ -99,7 +99,7 @@ function handleCancel() {
       .modal-title {
         font-size: 18px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
       }
 
       .modal-close {
@@ -120,7 +120,7 @@ function handleCancel() {
 
         .close-icon {
           font-size: 24px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
@@ -149,7 +149,7 @@ function handleCancel() {
 
         &-cancel {
           background: white;
-          color: $text-secondary;
+          color: $text-color-secondary;
           border: 1px solid $border-color;
 
           &:hover {

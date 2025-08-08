@@ -282,7 +282,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
-import { useRoute, useRouter } from '@dcloudio/uni-app'
+import { useRoute, useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import type { CreateCustomerData, Customer, UpdateCustomerData } from '@/types/customer'
 
@@ -638,7 +638,7 @@ function cancelAction() {
 
 .customer-edit-page {
   min-height: 100vh;
-  background-color: $background-color;
+  background-color: $bg-color;
   padding: 20px;
 
   .page-header {
@@ -654,7 +654,7 @@ function cancelAction() {
     .page-title {
       font-size: 20px;
       font-weight: 600;
-      color: $text-primary;
+      color: $text-color;
     }
 
     .header-actions {
@@ -672,7 +672,7 @@ function cancelAction() {
 
         &.cancel-btn {
           background: white;
-          color: $text-secondary;
+          color: $text-color-secondary;
           border: 1px solid $border-color;
 
           &:hover {
@@ -705,7 +705,7 @@ function cancelAction() {
 
     .loading-text {
       font-size: 16px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
   }
 
@@ -723,7 +723,7 @@ function cancelAction() {
       .section-title {
         font-size: 18px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         margin-bottom: 20px;
         display: block;
         padding-bottom: 10px;
@@ -755,7 +755,7 @@ function cancelAction() {
           display: block;
           margin-bottom: 8px;
           font-size: 14px;
-          color: $text-primary;
+          color: $text-color;
           font-weight: 500;
         }
 
@@ -817,7 +817,7 @@ function cancelAction() {
 
           .picker-arrow {
             font-size: 12px;
-            color: $text-secondary;
+            color: $text-color-secondary;
             margin-left: 8px;
           }
         }
@@ -833,7 +833,7 @@ function cancelAction() {
           display: block;
           margin-top: 4px;
           font-size: 12px;
-          color: $text-secondary;
+          color: $text-color-secondary;
           text-align: right;
         }
       }

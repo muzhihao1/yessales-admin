@@ -844,7 +844,7 @@ const handleBottomBarClick = (item: any, index: number) => {
   display: flex;
   align-items: center;
   background-color: $bg-color-white;
-  border-radius: $border-radius-large;
+  border-radius: $border-radius-lg;
   padding: 0 $spacing-base;
   box-shadow: $box-shadow-base;
 }
@@ -1011,7 +1011,7 @@ const handleBottomBarClick = (item: any, index: number) => {
 .loading-container {
   @include flex-center;
   flex-direction: column;
-  padding: $spacing-xxl 0;
+  padding: $spacing-xl 0;
 }
 
 .loading-spinner {
@@ -1038,7 +1038,7 @@ const handleBottomBarClick = (item: any, index: number) => {
 .empty-container {
   @include flex-center;
   flex-direction: column;
-  padding: $spacing-xxl 0;
+  padding: $spacing-xl 0;
   text-align: center;
 }
 
@@ -1204,8 +1204,8 @@ const handleBottomBarClick = (item: any, index: number) => {
   background-color: $primary-color;
   border-radius: 50%;
   @include flex-center;
-  box-shadow: $box-shadow-large;
-  z-index: $z-index-floating;
+  box-shadow: $box-shadow-light;
+  z-index: $z-index-fixed;
   cursor: pointer;
   transition: $transition-base;
 

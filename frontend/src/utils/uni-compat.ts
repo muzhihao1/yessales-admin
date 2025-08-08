@@ -58,7 +58,18 @@ export interface UniNavigation {
   }): void
 }
 
-export interface UniAPI extends UniModal, UniToast, UniNavigation {
+export interface UniStorage {
+  getStorageSync(key: string): any
+  setStorageSync(key: string, data: any): void
+  removeStorageSync(key: string): void
+  getStorageInfoSync(): {
+    keys: string[]
+    currentSize: number
+    limitSize: number
+  }
+}
+
+export interface UniAPI extends UniModal, UniToast, UniNavigation, UniStorage {
   // Additional uni APIs can be added here
 }
 
@@ -267,6 +278,79 @@ class WebUniAPI implements UniAPI {
     } finally {
       if (options.complete) {
         options.complete()
+      }
+    }
+  }
+
+  /**
+   * Storage API implementations using localStorage
+   */
+  getStorageSync(key: string): any {
+    try {
+      const item = localStorage.getItem(key)
+      if (item === null) {
+        return undefined
+      }
+      try {
+        // Try to parse as JSON first
+        return JSON.parse(item)
+      } catch {
+        // If JSON parsing fails, return as string
+        return item
+      }
+    } catch (error) {
+      console.warn('Failed to get storage item:', key, error)
+      return undefined
+    }
+  }
+
+  setStorageSync(key: string, data: any): void {
+    try {
+      const value = typeof data === 'string' ? data : JSON.stringify(data)
+      localStorage.setItem(key, value)
+    } catch (error) {
+      console.warn('Failed to set storage item:', key, error)
+      throw error
+    }
+  }
+
+  removeStorageSync(key: string): void {
+    try {
+      localStorage.removeItem(key)
+    } catch (error) {
+      console.warn('Failed to remove storage item:', key, error)
+      throw error
+    }
+  }
+
+  getStorageInfoSync(): {
+    keys: string[]
+    currentSize: number
+    limitSize: number
+  } {
+    try {
+      const keys = Object.keys(localStorage)
+      let currentSize = 0
+      
+      // Estimate storage size (not 100% accurate but close enough)
+      for (const key of keys) {
+        const value = localStorage.getItem(key)
+        if (value) {
+          currentSize += key.length + value.length
+        }
+      }
+      
+      return {
+        keys,
+        currentSize: currentSize * 2, // Rough estimate: each character is ~2 bytes
+        limitSize: 10 * 1024 * 1024 // 10MB typical localStorage limit
+      }
+    } catch (error) {
+      console.warn('Failed to get storage info:', error)
+      return {
+        keys: [],
+        currentSize: 0,
+        limitSize: 0
       }
     }
   }

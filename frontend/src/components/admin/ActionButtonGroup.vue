@@ -124,7 +124,7 @@ import { showModal } from '@/utils/ui'
  * @author Terminal 3 (Admin Frontend Team)
  */
 
-export interface ActionItem {
+interface ActionItem {
   key: string
   label: string
   icon?: string
@@ -280,7 +280,7 @@ onUnmounted(() => {
 })
 
 // 预定义的常用操作配置（符合PRD要求）
-export const commonActions = {
+const commonActions = {
   // 报价单管理操作 (PRD Line 829)
   quotes: {
     view: { key: 'view', label: '查看详情', icon: 'eye', type: 'default' as const },
@@ -341,6 +341,8 @@ export const commonActions = {
     }
   }
 }
+
+// Note: commonActions and commonBatchOperations moved to @/utils/common-actions.ts for better reusability
 </script>
 
 <style lang="scss" scoped>

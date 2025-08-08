@@ -1378,7 +1378,7 @@ const handleSubmit = async () => {
   width: 40rpx;
   height: 40rpx;
   border: 2px solid $border-color;
-  border-radius: $border-radius-small;
+  border-radius: 4px;
   @include flex-center;
   margin-right: $spacing-sm;
   transition: $transition-base;
@@ -1756,7 +1756,7 @@ const handleSubmit = async () => {
   }
 
   .form-group {
-    margin-bottom: $spacing-xxl;
+    margin-bottom: $spacing-xl;
   }
 }
 

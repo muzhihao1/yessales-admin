@@ -284,7 +284,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from '@dcloudio/uni-app'
+import { useRoute, useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import type { CustomerActivity, CustomerDetail, CustomerQuoteSummary } from '@/types/customer'
 import StatCard from '@/components/admin/StatCard.vue'
@@ -499,7 +499,7 @@ function getActivityIcon(type: string): string {
 
 .customer-detail-page {
   min-height: 100vh;
-  background-color: $background-color;
+  background-color: $bg-color;
   padding: 20px;
 
   .loading-container,
@@ -513,7 +513,7 @@ function getActivityIcon(type: string): string {
 
     .loading-text {
       font-size: 16px;
-      color: $text-secondary;
+      color: $text-color-secondary;
     }
 
     .error-text {
@@ -552,7 +552,7 @@ function getActivityIcon(type: string): string {
         .customer-name {
           font-size: 24px;
           font-weight: 600;
-          color: $text-primary;
+          color: $text-color;
           margin-bottom: 12px;
           display: block;
         }
@@ -647,7 +647,7 @@ function getActivityIcon(type: string): string {
 
           &.action-contact {
             background: white;
-            color: $text-primary;
+            color: $text-color;
             border: 1px solid $border-color;
 
             &:hover {
@@ -668,7 +668,7 @@ function getActivityIcon(type: string): string {
       .section-title {
         font-size: 18px;
         font-weight: 600;
-        color: $text-primary;
+        color: $text-color;
         margin-bottom: 20px;
         display: block;
       }
@@ -685,7 +685,7 @@ function getActivityIcon(type: string): string {
 
         .section-count {
           font-size: 14px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
 
@@ -705,13 +705,13 @@ function getActivityIcon(type: string): string {
 
           .info-label {
             font-size: 13px;
-            color: $text-secondary;
+            color: $text-color-secondary;
             font-weight: 500;
           }
 
           .info-value {
             font-size: 15px;
-            color: $text-primary;
+            color: $text-color;
           }
         }
       }
@@ -725,7 +725,7 @@ function getActivityIcon(type: string): string {
       .notes-content {
         font-size: 14px;
         line-height: 1.6;
-        color: $text-primary;
+        color: $text-color;
         white-space: pre-wrap;
       }
 
@@ -756,7 +756,7 @@ function getActivityIcon(type: string): string {
 
             .quote-number {
               font-weight: 500;
-              color: $text-primary;
+              color: $text-color;
             }
 
             .quote-amount {
@@ -774,12 +774,12 @@ function getActivityIcon(type: string): string {
 
             .quote-items {
               font-size: 13px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
 
             .quote-date {
               font-size: 12px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
           }
 
@@ -848,18 +848,18 @@ function getActivityIcon(type: string): string {
 
             .activity-description {
               font-size: 14px;
-              color: $text-primary;
+              color: $text-color;
               line-height: 1.5;
             }
 
             .activity-date {
               font-size: 12px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
 
             .activity-user {
               font-size: 12px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
           }
         }
@@ -913,17 +913,17 @@ function getActivityIcon(type: string): string {
 
             .timeline-title {
               font-weight: 500;
-              color: $text-primary;
+              color: $text-color;
             }
 
             .timeline-date {
               font-size: 14px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
 
             .timeline-user {
               font-size: 13px;
-              color: $text-secondary;
+              color: $text-color-secondary;
             }
           }
         }
@@ -937,7 +937,7 @@ function getActivityIcon(type: string): string {
           display: block;
           margin-bottom: 16px;
           font-size: 14px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
 
         .empty-action {
@@ -962,7 +962,7 @@ function getActivityIcon(type: string): string {
         display: block;
         margin-bottom: 8px;
         font-size: 14px;
-        color: $text-primary;
+        color: $text-color;
         font-weight: 500;
       }
 
@@ -997,7 +997,7 @@ function getActivityIcon(type: string): string {
 
         .picker-arrow {
           font-size: 12px;
-          color: $text-secondary;
+          color: $text-color-secondary;
         }
       }
     }
