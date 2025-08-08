@@ -1,39 +1,38 @@
 {
-  "buildCommand": "cd frontend && npm run build:h5",
-  "devCommand": "cd frontend && npm run dev:h5",
-  "installCommand": "cd frontend && npm ci --legacy-peer-deps",
-  "outputDirectory": "frontend/dist",
-  "rewrites": [
+  "version": 2,
+  "builds": [
     {
-      "source": "/admin",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/admin/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/sales", 
-      "destination": "/index.html"
-    },
-    {
-      "source": "/sales/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build@latest",
+      "config": {
+        "distDir": "dist"
+      }
     }
   ],
-  "headers": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-YesSales-Domain",
-          "value": "true"
-        }
-      ]
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/admin",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/sales",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/sales/(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
