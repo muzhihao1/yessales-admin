@@ -259,20 +259,14 @@
               <SalesButton
                 :type="pricingConfig.discountType === 'percentage' ? 'primary' : 'default'"
                 size="small"
-                @click="
-                  pricingConfig.discountType = 'percentage'
-                  validateDiscount()
-                "
+                @click="() => { pricingConfig.discountType = 'percentage'; validateDiscount() }"
               >
                 按比例
               </SalesButton>
               <SalesButton
                 :type="pricingConfig.discountType === 'fixed' ? 'primary' : 'default'"
                 size="small"
-                @click="
-                  pricingConfig.discountType = 'fixed'
-                  validateDiscount()
-                "
+                @click="() => { pricingConfig.discountType = 'fixed'; validateDiscount() }"
               >
                 固定金额
               </SalesButton>
@@ -320,10 +314,7 @@
 
               <view
                 class="tax-included-option"
-                @click="
-                  pricingConfig.taxIncluded = !pricingConfig.taxIncluded
-                  saveDraft()
-                "
+                @click="() => { pricingConfig.taxIncluded = !pricingConfig.taxIncluded; saveDraft() }"
               >
                 <view
                   class="option-checkbox"
@@ -371,20 +362,14 @@
                   <SalesButton
                     :type="charge.type === 'fixed' ? 'primary' : 'default'"
                     size="mini"
-                    @click="
-                      charge.type = 'fixed'
-                      saveDraft()
-                    "
+                    @click="() => { charge.type = 'fixed'; saveDraft() }"
                   >
                     固定
                   </SalesButton>
                   <SalesButton
                     :type="charge.type === 'percentage' ? 'primary' : 'default'"
                     size="mini"
-                    @click="
-                      charge.type = 'percentage'
-                      saveDraft()
-                    "
+                    @click="() => { charge.type = 'percentage'; saveDraft() }"
                   >
                     比例
                   </SalesButton>

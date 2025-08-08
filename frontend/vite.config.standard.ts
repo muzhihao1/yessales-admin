@@ -2,8 +2,23 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
+// Custom plugin to rename index.standard.html to index.html
+const renameIndexPlugin = () => {
+  return {
+    name: 'rename-index',
+    generateBundle(options, bundle) {
+      // Find the HTML file and rename it
+      const htmlFile = Object.keys(bundle).find(name => name.endsWith('.html'))
+      if (htmlFile && htmlFile !== 'index.html') {
+        bundle['index.html'] = bundle[htmlFile]
+        delete bundle[htmlFile]
+      }
+    }
+  }
+}
+
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), renameIndexPlugin()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
