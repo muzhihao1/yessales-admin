@@ -12,7 +12,8 @@
 <script setup lang="ts">
 import { useRealtimeIndicator } from '@/composables/useRealtimeStatus'
 
-const { indicatorProps, onIndicatorClick, isConnected, quality } = useRealtimeIndicator()
+const { indicatorProps, onIndicatorClick } = useRealtimeIndicator()
+// isConnected and quality are available if needed for additional logic
 </script>
 
 <style lang="scss" scoped>

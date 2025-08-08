@@ -224,7 +224,8 @@ const virtualRowStyle = computed(() => {
 
 // 从表格上下文获取状态映射配置（如果有）
 const statusConfig = inject<Record<string, { label: string; type: string }>>('statusConfig', {})
-const dateFormat = inject<string>('dateFormat', 'YYYY-MM-DD HH:mm')
+// dateFormat is available if needed for custom formatting
+// const dateFormat = inject<string>('dateFormat', 'YYYY-MM-DD HH:mm')
 
 // 获取列值
 const getColumnValue = (key: string) => {

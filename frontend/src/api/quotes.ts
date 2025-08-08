@@ -1,6 +1,6 @@
 import ApiClient from './client'
 import { supabase } from './config'
-import type { Customer, Quote, QuoteItem } from '@/types/models'
+import type { Quote } from '@/types/models'
 import type { ApiResponse, CreateQuoteRequest, QueryParams } from '@/types/api'
 
 export class QuotesApi {

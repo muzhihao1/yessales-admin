@@ -322,7 +322,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useLogsStore } from '@/stores/logs'
 import { usePermissions } from '@/composables/usePermissions'
 import DataTable from '@/components/common/DataTable.vue'
@@ -330,7 +330,7 @@ import DataPagination from '@/components/common/DataPagination.vue'
 import RealtimeIndicator from '@/components/admin/RealtimeIndicator.vue'
 import LogDetailsModal from '@/components/admin/LogDetailsModal.vue'
 import LogExportModal from '@/components/admin/LogExportModal.vue'
-import type { LogEntry, LogLevel, LogCategory, LogAction, LogFilter } from '@/types/logs'
+import type { LogAction, LogCategory, LogEntry, LogFilter, LogLevel } from '@/types/logs'
 
 // Store and permissions
 const logsStore = useLogsStore()

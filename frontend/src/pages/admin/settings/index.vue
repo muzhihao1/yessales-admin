@@ -6,33 +6,27 @@
         <text class="page-title">系统设置</text>
         <text class="page-subtitle">{{ categoryInfo.description }}</text>
       </view>
-      
+
       <view class="header-actions">
         <!-- Real-time indicator -->
         <RealtimeIndicator />
-        
+
         <!-- Import/Export actions -->
         <view class="import-export-actions">
-          <button 
-            class="action-btn export"
-            @click="showExportModal"
-          >
+          <button class="action-btn export" @click="showExportModal">
             <text class="btn-icon">📤</text>
             <text>导出设置</text>
           </button>
-          
-          <button 
-            class="action-btn import"
-            @click="showImportModal"
-          >
+
+          <button class="action-btn import" @click="showImportModal">
             <text class="btn-icon">📥</text>
             <text>导入设置</text>
           </button>
         </view>
-        
+
         <!-- Save actions -->
         <view class="save-actions">
-          <button 
+          <button
             class="action-btn reset"
             @click="resetCurrentCategory"
             :disabled="loading || saving"
@@ -40,8 +34,8 @@
             <text class="btn-icon">🔄</text>
             <text>重置</text>
           </button>
-          
-          <button 
+
+          <button
             class="action-btn save primary"
             @click="saveCurrentSettings"
             :disabled="loading || saving || !hasUnsavedChanges"
@@ -52,7 +46,7 @@
         </view>
       </view>
     </view>
-    
+
     <!-- Settings navigation and content -->
     <view class="settings-container">
       <!-- Category sidebar -->
@@ -60,9 +54,9 @@
         <view class="sidebar-header">
           <text class="sidebar-title">设置分类</text>
         </view>
-        
+
         <view class="category-list">
-          <view 
+          <view
             v-for="(info, category) in SETTINGS_CATEGORIES"
             :key="category"
             class="category-item"
@@ -82,14 +76,14 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Settings content -->
       <view class="settings-content">
         <!-- Loading state -->
         <view v-if="loading" class="loading-container">
           <text class="loading-text">加载设置中...</text>
         </view>
-        
+
         <!-- Error state -->
         <view v-if="error" class="error-container">
           <text class="error-text">{{ error }}</text>
@@ -97,7 +91,7 @@
             <text>重试</text>
           </button>
         </view>
-        
+
         <!-- Settings form -->
         <view v-if="!loading && !error" class="settings-form">
           <!-- Category header -->
@@ -124,106 +118,87 @@
                 <text class="category-description">{{ categoryInfo.description }}</text>
               </view>
             </view>
-            
+
             <view class="category-actions">
-              <button 
-                class="history-btn"
-                @click="showChangeHistory"
-              >
+              <button class="history-btn" @click="showChangeHistory">
                 <text class="btn-icon">📋</text>
                 <text>变更历史</text>
               </button>
             </view>
           </view>
-          
+
           <!-- Settings groups -->
           <view class="settings-groups">
             <!-- General Settings -->
             <view v-if="currentCategory === 'general'" class="settings-group">
-              <GeneralSettings 
-                :settings="currentCategorySettings"
-                @update="onSettingUpdate"
-              />
+              <GeneralSettings :settings="currentCategorySettings" @update="onSettingUpdate" />
             </view>
-            
+
             <!-- Business Rules -->
             <view v-if="currentCategory === 'business'" class="settings-group">
-              <BusinessRulesSettings 
-                :settings="businessRules"
-                @update="onBusinessRuleUpdate"
-              />
+              <BusinessRulesSettings :settings="businessRules" @update="onBusinessRuleUpdate" />
             </view>
-            
+
             <!-- Security Settings -->
             <view v-if="currentCategory === 'security'" class="settings-group">
-              <SecuritySettings 
-                :settings="securitySettings"
-                @update="onSecuritySettingUpdate"
-              />
+              <SecuritySettings :settings="securitySettings" @update="onSecuritySettingUpdate" />
             </view>
-            
+
             <!-- Notification Settings -->
             <view v-if="currentCategory === 'notification'" class="settings-group">
-              <NotificationSettings 
+              <NotificationSettings
                 :settings="notificationSettings"
                 @update="onNotificationSettingUpdate"
               />
             </view>
-            
+
             <!-- Integration Settings -->
             <view v-if="currentCategory === 'integration'" class="settings-group">
-              <IntegrationSettings 
+              <IntegrationSettings
                 :settings="integrationSettings"
                 @update="onIntegrationSettingUpdate"
               />
             </view>
-            
+
             <!-- Appearance Settings -->
             <view v-if="currentCategory === 'appearance'" class="settings-group">
-              <AppearanceSettings 
+              <AppearanceSettings
                 :settings="appearanceSettings"
                 @update="onAppearanceSettingUpdate"
               />
             </view>
-            
+
             <!-- Backup Settings -->
             <view v-if="currentCategory === 'backup'" class="settings-group">
-              <BackupSettings 
-                :settings="backupSettings"
-                @update="onBackupSettingUpdate"
-              />
+              <BackupSettings :settings="backupSettings" @update="onBackupSettingUpdate" />
             </view>
-            
+
             <!-- Maintenance Settings -->
             <view v-if="currentCategory === 'maintenance'" class="settings-group">
-              <MaintenanceSettings 
+              <MaintenanceSettings
                 :settings="maintenanceSettings"
                 @update="onMaintenanceSettingUpdate"
               />
             </view>
           </view>
-          
+
           <!-- Settings footer -->
           <view class="settings-footer">
             <view class="footer-info">
-              <text class="info-text">
-                最后更新: {{ formatLastUpdate() }}
-              </text>
-              <text v-if="hasUnsavedChanges" class="unsaved-indicator">
-                有未保存的更改
-              </text>
+              <text class="info-text"> 最后更新: {{ formatLastUpdate() }} </text>
+              <text v-if="hasUnsavedChanges" class="unsaved-indicator"> 有未保存的更改 </text>
             </view>
-            
+
             <view class="footer-actions">
-              <button 
+              <button
                 class="footer-btn secondary"
                 @click="discardChanges"
                 :disabled="!hasUnsavedChanges"
               >
                 <text>取消更改</text>
               </button>
-              
-              <button 
+
+              <button
                 class="footer-btn primary"
                 @click="saveCurrentSettings"
                 :disabled="!hasUnsavedChanges || saving"
@@ -235,27 +210,28 @@
         </view>
       </view>
     </view>
-    
-    <!-- UX Enhancement: Validation Feedback -->\n    <SettingsValidationFeedback
-      :state=\"validationFeedback.state\"
-      :visible=\"validationFeedback.visible\"
-      :success-message=\"validationFeedback.successMessage\"
-      :error-message=\"validationFeedback.errorMessage\"
-      :warning-message=\"validationFeedback.warningMessage\"
-      :info-message=\"validationFeedback.infoMessage\"
-      :error-details=\"validationFeedback.errorDetails\"
-      :field-errors=\"validationFeedback.fieldErrors\"
-      :show-progress=\"validationFeedback.showProgress\"
-      :progress-current=\"validationFeedback.progressCurrent\"
-      :progress-total=\"validationFeedback.progressTotal\"
-      :progress-title=\"validationFeedback.progressTitle\"
-      :progress-message=\"validationFeedback.progressMessage\"
-      :auto-hide=\"3000\"
-      @dismiss=\"handleValidationDismiss\"
-      @retry=\"handleValidationRetry\"
-      @apply-suggestion=\"handleApplySuggestion\"
+
+    <!-- UX Enhancement: Validation Feedback -->
+    <SettingsValidationFeedback
+      :state="validationFeedback.state"
+      :visible="validationFeedback.visible"
+      :success-message="validationFeedback.successMessage"
+      :error-message="validationFeedback.errorMessage"
+      :warning-message="validationFeedback.warningMessage"
+      :info-message="validationFeedback.infoMessage"
+      :error-details="validationFeedback.errorDetails"
+      :field-errors="validationFeedback.fieldErrors"
+      :show-progress="validationFeedback.showProgress"
+      :progress-current="validationFeedback.progressCurrent"
+      :progress-total="validationFeedback.progressTotal"
+      :progress-title="validationFeedback.progressTitle"
+      :progress-message="validationFeedback.progressMessage"
+      :auto-hide="3000"
+      @dismiss="handleValidationDismiss"
+      @retry="handleValidationRetry"
+      @apply-suggestion="handleApplySuggestion"
     />
-    
+
     <!-- Export Modal -->
     <SettingsExportModal
       :visible="showExportModalRef"
@@ -263,14 +239,14 @@
       @close="closeExportModal"
       @export="handleExportSettings"
     />
-    
+
     <!-- Import Modal -->
     <SettingsImportModal
       :visible="showImportModalRef"
       @close="closeImportModal"
       @import="handleImportSettings"
     />
-    
+
     <!-- Change History Modal -->
     <SettingsHistoryModal
       :visible="showHistoryModalRef"
@@ -278,7 +254,7 @@
       :category="currentCategory"
       @close="closeHistoryModal"
     />
-    
+
     <!-- Confirmation dialogs -->
     <ConfirmDialog
       :visible="showConfirmDialog"
@@ -333,7 +309,7 @@ const {
   currentCategorySettings,
   hasUnsavedChanges,
   categoryInfo,
-  
+
   fetchSettings,
   updateSetting,
   batchUpdateSettings,
@@ -374,8 +350,9 @@ const validationFeedback = ref({
 
 // Computed properties
 const lastUpdate = computed(() => {
-  const latestSetting = currentCategorySettings.value
-    .sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime())[0]
+  const latestSetting = [...currentCategorySettings.value].sort(
+    (a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+  )[0]
   return latestSetting?.updated_at
 })
 
@@ -443,7 +420,7 @@ async function saveCurrentSettings() {
   if (Object.keys(pendingChanges.value).length === 0) {
     return
   }
-  
+
   try {
     // Show validation progress
     validationFeedback.value = {
@@ -456,15 +433,15 @@ async function saveCurrentSettings() {
       progressCurrent: 30,
       progressTotal: 100
     }
-    
+
     // Simulate validation steps
     setTimeout(() => {
       validationFeedback.value.progressCurrent = 70
       validationFeedback.value.progressMessage = '应用设置更改...'
     }, 500)
-    
+
     await batchUpdateSettings(pendingChanges.value)
-    
+
     // Show success feedback
     validationFeedback.value = {
       ...validationFeedback.value,
@@ -474,19 +451,18 @@ async function saveCurrentSettings() {
       showProgress: false,
       progressCurrent: 100
     }
-    
+
     pendingChanges.value = {}
-    
+
     // Auto-hide after 3 seconds
     setTimeout(() => {
       if (validationFeedback.value.state === 'success') {
         validationFeedback.value.visible = false
       }
     }, 3000)
-    
   } catch (error) {
     console.error('Failed to save settings:', error)
-    
+
     // Show error feedback with details
     validationFeedback.value = {
       ...validationFeedback.value,
@@ -528,17 +504,16 @@ function closeExportModal() {
 async function handleExportSettings(categories: SettingsCategory[]) {
   try {
     const exportData = await exportSettings(categories)
-    
+
     // Simulate file download
     const filename = `settings_export_${new Date().toISOString().split('T')[0]}.json`
-    
+
     uni.showToast({
       title: `设置已导出: ${filename}`,
       icon: 'success'
     })
-    
+
     console.log('Exported settings:', exportData)
-    
   } catch (error) {
     console.error('Export failed:', error)
   }
@@ -555,7 +530,7 @@ function closeImportModal() {
 async function handleImportSettings(importData: SettingsExportData) {
   try {
     const result = await importSettings(importData)
-    
+
     let message = `导入完成: ${result.imported_count} 项成功`
     if (result.skipped_count > 0) {
       message += `, ${result.skipped_count} 项跳过`
@@ -563,16 +538,15 @@ async function handleImportSettings(importData: SettingsExportData) {
     if (result.error_count > 0) {
       message += `, ${result.error_count} 项失败`
     }
-    
+
     uni.showToast({
       title: message,
       icon: result.success ? 'success' : 'none'
     })
-    
+
     if (result.errors.length > 0) {
       console.error('Import errors:', result.errors)
     }
-    
   } catch (error) {
     console.error('Import failed:', error)
   }
@@ -601,7 +575,7 @@ function closeConfirmDialog() {
 
 function formatLastUpdate(): string {
   if (!lastUpdate.value) return '未知'
-  
+
   const date = new Date(lastUpdate.value)
   return date.toLocaleString('zh-CN')
 }
@@ -649,13 +623,20 @@ function handleHelpNavigate(settingKey: string) {
 function getCategoryHelpContent(category: SettingsCategory): string {
   const helpContent: Record<SettingsCategory, string> = {
     general: '常规设置控制系统的基础行为和显示选项。这些设置会影响所有用户的体验，建议谨慎修改。',
-    business: '业务规则设置定义了系统的核心业务逻辑，包括报价流程、审批规则、数据验证等。修改前请确保了解对业务流程的影响。',
-    security: '安全设置是系统防护的关键配置，包括访问控制、会话管理、数据加密等。任何修改都可能影响系统安全性，请谨慎操作。',
-    notification: '通知设置控制系统如何向用户发送消息和提醒。合理配置可以提升用户体验，避免信息过载。',
-    integration: '集成设置管理与第三方系统的连接配置，包括API密钥、外部服务地址等。错误配置可能导致功能异常。',
-    appearance: '外观设置控制系统的视觉表现，包括主题、布局、字体等。这些设置主要影响用户界面，相对安全。',
-    backup: '备份设置确保数据安全，包括备份频率、存储位置、保留策略等。建议定期检查备份状态，确保数据安全。',
-    maintenance: '维护设置控制系统的运维操作，包括日志级别、性能监控、清理策略等。这些设置影响系统性能和稳定性。'
+    business:
+      '业务规则设置定义了系统的核心业务逻辑，包括报价流程、审批规则、数据验证等。修改前请确保了解对业务流程的影响。',
+    security:
+      '安全设置是系统防护的关键配置，包括访问控制、会话管理、数据加密等。任何修改都可能影响系统安全性，请谨慎操作。',
+    notification:
+      '通知设置控制系统如何向用户发送消息和提醒。合理配置可以提升用户体验，避免信息过载。',
+    integration:
+      '集成设置管理与第三方系统的连接配置，包括API密钥、外部服务地址等。错误配置可能导致功能异常。',
+    appearance:
+      '外观设置控制系统的视觉表现，包括主题、布局、字体等。这些设置主要影响用户界面，相对安全。',
+    backup:
+      '备份设置确保数据安全，包括备份频率、存储位置、保留策略等。建议定期检查备份状态，确保数据安全。',
+    maintenance:
+      '维护设置控制系统的运维操作，包括日志级别、性能监控、清理策略等。这些设置影响系统性能和稳定性。'
   }
   return helpContent[category] || '暂无帮助信息'
 }
@@ -676,7 +657,8 @@ function getCategoryBestPractices(category: SettingsCategory): string[] {
 
 function getCategoryWarning(category: SettingsCategory): string | undefined {
   const warnings: Record<SettingsCategory, string> = {
-    security: '⚠️ 安全设置的修改可能影响系统安全性，请确保你了解每项设置的含义，并在修改前制定回滚计划。',
+    security:
+      '⚠️ 安全设置的修改可能影响系统安全性，请确保你了解每项设置的含义，并在修改前制定回滚计划。',
     business: '⚠️ 业务规则的变更将直接影响用户操作流程，请务必与相关业务团队确认后再进行修改。',
     integration: '⚠️ 集成设置错误可能导致外部服务无法正常工作，请在修改前确认相关服务的可用性。',
     backup: '⚠️ 备份设置关系到数据安全，错误配置可能导致数据丢失，请谨慎操作。'
@@ -684,8 +666,10 @@ function getCategoryWarning(category: SettingsCategory): string | undefined {
   return warnings[category]
 }
 
-function getCategoryRelatedSettings(category: SettingsCategory): Array<{key: string, label: string}> {
-  const relatedSettings: Record<SettingsCategory, Array<{key: string, label: string}>> = {
+function getCategoryRelatedSettings(
+  category: SettingsCategory
+): Array<{ key: string; label: string }> {
+  const relatedSettings: Record<SettingsCategory, Array<{ key: string; label: string }>> = {
     security: [
       { key: 'notification', label: '安全通知设置' },
       { key: 'backup', label: '数据备份设置' }
@@ -724,7 +708,7 @@ onMounted(async () => {
     uni.navigateBack()
     return
   }
-  
+
   // Load initial settings
   await refreshSettings()
 })
@@ -748,10 +732,10 @@ onMounted(async () => {
   background: $color-bg-white;
   border-bottom: 1px solid $color-border;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  
+
   .header-left {
     flex: 1;
-    
+
     .page-title {
       font-size: $font-size-xl;
       font-weight: 600;
@@ -759,24 +743,24 @@ onMounted(async () => {
       display: block;
       margin-bottom: $spacing-xs;
     }
-    
+
     .page-subtitle {
       font-size: $font-size-sm;
       color: $color-text-secondary;
     }
   }
-  
+
   .header-actions {
     display: flex;
     align-items: center;
     gap: $spacing-md;
-    
+
     .import-export-actions,
     .save-actions {
       display: flex;
       gap: $spacing-sm;
     }
-    
+
     .action-btn {
       display: flex;
       align-items: center;
@@ -786,66 +770,66 @@ onMounted(async () => {
       font-size: $font-size-sm;
       cursor: pointer;
       transition: all 0.3s ease;
-      
+
       .btn-icon {
         font-size: 14px;
       }
-      
+
       &.export {
         background: $color-bg-light;
         color: $color-text-primary;
         border: 1px solid $color-border;
-        
+
         &:hover {
           background: $color-bg-white;
         }
       }
-      
+
       &.import {
         background: $color-info;
         color: white;
         border: 1px solid $color-info;
-        
+
         &:hover {
           background: darken($color-info, 10%);
         }
       }
-      
+
       &.reset {
         background: $color-bg-light;
         color: $color-text-secondary;
         border: 1px solid $color-border;
-        
+
         &:hover {
           background: $color-warning;
           color: white;
           border-color: $color-warning;
         }
       }
-      
+
       &.save {
         background: $color-success;
         color: white;
         border: 1px solid $color-success;
-        
+
         &:hover {
           background: darken($color-success, 10%);
         }
-        
+
         &.primary {
           background: $color-primary;
           border-color: $color-primary;
-          
+
           &:hover {
             background: darken($color-primary, 10%);
           }
         }
       }
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;
-        
+
         &:hover {
           background: initial;
           color: initial;
@@ -867,21 +851,21 @@ onMounted(async () => {
   background: $color-bg-white;
   border-right: 1px solid $color-border;
   overflow-y: auto;
-  
+
   .sidebar-header {
     padding: $spacing-md;
     border-bottom: 1px solid $color-border;
-    
+
     .sidebar-title {
       font-size: $font-size-md;
       font-weight: 600;
       color: $color-text-primary;
     }
   }
-  
+
   .category-list {
     padding: $spacing-sm;
-    
+
     .category-item {
       display: flex;
       align-items: center;
@@ -892,30 +876,30 @@ onMounted(async () => {
       transition: all 0.3s ease;
       margin-bottom: $spacing-xs;
       position: relative;
-      
+
       &:hover {
         background: rgba($color-primary, 0.05);
       }
-      
+
       &.active {
         background: rgba($color-primary, 0.1);
         border-left: 3px solid $color-primary;
-        
+
         .category-title {
           color: $color-primary;
           font-weight: 600;
         }
       }
-      
+
       .category-icon {
         font-size: 20px;
         width: 24px;
         text-align: center;
       }
-      
+
       .category-content {
         flex: 1;
-        
+
         .category-title {
           font-size: $font-size-sm;
           font-weight: 500;
@@ -923,14 +907,14 @@ onMounted(async () => {
           display: block;
           margin-bottom: 2px;
         }
-        
+
         .category-desc {
           font-size: $font-size-xs;
           color: $color-text-secondary;
           line-height: 1.3;
         }
       }
-      
+
       .category-indicator {
         .indicator-dot {
           color: $color-warning;
@@ -945,7 +929,7 @@ onMounted(async () => {
   flex: 1;
   overflow-y: auto;
   background: $color-bg-light;
-  
+
   .loading-container,
   .error-container {
     display: flex;
@@ -953,14 +937,14 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     padding: $spacing-xl;
-    
+
     .loading-text,
     .error-text {
       font-size: $font-size-md;
       color: $color-text-secondary;
       margin-bottom: $spacing-md;
     }
-    
+
     .retry-btn {
       padding: 8px 16px;
       background: $color-primary;
@@ -970,12 +954,12 @@ onMounted(async () => {
       cursor: pointer;
     }
   }
-  
+
   .settings-form {
     height: 100%;
     display: flex;
     flex-direction: column;
-    
+
     .category-header {
       display: flex;
       justify-content: space-between;
@@ -983,16 +967,16 @@ onMounted(async () => {
       padding: $spacing-lg;
       background: $color-bg-white;
       border-bottom: 1px solid $color-border;
-      
+
       .category-info {
         display: flex;
         align-items: center;
         gap: $spacing-md;
-        
+
         .category-icon-large {
           font-size: 32px;
         }
-        
+
         .category-text {
           .category-title-row {
             display: flex;
@@ -1007,14 +991,14 @@ onMounted(async () => {
             color: $color-text-primary;
             display: block;
           }
-          
+
           .category-description {
             font-size: $font-size-sm;
             color: $color-text-secondary;
           }
         }
       }
-      
+
       .category-actions {
         .history-btn {
           display: flex;
@@ -1027,23 +1011,23 @@ onMounted(async () => {
           border-radius: $border-radius-md;
           font-size: $font-size-sm;
           cursor: pointer;
-          
+
           &:hover {
             background: $color-bg-white;
           }
-          
+
           .btn-icon {
             font-size: 12px;
           }
         }
       }
     }
-    
+
     .settings-groups {
       flex: 1;
       padding: $spacing-lg;
       overflow-y: auto;
-      
+
       .settings-group {
         background: $color-bg-white;
         border-radius: $border-radius-lg;
@@ -1051,7 +1035,7 @@ onMounted(async () => {
         overflow: hidden;
       }
     }
-    
+
     .settings-footer {
       display: flex;
       justify-content: space-between;
@@ -1059,13 +1043,13 @@ onMounted(async () => {
       padding: $spacing-md $spacing-lg;
       background: $color-bg-white;
       border-top: 1px solid $color-border;
-      
+
       .footer-info {
         .info-text {
           font-size: $font-size-sm;
           color: $color-text-secondary;
         }
-        
+
         .unsaved-indicator {
           font-size: $font-size-sm;
           color: $color-warning;
@@ -1073,38 +1057,38 @@ onMounted(async () => {
           margin-left: $spacing-md;
         }
       }
-      
+
       .footer-actions {
         display: flex;
         gap: $spacing-sm;
-        
+
         .footer-btn {
           padding: 8px 16px;
           border-radius: $border-radius-md;
           font-size: $font-size-sm;
           cursor: pointer;
           transition: all 0.3s ease;
-          
+
           &.secondary {
             background: $color-bg-light;
             color: $color-text-secondary;
             border: 1px solid $color-border;
-            
+
             &:hover {
               background: $color-bg-white;
             }
           }
-          
+
           &.primary {
             background: $color-primary;
             color: white;
             border: 1px solid $color-primary;
-            
+
             &:hover {
               background: darken($color-primary, 10%);
             }
           }
-          
+
           &:disabled {
             opacity: 0.6;
             cursor: not-allowed;
@@ -1120,23 +1104,23 @@ onMounted(async () => {
   .settings-container {
     flex-direction: column;
   }
-  
+
   .settings-sidebar {
     width: 100%;
     height: auto;
     max-height: 200px;
-    
+
     .category-list {
       display: flex;
       overflow-x: auto;
       gap: $spacing-sm;
-      
+
       .category-item {
         min-width: 120px;
         flex-direction: column;
         text-align: center;
         margin-bottom: 0;
-        
+
         .category-content {
           .category-desc {
             display: none;
@@ -1151,11 +1135,11 @@ onMounted(async () => {
   .page-header {
     flex-direction: column;
     gap: $spacing-md;
-    
+
     .header-actions {
       width: 100%;
       justify-content: space-between;
-      
+
       .import-export-actions,
       .save-actions {
         flex-direction: column;
@@ -1163,22 +1147,22 @@ onMounted(async () => {
       }
     }
   }
-  
+
   .settings-content {
     .category-header {
       flex-direction: column;
       align-items: stretch;
       gap: $spacing-md;
-      
+
       .category-actions {
         align-self: flex-end;
       }
     }
-    
+
     .settings-footer {
       flex-direction: column;
       gap: $spacing-md;
-      
+
       .footer-actions {
         width: 100%;
         justify-content: space-between;

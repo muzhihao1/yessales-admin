@@ -117,8 +117,8 @@
         </view>
         
         <!-- Loading state with skeleton -->
-        <Transition name="fade">
-          <view v-if="productsLoading" class="products-loading">
+        <Transition name="fade" v-if="productsLoading">
+          <view class="products-loading">
             <LoadingSkeleton 
               variant="product" 
               :item-count="6" 
@@ -134,8 +134,8 @@
         </view>
         
         <!-- Product carousel with animations -->
-        <Transition name="fade-up">
-          <view v-if="hotProducts.length > 0" class="product-carousel">
+        <Transition name="fade-up" v-else-if="hotProducts.length > 0">
+          <view class="product-carousel">
             <scroll-view
               scroll-x
               class="carousel-scroll"

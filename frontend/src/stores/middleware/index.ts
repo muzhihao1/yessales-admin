@@ -118,12 +118,8 @@ export class StoreEnhancer {
     for (const [key, value] of Object.entries(store)) {
       if (typeof value === 'function') {
         enhanced[key] = async (...args: any[]) => {
-          try {
-            return await value.apply(store, args)
-          } catch (error) {
-            // Error will be handled by the error handler utility
-            throw error
-          }
+          // Direct execution - error handling delegated to error handler utility
+          return await value.apply(store, args)
         }
       }
     }

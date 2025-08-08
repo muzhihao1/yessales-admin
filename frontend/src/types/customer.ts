@@ -183,30 +183,30 @@ export interface CustomerExportData {
 // Validation schemas
 export interface CustomerValidationRules {
   name: {
-    required: true
-    minLength: 2
-    maxLength: 50
+    required: boolean
+    minLength: number
+    maxLength: number
   }
   phone: {
-    required: true
-    pattern: /^1[3-9]\d{9}$/ // Chinese phone number pattern
+    required: boolean
+    pattern: RegExp
   }
   email: {
-    required: false
-    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    required: boolean
+    pattern: RegExp
   }
   wechat_id: {
-    required: false
-    minLength: 6
-    maxLength: 20
+    required: boolean
+    minLength: number
+    maxLength: number
   }
   company: {
-    required: false
-    maxLength: 100
+    required: boolean
+    maxLength: number
   }
   business_license: {
-    required: false
-    pattern: /^[0-9A-Z]{18}$/ // Simplified business license pattern
+    required: boolean
+    pattern: RegExp
   }
 }
 
