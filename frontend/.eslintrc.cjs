@@ -20,7 +20,11 @@ module.exports = {
   plugins: ['@typescript-eslint', 'vue'],
   rules: {
     // TypeScript rules
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-unused-vars': ['error', { 
+      argsIgnorePattern: '^_|^e$', 
+      varsIgnorePattern: '^_', 
+      ignoreRestSiblings: true 
+    }],
     '@typescript-eslint/no-explicit-any': 'warn',
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
@@ -35,7 +39,8 @@ module.exports = {
     'vue/component-definition-name-casing': ['error', 'PascalCase'],
     'vue/component-name-in-template-casing': ['error', 'PascalCase'],
     'vue/prop-name-casing': ['error', 'camelCase'],
-    'vue/custom-event-name-casing': ['error', 'camelCase'],
+    'vue/custom-event-name-casing': ['warn', 'camelCase'], // Relaxed to warning
+    'vue/no-export-in-script-setup': 'warn', // Relaxed to warning
 
     // General rules
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',

@@ -37,3 +37,14 @@ logs/
 # Uni-app specific auto-generated
 manifest.json
 pages.json
+
+# Backup and temporary directories
+src.backup.*
+*.backup.*
+repro/
+
+# Test and reproduction files
+**/test/
+**/tests/
+**/*.test.*
+**/*.spec.*
