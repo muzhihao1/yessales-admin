@@ -1,6 +1,6 @@
 {
   "name": "yessales-frontend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "YesSales（耶氏台球斗南销售中心报价系统）Frontend - Vue 3 + UniApp + Supabase",
   "type": "module",
   "scripts": {
