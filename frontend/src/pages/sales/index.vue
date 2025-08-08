@@ -3,15 +3,11 @@
     <view class="sales-header">
       <text class="sales-title">耶氏台球报价系统</text>
     </view>
-    
+
     <view class="sales-content">
-      <SalesButton @click="createQuote">
-        新建报价
-      </SalesButton>
-      
-      <SalesButton @click="viewHistory">
-        历史报价
-      </SalesButton>
+      <SalesButton @click="createQuote"> 新建报价 </SalesButton>
+
+      <SalesButton @click="viewHistory"> 历史报价 </SalesButton>
     </view>
   </view>
 </template>

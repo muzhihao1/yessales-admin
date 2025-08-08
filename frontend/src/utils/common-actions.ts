@@ -24,7 +24,12 @@ export const commonActions = {
       requiresConfirmation: true,
       confirmMessage: '确定要删除这个报价单吗？此操作不可撤销。'
     },
-    approve: { key: 'approve', label: '审批通过', icon: 'checkmarkempty', type: 'primary' as const },
+    approve: {
+      key: 'approve',
+      label: '审批通过',
+      icon: 'checkmarkempty',
+      type: 'primary' as const
+    },
     reject: { key: 'reject', label: '驳回', icon: 'close', type: 'warning' as const }
   },
 
@@ -72,18 +77,34 @@ export const commonActions = {
 export const commonBatchOperations = {
   quotes: [
     { key: 'export', label: '导出选中', icon: 'download', type: 'default' as const },
-    { key: 'delete', label: '批量删除', icon: 'trash', type: 'danger' as const, requiresConfirmation: true },
+    {
+      key: 'delete',
+      label: '批量删除',
+      icon: 'trash',
+      type: 'danger' as const,
+      requiresConfirmation: true
+    },
     { key: 'approve', label: '批量审批', icon: 'checkmarkempty', type: 'primary' as const }
   ],
   products: [
     { key: 'export', label: '导出选中', icon: 'download', type: 'default' as const },
-    { key: 'delete', label: '批量删除', icon: 'trash', type: 'danger' as const, requiresConfirmation: true }
+    {
+      key: 'delete',
+      label: '批量删除',
+      icon: 'trash',
+      type: 'danger' as const,
+      requiresConfirmation: true
+    }
   ],
-  customers: [
-    { key: 'export', label: '导出选中', icon: 'download', type: 'default' as const }
-  ],
+  customers: [{ key: 'export', label: '导出选中', icon: 'download', type: 'default' as const }],
   users: [
     { key: 'export', label: '导出选中', icon: 'download', type: 'default' as const },
-    { key: 'disable', label: '批量禁用', icon: 'close', type: 'warning' as const, requiresConfirmation: true }
+    {
+      key: 'disable',
+      label: '批量禁用',
+      icon: 'close',
+      type: 'warning' as const,
+      requiresConfirmation: true
+    }
   ]
 }

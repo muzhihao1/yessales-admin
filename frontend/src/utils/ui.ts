@@ -32,10 +32,10 @@ export const showModal = async (options: ModalOptions): Promise<ModalResult> => 
     type = 'info'
   } = options
 
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     // In a real implementation, this would show a modal component
     // For now, use uni.showModal or browser confirm as fallback
-    
+
     if (typeof uni !== 'undefined' && uni.showModal) {
       uni.showModal({
         title,
@@ -43,7 +43,7 @@ export const showModal = async (options: ModalOptions): Promise<ModalResult> => 
         showCancel,
         cancelText,
         confirmText,
-        success: (res) => {
+        success: res => {
           resolve({
             confirm: res.confirm || false,
             cancel: res.cancel || false
@@ -71,7 +71,7 @@ export const showModal = async (options: ModalOptions): Promise<ModalResult> => 
  * Show a toast notification
  */
 export const showToast = (
-  message: string, 
+  message: string,
   type: ToastType = 'success',
   duration: number = 2000
 ): void => {
@@ -85,7 +85,7 @@ export const showToast = (
   } else {
     // Web environment fallback
     console.log(`[${type.toUpperCase()}] ${message}`)
-    
+
     // Could implement a custom toast notification here
     // For now, just use console output
     if (type === 'error') {
@@ -128,13 +128,13 @@ export interface ActionSheetOptions {
   itemColor?: string
 }
 
-export const showActionSheet = (options: ActionSheetOptions): Promise<{tapIndex: number}> => {
+export const showActionSheet = (options: ActionSheetOptions): Promise<{ tapIndex: number }> => {
   return new Promise((resolve, reject) => {
     if (typeof uni !== 'undefined' && uni.showActionSheet) {
       uni.showActionSheet({
         ...options,
-        success: (res) => resolve(res),
-        fail: (err) => reject(err)
+        success: res => resolve(res),
+        fail: err => reject(err)
       })
     } else {
       // Web fallback - could implement custom action sheet
@@ -155,11 +155,12 @@ export const copyToClipboard = (text: string): Promise<void> => {
           showToast('已复制到剪贴板')
           resolve()
         },
-        fail: (err) => reject(err)
+        fail: err => reject(err)
       })
     } else if (navigator.clipboard) {
       // Modern browser clipboard API
-      navigator.clipboard.writeText(text)
+      navigator.clipboard
+        .writeText(text)
         .then(() => {
           showToast('已复制到剪贴板')
           resolve()
@@ -171,7 +172,7 @@ export const copyToClipboard = (text: string): Promise<void> => {
       textArea.value = text
       document.body.appendChild(textArea)
       textArea.select()
-      
+
       try {
         document.execCommand('copy')
         showToast('已复制到剪贴板')
@@ -194,18 +195,18 @@ export const debounce = <T extends (...args: any[]) => any>(
   immediate: boolean = false
 ): ((...args: Parameters<T>) => void) => {
   let timeout: NodeJS.Timeout | null = null
-  
+
   return (...args: Parameters<T>) => {
     const later = () => {
       timeout = null
       if (!immediate) func(...args)
     }
-    
+
     const callNow = immediate && !timeout
-    
+
     if (timeout) clearTimeout(timeout)
     timeout = setTimeout(later, wait)
-    
+
     if (callNow) func(...args)
   }
 }
@@ -218,12 +219,12 @@ export const throttle = <T extends (...args: any[]) => any>(
   limit: number
 ): ((...args: Parameters<T>) => void) => {
   let inThrottle = false
-  
+
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       func(...args)
       inThrottle = true
-      setTimeout(() => inThrottle = false, limit)
+      setTimeout(() => (inThrottle = false), limit)
     }
   }
 }
@@ -233,11 +234,11 @@ export const throttle = <T extends (...args: any[]) => any>(
  */
 export const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 Bytes'
-  
+
   const k = 1024
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB']
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
+
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 

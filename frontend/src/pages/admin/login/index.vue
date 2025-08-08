@@ -56,12 +56,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import type { LoginRequest } from '@/types/api'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore, type LoginCredentials } from '@/composables/useAuth'
 
 const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
 
-const formData = ref<LoginRequest>({
+const formData = ref<LoginCredentials>({
   username: '',
   password: ''
 })
@@ -98,20 +100,23 @@ const handleLogin = async () => {
   errorMessage.value = ''
 
   try {
-    const result = await authStore.login(formData.value)
+    const result = await authStore.loginAdmin(formData.value)
 
     if (result.success) {
-      uni.showToast({
-        title: '登录成功',
-        icon: 'success',
-        duration: 1500
-      })
-
-      setTimeout(() => {
+      console.log('✅ 管理员登录成功:', result.user?.name)
+      
+      // 获取redirect参数，如果没有则默认跳转到仪表盘
+      const redirectPath = (route.query.redirect as string) || '/admin/dashboard'
+      
+      // 在标准web环境中使用vue-router
+      if (typeof window !== 'undefined' && window.location) {
+        router.push(redirectPath)
+      } else {
+        // 在UniApp环境中使用uni API
         uni.reLaunch({
-          url: '/pages/admin/dashboard/index'
+          url: redirectPath.replace('/admin', '/pages/admin')
         })
-      }, 1500)
+      }
     } else {
       errorMessage.value = result.error || '登录失败'
     }
@@ -124,11 +129,22 @@ const handleLogin = async () => {
 }
 
 onMounted(async () => {
+  // 初始化身份验证状态
+  await authStore.initAuth()
+  
   // 检查是否已登录
-  if (authStore.isAuthenticated) {
-    uni.reLaunch({
-      url: '/pages/admin/dashboard/index'
-    })
+  if (authStore.isAdmin) {
+    console.log('✅ 已登录用户访问登录页，自动重定向')
+    
+    // 在标准web环境中使用vue-router
+    if (typeof window !== 'undefined' && window.location) {
+      router.push('/admin/dashboard')
+    } else {
+      // 在UniApp环境中使用uni API
+      uni.reLaunch({
+        url: '/pages/admin/dashboard/index'
+      })
+    }
   }
 })
 </script>

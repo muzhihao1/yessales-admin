@@ -8,7 +8,7 @@
           <text>×</text>
         </button>
       </view>
-      
+
       <!-- Content -->
       <view class="dialog-content">
         <view v-if="icon" class="dialog-icon">
@@ -23,13 +23,10 @@
           </view>
         </view>
       </view>
-      
+
       <!-- Actions -->
       <view class="dialog-actions">
-        <button
-          class="dialog-btn cancel-btn"
-          @click="handleCancel"
-        >
+        <button class="dialog-btn cancel-btn" @click="handleCancel">
           <text>{{ cancelText }}</text>
         </button>
         <button
@@ -150,13 +147,13 @@ function handleOverlayClick() {
   justify-content: space-between;
   padding: $spacing-lg;
   border-bottom: 1px solid $border-color;
-  
+
   .dialog-title {
     font-size: $font-size-large;
     font-weight: 600;
     color: $text-color;
   }
-  
+
   .close-btn {
     width: 32px;
     height: 32px;
@@ -169,7 +166,7 @@ function handleOverlayClick() {
     display: flex;
     align-items: center;
     justify-content: center;
-    
+
     &:hover {
       background: $bg-color;
       color: $text-color;
@@ -181,11 +178,11 @@ function handleOverlayClick() {
   padding: $spacing-lg;
   flex: 1;
   overflow-y: auto;
-  
+
   .dialog-icon {
     text-align: center;
     margin-bottom: $spacing-lg;
-    
+
     .icon {
       width: 60px;
       height: 60px;
@@ -195,34 +192,34 @@ function handleOverlayClick() {
       justify-content: center;
       font-size: 24px;
       font-weight: bold;
-      
+
       &.icon-default {
         background: rgba($primary-color, 0.1);
         color: $primary-color;
       }
-      
+
       &.icon-danger {
         background: rgba($danger-color, 0.1);
         color: $danger-color;
       }
-      
+
       &.icon-warning {
         background: rgba($warning-color, 0.1);
         color: $warning-color;
       }
-      
+
       &.icon-info {
         background: rgba($info-color, 0.1);
         color: $info-color;
       }
-      
+
       &.icon-success {
         background: rgba($success-color, 0.1);
         color: $success-color;
       }
     }
   }
-  
+
   .dialog-message {
     .message-text {
       font-size: $font-size-base;
@@ -230,24 +227,24 @@ function handleOverlayClick() {
       line-height: 1.5;
       display: block;
     }
-    
+
     .message-details {
       margin-top: $spacing-base;
       padding: $spacing-sm;
       background: $bg-color;
       border-radius: $border-radius-base;
-      
+
       .detail-item {
         display: block;
         font-size: $font-size-small;
         color: $text-color-secondary;
         line-height: 1.4;
         margin-bottom: $spacing-xs;
-        
+
         &:last-child {
           margin-bottom: 0;
         }
-        
+
         &:before {
           content: '•';
           margin-right: $spacing-xs;
@@ -265,7 +262,7 @@ function handleOverlayClick() {
   padding: $spacing-lg;
   border-top: 1px solid $border-color;
   background: $bg-color;
-  
+
   .dialog-btn {
     padding: $spacing-sm $spacing-lg;
     border-radius: $border-radius-base;
@@ -273,63 +270,63 @@ function handleOverlayClick() {
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 80px;
-    
+
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
     }
   }
-  
+
   .cancel-btn {
     background: $bg-color-white;
     color: $text-color-secondary;
     border: 1px solid $border-color;
-    
+
     &:hover:not(:disabled) {
       background: $bg-color;
       color: $text-color;
     }
   }
-  
+
   .confirm-btn {
     color: white;
     border: none;
-    
+
     &.btn-default {
       background: $primary-color;
-      
+
       &:hover:not(:disabled) {
         background: $primary-dark;
       }
     }
-    
+
     &.btn-danger {
       background: $danger-color;
-      
+
       &:hover:not(:disabled) {
         background: $danger-dark;
       }
     }
-    
+
     &.btn-warning {
       background: $warning-color;
-      
+
       &:hover:not(:disabled) {
         background: $warning-dark;
       }
     }
-    
+
     &.btn-info {
       background: $info-color;
-      
+
       &:hover:not(:disabled) {
         background: $info-dark;
       }
     }
-    
+
     &.btn-success {
       background: $success-color;
-      
+
       &:hover:not(:disabled) {
         background: $success-dark;
       }
@@ -342,13 +339,13 @@ function handleOverlayClick() {
   .confirm-dialog-overlay {
     padding: $spacing-base;
   }
-  
+
   .confirm-dialog {
     min-width: 0;
     width: 100%;
     max-width: none;
   }
-  
+
   .dialog-actions {
     .dialog-btn {
       flex: 1;

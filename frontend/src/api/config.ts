@@ -41,19 +41,19 @@ const createStorageAdapter = () => {
           const result = window.uni.getStorageSync(key)
           return result || null
         }
-        
+
         // 回退到标准localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           return localStorage.getItem(key)
         }
-        
+
         return null
       } catch (error) {
         console.warn('[Storage] Failed to get item:', key, error)
         return null
       }
     },
-    
+
     setItem: (key: string, value: string) => {
       try {
         // 优先使用UniApp API（如果可用）
@@ -61,20 +61,20 @@ const createStorageAdapter = () => {
           window.uni.setStorageSync(key, value)
           return
         }
-        
+
         // 回退到标准localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem(key, value)
           return
         }
-        
+
         console.warn('[Storage] No storage method available')
       } catch (error) {
         console.warn('[Storage] Failed to set item:', key, error)
         throw error
       }
     },
-    
+
     removeItem: (key: string) => {
       try {
         // 优先使用UniApp API（如果可用）
@@ -82,13 +82,13 @@ const createStorageAdapter = () => {
           window.uni.removeStorageSync(key)
           return
         }
-        
+
         // 回退到标准localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.removeItem(key)
           return
         }
-        
+
         console.warn('[Storage] No storage method available')
       } catch (error) {
         console.warn('[Storage] Failed to remove item:', key, error)

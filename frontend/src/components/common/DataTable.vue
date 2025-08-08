@@ -3,19 +3,15 @@
     <table class="table">
       <thead>
         <tr>
-          <th 
-            v-for="column in columns" 
+          <th
+            v-for="column in columns"
             :key="column.key"
-            :class="{ 'sortable': column.sortable }"
+            :class="{ sortable: column.sortable }"
             @click="handleSort(column)"
           >
             <view class="th-content">
               <text>{{ column.title }}</text>
-              <text 
-                v-if="column.sortable" 
-                class="sort-indicator"
-                :class="getSortClass(column.key)"
-              >
+              <text v-if="column.sortable" class="sort-indicator" :class="getSortClass(column.key)">
                 ↕
               </text>
             </view>
@@ -39,10 +35,10 @@
         </tr>
         <tr v-else v-for="(row, index) in data" :key="row.id || index" class="data-row">
           <td v-for="column in columns" :key="column.key" :class="column.class">
-            <slot 
-              :name="column.key" 
-              :row="row" 
-              :value="getColumnValue(row, column.key)" 
+            <slot
+              :name="column.key"
+              :row="row"
+              :value="getColumnValue(row, column.key)"
               :index="index"
             >
               {{ getColumnValue(row, column.key) }}
@@ -89,19 +85,19 @@ function getColumnValue(row: any, key: string) {
 
 function handleSort(column: Column) {
   if (!column.sortable) return
-  
+
   let newDirection: 'asc' | 'desc' = 'asc'
-  
+
   if (props.sortBy === column.key) {
     newDirection = props.sortDirection === 'asc' ? 'desc' : 'asc'
   }
-  
+
   emit('sort', column.key, newDirection)
 }
 
 function getSortClass(columnKey: string): string {
   if (props.sortBy !== columnKey) return ''
-  
+
   return props.sortDirection === 'asc' ? 'sort-asc' : 'sort-desc'
 }
 </script>
@@ -114,45 +110,45 @@ function getSortClass(columnKey: string): string {
   border-radius: 8px;
   border: 1px solid $border-color;
   overflow: hidden;
-  
+
   .table {
     width: 100%;
     border-collapse: collapse;
-    
+
     thead {
       background: $bg-color;
-      
+
       th {
         padding: $spacing-md;
         text-align: left;
         font-weight: 500;
         color: $text-color;
         border-bottom: 1px solid $border-color;
-        
+
         &.sortable {
           cursor: pointer;
           transition: background-color 0.3s ease;
-          
+
           &:hover {
             background: rgba($primary-color, 0.05);
           }
         }
-        
+
         .th-content {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          
+
           .sort-indicator {
             font-size: $font-size-small;
             color: $text-color-placeholder;
             margin-left: $spacing-xs;
-            
+
             &.sort-asc {
               color: $primary-color;
               transform: rotate(180deg);
             }
-            
+
             &.sort-desc {
               color: $primary-color;
             }
@@ -160,34 +156,34 @@ function getSortClass(columnKey: string): string {
         }
       }
     }
-    
+
     tbody {
       tr {
         border-bottom: 1px solid $border-color-light;
         transition: background-color 0.3s ease;
-        
+
         &:hover:not(.loading-row):not(.empty-row) {
           background: rgba($primary-color, 0.02);
         }
-        
+
         &:last-child {
           border-bottom: none;
         }
-        
+
         td {
           padding: $spacing-md;
           color: $text-color;
           vertical-align: top;
-          
+
           &:first-child {
             border-left: none;
           }
-          
+
           &:last-child {
             border-right: none;
           }
         }
-        
+
         &.loading-row,
         &.empty-row {
           td {
@@ -197,7 +193,7 @@ function getSortClass(columnKey: string): string {
             font-style: italic;
           }
         }
-        
+
         &.loading-row td {
           background: rgba($primary-color, 0.02);
         }
@@ -211,11 +207,11 @@ function getSortClass(columnKey: string): string {
   .data-table {
     .table {
       font-size: $font-size-small;
-      
+
       thead th {
         padding: $spacing-sm;
       }
-      
+
       tbody td {
         padding: $spacing-sm;
       }

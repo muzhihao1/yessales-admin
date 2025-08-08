@@ -5,12 +5,12 @@
         <text class="modal-title">变更历史</text>
         <button class="close-btn" @click="handleClose">×</button>
       </view>
-      
+
       <view class="modal-content">
         <text class="modal-description">
           查看 {{ getCategoryName(category) }} 的设置变更历史记录
         </text>
-        
+
         <view class="history-list">
           <view v-if="history.length === 0" class="empty-state">
             <text>暂无变更记录</text>
@@ -24,7 +24,7 @@
           </view>
         </view>
       </view>
-      
+
       <view class="modal-actions">
         <button class="modal-btn primary" @click="handleClose">关闭</button>
       </view>
@@ -99,13 +99,13 @@ function handleClose() {
   justify-content: space-between;
   padding: $spacing-lg;
   border-bottom: 1px solid $border-color;
-  
+
   .modal-title {
     font-size: $font-size-large;
     font-weight: 600;
     color: $text-color;
   }
-  
+
   .close-btn {
     width: 32px;
     height: 32px;
@@ -120,7 +120,7 @@ function handleClose() {
   padding: $spacing-lg;
   max-height: 400px;
   overflow-y: auto;
-  
+
   .modal-description {
     display: block;
     font-size: $font-size-base;
@@ -128,7 +128,7 @@ function handleClose() {
     margin-bottom: $spacing-lg;
     line-height: 1.5;
   }
-  
+
   .history-list {
     .empty-state {
       text-align: center;
@@ -136,15 +136,15 @@ function handleClose() {
       color: $text-color-secondary;
       font-style: italic;
     }
-    
+
     .history-item {
       padding: $spacing-base;
       border-bottom: 1px solid $border-color-light;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .history-content {
         .history-action {
           font-size: $font-size-base;
@@ -153,14 +153,14 @@ function handleClose() {
           display: block;
           margin-bottom: $spacing-xs;
         }
-        
+
         .history-details {
           font-size: $font-size-small;
           color: $text-color-secondary;
           display: block;
           margin-bottom: $spacing-xs;
         }
-        
+
         .history-time {
           font-size: $font-size-small;
           color: $text-color-placeholder;
@@ -176,13 +176,13 @@ function handleClose() {
   gap: $spacing-base;
   padding: $spacing-lg;
   border-top: 1px solid $border-color;
-  
+
   .modal-btn {
     padding: $spacing-sm $spacing-lg;
     border-radius: $border-radius-base;
     font-size: $font-size-base;
     cursor: pointer;
-    
+
     &.primary {
       background: $primary-color;
       color: white;

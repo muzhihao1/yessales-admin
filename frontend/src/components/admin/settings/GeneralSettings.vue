@@ -2,7 +2,7 @@
   <view class="general-settings">
     <view class="settings-section">
       <text class="section-title">基本配置</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -16,7 +16,7 @@
             @blur="handleUpdate('system_name', localSettings.system_name)"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">公司名称</text>
@@ -29,7 +29,7 @@
             @blur="handleUpdate('company_name', localSettings.company_name)"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">联系电话</text>
@@ -44,10 +44,10 @@
         </view>
       </view>
     </view>
-    
+
     <view class="settings-section">
       <text class="section-title">界面配置</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -67,7 +67,7 @@
             </view>
           </picker>
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">时区设置</text>
@@ -86,7 +86,7 @@
             </view>
           </picker>
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">每页显示条数</text>
@@ -106,10 +106,10 @@
         </view>
       </view>
     </view>
-    
+
     <view class="settings-section">
       <text class="section-title">功能开关</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -122,7 +122,7 @@
             color="#2563eb"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">启用维护模式</text>
@@ -134,7 +134,7 @@
             color="#dc2626"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">允许用户注册</text>
@@ -204,7 +204,9 @@ const timezoneIndex = computed(() => {
 })
 
 const pageSizeIndex = computed(() => {
-  return pageSizeOptions.findIndex(option => option === String(localSettings.value.default_page_size))
+  return pageSizeOptions.findIndex(
+    option => option === String(localSettings.value.default_page_size)
+  )
 })
 
 // Methods
@@ -240,9 +242,13 @@ function handleSwitchChange(key: string, e: any) {
 }
 
 // Watch for props changes
-watch(() => props.settings, (newSettings) => {
-  localSettings.value = { ...localSettings.value, ...newSettings }
-}, { deep: true })
+watch(
+  () => props.settings,
+  newSettings => {
+    localSettings.value = { ...localSettings.value, ...newSettings }
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -251,11 +257,11 @@ watch(() => props.settings, (newSettings) => {
 .general-settings {
   .settings-section {
     margin-bottom: $spacing-xl;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     .section-title {
       font-size: $font-size-large;
       font-weight: 600;
@@ -266,28 +272,28 @@ watch(() => props.settings, (newSettings) => {
       border-bottom: 2px solid $primary-color;
     }
   }
-  
+
   .settings-group {
     background: $bg-color-white;
     border-radius: $border-radius-lg;
     border: 1px solid $border-color;
     overflow: hidden;
-    
+
     .setting-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: $spacing-lg;
       border-bottom: 1px solid $border-color-light;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .setting-label {
         flex: 1;
         margin-right: $spacing-lg;
-        
+
         .label-text {
           font-size: $font-size-base;
           font-weight: 500;
@@ -295,27 +301,27 @@ watch(() => props.settings, (newSettings) => {
           display: block;
           margin-bottom: $spacing-xs;
         }
-        
+
         .label-desc {
           font-size: $font-size-small;
           color: $text-color-secondary;
           line-height: 1.4;
         }
       }
-      
+
       .setting-input {
         width: 200px;
         padding: $spacing-sm $spacing-base;
         border: 1px solid $border-color;
         border-radius: $border-radius-base;
         font-size: $font-size-base;
-        
+
         &:focus {
           border-color: $primary-color;
           outline: none;
         }
       }
-      
+
       .setting-picker {
         display: flex;
         align-items: center;
@@ -326,11 +332,11 @@ watch(() => props.settings, (newSettings) => {
         border-radius: $border-radius-base;
         background: $bg-color-white;
         cursor: pointer;
-        
+
         &:hover {
           border-color: $primary-color;
         }
-        
+
         .picker-arrow {
           font-size: 12px;
           color: $text-color-secondary;
@@ -348,11 +354,11 @@ watch(() => props.settings, (newSettings) => {
         flex-direction: column;
         align-items: stretch;
         gap: $spacing-base;
-        
+
         .setting-label {
           margin-right: 0;
         }
-        
+
         .setting-input,
         .setting-picker {
           width: 100%;

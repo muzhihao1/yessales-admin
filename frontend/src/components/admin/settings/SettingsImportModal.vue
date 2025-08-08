@@ -5,12 +5,12 @@
         <text class="modal-title">导入设置</text>
         <button class="close-btn" @click="handleClose">×</button>
       </view>
-      
+
       <view class="modal-content">
         <text class="modal-description">
           选择要导入的设置文件，系统将验证文件格式并导入配置。
         </text>
-        
+
         <view class="file-upload">
           <button class="upload-btn" @click="selectFile">
             <text>选择文件</text>
@@ -18,7 +18,7 @@
           <text v-if="selectedFile" class="file-name">{{ selectedFile.name }}</text>
         </view>
       </view>
-      
+
       <view class="modal-actions">
         <button class="modal-btn secondary" @click="handleClose">取消</button>
         <button class="modal-btn primary" @click="handleImport" :disabled="!selectedFile">
@@ -100,13 +100,13 @@ function handleImport() {
   justify-content: space-between;
   padding: $spacing-lg;
   border-bottom: 1px solid $border-color;
-  
+
   .modal-title {
     font-size: $font-size-large;
     font-weight: 600;
     color: $text-color;
   }
-  
+
   .close-btn {
     width: 32px;
     height: 32px;
@@ -119,7 +119,7 @@ function handleImport() {
 
 .modal-content {
   padding: $spacing-lg;
-  
+
   .modal-description {
     display: block;
     font-size: $font-size-base;
@@ -127,12 +127,12 @@ function handleImport() {
     margin-bottom: $spacing-lg;
     line-height: 1.5;
   }
-  
+
   .file-upload {
     display: flex;
     align-items: center;
     gap: $spacing-base;
-    
+
     .upload-btn {
       padding: $spacing-sm $spacing-lg;
       background: $primary-color;
@@ -141,7 +141,7 @@ function handleImport() {
       border-radius: $border-radius-base;
       cursor: pointer;
     }
-    
+
     .file-name {
       font-size: $font-size-base;
       color: $text-color;
@@ -155,24 +155,24 @@ function handleImport() {
   gap: $spacing-base;
   padding: $spacing-lg;
   border-top: 1px solid $border-color;
-  
+
   .modal-btn {
     padding: $spacing-sm $spacing-lg;
     border-radius: $border-radius-base;
     font-size: $font-size-base;
     cursor: pointer;
-    
+
     &.secondary {
       background: $bg-color-white;
       color: $text-color-secondary;
       border: 1px solid $border-color;
     }
-    
+
     &.primary {
       background: $primary-color;
       color: white;
       border: 1px solid $primary-color;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;

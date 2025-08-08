@@ -331,7 +331,7 @@ class WebUniAPI implements UniAPI {
     try {
       const keys = Object.keys(localStorage)
       let currentSize = 0
-      
+
       // Estimate storage size (not 100% accurate but close enough)
       for (const key of keys) {
         const value = localStorage.getItem(key)
@@ -339,7 +339,7 @@ class WebUniAPI implements UniAPI {
           currentSize += key.length + value.length
         }
       }
-      
+
       return {
         keys,
         currentSize: currentSize * 2, // Rough estimate: each character is ~2 bytes

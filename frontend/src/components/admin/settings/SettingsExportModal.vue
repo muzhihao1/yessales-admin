@@ -5,23 +5,30 @@
         <text class="modal-title">导出设置</text>
         <button class="close-btn" @click="handleClose">×</button>
       </view>
-      
+
       <view class="modal-content">
         <text class="modal-description">
           选择要导出的设置分类，导出的文件可以在其他系统中导入使用。
         </text>
-        
+
         <view class="category-list">
           <view v-for="category in categories" :key="category" class="category-item">
-            <checkbox :checked="selectedCategories.includes(category)" @change="toggleCategory(category)" />
+            <checkbox
+              :checked="selectedCategories.includes(category)"
+              @change="toggleCategory(category)"
+            />
             <text class="category-label">{{ getCategoryLabel(category) }}</text>
           </view>
         </view>
       </view>
-      
+
       <view class="modal-actions">
         <button class="modal-btn secondary" @click="handleClose">取消</button>
-        <button class="modal-btn primary" @click="handleExport" :disabled="selectedCategories.length === 0">
+        <button
+          class="modal-btn primary"
+          @click="handleExport"
+          :disabled="selectedCategories.length === 0"
+        >
           导出设置
         </button>
       </view>
@@ -111,13 +118,13 @@ function handleExport() {
   justify-content: space-between;
   padding: $spacing-lg;
   border-bottom: 1px solid $border-color;
-  
+
   .modal-title {
     font-size: $font-size-large;
     font-weight: 600;
     color: $text-color;
   }
-  
+
   .close-btn {
     width: 32px;
     height: 32px;
@@ -130,7 +137,7 @@ function handleExport() {
 
 .modal-content {
   padding: $spacing-lg;
-  
+
   .modal-description {
     display: block;
     font-size: $font-size-base;
@@ -138,14 +145,14 @@ function handleExport() {
     margin-bottom: $spacing-lg;
     line-height: 1.5;
   }
-  
+
   .category-list {
     .category-item {
       display: flex;
       align-items: center;
       gap: $spacing-sm;
       padding: $spacing-sm 0;
-      
+
       .category-label {
         font-size: $font-size-base;
         color: $text-color;
@@ -160,24 +167,24 @@ function handleExport() {
   gap: $spacing-base;
   padding: $spacing-lg;
   border-top: 1px solid $border-color;
-  
+
   .modal-btn {
     padding: $spacing-sm $spacing-lg;
     border-radius: $border-radius-base;
     font-size: $font-size-base;
     cursor: pointer;
-    
+
     &.secondary {
       background: $bg-color-white;
       color: $text-color-secondary;
       border: 1px solid $border-color;
     }
-    
+
     &.primary {
       background: $primary-color;
       color: white;
       border: 1px solid $primary-color;
-      
+
       &:disabled {
         opacity: 0.6;
         cursor: not-allowed;

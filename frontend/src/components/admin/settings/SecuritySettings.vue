@@ -2,7 +2,7 @@
   <view class="security-settings">
     <view class="settings-section">
       <text class="section-title">身份认证</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -21,7 +21,7 @@
             <text class="unit">字符</text>
           </view>
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">密码复杂度要求</text>
@@ -33,7 +33,7 @@
             color="#2563eb"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">启用双因素认证</text>
@@ -47,10 +47,10 @@
         </view>
       </view>
     </view>
-    
+
     <view class="settings-section">
       <text class="section-title">会话管理</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -69,7 +69,7 @@
             <text class="unit">分钟</text>
           </view>
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">记住登录状态</text>
@@ -81,7 +81,7 @@
             color="#2563eb"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">单点登录</text>
@@ -95,10 +95,10 @@
         </view>
       </view>
     </view>
-    
+
     <view class="settings-section">
       <text class="section-title">访问控制</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -111,7 +111,7 @@
             color="#dc2626"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">最大失败次数</text>
@@ -129,7 +129,7 @@
             <text class="unit">次</text>
           </view>
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">锁定持续时间</text>
@@ -142,12 +142,14 @@
               type="number"
               min="5"
               max="1440"
-              @blur="handleUpdate('lockout_duration_minutes', localSettings.lockout_duration_minutes)"
+              @blur="
+                handleUpdate('lockout_duration_minutes', localSettings.lockout_duration_minutes)
+              "
             />
             <text class="unit">分钟</text>
           </view>
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">IP访问限制</text>
@@ -161,10 +163,10 @@
         </view>
       </view>
     </view>
-    
+
     <view class="settings-section">
       <text class="section-title">数据保护</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -177,7 +179,7 @@
             color="#16a34a"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">审计日志</text>
@@ -189,7 +191,7 @@
             color="#2563eb"
           />
         </view>
-        
+
         <view class="setting-item">
           <view class="setting-label">
             <text class="label-text">日志保留期限</text>
@@ -256,9 +258,13 @@ function handleSwitchChange(key: string, e: any) {
 }
 
 // Watch for props changes
-watch(() => props.settings, (newSettings) => {
-  localSettings.value = { ...localSettings.value, ...newSettings }
-}, { deep: true })
+watch(
+  () => props.settings,
+  newSettings => {
+    localSettings.value = { ...localSettings.value, ...newSettings }
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -267,11 +273,11 @@ watch(() => props.settings, (newSettings) => {
 .security-settings {
   .settings-section {
     margin-bottom: $spacing-xl;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     .section-title {
       font-size: $font-size-large;
       font-weight: 600;
@@ -282,28 +288,28 @@ watch(() => props.settings, (newSettings) => {
       border-bottom: 2px solid $danger-color;
     }
   }
-  
+
   .settings-group {
     background: $bg-color-white;
     border-radius: $border-radius-lg;
     border: 1px solid $border-color;
     overflow: hidden;
-    
+
     .setting-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: $spacing-lg;
       border-bottom: 1px solid $border-color-light;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .setting-label {
         flex: 1;
         margin-right: $spacing-lg;
-        
+
         .label-text {
           font-size: $font-size-base;
           font-weight: 500;
@@ -311,25 +317,25 @@ watch(() => props.settings, (newSettings) => {
           display: block;
           margin-bottom: $spacing-xs;
         }
-        
+
         .label-desc {
           font-size: $font-size-small;
           color: $text-color-secondary;
           line-height: 1.4;
         }
       }
-      
+
       .setting-control {
         display: flex;
         align-items: center;
         gap: $spacing-xs;
-        
+
         .unit {
           font-size: $font-size-base;
           color: $text-color-secondary;
         }
       }
-      
+
       .setting-input {
         width: 120px;
         padding: $spacing-sm $spacing-base;
@@ -337,7 +343,7 @@ watch(() => props.settings, (newSettings) => {
         border-radius: $border-radius-base;
         font-size: $font-size-base;
         text-align: right;
-        
+
         &:focus {
           border-color: $danger-color;
           outline: none;
@@ -355,16 +361,16 @@ watch(() => props.settings, (newSettings) => {
         flex-direction: column;
         align-items: stretch;
         gap: $spacing-base;
-        
+
         .setting-label {
           margin-right: 0;
         }
-        
+
         .setting-control {
           width: 100%;
           justify-content: flex-start;
         }
-        
+
         .setting-input {
           width: 120px;
         }

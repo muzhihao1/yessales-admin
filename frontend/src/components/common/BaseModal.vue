@@ -5,11 +5,11 @@
         <text class="modal-title">{{ title }}</text>
         <button class="close-btn" @click="handleClose">×</button>
       </view>
-      
+
       <view class="modal-content">
         <slot />
       </view>
-      
+
       <view v-if="$slots.footer" class="modal-footer">
         <slot name="footer" />
       </view>
@@ -20,7 +20,7 @@
 <script setup lang="ts">
 /**
  * Base Modal Component
- * 
+ *
  * A reusable modal wrapper component that provides:
  * - Overlay backdrop
  * - Modal container with customizable width
@@ -75,8 +75,12 @@ function handleOverlayClick() {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-container {
@@ -106,13 +110,13 @@ function handleOverlayClick() {
   justify-content: space-between;
   padding: $spacing-lg;
   border-bottom: 1px solid $border-color;
-  
+
   .modal-title {
     font-size: $font-size-large;
     font-weight: 600;
     color: $text-color;
   }
-  
+
   .close-btn {
     width: 32px;
     height: 32px;
@@ -126,7 +130,7 @@ function handleOverlayClick() {
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    
+
     &:hover {
       background: $bg-color;
       color: $text-color;
@@ -156,24 +160,24 @@ function handleOverlayClick() {
     max-height: 95vh;
     margin: 0 10px;
   }
-  
+
   .modal-header {
     padding: $spacing-md;
-    
+
     .modal-title {
       font-size: $font-size-medium;
     }
   }
-  
+
   .modal-content {
     padding: $spacing-md;
     max-height: calc(95vh - 100px);
   }
-  
+
   .modal-footer {
     padding: $spacing-md;
     flex-wrap: wrap;
-    
+
     > * {
       flex: 1;
       min-width: 120px;
@@ -186,7 +190,7 @@ function handleOverlayClick() {
     flex-direction: column;
     align-items: stretch;
     gap: $spacing-sm;
-    
+
     .close-btn {
       align-self: flex-end;
       position: absolute;

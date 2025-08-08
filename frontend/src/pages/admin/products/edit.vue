@@ -165,7 +165,7 @@ const productsStore = useProductsStore()
 const route = useRoute()
 
 // 页面参数
-const productId = ref<string>(route.params.id as string || route.query.id as string || '')
+const productId = ref<string>((route.params.id as string) || (route.query.id as string) || '')
 const isEditMode = computed(() => !!productId.value)
 
 // 表单数据

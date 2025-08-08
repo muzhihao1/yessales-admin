@@ -2,7 +2,7 @@
   <view class="appearance-settings">
     <view class="settings-section">
       <text class="section-title">外观设置</text>
-      
+
       <view class="settings-group">
         <view class="setting-item">
           <view class="setting-label">
@@ -41,9 +41,13 @@ function handleSwitchChange(key: string, e: any) {
   emit('update', key, value)
 }
 
-watch(() => props.settings, (newSettings) => {
-  localSettings.value = { ...localSettings.value, ...newSettings }
-}, { deep: true })
+watch(
+  () => props.settings,
+  newSettings => {
+    localSettings.value = { ...localSettings.value, ...newSettings }
+  },
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -61,28 +65,28 @@ watch(() => props.settings, (newSettings) => {
       border-bottom: 2px solid $success-color;
     }
   }
-  
+
   .settings-group {
     background: $bg-color-white;
     border-radius: $border-radius-lg;
     border: 1px solid $border-color;
     overflow: hidden;
-    
+
     .setting-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: $spacing-lg;
       border-bottom: 1px solid $border-color-light;
-      
+
       &:last-child {
         border-bottom: none;
       }
-      
+
       .setting-label {
         flex: 1;
         margin-right: $spacing-lg;
-        
+
         .label-text {
           font-size: $font-size-base;
           font-weight: 500;
@@ -90,7 +94,7 @@ watch(() => props.settings, (newSettings) => {
           display: block;
           margin-bottom: $spacing-xs;
         }
-        
+
         .label-desc {
           font-size: $font-size-small;
           color: $text-color-secondary;

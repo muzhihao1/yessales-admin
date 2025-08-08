@@ -4,7 +4,7 @@
       <!-- 页面标题 -->
       <view class="page-header">
         <text class="page-title">仪表盘</text>
-        <text class="page-subtitle">欢迎回来，{{ authStore.userName }}</text>
+        <text class="page-subtitle">欢迎回来，{{ authStore.adminUser?.name || '管理员' }}</text>
       </view>
 
       <!-- 统计卡片 -->
@@ -115,13 +115,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
-import { useAuthStore } from '@/stores/auth'
-import type { Quote } from '@/types/models'
+import { useAuthStore } from '@/composables/useAuth'
 
 const authStore = useAuthStore()
 
 const activeChartTab = ref('week')
-const recentQuotes = ref<Quote[]>([])
+const recentQuotes = ref<any[]>([])
 
 const statistics = ref([
   {
