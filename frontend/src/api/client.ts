@@ -258,7 +258,13 @@ export class ApiClient {
     options?: {
       id?: string
       data?: any
-      query?: any
+      query?: Record<string, any> & {
+        limit?: number
+        offset?: number
+        page?: number
+        page_size?: number
+        order?: string
+      }
       select?: string
     }
   ): Promise<ApiResponse<T>> {
@@ -274,7 +280,7 @@ export class ApiClient {
 
       return {
         success: true,
-        data
+        data: data as T
       }
     }
 
@@ -285,11 +291,12 @@ export class ApiClient {
       if (options?.query) {
         Object.entries(options.query).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
-            if (key === 'limit') {
+            if (key === 'limit' && typeof value === 'number') {
               query = query.limit(value)
-            } else if (key === 'offset') {
-              query = query.range(value, value + (options.query.limit || 20) - 1)
-            } else if (key === 'order') {
+            } else if (key === 'offset' && typeof value === 'number') {
+              const limit = options.query?.limit || 20
+              query = query.range(value, value + limit - 1)
+            } else if (key === 'order' && typeof value === 'string') {
               const [column, direction] = value.split(',')
               query = query.order(column, { ascending: direction === 'asc' })
             } else {
@@ -305,7 +312,7 @@ export class ApiClient {
 
       return {
         success: true,
-        data,
+        data: data as T,
         pagination: options?.query?.page
           ? {
               page: options.query.page,

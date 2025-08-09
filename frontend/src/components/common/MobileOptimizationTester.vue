@@ -5,14 +5,14 @@
       <text class="toggle-icon">📱</text>
       <text class="toggle-text">Mobile Test</text>
     </view>
-    
+
     <!-- Tester Panel -->
     <view v-if="panelOpen" class="tester-panel">
       <view class="panel-header">
         <text class="panel-title">Mobile Optimization Tester</text>
         <view class="close-btn" @click="closeTester">×</view>
       </view>
-      
+
       <view class="panel-content">
         <!-- Device Info -->
         <view class="info-section">
@@ -38,13 +38,13 @@
             <text class="info-value">{{ safeAreaInfo }}</text>
           </view>
         </view>
-        
+
         <!-- Touch Target Tests -->
         <view class="test-section">
           <text class="section-title">Touch Target Tests</text>
           <view class="touch-targets">
-            <view 
-              v-for="size in touchTargetSizes" 
+            <view
+              v-for="size in touchTargetSizes"
               :key="size.name"
               class="touch-target"
               :class="`target-${size.name}`"
@@ -54,9 +54,11 @@
               <text class="target-size">{{ size.size }}px</text>
             </view>
           </view>
-          <text class="test-note">Tap targets to test touch responsiveness. Recommended minimum: 44px</text>
+          <text class="test-note"
+            >Tap targets to test touch responsiveness. Recommended minimum: 44px</text
+          >
         </view>
-        
+
         <!-- Responsive Tests -->
         <view class="responsive-section">
           <text class="section-title">Responsive Breakpoints</text>
@@ -64,7 +66,7 @@
             <text class="current-breakpoint">Current: {{ currentBreakpoint }}</text>
           </view>
         </view>
-        
+
         <!-- Performance Tests -->
         <view class="performance-section">
           <text class="section-title">Performance Metrics</text>
@@ -73,7 +75,7 @@
             <text class="perf-value" :class="metric.status">{{ metric.value }}</text>
           </view>
         </view>
-        
+
         <!-- Accessibility Tests -->
         <view class="a11y-section">
           <text class="section-title">Accessibility</text>
@@ -84,7 +86,7 @@
         </view>
       </view>
     </view>
-    
+
     <!-- Debug Overlay -->
     <view v-if="showDebugOverlay" class="debug-overlay">
       <view class="debug-grid"></view>
@@ -94,7 +96,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive, computed } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 
 interface Props {
   showTester?: boolean
@@ -173,7 +175,9 @@ const safeAreaInfo = computed(() => {
   // #ifdef H5
   if (typeof window !== 'undefined') {
     const top = getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-top')
-    const bottom = getComputedStyle(document.documentElement).getPropertyValue('--safe-area-inset-bottom')
+    const bottom = getComputedStyle(document.documentElement).getPropertyValue(
+      '--safe-area-inset-bottom'
+    )
     return `${top || '0px'} / ${bottom || '0px'}`
   }
   // #endif
@@ -205,21 +209,21 @@ const updateScreenInfo = () => {
     screenInfo.height = window.screen.height
     screenInfo.dpr = window.devicePixelRatio
     screenInfo.viewport = `${window.innerWidth}×${window.innerHeight}`
-    
+
     deviceInfo.isTouch = 'ontouchstart' in window
     deviceInfo.userAgent = navigator.userAgent
     deviceInfo.isMobile = /Mobile|Android|iPhone|iPad/.test(navigator.userAgent)
   }
   // #endif
-  
+
   // #ifndef H5
   uni.getSystemInfo({
-    success: (res) => {
+    success: res => {
       screenInfo.width = res.screenWidth
       screenInfo.height = res.screenHeight
       screenInfo.dpr = res.pixelRatio
       screenInfo.viewport = `${res.windowWidth}×${res.windowHeight}`
-      
+
       deviceInfo.isTouch = true
       deviceInfo.isMobile = res.platform !== 'devtools'
     }
@@ -229,7 +233,7 @@ const updateScreenInfo = () => {
 
 onMounted(() => {
   updateScreenInfo()
-  
+
   // Update on resize
   // #ifdef H5
   if (typeof window !== 'undefined') {
@@ -263,7 +267,7 @@ onMounted(() => {
   box-shadow: $box-shadow-base;
   flex-direction: column;
   gap: 2px;
-  
+
   &:hover {
     background: $primary-dark;
   }
@@ -365,20 +369,20 @@ onMounted(() => {
   border-radius: $border-radius-base;
   cursor: pointer;
   transition: $transition-base;
-  
+
   &.target-small {
     border-color: $danger-color;
   }
-  
+
   &.target-min {
     border-color: $warning-color;
   }
-  
+
   &.target-comfortable,
   &.target-large {
     border-color: $success-color;
   }
-  
+
   &:hover {
     background: rgba(37, 99, 235, 0.1);
   }
@@ -403,18 +407,30 @@ onMounted(() => {
 
 .perf-value {
   font-weight: $font-weight-medium;
-  
-  &.good { color: $success-color; }
-  &.warning { color: $warning-color; }
-  &.error { color: $danger-color; }
+
+  &.good {
+    color: $success-color;
+  }
+  &.warning {
+    color: $warning-color;
+  }
+  &.error {
+    color: $danger-color;
+  }
 }
 
 .check-status {
   font-weight: $font-weight-medium;
-  
-  &.pass { color: $success-color; }
-  &.warning { color: $warning-color; }
-  &.fail { color: $danger-color; }
+
+  &.pass {
+    color: $success-color;
+  }
+  &.warning {
+    color: $warning-color;
+  }
+  &.fail {
+    color: $danger-color;
+  }
 }
 
 .debug-overlay {
@@ -428,7 +444,7 @@ onMounted(() => {
 }
 
 .debug-grid {
-  background-image: 
+  background-image:
     repeating-linear-gradient(
       0deg,
       rgba(255, 0, 0, 0.1) 0px,
@@ -452,7 +468,7 @@ onMounted(() => {
   .tester-panel {
     width: 280px;
   }
-  
+
   .mobile-tester {
     right: 10px;
   }

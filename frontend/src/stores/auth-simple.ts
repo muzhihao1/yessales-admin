@@ -23,7 +23,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       // Simplified mock login for testing
       console.log('Login attempt:', credentials.username)
-      
+
       // Mock successful response
       user.value = {
         id: '1',

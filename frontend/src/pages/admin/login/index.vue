@@ -56,8 +56,8 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { useAuthStore, type LoginCredentials } from '@/composables/useAuth'
+import { useRoute, useRouter } from 'vue-router'
+import { type LoginCredentials, useAuthStore } from '@/composables/useAuth'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -104,10 +104,10 @@ const handleLogin = async () => {
 
     if (result.success) {
       console.log('✅ 管理员登录成功:', result.user?.name)
-      
+
       // 获取redirect参数，如果没有则默认跳转到仪表盘
       const redirectPath = (route.query.redirect as string) || '/admin/dashboard'
-      
+
       // 在标准web环境中使用vue-router
       if (typeof window !== 'undefined' && window.location) {
         router.push(redirectPath)
@@ -131,11 +131,11 @@ const handleLogin = async () => {
 onMounted(async () => {
   // 初始化身份验证状态
   await authStore.initializeAuth()
-  
+
   // 检查是否已登录
   if (authStore.isAdmin) {
     console.log('✅ 已登录用户访问登录页，自动重定向')
-    
+
     // 在标准web环境中使用vue-router
     if (typeof window !== 'undefined' && window.location) {
       router.push('/admin/dashboard')

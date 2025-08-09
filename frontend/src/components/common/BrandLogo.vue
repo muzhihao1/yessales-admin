@@ -1,14 +1,14 @@
 <template>
   <view :class="['brand-logo', `brand-logo--${size}`]" @click="handleClick">
-    <image 
-      :src="logoSrc" 
+    <image
+      :src="logoSrc"
       :mode="mode"
       class="logo-image"
       :alt="alt"
       @error="handleImageError"
       @load="handleImageLoad"
     />
-    
+
     <!-- Fallback text logo if image fails to load -->
     <view v-if="showFallback" class="logo-fallback">
       <text class="company-name">耶氏台球</text>
@@ -78,62 +78,62 @@ const handleImageLoad = () => {
   align-items: center;
   position: relative;
   user-select: none;
-  
+
   &--small {
     .logo-image {
       width: 80rpx;
       height: 24rpx;
     }
-    
+
     .company-name {
       font-size: $font-size-small;
     }
-    
+
     .company-subtitle {
       font-size: $font-size-extra-small;
     }
   }
-  
+
   &--medium {
     .logo-image {
       width: 120rpx;
       height: 36rpx;
     }
-    
+
     .company-name {
       font-size: $font-size-base;
     }
-    
+
     .company-subtitle {
       font-size: $font-size-small;
     }
   }
-  
+
   &--large {
     .logo-image {
       width: 160rpx;
       height: 48rpx;
     }
-    
+
     .company-name {
       font-size: $font-size-large;
     }
-    
+
     .company-subtitle {
       font-size: $font-size-base;
     }
   }
-  
+
   &--extra-large {
     .logo-image {
       width: 200rpx;
       height: 60rpx;
     }
-    
+
     .company-name {
       font-size: $font-size-extra-large;
     }
-    
+
     .company-subtitle {
       font-size: $font-size-medium;
     }
@@ -144,13 +144,13 @@ const handleImageLoad = () => {
   transition: $transition-base;
 }
 
-.brand-logo[class*="clickable"] {
+.brand-logo[class*='clickable'] {
   cursor: pointer;
-  
+
   &:hover .logo-image {
     transform: scale(1.05);
   }
-  
+
   &:active .logo-image {
     transform: scale(0.98);
   }
@@ -197,11 +197,11 @@ const handleImageLoad = () => {
     .logo-image {
       filter: none !important;
     }
-    
+
     .company-name {
       color: #000 !important;
     }
-    
+
     .company-subtitle {
       color: #666 !important;
     }

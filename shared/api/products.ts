@@ -235,7 +235,7 @@ export const productsApi = {
       if (error) throw error
 
       // 去重
-      const categories = [...new Set(data.map(item => item.category))].filter(Boolean)
+      const categories = [...new Set(data.map((item: any) => item.category))].filter(Boolean) as string[]
 
       return {
         success: true,

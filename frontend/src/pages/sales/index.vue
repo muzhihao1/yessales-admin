@@ -85,8 +85,8 @@
     <view class="recent-activity" v-if="recentQuotes.length > 0">
       <text class="section-title">最近报价</text>
       <view class="activity-list">
-        <view 
-          v-for="quote in recentQuotes" 
+        <view
+          v-for="quote in recentQuotes"
           :key="quote.id"
           class="activity-item"
           @click="viewQuoteDetail(quote.id)"
@@ -124,7 +124,7 @@ const recentQuotes = ref<any[]>([])
 // 主要业务功能
 function createQuote() {
   console.log('📝 创建新报价')
-  
+
   // 兼容多环境路由
   if (typeof window !== 'undefined' && window.location) {
     router.push('/sales/quote/create')
@@ -137,7 +137,7 @@ function createQuote() {
 
 function viewHistory() {
   console.log('📋 查看历史报价')
-  
+
   // 兼容多环境路由
   if (typeof window !== 'undefined' && window.location) {
     router.push('/sales/history')
@@ -187,7 +187,7 @@ function quickContact() {
 
 function viewQuoteDetail(id: string) {
   console.log('📄 查看报价详情:', id)
-  
+
   // 兼容多环境路由
   if (typeof window !== 'undefined' && window.location) {
     router.push(`/sales/quote/preview?id=${id}`)

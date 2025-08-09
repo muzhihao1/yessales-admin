@@ -33,9 +33,10 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.d.ts",
+    "src/**/*.d.ts", 
     "src/**/*.tsx",
-    "src/**/*.vue"
+    "src/**/*.vue",
+    "../shared/**/*.ts"
   ],
   "exclude": [
     "node_modules",

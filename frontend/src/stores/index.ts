@@ -11,9 +11,27 @@ import { type GlobalMiddlewareConfig, createStoreMiddleware, middlewarePresets }
 import { type ErrorHandlerConfig, devTools, globalCache, handleStoreError } from './utils'
 
 /**
- * 创建并配置Pinia实例
+ * 创建并配置Pinia实例 (简化版本，避免初始化问题)
  */
 export function createAppPinia(middlewareConfig?: Partial<GlobalMiddlewareConfig>) {
+  const pinia = createPinia()
+
+  // 简化配置：仅在开发环境添加基本日志
+  if (process.env.NODE_ENV === 'development') {
+    pinia.use(({ store }) => {
+      store.$subscribe((mutation, state) => {
+        console.log(`🔄 [${store.$id}] ${mutation.type}:`, mutation.payload)
+      })
+    })
+  }
+
+  return pinia
+}
+
+/**
+ * 创建并配置Pinia实例 (完整版本，问题解决后使用)
+ */
+export function createAppPiniaFull(middlewareConfig?: Partial<GlobalMiddlewareConfig>) {
   const pinia = createPinia()
 
   // 配置中间件
@@ -28,20 +46,14 @@ export function createAppPinia(middlewareConfig?: Partial<GlobalMiddlewareConfig
 
   // 开发环境特殊配置
   if (process.env.NODE_ENV === 'development') {
-    // 启用调试工具
-    devTools.enable({
-      enableActionLogging: true,
-      enableStateSnapshots: true,
-      enablePerformanceProfiling: true,
-      logLevel: 'debug'
-    })
-
     // 基础的mutation日志（保持原有功能）
     pinia.use(({ store }) => {
       store.$subscribe((mutation, state) => {
         console.log(`🔄 [${store.$id}] ${mutation.type}:`, mutation.payload)
       })
     })
+
+    // Note: devTools.enable() will be called after Pinia is mounted to avoid initialization issues
   }
 
   return pinia
@@ -94,11 +106,7 @@ export async function initializeStores() {
       })
     } catch (appError) {
       // 如果连App Store都无法使用，直接显示原生提示
-      uni.showToast({
-        title: '应用初始化失败',
-        icon: 'none',
-        duration: 3000
-      })
+      console.error('应用初始化失败')
     }
 
     throw error
@@ -247,18 +255,19 @@ export {
 }
 
 // 导出中间件和工具
-export { createStoreMiddleware, middlewarePresets, devTools, globalCache } from './middleware'
+export { createStoreMiddleware, middlewarePresets } from './middleware'
+export { devTools, globalCache } from './utils'
 
+// Temporarily disable some exports to debug infinite recursion
 export {
   handleStoreError,
-  useLoadingState,
-  useCache,
-  useOptimisticUpdates,
-  usePersistence,
-  useValidation,
-  useStoreDebug,
-  withLoading,
-  withOptimisticUpdate
+  useLoadingState
+  // useCache,
+  // useOptimisticUpdates,
+  // usePersistence,
+  // useValidation,
+  // useStoreDebug,
+  // withLoading
 } from './utils'
 
 // 导出类型

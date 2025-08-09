@@ -6,29 +6,29 @@
         <view class="toast-icon">
           <text class="icon-text">{{ iconText }}</text>
         </view>
-        
+
         <!-- Content -->
         <view class="toast-body">
           <text v-if="title" class="toast-title">{{ title }}</text>
           <text class="toast-message">{{ message }}</text>
-          
+
           <!-- Progress bar for auto-dismiss -->
           <view v-if="showProgress && duration > 0" class="toast-progress">
-            <view 
-              class="progress-bar" 
-              :style="{ 
+            <view
+              class="progress-bar"
+              :style="{
                 width: progressWidth + '%',
                 animationDuration: duration + 'ms'
               }"
             ></view>
           </view>
         </view>
-        
+
         <!-- Close button -->
         <view v-if="closable" class="toast-close" @click.stop="handleClose">
           <text class="close-icon">×</text>
         </view>
-        
+
         <!-- Action button -->
         <view v-if="actionText" class="toast-action" @click.stop="handleAction">
           <text class="action-text">{{ actionText }}</text>
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 interface Props {
   type?: 'success' | 'error' | 'warning' | 'info' | 'loading'
@@ -121,18 +121,18 @@ const startAutoDismiss = () => {
     timer = setTimeout(() => {
       handleClose()
     }, props.duration)
-    
+
     // Start progress bar animation
     if (props.showProgress) {
       progressWidth.value = 0
       const progressInterval = 50
       const totalSteps = props.duration / progressInterval
       let currentStep = 0
-      
+
       progressTimer = setInterval(() => {
         currentStep++
         progressWidth.value = 100 - (currentStep / totalSteps) * 100
-        
+
         if (currentStep >= totalSteps) {
           clearInterval(progressTimer!)
           progressTimer = null
@@ -150,7 +150,7 @@ onMounted(() => {
     uni.vibrateShort()
     // #endif
   }
-  
+
   startAutoDismiss()
 })
 
@@ -159,13 +159,16 @@ onUnmounted(() => {
 })
 
 // Watch for prop changes
-watch(() => props.type, () => {
-  if (props.type === 'loading') {
-    clearTimers()
-  } else {
-    startAutoDismiss()
+watch(
+  () => props.type,
+  () => {
+    if (props.type === 'loading') {
+      clearTimers()
+    } else {
+      startAutoDismiss()
+    }
   }
-})
+)
 
 // Expose methods for parent component
 defineExpose({
@@ -185,17 +188,17 @@ defineExpose({
   z-index: $z-index-notification;
   max-width: 90vw;
   min-width: 280px;
-  
+
   // Position variants
   &.toast-top {
     top: calc(var(--status-bar-height, 0px) + 80px);
   }
-  
+
   &.toast-center {
     top: 50%;
     transform: translate(-50%, -50%);
   }
-  
+
   &.toast-bottom {
     bottom: calc(var(--safe-area-inset-bottom, 0px) + 80px);
   }
@@ -213,10 +216,10 @@ defineExpose({
   min-height: 48px;
   position: relative;
   overflow: hidden;
-  
+
   // Touch feedback
   @include touch-feedback(0.98, 0.1s);
-  
+
   // GPU acceleration for smooth animations
   @include gpu-accelerated;
 }
@@ -279,7 +282,7 @@ defineExpose({
 .toast-loading .toast-icon {
   background: $primary-color;
   color: white;
-  
+
   .icon-text {
     animation: rotate 1s linear infinite;
   }
@@ -291,8 +294,12 @@ defineExpose({
 }
 
 @keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Body content
@@ -328,11 +335,11 @@ defineExpose({
   cursor: pointer;
   transition: $transition-base;
   flex-shrink: 0;
-  
+
   &:hover {
     background: rgba(0, 0, 0, 0.15);
   }
-  
+
   &:active {
     transform: scale(0.9);
   }
@@ -352,11 +359,11 @@ defineExpose({
   cursor: pointer;
   transition: $transition-base;
   flex-shrink: 0;
-  
+
   &:hover {
     background: $primary-dark;
   }
-  
+
   &:active {
     transform: scale(0.95);
   }
@@ -430,11 +437,11 @@ defineExpose({
     transform: none;
     max-width: none;
   }
-  
+
   .toast-content {
     padding: $mobile-padding-y $mobile-padding-x;
   }
-  
+
   .toast-message {
     font-size: $font-size-base;
   }
@@ -446,11 +453,11 @@ defineExpose({
   .toast-fade-leave-active {
     transition-duration: 0.01ms !important;
   }
-  
+
   .icon-text {
     animation: none !important;
   }
-  
+
   .progress-bar {
     transition: none !important;
   }

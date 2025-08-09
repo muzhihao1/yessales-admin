@@ -296,7 +296,7 @@ export const quotesApi = {
         .from('quotes')
         .select('status')
 
-      const statusCount = statusData?.reduce((acc: any, item) => {
+      const statusCount = statusData?.reduce((acc: any, item: any) => {
         acc[item.status] = (acc[item.status] || 0) + 1
         return acc
       }, {})

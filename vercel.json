@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "name": "yessales-admin",
   "builds": [
     {
       "src": "frontend/package.json",
@@ -12,7 +13,14 @@
   "routes": [
     {
       "src": "/assets/(.*)",
-      "dest": "/assets/$1"
+      "dest": "/assets/$1",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/favicon.ico"
     },
     {
       "src": "/admin",
@@ -31,8 +39,19 @@
       "dest": "/index.html"
     },
     {
-      "src": "/(.*)",
+      "src": "/test/(.*)",
       "dest": "/index.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "public, max-age=0, must-revalidate"
+      }
     }
-  ]
+  ],
+  "installCommand": "cd frontend && npm ci",
+  "buildCommand": "cd frontend && npm run build:h5",
+  "outputDirectory": "frontend/dist",
+  "framework": "vue"
 }

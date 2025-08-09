@@ -17,6 +17,7 @@ export interface ApiError {
   code: string
   message: string
   field?: string
+  details?: any
 }
 
 export interface PaginationParams {
@@ -29,6 +30,9 @@ export interface PaginationParams {
 export interface QueryParams extends PaginationParams {
   search?: string
   filters?: Record<string, any>
+  startDate?: string
+  endDate?: string
+  limit?: number
 }
 
 export interface LoginRequest {

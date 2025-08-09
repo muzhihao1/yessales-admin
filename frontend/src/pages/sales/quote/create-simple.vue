@@ -11,29 +11,15 @@
         <h2 class="section-title">客户信息</h2>
         <div class="form-group">
           <label>客户姓名 *</label>
-          <input 
-            v-model="form.customerName" 
-            type="text" 
-            placeholder="请输入客户姓名"
-            required
-          />
+          <input v-model="form.customerName" type="text" placeholder="请输入客户姓名" required />
         </div>
         <div class="form-group">
           <label>联系电话 *</label>
-          <input 
-            v-model="form.customerPhone" 
-            type="tel" 
-            placeholder="请输入联系电话"
-            required
-          />
+          <input v-model="form.customerPhone" type="tel" placeholder="请输入联系电话" required />
         </div>
         <div class="form-group">
           <label>联系地址</label>
-          <input 
-            v-model="form.customerAddress" 
-            type="text" 
-            placeholder="请输入联系地址"
-          />
+          <input v-model="form.customerAddress" type="text" placeholder="请输入联系地址" />
         </div>
       </div>
 
@@ -77,11 +63,7 @@
       <!-- 备注信息 -->
       <div class="form-section">
         <h2 class="section-title">备注信息</h2>
-        <textarea 
-          v-model="form.notes" 
-          placeholder="请输入备注信息..."
-          rows="4"
-        ></textarea>
+        <textarea v-model="form.notes" placeholder="请输入备注信息..." rows="4"></textarea>
       </div>
 
       <!-- 操作按钮 -->
@@ -96,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -145,7 +127,7 @@ const decreaseQuantity = (productId: number) => {
 const totalAmount = computed(() => {
   return sampleProducts.value.reduce((total, product) => {
     const quantity = getQuantity(product.id)
-    return total + (product.price * quantity)
+    return total + product.price * quantity
   }, 0)
 })
 
@@ -155,9 +137,11 @@ const finalAmount = computed(() => {
 
 // 表单验证
 const isFormValid = computed(() => {
-  return form.value.customerName.trim() !== '' && 
-         form.value.customerPhone.trim() !== '' &&
-         totalAmount.value > 0
+  return (
+    form.value.customerName.trim() !== '' &&
+    form.value.customerPhone.trim() !== '' &&
+    totalAmount.value > 0
+  )
 })
 
 const saveAsDraft = () => {
@@ -170,13 +154,13 @@ const generateQuote = () => {
     alert('请填写必填信息并选择产品')
     return
   }
-  
+
   console.log('生成报价单:', {
     customer: form.value,
     products: quantities.value,
     totalAmount: finalAmount.value
   })
-  
+
   alert('报价单生成成功！')
   // 可以导航到预览页面
   // router.push('/sales/quote/preview?id=new')
@@ -199,7 +183,7 @@ const generateQuote = () => {
   padding: 20px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .back-btn {
@@ -210,7 +194,7 @@ const generateQuote = () => {
   cursor: pointer;
   padding: 8px;
   margin-right: 15px;
-  
+
   &:hover {
     color: #333;
   }
@@ -226,12 +210,12 @@ const generateQuote = () => {
   background: white;
   border-radius: 12px;
   padding: 30px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .form-section {
   margin-bottom: 40px;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -247,22 +231,23 @@ const generateQuote = () => {
 
 .form-group {
   margin-bottom: 20px;
-  
+
   label {
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
     color: #333;
   }
-  
-  input, textarea {
+
+  input,
+  textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 8px;
     font-size: 16px;
     box-sizing: border-box;
-    
+
     &:focus {
       outline: none;
       border-color: #667eea;
@@ -280,30 +265,30 @@ const generateQuote = () => {
     border: 1px solid #eee;
     border-radius: 8px;
     margin-bottom: 10px;
-    
+
     &:hover {
       border-color: #667eea;
     }
   }
-  
+
   .product-info {
     .product-name {
       display: block;
       font-weight: 600;
       color: #333;
     }
-    
+
     .product-price {
       color: #667eea;
       font-weight: 600;
     }
   }
-  
+
   .quantity-controls {
     display: flex;
     align-items: center;
     gap: 15px;
-    
+
     button {
       width: 30px;
       height: 30px;
@@ -311,12 +296,12 @@ const generateQuote = () => {
       background: white;
       border-radius: 4px;
       cursor: pointer;
-      
+
       &:hover {
         background: #f5f5f5;
       }
     }
-    
+
     .quantity {
       font-weight: 600;
       min-width: 20px;
@@ -332,7 +317,7 @@ const generateQuote = () => {
     align-items: center;
     padding: 12px 0;
     border-bottom: 1px solid #eee;
-    
+
     input {
       width: 120px;
       padding: 8px;
@@ -340,13 +325,13 @@ const generateQuote = () => {
       border-radius: 4px;
       text-align: right;
     }
-    
+
     &.final {
       border-bottom: none;
       font-size: 18px;
       font-weight: 600;
       padding-top: 20px;
-      
+
       .total {
         color: #667eea;
         font-size: 20px;
@@ -362,7 +347,7 @@ const generateQuote = () => {
   margin-top: 40px;
   padding-top: 30px;
   border-top: 1px solid #eee;
-  
+
   button {
     padding: 12px 30px;
     border: none;
@@ -370,24 +355,24 @@ const generateQuote = () => {
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
-    
+
     &.btn-secondary {
       background: #f5f5f5;
       color: #666;
-      
+
       &:hover {
         background: #e0e0e0;
       }
     }
-    
+
     &.btn-primary {
       background: #667eea;
       color: white;
-      
+
       &:hover:not(:disabled) {
         background: #5a6fd8;
       }
-      
+
       &:disabled {
         background: #ccc;
         cursor: not-allowed;

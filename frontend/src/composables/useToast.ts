@@ -1,4 +1,4 @@
-import { ref, createApp, nextTick } from 'vue'
+import { createApp, nextTick, ref } from 'vue'
 import EnhancedToast from '@/components/common/EnhancedToast.vue'
 
 interface ToastOptions {
@@ -51,11 +51,11 @@ class ToastManager {
 
   show(options: ToastOptions): ToastInstance {
     const id = this.generateId()
-    
+
     // Create a wrapper div for this toast
     const wrapper = document.createElement('div')
     wrapper.style.pointerEvents = 'auto'
-    
+
     // Create Vue app instance
     const app = createApp(EnhancedToast, {
       ...options,
@@ -70,13 +70,13 @@ class ToastManager {
         options.onClick?.()
       }
     })
-    
+
     const vm = app.mount(wrapper)
-    
+
     // Add to container
     const container = this.getContainer()
     container.appendChild(wrapper)
-    
+
     // Store instance
     const instance = {
       id,
@@ -89,9 +89,9 @@ class ToastManager {
         Object.assign(vm.$props, newOptions)
       }
     }
-    
+
     this.instances.set(id, instance)
-    
+
     return {
       id,
       close: () => this.remove(id),
@@ -207,25 +207,22 @@ export function useToast() {
   // #ifdef H5
   return {
     show: (options: ToastOptions) => toastManager.show(options),
-    success: (message: string, options?: Partial<ToastOptions>) => 
+    success: (message: string, options?: Partial<ToastOptions>) =>
       toastManager.success(message, options),
-    error: (message: string, options?: Partial<ToastOptions>) => 
+    error: (message: string, options?: Partial<ToastOptions>) =>
       toastManager.error(message, options),
-    warning: (message: string, options?: Partial<ToastOptions>) => 
+    warning: (message: string, options?: Partial<ToastOptions>) =>
       toastManager.warning(message, options),
-    info: (message: string, options?: Partial<ToastOptions>) => 
-      toastManager.info(message, options),
-    loading: (message: string, options?: Partial<ToastOptions>) => 
+    info: (message: string, options?: Partial<ToastOptions>) => toastManager.info(message, options),
+    loading: (message: string, options?: Partial<ToastOptions>) =>
       toastManager.loading(message, options),
     clear: () => toastManager.clear(),
-    
+
     // Form-specific methods
-    validationError: (field: string, message: string) => 
+    validationError: (field: string, message: string) =>
       toastManager.validationError(field, message),
-    formSuccess: (message?: string) => 
-      toastManager.formSuccess(message),
-    networkError: (action?: string) => 
-      toastManager.networkError(action)
+    formSuccess: (message?: string) => toastManager.formSuccess(message),
+    networkError: (action?: string) => toastManager.networkError(action)
   }
   // #endif
 
@@ -235,18 +232,18 @@ export function useToast() {
     show: (options: ToastOptions) => {
       uni.showToast({
         title: options.message,
-        icon: options.type === 'success' ? 'success' : 
-              options.type === 'loading' ? 'loading' : 'none',
+        icon:
+          options.type === 'success' ? 'success' : options.type === 'loading' ? 'loading' : 'none',
         duration: options.duration || 3000
       })
-      
+
       return {
         id: Date.now().toString(),
         close: () => uni.hideToast(),
         update: () => {}
       }
     },
-    
+
     success: (message: string) => {
       uni.showToast({
         title: message,
@@ -255,7 +252,7 @@ export function useToast() {
       })
       return { id: '', close: () => {}, update: () => {} }
     },
-    
+
     error: (message: string) => {
       uni.showToast({
         title: message,
@@ -267,7 +264,7 @@ export function useToast() {
       }
       return { id: '', close: () => {}, update: () => {} }
     },
-    
+
     warning: (message: string) => {
       uni.showToast({
         title: message,
@@ -276,7 +273,7 @@ export function useToast() {
       })
       return { id: '', close: () => {}, update: () => {} }
     },
-    
+
     info: (message: string) => {
       uni.showToast({
         title: message,
@@ -285,7 +282,7 @@ export function useToast() {
       })
       return { id: '', close: () => {}, update: () => {} }
     },
-    
+
     loading: (message: string) => {
       uni.showLoading({
         title: message
@@ -296,12 +293,12 @@ export function useToast() {
         update: () => {}
       }
     },
-    
+
     clear: () => {
       uni.hideToast()
       uni.hideLoading()
     },
-    
+
     // Form-specific methods
     validationError: (field: string, message: string) => {
       uni.showToast({
@@ -311,7 +308,7 @@ export function useToast() {
       })
       return { id: '', close: () => {}, update: () => {} }
     },
-    
+
     formSuccess: (message: string = '操作成功') => {
       uni.showToast({
         title: message,
@@ -320,7 +317,7 @@ export function useToast() {
       })
       return { id: '', close: () => {}, update: () => {} }
     },
-    
+
     networkError: () => {
       uni.showToast({
         title: '网络连接异常，请检查网络设置',

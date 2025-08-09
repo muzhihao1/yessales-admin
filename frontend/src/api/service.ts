@@ -210,7 +210,7 @@ export class ApiService {
         endDate: params?.endDate
       })
 
-      if (!quotes.success || error) {
+      if (error || !quotes) {
         return {
           success: false,
           error: {
@@ -220,7 +220,7 @@ export class ApiService {
         }
       }
 
-      const quoteList = quotes.data as Quote[]
+      const quoteList = quotes as Quote[]
 
       const stats = {
         totalQuotes: quoteList.length,

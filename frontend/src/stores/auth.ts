@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { AuthApi } from '@/api/auth'
 import type { User } from '@/types/models'
 import type { LoginRequest } from '@/types/api'
+import { navigation, storage } from '@/utils/platform-adapter'
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -36,8 +37,8 @@ export const useAuthStore = defineStore('auth', () => {
         token.value = response.data.access_token
 
         // 存储到本地
-        uni.setStorageSync('auth_token', response.data.access_token)
-        uni.setStorageSync('auth_user', user.value)
+        storage.setItem('auth_token', response.data.access_token)
+        storage.setJSON('auth_user', user.value)
 
         return { success: true }
       } else {
@@ -66,15 +67,13 @@ export const useAuthStore = defineStore('auth', () => {
       token.value = null
 
       // 清除本地存储
-      uni.removeStorageSync('auth_token')
-      uni.removeStorageSync('auth_user')
+      storage.removeItem('auth_token')
+      storage.removeItem('auth_user')
 
       isLoading.value = false
 
       // 跳转到登录页
-      uni.reLaunch({
-        url: '/pages/admin/login/index'
-      })
+      navigation.reLaunch('/admin/login')
     }
   }
 
@@ -84,7 +83,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (response.success && response.data) {
         token.value = response.data.access_token
-        uni.setStorageSync('auth_token', response.data.access_token)
+        storage.setItem('auth_token', response.data.access_token)
         return true
       }
 
@@ -97,8 +96,8 @@ export const useAuthStore = defineStore('auth', () => {
 
   async function checkAuth() {
     // 从本地存储恢复状态
-    const storedToken = uni.getStorageSync('auth_token')
-    const storedUser = uni.getStorageSync('auth_user')
+    const storedToken = storage.getItem('auth_token')
+    const storedUser = storage.getJSON('auth_user')
 
     if (storedToken && storedUser) {
       token.value = storedToken
@@ -141,13 +140,26 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function loginAdmin(credentials: LoginRequest) {
+    // 管理员登录使用相同的login逻辑，但添加管理员权限验证
+    const result = await login(credentials)
+
+    if (result.success && user.value?.role !== 'admin') {
+      error.value = '权限不足，请使用管理员账号登录'
+      await logout()
+      return { success: false, error: error.value }
+    }
+
+    return result
+  }
+
   async function getCurrentUser() {
     try {
       const response = await AuthApi.getCurrentUser()
 
       if (response.success && response.data) {
         user.value = response.data
-        uni.setStorageSync('auth_user', response.data)
+        storage.setJSON('auth_user', response.data)
       }
 
       return response
@@ -183,6 +195,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     // Actions
     login,
+    loginAdmin,
     logout,
     refreshToken,
     checkAuth,

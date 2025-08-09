@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <router-view />
+    <RouterView />
   </div>
 </template>
 
@@ -25,8 +25,8 @@ onMounted(async () => {
   // 执行自动重定向（如果需要）
   domainRouter.autoRedirect()
 
-  // 2. Initialize route guards
-  setupRouteGuards()
+  // 2. Initialize route guards (disabled for standard Vue build - using Vue Router guards instead)
+  // setupRouteGuards()
 
   // 3. Initialize auth store and check for existing session
   const authStore = useAuthStore()

@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-08-09T23:17:35+08:00",
+  "version": "1.0.0",
+  "buildNumber": "1754752649",
+  "preset": "standard",
+  "buildTime": 5,
+  "distSize": "1.2M",
+  "nodeVersion": "v22.17.0",
+  "packageManager": "npm",
+  "environment": "production",
+  "chunkCount":       29,
+  "compressionRatio": "27.12"
+}

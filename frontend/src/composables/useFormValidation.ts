@@ -1,4 +1,4 @@
-import { ref, reactive, computed, watch, toRefs } from 'vue'
+import { computed, reactive, ref, toRefs, watch } from 'vue'
 import { useToast } from './useToast'
 
 interface ValidationRule {
@@ -68,7 +68,8 @@ export const ValidationRules = {
 
   // 身份证号
   idCard: (message?: string): ValidationRule => ({
-    pattern: /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
+    pattern:
+      /^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/,
     message: message || '请输入正确的身份证号码',
     trigger: 'blur'
   }),
@@ -108,7 +109,10 @@ export const ValidationRules = {
   }),
 
   // 自定义异步验证
-  async: (validator: (value: any) => Promise<boolean | string>, message?: string): ValidationRule => ({
+  async: (
+    validator: (value: any) => Promise<boolean | string>,
+    message?: string
+  ): ValidationRule => ({
     validator,
     message: message || '验证失败',
     trigger: 'blur'
@@ -117,7 +121,7 @@ export const ValidationRules = {
   // 确认密码
   confirmPassword: (getPassword: () => string, message?: string): ValidationRule => ({
     validator: (value: string) => {
-      return value === getPassword() || (message || '两次输入的密码不一致')
+      return value === getPassword() || message || '两次输入的密码不一致'
     },
     trigger: 'blur'
   })
@@ -125,13 +129,13 @@ export const ValidationRules = {
 
 export function useFormValidation<T extends FormConfig>(config: T) {
   const toast = useToast()
-  
+
   // Form data
   const formData = reactive<{ [K in keyof T]: any }>({} as any)
-  
+
   // Validation states
   const validationStates = reactive<{ [K in keyof T]: ValidationState }>({} as any)
-  
+
   // Initialize form data and validation states
   for (const [key, field] of Object.entries(config)) {
     formData[key as keyof T] = field.value || ''
@@ -143,16 +147,16 @@ export function useFormValidation<T extends FormConfig>(config: T) {
       hasSuccess: false
     }
   }
-  
+
   // Global form state
   const isFormValid = computed(() => {
     return Object.values(validationStates).every(state => state.isValid && !state.hasError)
   })
-  
+
   const isFormValidating = computed(() => {
     return Object.values(validationStates).some(state => state.isValidating)
   })
-  
+
   const formErrors = computed(() => {
     const errors: { [key: string]: string } = {}
     for (const [key, state] of Object.entries(validationStates)) {
@@ -164,16 +168,19 @@ export function useFormValidation<T extends FormConfig>(config: T) {
   })
 
   // Validate single field
-  const validateField = async (fieldName: keyof T, showToast: boolean = false): Promise<boolean> => {
+  const validateField = async (
+    fieldName: keyof T,
+    showToast: boolean = false
+  ): Promise<boolean> => {
     const field = config[fieldName]
     const value = formData[fieldName]
     const state = validationStates[fieldName]
-    
+
     state.isValidating = true
     state.hasError = false
     state.hasSuccess = false
     state.message = ''
-    
+
     try {
       for (const rule of field.rules) {
         // Required check
@@ -182,12 +189,12 @@ export function useFormValidation<T extends FormConfig>(config: T) {
           state.message = rule.message || '此项为必填项'
           break
         }
-        
+
         // Skip other validations if value is empty and not required
         if (!rule.required && (!value || (typeof value === 'string' && !value.trim()))) {
           continue
         }
-        
+
         // Length validation
         if (rule.min !== undefined || rule.max !== undefined) {
           const len = typeof value === 'string' ? value.length : 0
@@ -202,35 +209,34 @@ export function useFormValidation<T extends FormConfig>(config: T) {
             break
           }
         }
-        
+
         // Pattern validation
         if (rule.pattern && !rule.pattern.test(String(value))) {
           state.hasError = true
           state.message = rule.message || '格式不正确'
           break
         }
-        
+
         // Custom validator
         if (rule.validator) {
           const result = await rule.validator(value)
           if (result !== true) {
             state.hasError = true
-            state.message = typeof result === 'string' ? result : (rule.message || '验证失败')
+            state.message = typeof result === 'string' ? result : rule.message || '验证失败'
             break
           }
         }
       }
-      
+
       state.isValid = !state.hasError
       state.hasSuccess = !state.hasError && value
-      
+
       // Show toast for validation errors if requested
       if (showToast && state.hasError) {
         toast.validationError(field.label, state.message)
       }
-      
+
       return state.isValid
-      
     } catch (error) {
       state.hasError = true
       state.message = '验证过程出错'
@@ -242,15 +248,15 @@ export function useFormValidation<T extends FormConfig>(config: T) {
       state.isValidating = false
     }
   }
-  
+
   // Validate all fields
   const validateForm = async (showToast: boolean = true): Promise<boolean> => {
     const results = await Promise.all(
       Object.keys(config).map(key => validateField(key as keyof T, false))
     )
-    
+
     const isValid = results.every(result => result)
-    
+
     if (showToast) {
       if (isValid) {
         toast.formSuccess('表单验证通过')
@@ -263,10 +269,10 @@ export function useFormValidation<T extends FormConfig>(config: T) {
         }
       }
     }
-    
+
     return isValid
   }
-  
+
   // Reset field
   const resetField = (fieldName: keyof T) => {
     formData[fieldName] = config[fieldName].value || ''
@@ -278,42 +284,42 @@ export function useFormValidation<T extends FormConfig>(config: T) {
       hasSuccess: false
     }
   }
-  
+
   // Reset form
   const resetForm = () => {
     Object.keys(config).forEach(key => {
       resetField(key as keyof T)
     })
   }
-  
+
   // Get field error
   const getFieldError = (fieldName: keyof T): string => {
     return validationStates[fieldName].message
   }
-  
+
   // Check if field has error
   const hasFieldError = (fieldName: keyof T): boolean => {
     return validationStates[fieldName].hasError
   }
-  
+
   // Check if field is valid
   const isFieldValid = (fieldName: keyof T): boolean => {
     return validationStates[fieldName].isValid
   }
-  
+
   // Set field value with validation
   const setFieldValue = async (fieldName: keyof T, value: any, validate: boolean = false) => {
     formData[fieldName] = value
-    
+
     if (validate) {
       await validateField(fieldName)
     }
   }
-  
+
   // Watch for form data changes and trigger real-time validation
   for (const [key, field] of Object.entries(config)) {
     const hasInputTrigger = field.rules.some(rule => rule.trigger === 'input')
-    
+
     if (hasInputTrigger) {
       watch(
         () => formData[key as keyof T],
@@ -328,19 +334,19 @@ export function useFormValidation<T extends FormConfig>(config: T) {
       )
     }
   }
-  
+
   return {
     // Form data
     formData: toRefs(formData),
-    
+
     // Validation states
     validationStates: toRefs(validationStates),
-    
+
     // Computed properties
     isFormValid,
     isFormValidating,
     formErrors,
-    
+
     // Methods
     validateField,
     validateForm,
@@ -350,7 +356,7 @@ export function useFormValidation<T extends FormConfig>(config: T) {
     hasFieldError,
     isFieldValid,
     setFieldValue,
-    
+
     // Raw reactive objects (for advanced usage)
     $formData: formData,
     $validationStates: validationStates

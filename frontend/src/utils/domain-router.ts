@@ -12,17 +12,17 @@ interface DomainConfig {
 const DOMAIN_CONFIGS: DomainConfig[] = [
   {
     domain: 'admin.yessales.cn',
-    defaultRoute: '/pages/admin/dashboard/index',
+    defaultRoute: '/admin/dashboard',
     appType: 'admin'
   },
   {
     domain: 'app.yessales.cn',
-    defaultRoute: '/pages/sales/index',
+    defaultRoute: '/sales',
     appType: 'sales'
   },
   {
     domain: 'yessales.cn',
-    defaultRoute: '/pages/sales/index', // 主域名默认到销售端
+    defaultRoute: '/sales', // 主域名默认到销售端
     appType: 'main'
   }
 ]
@@ -55,7 +55,7 @@ export class DomainRouter {
     }
 
     // 如果是管理端域名但访问的不是管理页面
-    if (config.appType === 'admin' && !this.currentPath.startsWith('/pages/admin')) {
+    if (config.appType === 'admin' && !this.currentPath.startsWith('/admin')) {
       return {
         redirect: true,
         targetPath: config.defaultRoute
@@ -63,7 +63,7 @@ export class DomainRouter {
     }
 
     // 如果是销售端域名但访问的不是销售页面
-    if (config.appType === 'sales' && !this.currentPath.startsWith('/pages/sales')) {
+    if (config.appType === 'sales' && !this.currentPath.startsWith('/sales')) {
       return {
         redirect: true,
         targetPath: config.defaultRoute
@@ -111,7 +111,7 @@ export class DomainRouter {
     if (!config) {
       if (this.currentDomain.includes('localhost') || this.currentDomain.includes('127.0.0.1')) {
         // 本地开发环境，根据路径判断
-        if (this.currentPath.startsWith('/pages/admin') || this.currentPath.includes('admin')) {
+        if (this.currentPath.startsWith('/admin') || this.currentPath.includes('admin')) {
           config = DOMAIN_CONFIGS.find(c => c.appType === 'admin')
         } else {
           config = DOMAIN_CONFIGS.find(c => c.appType === 'sales')

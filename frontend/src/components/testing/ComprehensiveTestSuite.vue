@@ -6,23 +6,13 @@
         <text class="suite-title">YesSales 综合测试套件</text>
         <text class="suite-subtitle">双端功能与用户体验全面验证</text>
       </view>
-      
+
       <view class="test-controls">
-        <SalesButton 
-          type="primary" 
-          size="small"
-          :loading="runningTests"
-          @click="runAllTests"
-        >
+        <SalesButton type="primary" size="small" :loading="runningTests" @click="runAllTests">
           {{ runningTests ? '测试进行中...' : '运行全部测试' }}
         </SalesButton>
-        
-        <SalesButton 
-          type="default" 
-          size="small"
-          @click="clearResults"
-          :disabled="runningTests"
-        >
+
+        <SalesButton type="default" size="small" @click="clearResults" :disabled="runningTests">
           清空结果
         </SalesButton>
       </view>
@@ -35,10 +25,7 @@
         <text class="progress-stats">{{ completedTests }}/{{ totalTests }}</text>
       </view>
       <view class="progress-bar">
-        <view 
-          class="progress-fill" 
-          :style="{ width: progressPercentage + '%' }"
-        ></view>
+        <view class="progress-fill" :style="{ width: progressPercentage + '%' }"></view>
       </view>
     </view>
 
@@ -62,7 +49,7 @@
           <text class="card-label">总计</text>
         </view>
       </view>
-      
+
       <view class="overall-score">
         <text class="score-label">整体得分</text>
         <text class="score-value" :class="scoreClass">{{ overallScore }}/100</text>
@@ -71,13 +58,13 @@
 
     <!-- Test Categories -->
     <view class="test-categories">
-      <view 
-        v-for="category in testCategories" 
+      <view
+        v-for="category in testCategories"
         :key="category.id"
         class="test-category"
-        :class="{ 
+        :class="{
           'category-running': category.running,
-          'category-completed': category.completed 
+          'category-completed': category.completed
         }"
       >
         <view class="category-header" @click="toggleCategory(category.id)">
@@ -86,7 +73,7 @@
             <text class="category-name">{{ category.name }}</text>
             <text class="category-description">{{ category.description }}</text>
           </view>
-          
+
           <view class="category-status">
             <view v-if="category.running" class="status-indicator running">
               <text class="status-spinner">⟳</text>
@@ -101,8 +88,8 @@
         <!-- Category Tests -->
         <transition name="test-expand">
           <view v-if="category.expanded" class="category-tests">
-            <view 
-              v-for="test in category.tests" 
+            <view
+              v-for="test in category.tests"
               :key="test.id"
               class="test-item"
               :class="test.status"
@@ -114,23 +101,29 @@
                     <text class="status-text">{{ getStatusText(test.status) }}</text>
                   </view>
                 </view>
-                
+
                 <text v-if="test.description" class="test-description">{{ test.description }}</text>
-                
+
                 <!-- Test Results -->
                 <view v-if="test.result" class="test-result">
-                  <text v-if="test.result.message" class="result-message">{{ test.result.message }}</text>
-                  
+                  <text v-if="test.result.message" class="result-message">{{
+                    test.result.message
+                  }}</text>
+
                   <!-- Performance Metrics -->
                   <view v-if="test.result.performance" class="performance-metrics">
                     <text class="metrics-title">性能指标：</text>
                     <view class="metrics-list">
-                      <text v-for="(value, key) in test.result.performance" :key="key" class="metric-item">
+                      <text
+                        v-for="(value, key) in test.result.performance"
+                        :key="key"
+                        class="metric-item"
+                      >
                         {{ getMetricLabel(key) }}: {{ value }}
                       </text>
                     </view>
                   </view>
-                  
+
                   <!-- Screenshots/Evidence -->
                   <view v-if="test.result.evidence" class="test-evidence">
                     <text class="evidence-title">测试证据：</text>
@@ -140,7 +133,7 @@
                       </text>
                     </view>
                   </view>
-                  
+
                   <!-- Error Details -->
                   <view v-if="test.result.error" class="test-error">
                     <text class="error-title">错误详情：</text>
@@ -151,8 +144,8 @@
 
               <!-- Manual Test Controls -->
               <view v-if="test.manual" class="manual-test-controls">
-                <SalesButton 
-                  size="small" 
+                <SalesButton
+                  size="small"
                   type="default"
                   @click="runSingleTest(test.id)"
                   :disabled="test.running"
@@ -172,7 +165,7 @@
         <text class="report-title">详细测试报告</text>
         <text class="report-timestamp">{{ reportTimestamp }}</text>
       </view>
-      
+
       <view class="report-content">
         <!-- System Information -->
         <view class="report-section">
@@ -184,7 +177,7 @@
             <text class="info-item">网络: {{ systemInfo.network }}</text>
           </view>
         </view>
-        
+
         <!-- Performance Summary -->
         <view class="report-section">
           <text class="section-title">性能总结</text>
@@ -203,14 +196,16 @@
             </view>
           </view>
         </view>
-        
+
         <!-- Recommendations -->
         <view class="report-section">
           <text class="section-title">优化建议</text>
           <view class="recommendations">
             <view v-for="rec in recommendations" :key="rec.id" class="recommendation">
               <view class="rec-header">
-                <text class="rec-priority" :class="rec.priority">{{ rec.priority.toUpperCase() }}</text>
+                <text class="rec-priority" :class="rec.priority">{{
+                  rec.priority.toUpperCase()
+                }}</text>
                 <text class="rec-title">{{ rec.title }}</text>
               </view>
               <text class="rec-description">{{ rec.description }}</text>
@@ -230,7 +225,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useToast } from '@/composables/useToast'
 import SalesButton from '@/components/sales/SalesButton.vue'
 
@@ -453,10 +448,10 @@ const warningTests = computed(() => {
 const overallScore = computed(() => {
   const total = getAllTests().length
   if (total === 0) return 0
-  
+
   const passed = passedTests.value
   const warnings = warningTests.value
-  
+
   return Math.round(((passed + warnings * 0.5) / total) * 100)
 })
 
@@ -555,14 +550,14 @@ const getMetricLabel = (key: string) => {
 // Test implementations
 const testQuoteCreation = async (): Promise<TestResult> => {
   const startTime = Date.now()
-  
+
   try {
     // Simulate quote creation flow testing
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
+
     const duration = Date.now() - startTime
     performanceMetrics.loadTimes.push(duration)
-    
+
     return {
       success: true,
       message: '报价单创建流程测试通过',
@@ -584,16 +579,11 @@ const testQuoteCreation = async (): Promise<TestResult> => {
 const testFormValidation = async (): Promise<TestResult> => {
   try {
     await new Promise(resolve => setTimeout(resolve, 800))
-    
+
     return {
       success: true,
       message: '表单验证功能正常',
-      evidence: [
-        '必填字段验证通过',
-        '手机号格式验证正确',
-        '邮箱格式验证正确',
-        '实时验证反馈及时'
-      ]
+      evidence: ['必填字段验证通过', '手机号格式验证正确', '邮箱格式验证正确', '实时验证反馈及时']
     }
   } catch (error) {
     return {
@@ -607,16 +597,11 @@ const testFormValidation = async (): Promise<TestResult> => {
 const testImageUpload = async (): Promise<TestResult> => {
   try {
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     return {
       success: true,
       message: '图片上传功能正常',
-      evidence: [
-        '支持多种图片格式',
-        '文件大小限制有效',
-        '上传进度显示正常',
-        '预览功能正常'
-      ]
+      evidence: ['支持多种图片格式', '文件大小限制有效', '上传进度显示正常', '预览功能正常']
     }
   } catch (error) {
     return {
@@ -629,16 +614,16 @@ const testImageUpload = async (): Promise<TestResult> => {
 
 const testPageLoadTime = async (): Promise<TestResult> => {
   const startTime = Date.now()
-  
+
   try {
     // Simulate page load testing
     await new Promise(resolve => setTimeout(resolve, 600))
-    
+
     const loadTime = Date.now() - startTime
     performanceMetrics.loadTimes.push(loadTime)
-    
+
     const isGood = loadTime < 2000
-    
+
     return {
       success: isGood,
       message: isGood ? '页面加载性能良好' : '页面加载较慢，建议优化',
@@ -660,15 +645,15 @@ const testMemoryUsage = async (): Promise<TestResult> => {
   try {
     // Simulate memory usage testing
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     // #ifdef H5
     const memoryInfo = (performance as any).memory
     if (memoryInfo) {
       const usedMB = memoryInfo.usedJSHeapSize / 1024 / 1024
       performanceMetrics.memoryUsage = usedMB
-      
+
       const isGood = usedMB < 50 // Less than 50MB is considered good
-      
+
       return {
         success: isGood,
         message: isGood ? '内存使用正常' : '内存使用较高',
@@ -680,7 +665,7 @@ const testMemoryUsage = async (): Promise<TestResult> => {
       }
     }
     // #endif
-    
+
     return {
       success: true,
       message: '内存信息不可用，但未检测到内存泄漏',
@@ -700,7 +685,7 @@ const testMemoryUsage = async (): Promise<TestResult> => {
 const testKeyboardNavigation = async (): Promise<TestResult> => {
   try {
     await new Promise(resolve => setTimeout(resolve, 1200))
-    
+
     return {
       success: true,
       message: '键盘导航可访问性良好',
@@ -723,7 +708,7 @@ const testKeyboardNavigation = async (): Promise<TestResult> => {
 const testColorContrast = async (): Promise<TestResult> => {
   try {
     await new Promise(resolve => setTimeout(resolve, 400))
-    
+
     return {
       success: true,
       message: '颜色对比度符合WCAG标准',
@@ -746,7 +731,7 @@ const testColorContrast = async (): Promise<TestResult> => {
 const testTouchTargets = async (): Promise<TestResult> => {
   try {
     await new Promise(resolve => setTimeout(resolve, 600))
-    
+
     return {
       success: true,
       message: '触摸目标尺寸符合标准',
@@ -769,16 +754,11 @@ const testTouchTargets = async (): Promise<TestResult> => {
 const testResponsiveDesign = async (): Promise<TestResult> => {
   try {
     await new Promise(resolve => setTimeout(resolve, 900))
-    
+
     return {
       success: true,
       message: '响应式设计适配良好',
-      evidence: [
-        '移动端布局正常',
-        '文字大小适中',
-        '图片自适应缩放',
-        '横屏模式支持良好'
-      ]
+      evidence: ['移动端布局正常', '文字大小适中', '图片自适应缩放', '横屏模式支持良好']
     }
   } catch (error) {
     return {
@@ -792,16 +772,16 @@ const testResponsiveDesign = async (): Promise<TestResult> => {
 const runSingleTest = async (testId: string) => {
   const test = getAllTests().find(t => t.id === testId)
   if (!test) return
-  
+
   test.running = true
   test.status = 'running'
   currentTestName.value = test.name
-  
+
   try {
     const result = await test.test()
     test.result = result
     test.status = result.success ? 'passed' : 'failed'
-    
+
     toast.success(`测试 "${test.name}" 完成`)
   } catch (error) {
     test.status = 'failed'
@@ -810,7 +790,7 @@ const runSingleTest = async (testId: string) => {
       message: '测试执行异常',
       error: String(error)
     }
-    
+
     toast.error(`测试 "${test.name}" 失败`)
   } finally {
     test.running = false
@@ -819,14 +799,14 @@ const runSingleTest = async (testId: string) => {
 
 const runAllTests = async () => {
   if (runningTests.value) return
-  
+
   runningTests.value = true
   completedTests.value = 0
   const allTests = getAllTests()
   totalTests.value = allTests.length
-  
+
   toast.loading('开始执行全面测试...', { duration: 0 })
-  
+
   try {
     // Reset all test states
     testCategories.value.forEach(category => {
@@ -839,19 +819,19 @@ const runAllTests = async () => {
         test.result = undefined
       })
     })
-    
+
     // Run tests by category
     for (const category of testCategories.value) {
       category.running = true
-      
+
       for (const test of category.tests) {
         await runSingleTest(test.id)
         completedTests.value++
       }
-      
+
       category.running = false
       category.completed = true
-      
+
       // Calculate category status
       const categoryResults = category.tests.map(t => t.status)
       if (categoryResults.every(s => s === 'passed')) {
@@ -862,11 +842,10 @@ const runAllTests = async () => {
         category.status = 'warning'
       }
     }
-    
+
     showDetailedReport.value = true
     toast.clear()
     toast.formSuccess(`测试完成！总得分: ${overallScore.value}/100`)
-    
   } catch (error) {
     toast.clear()
     toast.error('测试执行过程中发生错误')
@@ -882,7 +861,7 @@ const clearResults = () => {
   showDetailedReport.value = false
   completedTests.value = 0
   totalTests.value = 0
-  
+
   // Reset all test states
   testCategories.value.forEach(category => {
     category.status = 'pending'
@@ -894,12 +873,12 @@ const clearResults = () => {
       test.result = undefined
     })
   })
-  
+
   // Clear performance metrics
   performanceMetrics.loadTimes = []
   performanceMetrics.responseTimes = []
   performanceMetrics.memoryUsage = 0
-  
+
   toast.info('测试结果已清空')
 }
 
@@ -912,7 +891,7 @@ const exportReport = (format: string) => {
     performance: performanceMetrics,
     recommendations: recommendations.value
   }
-  
+
   if (format === 'json') {
     const dataStr = JSON.stringify(reportData, null, 2)
     downloadFile(dataStr, 'test-report.json', 'application/json')
@@ -920,13 +899,13 @@ const exportReport = (format: string) => {
     const htmlReport = generateHTMLReport(reportData)
     downloadFile(htmlReport, 'test-report.html', 'text/html')
   }
-  
+
   toast.success(`报告已导出为 ${format.toUpperCase()} 格式`)
 }
 
 const shareReport = () => {
   const summary = `YesSales测试报告 - 得分: ${overallScore.value}/100\n通过: ${passedTests.value} | 失败: ${failedTests.value} | 警告: ${warningTests.value}`
-  
+
   // #ifdef H5
   if (navigator.share) {
     navigator.share({
@@ -939,7 +918,7 @@ const shareReport = () => {
     toast.success('报告摘要已复制到剪贴板')
   }
   // #endif
-  
+
   // #ifndef H5
   uni.setClipboardData({
     data: summary,
@@ -962,7 +941,7 @@ const downloadFile = (content: string, filename: string, mimeType: string) => {
   document.body.removeChild(link)
   URL.revokeObjectURL(url)
   // #endif
-  
+
   // #ifndef H5
   toast.info('请在H5环境下导出报告')
   // #endif
@@ -1017,17 +996,25 @@ const generateHTMLReport = (data: any): string => {
         <li>浏览器: ${data.systemInfo.userAgent}</li>
       </ul>
       <h2>详细结果</h2>
-      ${data.results.map(category => `
+      ${data.results
+        .map(
+          category => `
         <h3>${category.name} (${category.status})</h3>
         <ul>
-          ${category.tests.map(test => `
+          ${category.tests
+            .map(
+              test => `
             <li>
               <strong>${test.name}</strong>: ${test.status}
               ${test.result?.message ? `<br><em>${test.result.message}</em>` : ''}
             </li>
-          `).join('')}
+          `
+            )
+            .join('')}
         </ul>
-      `).join('')}
+      `
+        )
+        .join('')}
     </body>
     </html>
   `
@@ -1041,10 +1028,10 @@ const getSystemInfo = () => {
   systemInfo.userAgent = navigator.userAgent
   systemInfo.network = (navigator as any).connection?.effectiveType || 'unknown'
   // #endif
-  
+
   // #ifndef H5
   uni.getSystemInfo({
-    success: (res) => {
+    success: res => {
       systemInfo.platform = res.platform
       systemInfo.screenSize = `${res.screenWidth}×${res.screenHeight}`
       systemInfo.userAgent = res.brand + ' ' + res.model
@@ -1082,7 +1069,7 @@ onMounted(() => {
   background: $bg-color-white;
   border-radius: $border-radius-lg;
   box-shadow: $box-shadow-light;
-  
+
   @include mobile-only {
     flex-direction: column;
     gap: $spacing-base;
@@ -1097,7 +1084,7 @@ onMounted(() => {
     color: $text-color;
     margin-bottom: $spacing-xs;
   }
-  
+
   .suite-subtitle {
     display: block;
     font-size: $font-size-base;
@@ -1108,11 +1095,11 @@ onMounted(() => {
 .test-controls {
   display: flex;
   gap: $spacing-sm;
-  
+
   @include mobile-only {
     width: 100%;
     justify-content: stretch;
-    
+
     .sales-btn {
       flex: 1;
     }
@@ -1132,12 +1119,12 @@ onMounted(() => {
   @include flex-between;
   align-items: center;
   margin-bottom: $spacing-sm;
-  
+
   .progress-text {
     font-size: $font-size-base;
     color: $text-color;
   }
-  
+
   .progress-stats {
     font-size: $font-size-small;
     color: $text-color-secondary;
@@ -1150,7 +1137,7 @@ onMounted(() => {
   background: $border-color-lighter;
   border-radius: 4px;
   overflow: hidden;
-  
+
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, $primary-color 0%, $primary-light 100%);
@@ -1178,34 +1165,34 @@ onMounted(() => {
   padding: $spacing-base;
   border-radius: $border-radius-base;
   text-align: center;
-  
+
   &.success {
     background: $success-bg;
     border-left: 4px solid $success-color;
   }
-  
+
   &.error {
     background: $danger-bg;
     border-left: 4px solid $danger-color;
   }
-  
+
   &.warning {
     background: $warning-bg;
     border-left: 4px solid $warning-color;
   }
-  
+
   &.info {
     background: $info-bg;
     border-left: 4px solid $info-color;
   }
-  
+
   .card-number {
     display: block;
     font-size: $font-size-extra-large;
     font-weight: $font-weight-bold;
     margin-bottom: $spacing-xs;
   }
-  
+
   .card-label {
     font-size: $font-size-small;
     color: $text-color-secondary;
@@ -1217,22 +1204,30 @@ onMounted(() => {
   padding: $spacing-base;
   border-radius: $border-radius-base;
   background: linear-gradient(135deg, $primary-bg 0%, $bg-color-white 100%);
-  
+
   .score-label {
     display: block;
     font-size: $font-size-base;
     color: $text-color-secondary;
     margin-bottom: $spacing-xs;
   }
-  
+
   .score-value {
     font-size: 2.5rem;
     font-weight: $font-weight-bold;
-    
-    &.excellent { color: $success-color; }
-    &.good { color: $primary-color; }
-    &.fair { color: $warning-color; }
-    &.poor { color: $danger-color; }
+
+    &.excellent {
+      color: $success-color;
+    }
+    &.good {
+      color: $primary-color;
+    }
+    &.fair {
+      color: $warning-color;
+    }
+    &.poor {
+      color: $danger-color;
+    }
   }
 }
 
@@ -1250,12 +1245,12 @@ onMounted(() => {
   box-shadow: $box-shadow-light;
   overflow: hidden;
   transition: all 0.3s ease;
-  
+
   &.category-running {
     border-color: $primary-color;
     box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   }
-  
+
   &.category-completed {
     &.category-running {
       border-color: transparent;
@@ -1269,7 +1264,7 @@ onMounted(() => {
   padding: $spacing-lg;
   cursor: pointer;
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     background: $bg-color;
   }
@@ -1280,17 +1275,17 @@ onMounted(() => {
   align-items: center;
   gap: $spacing-base;
   flex: 1;
-  
+
   .category-icon {
     font-size: $font-size-large;
   }
-  
+
   .category-name {
     font-size: $font-size-large;
     font-weight: $font-weight-semibold;
     color: $text-color;
   }
-  
+
   .category-description {
     font-size: $font-size-small;
     color: $text-color-secondary;
@@ -1311,25 +1306,25 @@ onMounted(() => {
   border-radius: 50%;
   font-size: $font-size-small;
   font-weight: $font-weight-bold;
-  
+
   &.running {
     color: $primary-color;
-    
+
     .status-spinner {
       animation: spin 1s linear infinite;
     }
   }
-  
+
   &.passed {
     background: $success-color;
     color: white;
   }
-  
+
   &.failed {
     background: $danger-color;
     color: white;
   }
-  
+
   &.warning {
     background: $warning-color;
     color: white;
@@ -1340,7 +1335,7 @@ onMounted(() => {
   font-size: $font-size-small;
   color: $text-color-placeholder;
   transition: transform 0.3s ease;
-  
+
   &.expanded {
     transform: rotate(180deg);
   }
@@ -1378,23 +1373,23 @@ onMounted(() => {
   background: $bg-color-white;
   border-radius: $border-radius-base;
   border-left: 4px solid $border-color;
-  
+
   &.running {
     border-left-color: $primary-color;
   }
-  
+
   &.passed {
     border-left-color: $success-color;
   }
-  
+
   &.failed {
     border-left-color: $danger-color;
   }
-  
+
   &.warning {
     border-left-color: $warning-color;
   }
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -1409,7 +1404,7 @@ onMounted(() => {
   @include flex-between;
   align-items: center;
   margin-bottom: $spacing-xs;
-  
+
   .test-name {
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
@@ -1422,32 +1417,32 @@ onMounted(() => {
   border-radius: 12px;
   font-size: $font-size-extra-small;
   font-weight: $font-weight-medium;
-  
+
   &.pending {
     background: $border-color-lighter;
     color: $text-color-placeholder;
   }
-  
+
   &.running {
     background: $primary-bg;
     color: $primary-color;
   }
-  
+
   &.passed {
     background: $success-bg;
     color: $success-color;
   }
-  
+
   &.failed {
     background: $danger-bg;
     color: $danger-color;
   }
-  
+
   &.warning {
     background: $warning-bg;
     color: $warning-color;
   }
-  
+
   .status-text {
     font-size: inherit;
   }
@@ -1465,7 +1460,7 @@ onMounted(() => {
   padding: $spacing-sm;
   background: $bg-color;
   border-radius: $border-radius-base;
-  
+
   .result-message {
     display: block;
     font-size: $font-size-small;
@@ -1477,7 +1472,7 @@ onMounted(() => {
 .performance-metrics,
 .test-evidence {
   margin-top: $spacing-sm;
-  
+
   .metrics-title,
   .evidence-title {
     font-size: $font-size-small;
@@ -1485,14 +1480,14 @@ onMounted(() => {
     color: $text-color-secondary;
     margin-bottom: $spacing-xs;
   }
-  
+
   .metrics-list,
   .evidence-items {
     display: flex;
     flex-direction: column;
     gap: 2px;
   }
-  
+
   .metric-item,
   .evidence-item {
     font-size: $font-size-extra-small;
@@ -1506,14 +1501,14 @@ onMounted(() => {
   padding: $spacing-xs;
   background: $danger-bg;
   border-radius: $border-radius-sm;
-  
+
   .error-title {
     font-size: $font-size-small;
     font-weight: $font-weight-medium;
     color: $danger-color;
     margin-bottom: $spacing-xs;
   }
-  
+
   .error-details {
     font-size: $font-size-small;
     color: $danger-color;
@@ -1540,14 +1535,14 @@ onMounted(() => {
   margin-bottom: $spacing-lg;
   padding-bottom: $spacing-base;
   border-bottom: 2px solid $border-color-lighter;
-  
+
   .report-title {
     font-size: $font-size-extra-large;
     font-weight: $font-weight-bold;
     color: $text-color;
     margin-bottom: $spacing-xs;
   }
-  
+
   .report-timestamp {
     font-size: $font-size-small;
     color: $text-color-secondary;
@@ -1556,7 +1551,7 @@ onMounted(() => {
 
 .report-section {
   margin-bottom: $spacing-lg;
-  
+
   .section-title {
     font-size: $font-size-large;
     font-weight: $font-weight-semibold;
@@ -1571,7 +1566,7 @@ onMounted(() => {
 .performance-summary {
   display: grid;
   gap: $spacing-sm;
-  
+
   @include tablet-up {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1582,13 +1577,13 @@ onMounted(() => {
   padding: $spacing-sm;
   background: $bg-color;
   border-radius: $border-radius-base;
-  
+
   .metric-name {
     font-size: $font-size-small;
     color: $text-color-secondary;
     margin-bottom: 2px;
   }
-  
+
   .metric-value {
     font-size: $font-size-base;
     font-weight: $font-weight-semibold;
@@ -1607,54 +1602,54 @@ onMounted(() => {
   background: $bg-color;
   border-radius: $border-radius-base;
   border-left: 4px solid;
-  
+
   &.high {
     border-left-color: $danger-color;
   }
-  
+
   &.medium {
     border-left-color: $warning-color;
   }
-  
+
   &.low {
     border-left-color: $info-color;
   }
-  
+
   .rec-header {
     @include flex-between;
     align-items: center;
     margin-bottom: $spacing-xs;
   }
-  
+
   .rec-priority {
     padding: 2px 8px;
     border-radius: 12px;
     font-size: $font-size-extra-small;
     font-weight: $font-weight-bold;
     text-transform: uppercase;
-    
+
     &.high {
       background: $danger-bg;
       color: $danger-color;
     }
-    
+
     &.medium {
       background: $warning-bg;
       color: $warning-color;
     }
-    
+
     &.low {
       background: $info-bg;
       color: $info-color;
     }
   }
-  
+
   .rec-title {
     font-size: $font-size-base;
     font-weight: $font-weight-medium;
     color: $text-color;
   }
-  
+
   .rec-description {
     font-size: $font-size-small;
     color: $text-color-secondary;
@@ -1669,7 +1664,7 @@ onMounted(() => {
   margin-top: $spacing-lg;
   padding-top: $spacing-base;
   border-top: 1px solid $border-color-lighter;
-  
+
   @include mobile-only {
     flex-direction: column;
   }
@@ -1677,8 +1672,12 @@ onMounted(() => {
 
 // Animations
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Mobile optimizations
@@ -1686,18 +1685,18 @@ onMounted(() => {
   .test-suite {
     padding: $mobile-padding-x;
   }
-  
+
   .category-info {
     flex-direction: column;
     align-items: flex-start;
     gap: $spacing-xs;
   }
-  
+
   .test-item {
     flex-direction: column;
     gap: $spacing-sm;
   }
-  
+
   .manual-test-controls {
     margin-left: 0;
     align-self: flex-end;

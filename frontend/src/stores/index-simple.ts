@@ -5,7 +5,7 @@ import { createPinia } from 'pinia'
  */
 export function createAppPinia() {
   const pinia = createPinia()
-  
+
   console.log('✅ Pinia initialized in simple mode')
   return pinia
 }

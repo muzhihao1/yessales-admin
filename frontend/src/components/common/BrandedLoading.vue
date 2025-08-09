@@ -3,37 +3,38 @@
     <view class="loading-container">
       <!-- Brand Logo -->
       <view class="logo-container">
-        <BrandLogo 
-          :size="logoSize"
-          :show-subtitle="showSubtitle"
-          class="loading-logo"
-        />
+        <BrandLogo :size="logoSize" :show-subtitle="showSubtitle" class="loading-logo" />
       </view>
-      
+
       <!-- Loading Animation -->
       <view class="loading-animation">
         <view v-if="type === 'spinner'" class="spinner-container">
           <view class="spinner"></view>
         </view>
-        
+
         <view v-else-if="type === 'dots'" class="dots-container">
-          <view v-for="i in 3" :key="i" class="dot" :style="{ animationDelay: `${i * 0.1}s` }"></view>
+          <view
+            v-for="i in 3"
+            :key="i"
+            class="dot"
+            :style="{ animationDelay: `${i * 0.1}s` }"
+          ></view>
         </view>
-        
+
         <view v-else-if="type === 'billiard'" class="billiard-container">
           <view class="billiard-ball">
             <text class="ball-number">8</text>
           </view>
         </view>
       </view>
-      
+
       <!-- Loading Text -->
       <view class="loading-text">
         <text class="loading-message">{{ message }}</text>
         <text v-if="subtitle" class="loading-subtitle">{{ subtitle }}</text>
       </view>
     </view>
-    
+
     <!-- Overlay background -->
     <view v-if="overlay" class="loading-overlay"></view>
   </view>
@@ -76,7 +77,7 @@ const emit = defineEmits<{
   height: 100%;
   @include flex-center;
   flex-direction: column;
-  
+
   &--spinner,
   &--dots,
   &--billiard {
@@ -100,8 +101,12 @@ const emit = defineEmits<{
 }
 
 @keyframes logoFadeIn {
-  0% { opacity: 0.6; }
-  100% { opacity: 0.9; }
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0.9;
+  }
 }
 
 // Spinner Animation
@@ -119,7 +124,9 @@ const emit = defineEmits<{
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 // Dots Animation
@@ -137,7 +144,9 @@ const emit = defineEmits<{
 }
 
 @keyframes bounce {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0.8);
     opacity: 0.5;
   }
@@ -170,7 +179,7 @@ const emit = defineEmits<{
 }
 
 @keyframes billiardRoll {
-  0% { 
+  0% {
     transform: rotate(0deg) translateX(0);
   }
   25% {
@@ -224,17 +233,17 @@ const emit = defineEmits<{
     gap: $spacing-base;
     padding: $spacing-lg;
   }
-  
+
   .billiard-ball {
     width: 35px;
     height: 35px;
   }
-  
+
   .spinner {
     width: 30px;
     height: 30px;
   }
-  
+
   .dot {
     width: 8px;
     height: 8px;
@@ -246,17 +255,17 @@ const emit = defineEmits<{
     gap: $spacing-xl;
     padding: $spacing-xl * 2;
   }
-  
+
   .billiard-ball {
     width: 60px;
     height: 60px;
   }
-  
+
   .spinner {
     width: 50px;
     height: 50px;
   }
-  
+
   .dot {
     width: 14px;
     height: 14px;
@@ -268,11 +277,11 @@ const emit = defineEmits<{
   .loading-overlay {
     background-color: rgba(0, 0, 0, 0.8);
   }
-  
+
   .loading-message {
     color: #ffffff;
   }
-  
+
   .loading-subtitle {
     color: #cccccc;
   }
