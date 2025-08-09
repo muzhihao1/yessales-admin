@@ -271,7 +271,7 @@ router.beforeEach(async (to, from, next) => {
 
   // 初始化身份验证状态（仅在应用启动时执行一次）
   if (to.path !== from.path || !from.path) {
-    await authStore.initAuth()
+    await authStore.initializeAuth()
   }
 
   // 设置页面标题

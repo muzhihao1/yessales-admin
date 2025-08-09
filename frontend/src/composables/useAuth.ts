@@ -161,7 +161,7 @@ export const useAuthStore = defineStore('auth', () => {
   /**
    * 初始化身份验证状态
    */
-  const initAuth = async () => {
+  const initializeAuth = async () => {
     if (adminToken.value) {
       await validateAdminToken()
     }
@@ -183,7 +183,7 @@ export const useAuthStore = defineStore('auth', () => {
     loginAdmin,
     logoutAdmin,
     validateAdminToken,
-    initAuth
+    initializeAuth
   }
 })
 

@@ -130,7 +130,7 @@ const handleLogin = async () => {
 
 onMounted(async () => {
   // 初始化身份验证状态
-  await authStore.initAuth()
+  await authStore.initializeAuth()
   
   // 检查是否已登录
   if (authStore.isAdmin) {
