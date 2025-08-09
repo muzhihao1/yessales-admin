@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" width="200" height="60">
+  <!-- Background circle for billiard ball -->
+  <circle cx="30" cy="30" r="20" fill="#2563eb" stroke="#1d4ed8" stroke-width="2"/>
+  
+  <!-- Number "8" on billiard ball -->
+  <text x="30" y="36" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="16" font-weight="bold">8</text>
+  
+  <!-- Company name in Chinese -->
+  <text x="60" y="25" fill="#303133" font-family="SimHei, Microsoft YaHei, sans-serif" font-size="16" font-weight="bold">耶氏台球</text>
+  
+  <!-- Subtitle -->
+  <text x="60" y="42" fill="#606266" font-family="SimHei, Microsoft YaHei, sans-serif" font-size="12">斗南销售中心</text>
+  
+  <!-- Decorative cue stick -->
+  <line x1="150" y1="15" x2="190" y2="25" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="190" cy="25" r="3" fill="#f59e0b"/>
+</svg>
