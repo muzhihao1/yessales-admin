@@ -12,6 +12,7 @@
     "format": "prettier --write src/",
     "validate": "npm run type-check && npm run lint && prettier --check src/",
     "preview": "vite preview --port 4173",
+    "verify-env": "node scripts/verify-env.js",
     "test:unit": "vitest",
     "test:smoke": "vitest run src/tests/"
   },
