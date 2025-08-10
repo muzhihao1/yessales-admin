@@ -8,6 +8,87 @@ import type { Accessory, Product, Quote } from '@/types/models'
  * 可以无缝替换MockService，无需修改业务代码
  */
 export class ApiService {
+  // ============= 通用HTTP方法 =============
+
+  /**
+   * 通用GET请求
+   * @param endpoint API端点
+   * @param options 请求选项
+   * @returns 响应结果
+   */
+  static async get(endpoint: string, options?: { params?: any }): Promise<ApiResponse<any>> {
+    try {
+      return await ApiClient.request('GET', endpoint, undefined, options?.params)
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'REQUEST_ERROR',
+          message: '请求失败'
+        }
+      }
+    }
+  }
+
+  /**
+   * 通用POST请求
+   * @param endpoint API端点
+   * @param data 请求数据
+   * @returns 响应结果
+   */
+  static async post(endpoint: string, data: any): Promise<ApiResponse<any>> {
+    try {
+      return await ApiClient.request('POST', endpoint, data)
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'REQUEST_ERROR',
+          message: '请求失败'
+        }
+      }
+    }
+  }
+
+  /**
+   * 通用PUT请求
+   * @param endpoint API端点
+   * @param data 请求数据
+   * @returns 响应结果
+   */
+  static async put(endpoint: string, data: any): Promise<ApiResponse<any>> {
+    try {
+      return await ApiClient.request('PUT', endpoint, data)
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'REQUEST_ERROR',
+          message: '请求失败'
+        }
+      }
+    }
+  }
+
+  /**
+   * 通用DELETE请求
+   * @param endpoint API端点
+   * @returns 响应结果
+   */
+  static async delete(endpoint: string): Promise<ApiResponse<any>> {
+    try {
+      return await ApiClient.request('DELETE', endpoint)
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'REQUEST_ERROR',
+          message: '请求失败'
+        }
+      }
+    }
+  }
+
   // ============= 产品相关API =============
 
   /**

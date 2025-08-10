@@ -1,117 +1,169 @@
 <template>
-  <view class="sales-home">
-    <!-- 品牌标识区域 -->
-    <view class="brand-section">
-      <view class="brand-header">
-        <image class="brand-logo" src="/static/logo.png" mode="aspectFit" />
-        <view class="brand-info">
-          <text class="brand-title">耶氏台球斗南销售中心</text>
-          <text class="brand-subtitle">专业台球设备报价系统</text>
-        </view>
-      </view>
-      <view class="welcome-text">
-        <text class="welcome-msg">欢迎使用报价系统，为您提供专业的台球设备报价服务</text>
-      </view>
-    </view>
+  <div class="sales-home">
+    <!-- Professional Hero Section -->
+    <header class="hero-section">
+      <div class="hero-content">
+        <div class="brand-identity">
+          <div class="brand-logo">
+            <div class="logo-placeholder">🎱</div>
+          </div>
+          <div class="brand-info">
+            <h1 class="brand-title">耶氏台球斗南销售中心</h1>
+            <p class="brand-subtitle">专业台球设备报价系统</p>
+          </div>
+        </div>
+        <p class="hero-description">
+          为您提供专业、高效、准确的台球设备报价服务，助力您的业务决策
+        </p>
+      </div>
+      <div class="hero-decoration">
+        <div class="decoration-circle decoration-circle--1"></div>
+        <div class="decoration-circle decoration-circle--2"></div>
+        <div class="decoration-circle decoration-circle--3"></div>
+      </div>
+    </header>
 
-    <!-- 主要业务功能区 -->
-    <view class="main-features">
-      <view class="feature-grid">
-        <!-- 新建报价 -->
-        <view class="feature-card primary" @click="createQuote">
-          <view class="feature-icon">
-            <text class="icon-text">📋</text>
-          </view>
-          <view class="feature-content">
-            <text class="feature-title">新建报价</text>
-            <text class="feature-desc">创建新的台球设备报价单</text>
-          </view>
-          <view class="feature-arrow">
-            <text class="arrow-text">→</text>
-          </view>
-        </view>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Primary Actions -->
+      <section class="primary-actions">
+        <div class="actions-grid">
+          <button class="action-card action-card--primary" @click="createQuote">
+            <div class="action-card__icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+            </div>
+            <div class="action-card__content">
+              <h3 class="action-card__title">新建报价</h3>
+              <p class="action-card__description">创建新的台球设备报价单</p>
+            </div>
+            <div class="action-card__arrow">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+              </svg>
+            </div>
+          </button>
 
-        <!-- 历史报价 -->
-        <view class="feature-card secondary" @click="viewHistory">
-          <view class="feature-icon">
-            <text class="icon-text">📄</text>
-          </view>
-          <view class="feature-content">
-            <text class="feature-title">历史报价</text>
-            <text class="feature-desc">查看和管理历史报价记录</text>
-          </view>
-          <view class="feature-arrow">
-            <text class="arrow-text">→</text>
-          </view>
-        </view>
-      </view>
-    </view>
+          <button class="action-card action-card--secondary" @click="viewHistory">
+            <div class="action-card__icon">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+              </svg>
+            </div>
+            <div class="action-card__content">
+              <h3 class="action-card__title">历史报价</h3>
+              <p class="action-card__description">查看和管理历史报价记录</p>
+            </div>
+            <div class="action-card__arrow">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+      </section>
 
-    <!-- 快捷功能区 -->
-    <view class="quick-actions">
-      <text class="section-title">快捷功能</text>
-      <view class="action-grid">
-        <view class="action-item" @click="quickProduct">
-          <view class="action-icon product">
-            <text class="icon-text">🎱</text>
-          </view>
-          <text class="action-label">产品目录</text>
-        </view>
+      <!-- Quick Tools -->
+      <section class="quick-tools">
+        <h2 class="section-title">快捷工具</h2>
+        <div class="tools-grid">
+          <button class="tool-card" @click="quickProduct">
+            <div class="tool-card__icon tool-card__icon--product">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <span class="tool-card__label">产品目录</span>
+          </button>
 
-        <view class="action-item" @click="quickCustomer">
-          <view class="action-icon customer">
-            <text class="icon-text">👤</text>
-          </view>
-          <text class="action-label">客户信息</text>
-        </view>
+          <button class="tool-card" @click="quickCustomer">
+            <div class="tool-card__icon tool-card__icon--customer">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+            <span class="tool-card__label">客户信息</span>
+          </button>
 
-        <view class="action-item" @click="quickCalculator">
-          <view class="action-icon calculator">
-            <text class="icon-text">🧮</text>
-          </view>
-          <text class="action-label">价格计算</text>
-        </view>
+          <button class="tool-card" @click="quickCalculator">
+            <div class="tool-card__icon tool-card__icon--calculator">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5.97 4.06L14.09 6l1.41 1.41L16.91 6l1.06 1.06L16.91 8.12l1.06 1.06L16.91 10.24 15.5 8.83 14.09 10.24 13.03 9.18 14.44 7.77l-1.41-1.71z"/>
+              </svg>
+            </div>
+            <span class="tool-card__label">价格计算</span>
+          </button>
 
-        <view class="action-item" @click="quickContact">
-          <view class="action-icon contact">
-            <text class="icon-text">📞</text>
-          </view>
-          <text class="action-label">联系我们</text>
-        </view>
-      </view>
-    </view>
+          <button class="tool-card" @click="quickContact">
+            <div class="tool-card__icon tool-card__icon--contact">
+              <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+              </svg>
+            </div>
+            <span class="tool-card__label">联系我们</span>
+          </button>
+        </div>
+      </section>
 
-    <!-- 最近活动 -->
-    <view class="recent-activity" v-if="recentQuotes.length > 0">
-      <text class="section-title">最近报价</text>
-      <view class="activity-list">
-        <view
-          v-for="quote in recentQuotes"
-          :key="quote.id"
-          class="activity-item"
-          @click="viewQuoteDetail(quote.id)"
-        >
-          <view class="activity-info">
-            <text class="activity-title">{{ quote.quote_no }}</text>
-            <text class="activity-customer">{{ quote.customer_name || '客户信息' }}</text>
-            <text class="activity-time">{{ formatDate(quote.created_at) }}</text>
-          </view>
-          <view class="activity-amount">
-            <text class="amount-value">¥{{ quote.total_price.toFixed(2) }}</text>
-          </view>
-        </view>
-      </view>
-    </view>
+      <!-- Recent Activity -->
+      <section class="recent-activity" v-if="recentQuotes.length > 0">
+        <div class="section-header">
+          <h2 class="section-title">最近报价</h2>
+          <button class="view-all-btn" @click="viewHistory">
+            <span>查看全部</span>
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+            </svg>
+          </button>
+        </div>
 
-    <!-- 底部信息 -->
-    <view class="footer-info">
-      <view class="company-info">
-        <text class="company-name">耶氏台球斗南销售中心</text>
-        <text class="company-desc">专业提供台球桌、配件及相关设备销售</text>
-        <text class="contact-info">服务热线：400-888-8888</text>
-      </view>
-    </view>
-  </view>
+        <div class="activity-list">
+          <div
+            v-for="quote in recentQuotes"
+            :key="quote.id"
+            class="activity-item"
+            @click="viewQuoteDetail(quote.id)"
+          >
+            <div class="activity-content">
+              <div class="activity-header">
+                <h4 class="activity-title">{{ quote.quote_no }}</h4>
+                <div class="activity-badge activity-badge--pending">待确认</div>
+              </div>
+              <div class="activity-details">
+                <p class="activity-customer">{{ quote.customer_name || '客户信息' }}</p>
+                <time class="activity-time">{{ formatDate(quote.created_at) }}</time>
+              </div>
+            </div>
+            <div class="activity-amount">
+              <span class="amount-value">¥{{ quote.total_price.toFixed(2) }}</span>
+              <svg class="icon activity-arrow" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="company-info">
+          <h3 class="company-name">耶氏台球斗南销售中心</h3>
+          <p class="company-desc">专业提供台球桌、配件及相关设备销售</p>
+        </div>
+        <div class="contact-info">
+          <div class="contact-item">
+            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.15 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+            </svg>
+            <span class="contact-text">服务热线：400-888-8888</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -223,346 +275,604 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/design-tokens.scss';
+
 .sales-home {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 0;
+  background-color: $gray-50;
 }
 
-// 品牌标识区域
-.brand-section {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  color: white;
-  padding: 32px 20px;
+// Professional Hero Section
+.hero-section {
+  position: relative;
+  background: linear-gradient(135deg, $primary-700 0%, $primary-900 100%);
+  color: $white;
+  padding: $space-12 $space-4 $space-16;
+  overflow: hidden;
+  
+  @media (min-width: $breakpoint-md) {
+    padding: $space-20 $space-8 $space-24;
+  }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
   text-align: center;
-
-  .brand-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 24px;
-
-    .brand-logo {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 16px;
-      border-radius: 12px;
-      background-color: rgba(255, 255, 255, 0.1);
-    }
-
-    .brand-info {
-      .brand-title {
-        font-size: 24px;
-        font-weight: 600;
-        display: block;
-        margin-bottom: 8px;
-        letter-spacing: 0.5px;
-      }
-
-      .brand-subtitle {
-        font-size: 14px;
-        opacity: 0.9;
-        display: block;
-      }
-    }
-  }
-
-  .welcome-text {
-    .welcome-msg {
-      font-size: 16px;
-      line-height: 1.5;
-      opacity: 0.9;
-      display: block;
-    }
-  }
 }
 
-// 主要功能区域
-.main-features {
-  padding: 32px 20px;
-
-  .feature-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .feature-card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    display: flex;
-    align-items: center;
-    position: relative;
-    transition: all 0.3s ease;
-
-    &:active {
-      transform: scale(0.98);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    &.primary {
-      background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
-      color: white;
-
-      .feature-arrow .arrow-text {
-        color: white;
-      }
-    }
-
-    &.secondary {
-      border: 2px solid #e5e7eb;
-
-      &:hover {
-        border-color: #3b82f6;
-      }
-    }
-
-    .feature-icon {
-      width: 56px;
-      height: 56px;
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 16px;
-
-      .icon-text {
-        font-size: 28px;
-      }
-    }
-
-    .feature-content {
-      flex: 1;
-
-      .feature-title {
-        font-size: 18px;
-        font-weight: 600;
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .feature-desc {
-        font-size: 14px;
-        opacity: 0.8;
-        display: block;
-      }
-    }
-
-    .feature-arrow {
-      .arrow-text {
-        font-size: 20px;
-        color: #6b7280;
-        font-weight: bold;
-      }
-    }
-  }
-}
-
-// 快捷功能
-.quick-actions {
-  padding: 0 20px 32px;
-
-  .section-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 20px;
-    display: block;
-  }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
-  .action-item {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-
-    &:active {
-      transform: translateY(1px);
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    }
-
-    .action-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-
-      &.product {
-        background: linear-gradient(135deg, #fef3c7 0%, #fbbf24 100%);
-      }
-
-      &.customer {
-        background: linear-gradient(135deg, #e0f2fe 0%, #0284c7 100%);
-      }
-
-      &.calculator {
-        background: linear-gradient(135deg, #f3e8ff 0%, #8b5cf6 100%);
-      }
-
-      &.contact {
-        background: linear-gradient(135deg, #f0fdf4 0%, #22c55e 100%);
-      }
-
-      .icon-text {
-        font-size: 24px;
-      }
-    }
-
-    .action-label {
-      font-size: 14px;
-      font-weight: 500;
-      color: #374151;
-    }
-  }
-}
-
-// 最近活动
-.recent-activity {
-  padding: 0 20px 32px;
-
-  .section-title {
-    font-size: 20px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 20px;
-    display: block;
-  }
-
-  .activity-list {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-  }
-
-  .activity-item {
-    display: flex;
-    align-items: center;
-    padding: 16px 20px;
-    border-bottom: 1px solid #f3f4f6;
-    transition: background-color 0.3s ease;
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    &:active {
-      background-color: #f9fafb;
-    }
-
-    .activity-info {
-      flex: 1;
-
-      .activity-title {
-        font-size: 16px;
-        font-weight: 600;
-        color: #374151;
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .activity-customer {
-        font-size: 14px;
-        color: #6b7280;
-        display: block;
-        margin-bottom: 4px;
-      }
-
-      .activity-time {
-        font-size: 12px;
-        color: #9ca3af;
-        display: block;
-      }
-    }
-
-    .activity-amount {
-      .amount-value {
-        font-size: 16px;
-        font-weight: 600;
-        color: #059669;
-      }
-    }
-  }
-}
-
-// 底部信息
-.footer-info {
-  padding: 32px 20px;
-  margin-top: 40px;
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
-
-  .company-info {
-    text-align: center;
-
-    .company-name {
-      font-size: 18px;
-      font-weight: 600;
-      color: #374151;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .company-desc {
-      font-size: 14px;
-      color: #6b7280;
-      display: block;
-      margin-bottom: 8px;
-    }
-
-    .contact-info {
-      font-size: 14px;
-      color: #2563eb;
-      font-weight: 500;
-      display: block;
-    }
-  }
-}
-
-/* 平板和桌面端适配 */
-@media (min-width: 768px) {
-  .main-features .feature-grid {
+.brand-identity {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: $space-8;
+  
+  @media (min-width: $breakpoint-md) {
     flex-direction: row;
+    justify-content: center;
+    text-align: left;
   }
+}
 
-  .quick-actions .action-grid {
+.brand-logo {
+  margin-bottom: $space-4;
+  
+  @media (min-width: $breakpoint-md) {
+    margin-bottom: 0;
+    margin-right: $space-6;
+  }
+  
+  .logo-placeholder {
+    width: 80px;
+    height: 80px;
+    background: rgba($white, 0.15);
+    border-radius: $radius-2xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba($white, 0.2);
+  }
+}
+
+.brand-info {
+  text-align: center;
+  
+  @media (min-width: $breakpoint-md) {
+    text-align: left;
+  }
+  
+  .brand-title {
+    font-size: $text-2xl;
+    font-weight: $font-bold;
+    margin-bottom: $space-2;
+    
+    @media (min-width: $breakpoint-md) {
+      font-size: $text-3xl;
+    }
+  }
+  
+  .brand-subtitle {
+    font-size: $text-lg;
+    opacity: 0.9;
+    margin: 0;
+  }
+}
+
+.hero-description {
+  font-size: $text-lg;
+  line-height: $leading-relaxed;
+  opacity: 0.95;
+  max-width: 600px;
+  margin: 0 auto;
+  
+  @media (min-width: $breakpoint-md) {
+    font-size: $text-xl;
+  }
+}
+
+// Hero Decorations
+.hero-decoration {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  overflow: hidden;
+  
+  .decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba($white, 0.05);
+    
+    &--1 {
+      width: 200px;
+      height: 200px;
+      top: -100px;
+      right: -100px;
+    }
+    
+    &--2 {
+      width: 300px;
+      height: 300px;
+      bottom: -150px;
+      left: -150px;
+    }
+    
+    &--3 {
+      width: 120px;
+      height: 120px;
+      top: 50%;
+      left: 10%;
+      opacity: 0.3;
+    }
+  }
+}
+
+// Main Content
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-8 $space-4;
+  
+  @media (min-width: $breakpoint-md) {
+    padding: $space-12 $space-8;
+  }
+}
+
+// Primary Actions
+.primary-actions {
+  margin-bottom: $space-12;
+}
+
+.actions-grid {
+  display: grid;
+  gap: $space-4;
+  
+  @media (min-width: $breakpoint-md) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: $space-6;
+  }
+}
+
+.action-card {
+  background-color: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-base;
+  border: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  padding: $space-6;
+  cursor: pointer;
+  transition: all $transition-base;
+  text-align: left;
+  width: 100%;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-lg;
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &--primary {
+    background: linear-gradient(135deg, $primary-500 0%, $primary-700 100%);
+    color: $white;
+    border-color: $primary-600;
+    
+    &:hover {
+      box-shadow: $shadow-xl;
+    }
+  }
+  
+  &--secondary {
+    border-color: $gray-200;
+    
+    &:hover {
+      border-color: $primary-300;
+    }
+  }
+  
+  &__icon {
+    width: 64px;
+    height: 64px;
+    border-radius: $radius-xl;
+    background: rgba($white, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: $space-4;
+    backdrop-filter: blur(10px);
+    
+    .action-card--secondary & {
+      background: $primary-50;
+      color: $primary-600;
+    }
+    
+    .icon {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  
+  &__content {
+    flex: 1;
+  }
+  
+  &__title {
+    font-size: $text-xl;
+    font-weight: $font-semibold;
+    margin-bottom: $space-1;
+  }
+  
+  &__description {
+    font-size: $text-sm;
+    opacity: 0.8;
+    margin: 0;
+    
+    .action-card--primary & {
+      opacity: 0.9;
+    }
+  }
+  
+  &__arrow {
+    margin-left: $space-2;
+    
+    .icon {
+      width: 24px;
+      height: 24px;
+      opacity: 0.7;
+      
+      .action-card--primary & {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+// Quick Tools
+.quick-tools {
+  margin-bottom: $space-12;
+}
+
+.section-title {
+  font-size: $text-2xl;
+  font-weight: $font-semibold;
+  color: $gray-900;
+  margin-bottom: $space-6;
+  padding-bottom: $space-2;
+  border-bottom: 3px solid $primary-500;
+  display: inline-block;
+}
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: $space-4;
+  
+  @media (min-width: $breakpoint-sm) {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* 小屏幕适配 */
-@media (max-width: 375px) {
-  .brand-section {
-    padding: 24px 16px;
+.tool-card {
+  background-color: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-base;
+  border: 2px solid transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: $space-5;
+  text-align: center;
+  cursor: pointer;
+  transition: all $transition-base;
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+    border-color: $primary-200;
   }
-
-  .main-features {
-    padding: 24px 16px;
+  
+  &:active {
+    transform: translateY(-2px);
   }
-
-  .quick-actions {
-    padding: 0 16px 24px;
+  
+  &__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: $radius-xl;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: $space-3;
+    
+    .icon {
+      width: 28px;
+      height: 28px;
+      color: $white;
+    }
+    
+    &--product {
+      background: linear-gradient(135deg, #FFB74D 0%, $warning 100%);
+    }
+    
+    &--customer {
+      background: linear-gradient(135deg, #64B5F6 0%, $info 100%);
+    }
+    
+    &--calculator {
+      background: linear-gradient(135deg, #A78BFA 0%, #7C3AED 100%);
+    }
+    
+    &--contact {
+      background: linear-gradient(135deg, #81C784 0%, $success 100%);
+    }
   }
-
-  .recent-activity {
-    padding: 0 16px 24px;
+  
+  &__label {
+    font-size: $text-sm;
+    font-weight: $font-medium;
+    color: $gray-700;
   }
 }
-</style>
+
+// Recent Activity
+.recent-activity {
+  margin-bottom: $space-12;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: $space-6;
+}
+
+.view-all-btn {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  color: $primary-600;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: $space-2 $space-3;
+  border-radius: $radius-lg;
+  transition: all $transition-fast;
+  
+  &:hover {
+    background-color: $primary-50;
+    color: $primary-700;
+  }
+  
+  .icon {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.activity-list {
+  background-color: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-base;
+  border: 1px solid $gray-200;
+  overflow: hidden;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: $space-4 $space-5;
+  border-bottom: 1px solid $gray-200;
+  cursor: pointer;
+  transition: background-color $transition-fast;
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  &:hover {
+    background-color: $gray-50;
+  }
+  
+  &:active {
+    background-color: $gray-100;
+  }
+}
+
+.activity-content {
+  flex: 1;
+}
+
+.activity-header {
+  display: flex;
+  align-items: center;
+  gap: $space-3;
+  margin-bottom: $space-2;
+}
+
+.activity-title {
+  font-size: $text-lg;
+  font-weight: $font-semibold;
+  color: $gray-900;
+  margin: 0;
+}
+
+.activity-badge {
+  font-size: $text-xs;
+  font-weight: $font-medium;
+  padding: $space-1 $space-2;
+  border-radius: $radius-full;
+  
+  &--pending {
+    background-color: #FEF3C7;
+    color: #92400E;
+  }
+}
+
+.activity-details {
+  display: flex;
+  align-items: center;
+  gap: $space-4;
+}
+
+.activity-customer {
+  font-size: $text-sm;
+  color: $gray-600;
+  margin: 0;
+}
+
+.activity-time {
+  font-size: $text-xs;
+  color: $gray-500;
+}
+
+.activity-amount {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  
+  .amount-value {
+    font-size: $text-xl;
+    font-weight: $font-bold;
+    color: $primary-600;
+  }
+  
+  .activity-arrow {
+    width: 20px;
+    height: 20px;
+    color: $gray-400;
+  }
+}
+
+// Professional Footer
+.app-footer {
+  background-color: $white;
+  border-top: 1px solid $gray-200;
+  margin-top: $space-16;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: $space-8 $space-4;
+  display: flex;
+  flex-direction: column;
+  gap: $space-6;
+  
+  @media (min-width: $breakpoint-md) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
+
+.company-info {
+  text-align: center;
+  
+  @media (min-width: $breakpoint-md) {
+    text-align: left;
+  }
+  
+  .company-name {
+    font-size: $text-xl;
+    font-weight: $font-semibold;
+    color: $gray-900;
+    margin-bottom: $space-2;
+  }
+  
+  .company-desc {
+    font-size: $text-base;
+    color: $gray-600;
+    margin: 0;
+  }
+}
+
+.contact-info {
+  text-align: center;
+  
+  @media (min-width: $breakpoint-md) {
+    text-align: right;
+  }
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  justify-content: center;
+  
+  @media (min-width: $breakpoint-md) {
+    justify-content: flex-end;
+  }
+  
+  .icon {
+    width: 20px;
+    height: 20px;
+    color: $primary-600;
+  }
+  
+  .contact-text {
+    font-size: $text-base;
+    font-weight: $font-medium;
+    color: $primary-600;
+  }
+}
+
+// Icon base styles
+.icon {
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+// Responsive optimizations
+@media (max-width: $breakpoint-sm) {
+  .hero-section {
+    padding: $space-8 $space-4 $space-12;
+  }
+  
+  .main-content {
+    padding: $space-6 $space-4;
+  }
+  
+  .actions-grid {
+    gap: $space-3;
+  }
+  
+  .action-card {
+    padding: $space-4;
+    
+    &__icon {
+      width: 56px;
+      height: 56px;
+      margin-right: $space-3;
+    }
+    
+    &__title {
+      font-size: $text-lg;
+    }
+  }
+  
+  .tools-grid {
+    gap: $space-3;
+  }
+  
+  .tool-card {
+    padding: $space-4;
+    
+    &__icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: $space-2;
+    }
+  }
+}</style>

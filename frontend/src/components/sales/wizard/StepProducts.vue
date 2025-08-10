@@ -3,115 +3,138 @@
   Visual product selection with enhanced UX patterns
 -->
 <template>
-  <view class="step-products">
-    <view class="step-header">
-      <text class="step-title">选择产品</text>
-      <text class="step-subtitle">
+  <div class="step-customer">
+    <!-- Main Header Card -->
+    <div class="customer-card">
+      <div class="card-title">
+        <span class="title-icon">🎱</span>
+        <h3 class="title-text">产品选择</h3>
+      </div>
+      <p class="step-subtitle">
         浏览产品目录，点击产品卡片进行选择
-        <text v-if="maxSelection"> (最多{{ maxSelection }}种)</text>
-      </text>
-    </view>
+        <span v-if="maxSelection"> (最多{{ maxSelection }}种)</span>
+      </p>
+    </div>
 
-    <!-- Search and Filter Bar -->
-    <view class="search-filter-bar">
-      <view class="search-box">
-        <text class="search-icon">🔍</text>
-        <input
-          v-model="searchKeyword"
-          class="search-input"
-          placeholder="搜索产品名称、型号"
-          @input="handleSearch"
-        />
-        <view v-if="searchKeyword" class="clear-search" @click="clearSearch">
-          <text>×</text>
-        </view>
-      </view>
+    <!-- Search and Filter Section -->
+    <div class="customer-card">
+      <div class="card-title">
+        <span class="title-icon">🔍</span>
+        <h3 class="title-text">搜索筛选</h3>
+      </div>
+      
+      <div class="form-group">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input
+            v-model="searchKeyword"
+            class="search-input"
+            placeholder="搜索产品名称、型号"
+            @input="handleSearch"
+          />
+          <div v-if="searchKeyword" class="clear-search" @click="clearSearch">
+            <span>×</span>
+          </div>
+        </div>
 
-      <!-- Quick Filter Chips -->
-      <scroll-view class="filter-chips" scroll-x :show-scrollbar="false">
-        <view class="chips-container">
-          <view
-            class="filter-chip"
-            :class="{ 'filter-chip--active': activeCategory === 'all' }"
-            @click="selectCategory('all')"
-          >
-            全部
-          </view>
-          <view
-            v-for="category in categories"
-            :key="category.id"
-            class="filter-chip"
-            :class="{ 'filter-chip--active': activeCategory === category.id }"
-            @click="selectCategory(category.id)"
-          >
-            <text class="chip-icon">{{ category.icon }}</text>
-            <text class="chip-name">{{ category.name }}</text>
-          </view>
-        </view>
-      </scroll-view>
-    </view>
+        <!-- Quick Filter Chips -->
+        <div class="filter-chips">
+          <div class="chips-container">
+            <div
+              class="filter-chip"
+              :class="{ 'filter-chip--active': activeCategory === 'all' }"
+              @click="selectCategory('all')"
+            >
+              全部
+            </div>
+            <div
+              v-for="category in categories"
+              :key="category.id"
+              class="filter-chip"
+              :class="{ 'filter-chip--active': activeCategory === category.id }"
+              @click="selectCategory(category.id)"
+            >
+              <span class="chip-icon">{{ category.icon }}</span>
+              <span class="chip-name">{{ category.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Selected Products Summary (Sticky when items selected) -->
-    <view v-if="localSelectedProducts.length > 0" class="selected-summary">
-      <view class="summary-header" @click="showSelectedDetails = !showSelectedDetails">
-        <text class="summary-title"> 已选 {{ localSelectedProducts.length }} 种产品 </text>
-        <text class="summary-total"> 合计：¥{{ selectedTotal.toFixed(2) }} </text>
-        <text class="expand-icon">{{ showSelectedDetails ? '▲' : '▼' }}</text>
-      </view>
+    <!-- Selected Products Summary -->
+    <div v-if="localSelectedProducts.length > 0" class="customer-card">
+      <div class="card-title">
+        <span class="title-icon">✅</span>
+        <h3 class="title-text">已选产品</h3>
+        <span class="optional-badge">{{ localSelectedProducts.length }}种</span>
+      </div>
+      
+      <div class="summary-header" @click="showSelectedDetails = !showSelectedDetails">
+        <span class="summary-total"> 合计：¥{{ selectedTotal.toFixed(2) }} </span>
+        <span class="collapse-icon">{{ showSelectedDetails ? '▲' : '▼' }}</span>
+      </div>
 
       <!-- Selected Items List (Collapsible) -->
-      <view v-if="showSelectedDetails" class="selected-list">
-        <view
+      <div v-if="showSelectedDetails" class="selected-list">
+        <div
           v-for="(item, index) in localSelectedProducts"
           :key="`${item.product.id}-${item.skuId}`"
           class="selected-item"
         >
-          <image
+          <img
             class="item-image"
             :src="item.product.image || '/static/images/default-product.png'"
-            mode="aspectFill"
+            style="object-fit: cover"
+            alt="Product image"
           />
-          <view class="item-info">
-            <text class="item-name">{{ item.product.name }}</text>
-            <text class="item-spec">
+          <div class="item-info">
+            <span class="item-name">{{ item.product.name }}</span>
+            <span class="item-spec">
               {{ item.product.model }}
-              <text v-if="item.skuName"> - {{ item.skuName }}</text>
-            </text>
-            <text class="item-price">¥{{ item.price }} × {{ item.quantity }}</text>
-          </view>
-          <view class="item-actions">
-            <text class="item-subtotal">¥{{ item.subtotal.toFixed(2) }}</text>
+              <span v-if="item.skuName"> - {{ item.skuName }}</span>
+            </span>
+            <span class="item-price">¥{{ item.price }} × {{ item.quantity }}</span>
+          </div>
+          <div class="item-actions">
+            <span class="item-subtotal">¥{{ item.subtotal.toFixed(2) }}</span>
             <SalesButton size="mini" type="danger" @click="removeSelectedItem(index)">
               移除
             </SalesButton>
-          </view>
-        </view>
-      </view>
-    </view>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <!-- Product Grid -->
-    <view class="products-container">
+    <!-- Product Catalog -->
+    <div class="customer-card">
+      <div class="card-title">
+        <span class="title-icon">🛍️</span>
+        <h3 class="title-text">产品目录</h3>
+      </div>
+      
+      <div class="products-container">
       <!-- Loading State -->
-      <view v-if="loading" class="loading-state">
-        <view class="loading-spinner"></view>
-        <text class="loading-text">加载产品中...</text>
-      </view>
+      <div v-if="loading" class="loading-state">
+        <div class="loading-spinner"></div>
+        <span class="loading-text">加载产品中...</span>
+      </div>
 
       <!-- Empty State -->
-      <view v-else-if="filteredProducts.length === 0" class="empty-state">
-        <text class="empty-icon">📦</text>
-        <text class="empty-title">没有找到产品</text>
-        <text class="empty-subtitle">
+      <div v-else-if="filteredProducts.length === 0" class="empty-state">
+        <span class="empty-icon">📦</span>
+        <span class="empty-title">没有找到产品</span>
+        <span class="empty-subtitle">
           {{ searchKeyword ? '尝试其他搜索关键词' : '该分类暂无产品' }}
-        </text>
+        </span>
         <SalesButton v-if="searchKeyword" type="plain" @click="clearSearch" size="small">
           清除搜索条件
         </SalesButton>
-      </view>
+      </div>
 
       <!-- Product Cards Grid -->
-      <view v-else class="product-grid">
-        <view
+      <div v-else class="product-grid">
+        <div
           v-for="product in filteredProducts"
           :key="product.id"
           class="product-card"
@@ -122,111 +145,96 @@
           @click="handleProductSelect(product)"
         >
           <!-- Product Image with Badge -->
-          <view class="card-image-wrapper">
-            <image
+          <div class="card-image-wrapper">
+            <img
               class="card-image"
               :src="product.image || '/static/images/default-product.png'"
-              mode="aspectFill"
-              lazy-load
+              style="object-fit: cover"
+              loading="lazy"
+              alt="Product image"
             />
 
             <!-- Selection Badge -->
-            <view v-if="isProductSelected(product.id)" class="selection-badge">
-              <text class="badge-text">{{ getSelectedQuantity(product.id) }}</text>
-            </view>
+            <div v-if="isProductSelected(product.id)" class="selection-badge">
+              <span class="badge-text">{{ getSelectedQuantity(product.id) }}</span>
+            </div>
 
             <!-- Quick Add Button -->
-            <view v-else class="quick-add-btn" @click.stop="quickAddProduct(product)">
-              <text class="add-icon">+</text>
-            </view>
+            <div v-else class="quick-add-btn" @click.stop="quickAddProduct(product)">
+              <span class="add-icon">+</span>
+            </div>
 
             <!-- Price Tag -->
-            <view class="price-tag">
-              <text class="price-text">¥{{ product.price }}</text>
-            </view>
-          </view>
+            <div class="price-tag">
+              <span class="price-text">¥{{ product.price }}</span>
+            </div>
+          </div>
 
           <!-- Product Info -->
-          <view class="card-info">
-            <text class="product-name">{{ product.name }}</text>
-            <text class="product-model">{{ product.model }}</text>
-            <view class="product-meta">
-              <text class="product-unit">{{ product.unit || '个' }}</text>
-              <text v-if="product.stock" class="product-stock"> 库存: {{ product.stock }} </text>
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- Load More -->
-      <view v-if="hasMore && !loading" class="load-more">
-        <SalesButton type="plain" @click="loadMore"> 加载更多产品 </SalesButton>
-      </view>
-    </view>
-
-    <!-- Bottom Actions -->
-    <view class="step-actions">
-      <SalesButton type="default" @click="goBack"> 上一步 </SalesButton>
-
-      <SalesButton
-        type="primary"
-        @click="handleNext"
-        :disabled="localSelectedProducts.length === 0"
-        class="next-button"
-      >
-        下一步：价格配置
-        <text v-if="localSelectedProducts.length > 0" class="action-count">
-          ({{ localSelectedProducts.length }})
-        </text>
-      </SalesButton>
-    </view>
+          <div class="card-info">
+            <span class="product-name">{{ product.name }}</span>
+            <span class="product-model">{{ product.model }}</span>
+            <div class="product-meta">
+              <span class="product-unit">{{ product.unit || '个' }}</span>
+              <span v-if="product.stock" class="product-stock"> 库存: {{ product.stock }} </span>
+            </div>
+          </div>
+        </div>
+      
+        <!-- Load More -->
+        <div v-if="hasMore && !loading" class="load-more">
+          <SalesButton type="plain" @click="loadMore"> 加载更多产品 </SalesButton>
+        </div>
+      </div>
+    </div>
 
     <!-- SKU Selection Modal -->
-    <uni-popup ref="skuModalRef" type="bottom" :mask-click="false">
-      <view class="sku-modal" v-if="selectedProduct">
-        <view class="sku-header">
-          <text class="sku-title">选择规格</text>
-          <view class="sku-close" @click="closeSkuModal">
-            <text>×</text>
-          </view>
-        </view>
+    <div v-if="showSkuModal && selectedProduct" class="modal-overlay" @click="closeSkuModal">
+      <div class="sku-modal" @click.stop>
+        <div class="sku-header">
+          <span class="sku-title">选择规格</span>
+          <div class="sku-close" @click="closeSkuModal">
+            <span>×</span>
+          </div>
+        </div>
 
-        <view class="sku-product">
-          <image
+        <div class="sku-product">
+          <img
             class="sku-image"
             :src="selectedProduct.image || '/static/images/default-product.png'"
-            mode="aspectFill"
+            style="object-fit: cover"
+            alt="Product image"
           />
-          <view class="sku-info">
-            <text class="sku-name">{{ selectedProduct.name }}</text>
-            <text class="sku-model">{{ selectedProduct.model }}</text>
-            <text class="sku-base-price">基础价格：¥{{ selectedProduct.price }}</text>
-          </view>
-        </view>
+          <div class="sku-info">
+            <span class="sku-name">{{ selectedProduct.name }}</span>
+            <span class="sku-model">{{ selectedProduct.model }}</span>
+            <span class="sku-base-price">基础价格：¥{{ selectedProduct.price }}</span>
+          </div>
+        </div>
 
         <!-- SKU Options -->
-        <view v-if="selectedProduct.skuOptions?.length" class="sku-options">
-          <text class="option-label">规格选择</text>
-          <view class="option-grid">
-            <view
+        <div v-if="selectedProduct.skuOptions?.length" class="sku-options">
+          <span class="option-label">规格选择</span>
+          <div class="option-grid">
+            <div
               v-for="sku in selectedProduct.skuOptions"
               :key="sku.id"
               class="option-item"
               :class="{ 'option-item--selected': selectedSkuId === sku.id }"
               @click="selectSku(sku)"
             >
-              <text class="option-name">{{ sku.name }}</text>
-              <text v-if="sku.price" class="option-price">
+              <span class="option-name">{{ sku.name }}</span>
+              <span v-if="sku.price" class="option-price">
                 {{ sku.price > 0 ? '+' : '' }}¥{{ sku.price }}
-              </text>
-            </view>
-          </view>
-        </view>
+              </span>
+            </div>
+          </div>
+        </div>
 
         <!-- Quantity Selector -->
-        <view class="quantity-section">
-          <text class="quantity-label">数量</text>
-          <view class="quantity-controls">
+        <div class="quantity-section">
+          <span class="quantity-label">数量</span>
+          <div class="quantity-controls">
             <SalesButton
               size="small"
               type="default"
@@ -243,29 +251,31 @@
               @blur="validateQuantity"
             />
             <SalesButton size="small" type="default" @click="increaseQuantity"> + </SalesButton>
-          </view>
-        </view>
+          </div>
+        </div>
 
         <!-- Price Preview -->
-        <view class="price-preview">
-          <text class="preview-label">小计：</text>
-          <text class="preview-price">¥{{ modalSubtotal.toFixed(2) }}</text>
-        </view>
+        <div class="price-preview">
+          <span class="preview-label">小计：</span>
+          <span class="preview-price">¥{{ modalSubtotal.toFixed(2) }}</span>
+        </div>
 
         <!-- Modal Actions -->
-        <view class="sku-actions">
+        <div class="sku-actions">
           <SalesButton type="default" @click="closeSkuModal"> 取消 </SalesButton>
           <SalesButton type="primary" @click="confirmSkuSelection"> 确认添加 </SalesButton>
-        </view>
-      </view>
-    </uni-popup>
-  </view>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SalesButton from '../SalesButton.vue'
 import { toast } from '@/utils/platform-adapter'
+import { ProductsApi } from '@/api/products'
 import type { SelectedProduct } from '@/components/business/ProductSelector.vue'
 import type { Category, Product } from '@/types/api'
 
@@ -298,7 +308,7 @@ const localSelectedProducts = ref<SelectedProduct[]>([...props.selectedProducts]
 const products = ref<Product[]>([])
 
 // SKU Modal state
-const skuModalRef = ref()
+const showSkuModal = ref(false)
 const selectedProduct = ref<Product | null>(null)
 const selectedSkuId = ref('')
 const modalQuantity = ref(1)
@@ -308,24 +318,24 @@ const editingIndex = ref(-1)
 const generateMockProducts = (categoryId?: string) => {
   const mockProducts: Product[] = []
   const productNames = {
-    tables: ['星牌台球桌', '乔氏台球桌', '亚林台球桌', '康溪台球桌'],
-    cues: ['高端枫木球杆', '专业碳纤维球杆', '初学者套装球杆', '定制雕花球杆'],
-    balls: ['亚美利加台球', '比利时aramith球', '国产优质台球', '练习专用球'],
-    accessories: ['台球三角架', '球杆架', '台球刷', '球杆皮头'],
-    maintenance: ['台呢清洁剂', '球杆保养油', '台球桌罩', '专业维修工具']
+    '台球桌': ['星牌台球桌', '乔氏台球桌', '亚林台球桌', '康溪台球桌'],
+    '球杆': ['高端枫木球杆', '专业碳纤维球杆', '初学者套装球杆', '定制雕花球杆'],
+    '台球': ['亚美利加台球', '比利时aramith球', '国产优质台球', '练习专用球'],
+    '地毯': ['专业台球毯', '耐磨型毯面', '高档羊毛毯', '维护用绒毯'],
+    '其他配件': ['台球三角架', '球杆架', '台球刷', '球杆皮头', '台呢清洁剂', '球杆保养油']
   }
 
-  const categoryNames = categoryId === 'all' ? Object.keys(productNames) : [categoryId || 'tables']
+  const categoryNames = categoryId === 'all' ? Object.keys(productNames) : [categoryId || '台球桌']
 
   categoryNames.forEach(cat => {
     productNames[cat]?.forEach((name, i) => {
       mockProducts.push({
         id: `${cat}-${i}`,
         name,
-        model: `${cat.toUpperCase()}-${Math.random().toString(36).substring(7)}`,
+        model: `${cat.substring(0,2).toUpperCase()}-${Math.random().toString(36).substring(7)}`,
         price: Math.floor(Math.random() * 5000) + 500,
-        unit: cat === 'tables' ? '张' : cat === 'cues' ? '支' : '个',
-        categoryId: cat,
+        unit: cat === '台球桌' ? '张' : cat === '球杆' ? '支' : '个',
+        category: cat,
         stock: Math.floor(Math.random() * 50) + 10,
         image: `/static/images/products/${cat}-${i + 1}.jpg`,
         skuOptions:
@@ -384,19 +394,52 @@ const loadProducts = async () => {
 
   loading.value = true
 
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500))
+  try {
+    // Use real API to fetch products
+    const queryParams = {
+      page: page.value,
+      page_size: 10, // 10 products per page
+      search: searchKeyword.value || undefined,
+      category: activeCategory.value !== 'all' ? activeCategory.value : undefined,
+      is_active: true // Only show active products in sales
+    }
 
-  const newProducts = generateMockProducts(activeCategory.value)
+    const response = await ProductsApi.getProducts(queryParams)
 
-  if (page.value === 1) {
-    products.value = newProducts
-  } else {
-    products.value = [...products.value, ...newProducts]
+    if (response.success && response.data) {
+      if (page.value === 1) {
+        products.value = response.data
+      } else {
+        products.value = [...products.value, ...response.data]
+      }
+
+      // Check if there are more pages
+      const totalPages = Math.ceil((response.pagination?.total || 0) / 10)
+      hasMore.value = page.value < totalPages
+    } else {
+      console.error('Failed to load products:', response.error)
+      // Fallback to mock data if API fails
+      const mockProducts = generateMockProducts(activeCategory.value)
+      if (page.value === 1) {
+        products.value = mockProducts
+      } else {
+        products.value = [...products.value, ...mockProducts]
+      }
+      hasMore.value = page.value < 3
+    }
+  } catch (error) {
+    console.error('Error loading products:', error)
+    // Fallback to mock data if API fails
+    const mockProducts = generateMockProducts(activeCategory.value)
+    if (page.value === 1) {
+      products.value = mockProducts
+    } else {
+      products.value = [...products.value, ...mockProducts]
+    }
+    hasMore.value = page.value < 3
+  } finally {
+    loading.value = false
   }
-
-  hasMore.value = page.value < 3 // Simulate 3 pages max
-  loading.value = false
 }
 
 const handleSearch = () => {
@@ -496,7 +539,7 @@ const handleProductSelect = (product: Product) => {
     selectedSkuId.value = product.skuOptions?.[0]?.id || ''
   }
 
-  skuModalRef.value?.open()
+  showSkuModal.value = true
 }
 
 const selectSku = (sku: { id: string; name: string; price?: number }) => {
@@ -552,7 +595,7 @@ const removeSelectedItem = (index: number) => {
 }
 
 const closeSkuModal = () => {
-  skuModalRef.value?.close()
+  showSkuModal.value = false
   selectedProduct.value = null
   editingIndex.value = -1
 }
@@ -561,18 +604,6 @@ const emitUpdate = () => {
   emit('update:selectedProducts', [...localSelectedProducts.value])
 }
 
-const goBack = () => {
-  emit('back')
-}
-
-const handleNext = () => {
-  if (localSelectedProducts.value.length === 0) {
-    toast.show('请选择至少一个产品', 'none')
-    return
-  }
-
-  emit('next')
-}
 
 // Watch for external changes
 watch(
@@ -590,60 +621,104 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@import '@/styles/design-tokens.scss';
 @import '@/styles/variables.scss';
 @import '@/styles/mixins.scss';
 
-.step-products {
-  min-height: 100vh;
+.step-customer {
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.step-header {
-  text-align: center;
-  margin-bottom: $spacing-lg;
+.customer-card {
+  @include card;
+  margin-bottom: $space-6;
+  padding: $space-6;
+  border-radius: $radius-2xl;
 }
 
-.step-title {
-  font-size: $font-size-extra-large;
-  font-weight: $font-weight-semibold;
-  color: $text-color;
-  display: block;
-  margin-bottom: $spacing-xs;
+.card-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: $space-4;
+  cursor: pointer;
+  position: relative;
+}
+
+.title-icon {
+  font-size: $text-lg;
+  margin-right: $space-3;
+}
+
+.title-text {
+  font-size: $text-lg;
+  font-weight: $font-semibold;
+  color: $gray-900;
+  flex: 1;
+  margin: 0;
+}
+
+.optional-badge {
+  background-color: $primary-100;
+  color: $primary-700;
+  font-size: $text-xs;
+  padding: $space-1 $space-3;
+  border-radius: $radius-full;
+  margin-right: $space-2;
+  font-weight: $font-medium;
+}
+
+.collapse-icon {
+  font-size: $text-sm;
+  color: $gray-500;
+  transition: $transition-base;
 }
 
 .step-subtitle {
-  font-size: $font-size-small;
-  color: $text-color-secondary;
-  line-height: 1.4;
+  font-size: $text-sm;
+  color: $gray-600;
+  line-height: $leading-relaxed;
+  margin: 0;
 }
 
-// Search and Filter
-.search-filter-bar {
-  @include card;
-  margin-bottom: $spacing-base;
-  padding: $spacing-base;
+.form-group {
+  margin-bottom: $space-6;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
+// Search and Filter - using consistent card styling
 .search-box {
   display: flex;
   align-items: center;
-  background-color: $bg-color-page;
-  border-radius: $border-radius-lg;
-  padding: $spacing-sm $spacing-base;
-  margin-bottom: $spacing-base;
+  background-color: $gray-50;
+  border-radius: $radius-lg;
+  padding: $space-3 $space-4;
+  margin-bottom: $space-4;
 }
 
 .search-icon {
-  font-size: $font-size-base;
-  margin-right: $spacing-sm;
-  color: $text-color-secondary;
+  font-size: $text-base;
+  margin-right: $space-3;
+  color: $gray-500;
 }
 
 .search-input {
   flex: 1;
-  font-size: $font-size-base;
-  color: $text-color;
+  font-size: $text-base;
+  color: $gray-900;
   background: transparent;
   border: none;
+  
+  &::placeholder {
+    color: $gray-500;
+  }
+  
+  &:focus {
+    outline: none;
+  }
 }
 
 .clear-search {
@@ -652,13 +727,24 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: $text-color-secondary;
-  font-size: $font-size-large;
+  color: $gray-500;
+  font-size: $text-lg;
   cursor: pointer;
+  
+  &:hover {
+    color: $gray-700;
+  }
 }
 
 .filter-chips {
-  height: 40px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .chips-container {
@@ -696,44 +782,32 @@ onMounted(() => {
   font-size: $font-size-small;
 }
 
-// Selected Summary
-.selected-summary {
-  @include card;
-  margin-bottom: $spacing-base;
-  padding: 0;
-  border-left: 4px solid $primary-color;
-}
-
+// Selected Summary - using consistent card styling
 .summary-header {
   display: flex;
   align-items: center;
-  padding: $spacing-base;
+  justify-content: space-between;
+  padding: $space-4;
   cursor: pointer;
-}
-
-.summary-title {
-  font-size: $font-size-base;
-  font-weight: $font-weight-medium;
-  color: $text-color;
-  flex: 1;
+  background-color: $gray-50;
+  border-radius: $radius-lg;
+  margin-bottom: $space-4;
+  transition: $transition-base;
+  
+  &:hover {
+    background-color: $gray-100;
+  }
 }
 
 .summary-total {
-  font-size: $font-size-base;
-  font-weight: $font-weight-semibold;
-  color: $primary-color;
-  margin-right: $spacing-sm;
-}
-
-.expand-icon {
-  font-size: $font-size-small;
-  color: $text-color-secondary;
+  font-size: $text-lg;
+  font-weight: $font-bold;
+  color: $primary-600;
 }
 
 .selected-list {
-  border-top: 1px solid $border-color-lighter;
-  padding: $spacing-base;
-  padding-top: 0;
+  border-top: 1px solid $gray-200;
+  padding-top: $space-4;
 }
 
 .selected-item {
@@ -786,9 +860,9 @@ onMounted(() => {
   margin-bottom: $spacing-xs;
 }
 
-// Products Container
+// Products Container - nested within card
 .products-container {
-  margin-bottom: 80px; // Space for actions
+  // Container is now within customer-card, no additional margin needed
 }
 
 .loading-state,
@@ -969,36 +1043,26 @@ onMounted(() => {
   padding: $spacing-lg 0;
 }
 
-// Step Actions
-.step-actions {
+
+// Modal Overlay
+.modal-overlay {
   position: fixed;
-  bottom: 0;
+  top: 0;
   left: 0;
   right: 0;
-  background-color: $bg-color-white;
-  border-top: 1px solid $border-color-lighter;
-  padding: $spacing-base;
-  padding-bottom: calc(#{$spacing-base} + env(safe-area-inset-bottom));
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  gap: $spacing-base;
-  z-index: $z-index-fixed;
-}
-
-.next-button {
-  flex: 2;
-  position: relative;
-}
-
-.action-count {
-  margin-left: $spacing-xs;
-  background-color: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: $font-size-extra-small;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: $z-index-modal;
+  padding: $spacing-base;
 }
 
 // SKU Modal
 .sku-modal {
+  width: 100%;
+  max-width: 500px;
   background-color: $bg-color-white;
   border-radius: $border-radius-lg $border-radius-lg 0 0;
   padding: $spacing-lg;

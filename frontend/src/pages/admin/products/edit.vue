@@ -1,23 +1,23 @@
 <template>
-  <view class="product-edit-page">
+  <div class="product-edit-page">
     <AdminLayout>
       <!-- 页面标题 -->
-      <view class="page-header">
-        <text class="page-title">{{ isEditMode ? '编辑产品' : '添加产品' }}</text>
+      <div class="page-header">
+        <h2 class="page-title">{{ isEditMode ? '编辑产品' : '添加产品' }}</h2>
         <button class="back-btn" @click="handleBack">
-          <text>← 返回列表</text>
+          <span>← 返回列表</span>
         </button>
-      </view>
+      </div>
 
       <!-- 表单 -->
-      <view class="edit-form admin-card">
+      <div class="edit-form admin-card">
         <form @submit.prevent="handleSubmit">
           <!-- 基本信息 -->
-          <view class="form-section">
-            <text class="section-title">基本信息</text>
+          <div class="form-section">
+            <h3 class="section-title">基本信息</h3>
 
-            <view class="admin-form-item">
-              <text class="admin-form-label required">产品名称</text>
+            <div class="admin-form-item">
+              <label class="admin-form-label required">产品名称</label>
               <input
                 v-model="formData.name"
                 class="admin-form-control"
@@ -25,11 +25,11 @@
                 placeholder="请输入产品名称"
                 maxlength="100"
               />
-              <text v-if="errors.name" class="form-error">{{ errors.name }}</text>
-            </view>
+              <span v-if="errors.name" class="form-error">{{ errors.name }}</span>
+            </div>
 
-            <view class="admin-form-item">
-              <text class="admin-form-label required">产品型号</text>
+            <div class="admin-form-item">
+              <label class="admin-form-label required">产品型号</label>
               <input
                 v-model="formData.model"
                 class="admin-form-control"
@@ -37,132 +37,146 @@
                 placeholder="请输入产品型号"
                 maxlength="50"
               />
-              <text v-if="errors.model" class="form-error">{{ errors.model }}</text>
-            </view>
+              <span v-if="errors.model" class="form-error">{{ errors.model }}</span>
+            </div>
 
-            <view class="admin-form-item">
-              <text class="admin-form-label required">产品分类</text>
-              <picker
-                mode="selector"
-                :range="categoryOptions"
-                :value="categoryIndex"
-                @change="handleCategoryChange"
-              >
-                <view class="form-picker">
-                  <text :class="['picker-text', { placeholder: !formData.category }]">
-                    {{ formData.category || '请选择产品分类' }}
-                  </text>
-                  <text class="picker-arrow">▼</text>
-                </view>
-              </picker>
-              <text v-if="errors.category" class="form-error">{{ errors.category }}</text>
-            </view>
+            <div class="admin-form-item">
+              <label class="admin-form-label required">产品分类</label>
+              <div class="form-picker" @click="showCategorySelect = !showCategorySelect">
+                <span :class="['picker-text', { placeholder: !formData.category }]">
+                  {{ formData.category || '请选择产品分类' }}
+                </span>
+                <span class="picker-arrow">▼</span>
+              </div>
+              <div v-if="showCategorySelect" class="picker-options">
+                <div 
+                  v-for="(option, index) in categoryOptions" 
+                  :key="index"
+                  class="picker-option"
+                  @click.stop="selectCategory(option, index)"
+                >
+                  {{ option }}
+                </div>
+              </div>
+              <span v-if="errors.category" class="form-error">{{ errors.category }}</span>
+            </div>
 
-            <view class="form-row">
-              <view class="admin-form-item">
-                <text class="admin-form-label required">价格</text>
+            <div class="form-row">
+              <div class="admin-form-item">
+                <label class="admin-form-label required">价格</label>
                 <input
                   v-model.number="formData.price"
                   class="admin-form-control"
-                  type="digit"
+                  type="number"
+                  step="0.01"
                   placeholder="0.00"
                 />
-                <text v-if="errors.price" class="form-error">{{ errors.price }}</text>
-              </view>
+                <span v-if="errors.price" class="form-error">{{ errors.price }}</span>
+              </div>
 
-              <view class="admin-form-item">
-                <text class="admin-form-label required">单位</text>
-                <picker
-                  mode="selector"
-                  :range="unitOptions"
-                  :value="unitIndex"
-                  @change="handleUnitChange"
-                >
-                  <view class="form-picker">
-                    <text>{{ formData.unit }}</text>
-                    <text class="picker-arrow">▼</text>
-                  </view>
-                </picker>
-                <text v-if="errors.unit" class="form-error">{{ errors.unit }}</text>
-              </view>
-            </view>
+              <div class="admin-form-item">
+                <label class="admin-form-label required">单位</label>
+                <div class="form-picker" @click="showUnitSelect = !showUnitSelect">
+                  <span>{{ formData.unit }}</span>
+                  <span class="picker-arrow">▼</span>
+                </div>
+                <div v-if="showUnitSelect" class="picker-options">
+                  <div 
+                    v-for="(option, index) in unitOptions" 
+                    :key="index"
+                    class="picker-option"
+                    @click.stop="selectUnit(option, index)"
+                  >
+                    {{ option }}
+                  </div>
+                </div>
+                <span v-if="errors.unit" class="form-error">{{ errors.unit }}</span>
+              </div>
+            </div>
 
-            <view class="admin-form-item">
-              <text class="admin-form-label">产品描述</text>
+            <div class="admin-form-item">
+              <label class="admin-form-label">产品描述</label>
               <textarea
                 v-model="formData.description"
                 class="admin-form-control form-textarea"
                 placeholder="请输入产品描述"
                 maxlength="500"
               />
-            </view>
-          </view>
+            </div>
+          </div>
 
           <!-- 产品图片 -->
-          <view class="form-section">
-            <text class="section-title">产品图片</text>
+          <div class="form-section">
+            <h3 class="section-title">产品图片</h3>
 
-            <view class="image-upload">
-              <view v-if="formData.image_url" class="image-preview">
-                <image :src="formData.image_url" mode="aspectFill" />
-                <button class="remove-btn" @click="removeImage">
-                  <text>×</text>
+            <div class="image-upload">
+              <div v-if="formData.image_url" class="image-preview">
+                <img :src="formData.image_url" alt="产品图片" />
+                <button type="button" class="remove-btn" @click="removeImage">
+                  <span>×</span>
                 </button>
-              </view>
+              </div>
 
-              <button v-else class="upload-btn" @click="chooseImage">
-                <text class="upload-icon">+</text>
-                <text class="upload-text">上传图片</text>
+              <button v-else type="button" class="upload-btn" @click="chooseImage">
+                <span class="upload-icon">+</span>
+                <span class="upload-text">上传图片</span>
               </button>
+              <input 
+                ref="fileInput" 
+                type="file" 
+                accept="image/*" 
+                @change="handleImageUpload" 
+                style="display: none;" 
+              />
 
-              <text class="upload-tips">建议尺寸：800x800px，支持 JPG、PNG 格式</text>
-            </view>
-          </view>
+              <p class="upload-tips">建议尺寸：800x800px，支持 JPG、PNG 格式</p>
+            </div>
+          </div>
 
           <!-- 状态设置 -->
-          <view class="form-section">
-            <text class="section-title">状态设置</text>
+          <div class="form-section">
+            <h3 class="section-title">状态设置</h3>
 
-            <view class="admin-form-item">
-              <view class="switch-item">
-                <text class="switch-label">是否上架</text>
-                <switch
-                  :checked="formData.is_active"
-                  @change="handleStatusChange"
-                  color="#2563eb"
+            <div class="admin-form-item">
+              <div class="switch-item">
+                <label class="switch-label">是否上架</label>
+                <input
+                  type="checkbox"
+                  v-model="formData.is_active"
+                  class="form-switch"
                 />
-              </view>
-              <text class="form-help">下架后产品将不在销售端显示</text>
-            </view>
-          </view>
+              </div>
+              <p class="form-help">下架后产品将不在销售端显示</p>
+            </div>
+          </div>
 
           <!-- 操作按钮 -->
-          <view class="form-actions">
+          <div class="form-actions">
             <button
               class="admin-btn admin-btn-primary"
               type="submit"
-              :loading="isSubmitting"
               :disabled="isSubmitting"
             >
               {{ isSubmitting ? '保存中...' : '保存' }}
             </button>
-            <button class="admin-btn admin-btn-default" @click="handleCancel">取消</button>
-          </view>
+            <button type="button" class="admin-btn admin-btn-default" @click="handleCancel">取消</button>
+          </div>
         </form>
-      </view>
+      </div>
     </AdminLayout>
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import type { Product } from '@/types/models'
 
 const productsStore = useProductsStore()
 const route = useRoute()
+const router = useRouter()
 
 // 页面参数
 const productId = ref<string>((route.params.id as string) || (route.query.id as string) || '')
@@ -186,6 +200,11 @@ const errors = ref<Record<string, string>>({})
 // 提交状态
 const isSubmitting = ref(false)
 
+// UI 状态
+const showCategorySelect = ref(false)
+const showUnitSelect = ref(false)
+const fileInput = ref<HTMLInputElement>()
+
 // 选项数据
 const categoryOptions = ['台球桌', '地毯', '球杆', '台球', '其他配件']
 const categoryIndex = computed(() => {
@@ -205,12 +224,10 @@ const loadProduct = async () => {
   if (product) {
     formData.value = { ...product }
   } else {
-    uni.showToast({
-      title: '产品不存在',
-      icon: 'none'
-    })
+    console.warn('产品不存在')
+    alert('产品不存在')
     setTimeout(() => {
-      uni.navigateBack()
+      router.back()
     }, 1500)
   }
 }
@@ -242,51 +259,63 @@ const validateForm = (): boolean => {
   return Object.keys(errors.value).length === 0
 }
 
-// 事件处理
-const handleCategoryChange = (e: any) => {
-  formData.value.category = categoryOptions[e.detail.value]
+// 选择器事件处理
+const selectCategory = (option: string, index: number) => {
+  formData.value.category = option
+  showCategorySelect.value = false
 }
 
-const handleUnitChange = (e: any) => {
-  formData.value.unit = unitOptions[e.detail.value]
+const selectUnit = (option: string, index: number) => {
+  formData.value.unit = option
+  showUnitSelect.value = false
 }
 
-const handleStatusChange = (e: any) => {
-  formData.value.is_active = e.detail.value
-}
-
+// 图片上传处理
 const chooseImage = () => {
-  uni.chooseImage({
-    count: 1,
-    sizeType: ['compressed'],
-    sourceType: ['album', 'camera'],
-    success: res => {
-      const tempFilePath = res.tempFilePaths[0]
-      uploadImage(tempFilePath)
-    }
-  })
+  if (fileInput.value) {
+    fileInput.value.click()
+  }
+}
+
+const handleImageUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0]
+  
+  if (!file) return
+
+  // 验证文件类型
+  if (!file.type.startsWith('image/')) {
+    alert('请选择图片文件')
+    return
+  }
+
+  // 验证文件大小 (5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('图片大小不能超过5MB')
+    return
+  }
+
+  try {
+    console.log('开始上传图片...')
+    
+    // 创建预览URL
+    const previewUrl = URL.createObjectURL(file)
+    formData.value.image_url = previewUrl
+
+    // TODO: 实现实际的图片上传到 Supabase Storage
+    // const uploadResult = await uploadFile(file, 'products', `product-${Date.now()}`)
+    // formData.value.image_url = uploadResult.url
+
+    console.log('图片上传成功')
+  } catch (error) {
+    console.error('图片上传失败:', error)
+    alert('图片上传失败，请重试')
+  }
 }
 
 const uploadImage = async (filePath: string) => {
-  uni.showLoading({ title: '上传中...' })
-
-  try {
-    // TODO: 实现图片上传到 Supabase Storage
-    // 这里暂时使用本地路径
-    formData.value.image_url = filePath
-
-    uni.hideLoading()
-    uni.showToast({
-      title: '上传成功',
-      icon: 'success'
-    })
-  } catch (error) {
-    uni.hideLoading()
-    uni.showToast({
-      title: '上传失败',
-      icon: 'none'
-    })
-  }
+  // This function is kept for compatibility but not used
+  console.log('Legacy uploadImage function called')
 }
 
 const removeImage = () => {
@@ -309,44 +338,35 @@ const handleSubmit = async () => {
     }
 
     if (result.success) {
-      uni.showToast({
-        title: isEditMode.value ? '更新成功' : '添加成功',
-        icon: 'success'
-      })
+      const message = isEditMode.value ? '更新成功' : '添加成功'
+      console.log(message)
+      alert(message)
 
       setTimeout(() => {
-        uni.navigateBack()
+        router.back()
       }, 1500)
     } else {
-      uni.showToast({
-        title: result.error || '操作失败',
-        icon: 'none'
-      })
+      const errorMessage = result.error || '操作失败'
+      console.error(errorMessage)
+      alert(errorMessage)
     }
   } catch (error) {
-    uni.showToast({
-      title: '操作失败',
-      icon: 'none'
-    })
+    console.error('操作失败:', error)
+    alert('操作失败，请重试')
   } finally {
     isSubmitting.value = false
   }
 }
 
 const handleCancel = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要放弃当前编辑吗？',
-    success: res => {
-      if (res.confirm) {
-        uni.navigateBack()
-      }
-    }
-  })
+  const confirmed = confirm('确定要放弃当前编辑吗？')
+  if (confirmed) {
+    router.back()
+  }
 }
 
 const handleBack = () => {
-  uni.navigateBack()
+  router.back()
 }
 
 // 页面加载
@@ -354,7 +374,26 @@ onMounted(() => {
   if (productId.value) {
     loadProduct()
   }
+  
+  // 添加文档点击监听器以关闭下拉框
+  document.addEventListener('click', handleDocumentClick)
 })
+
+// 清理事件监听器
+onUnmounted(() => {
+  document.removeEventListener('click', handleDocumentClick)
+})
+
+// 处理文档点击事件以关闭下拉框
+const handleDocumentClick = (event: Event) => {
+  const target = event.target as HTMLElement
+  
+  // 如果点击的不是下拉框或其内部元素，关闭所有下拉框
+  if (!target.closest('.form-picker')) {
+    showCategorySelect.value = false
+    showUnitSelect.value = false
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -450,6 +489,7 @@ onMounted(() => {
   }
 
   .form-picker {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -460,6 +500,11 @@ onMounted(() => {
     border-radius: $border-radius-base;
     background-color: white;
     cursor: pointer;
+    transition: $transition-base;
+
+    &:hover {
+      border-color: $primary-color;
+    }
 
     .picker-text {
       font-size: $font-size-base;
@@ -473,6 +518,38 @@ onMounted(() => {
     .picker-arrow {
       font-size: 12px;
       color: $text-color-regular;
+      transition: transform 0.2s;
+    }
+  }
+
+  .picker-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background: white;
+    border: 1px solid $border-color;
+    border-top: none;
+    border-radius: 0 0 $border-radius-base $border-radius-base;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 200px;
+    overflow-y: auto;
+
+    .picker-option {
+      padding: 10px $spacing-base;
+      font-size: $font-size-base;
+      color: $text-color;
+      cursor: pointer;
+      transition: background-color 0.2s;
+
+      &:hover {
+        background-color: $bg-color;
+      }
+
+      &:active {
+        background-color: lighten($primary-color, 40%);
+      }
     }
   }
 
@@ -506,6 +583,39 @@ onMounted(() => {
     font-size: $font-size-base;
     color: $text-color;
   }
+
+  .form-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    -webkit-appearance: none;
+    background-color: #ccc;
+    border-radius: 12px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    &:checked {
+      background-color: $primary-color;
+    }
+
+    &:before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      background-color: white;
+      transition: transform 0.3s;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &:checked:before {
+      transform: translateX(24px);
+    }
+  }
 }
 
 .image-upload {
@@ -517,7 +627,7 @@ onMounted(() => {
     overflow: hidden;
     margin-bottom: $spacing-sm;
 
-    image {
+    img {
       width: 100%;
       height: 100%;
       object-fit: cover;

@@ -1,86 +1,86 @@
 <template>
-  <view class="quotes-page">
+  <div class="quotes-page">
     <!-- Header -->
-    <view class="page-header">
-      <view class="header-content">
-        <text class="page-title">报价单管理</text>
-        <view class="header-stats">
-          <text class="stat-item">
-            <text class="stat-value">{{ quotesStore.totalCount }}</text>
-            <text class="stat-label">总报价单</text>
-          </text>
-          <text class="stat-item">
-            <text class="stat-value">{{ quotesStore.statistics.pending }}</text>
-            <text class="stat-label">待审批</text>
-          </text>
-        </view>
-      </view>
-      <view class="header-actions">
-        <button class="export-btn" @click="handleExport" :loading="exporting">
-          <text class="btn-icon">📊</text>
+    <div class="page-header">
+      <div class="header-content">
+        <span class="page-title">报价单管理</span>
+        <div class="header-stats">
+          <span class="stat-item">
+            <span class="stat-value">{{ quotesStore.totalCount }}</span>
+            <span class="stat-label">总报价单</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">{{ quotesStore.statistics?.pending || 0 }}</span>
+            <span class="stat-label">待审批</span>
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="export-btn" @click="handleExport" :disabled="exporting">
+          <span class="btn-icon">📊</span>
           导出报表
         </button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Filters -->
-    <view class="filters-section">
-      <view class="filters-row">
-        <view class="filter-item">
+    <div class="filters-section">
+      <div class="filters-row">
+        <div class="filter-item">
           <input
             v-model="searchPhone"
             class="search-input"
             placeholder="搜索手机号码"
             @input="debounceSearch"
           />
-        </view>
-        <view class="filter-item">
-          <picker
-            mode="selector"
-            :range="statusOptions"
-            :range-key="'label'"
-            :value="statusIndex"
+        </div>
+        <div class="filter-item">
+          <select
+            v-model="statusIndex"
+            class="filter-select"
             @change="handleStatusChange"
           >
-            <view class="filter-picker">
-              <text>{{ statusOptions[statusIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
-          <picker mode="date" :value="startDate" @change="handleStartDateChange">
-            <view class="filter-picker">
-              <text>{{ startDate || '开始日期' }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
-          <picker mode="date" :value="endDate" @change="handleEndDateChange">
-            <view class="filter-picker">
-              <text>{{ endDate || '结束日期' }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
+            <option v-for="(option, index) in statusOptions" :key="option.value" :value="index">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <input
+            type="date"
+            v-model="startDate"
+            class="filter-date"
+            placeholder="开始日期"
+            @change="handleStartDateChange"
+          />
+        </div>
+        <div class="filter-item">
+          <input
+            type="date"
+            v-model="endDate"
+            class="filter-date"
+            placeholder="结束日期"
+            @change="handleEndDateChange"
+          />
+        </div>
         <button class="filter-reset" @click="resetFilters">重置</button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Enhanced Data Table -->
-    <view class="enhanced-table">
+    <div class="enhanced-table">
       <!-- Table Header -->
-      <view class="table-header">
-        <view class="header-row">
-          <view v-if="selectedItems.length > 0" class="header-selector">
-            <checkbox
+      <div class="table-header">
+        <div class="header-row">
+          <div v-if="selectedItems.length > 0" class="header-selector">
+            <input
+              type="checkbox"
               :checked="selectAllChecked"
               :indeterminate="selectAllIndeterminate"
               @change="handleSelectAll"
             />
-          </view>
-          <view
+          </div>
+          <div
             v-for="column in columns"
             :key="column.key"
             class="header-cell"
@@ -88,16 +88,16 @@
             :style="{ width: column.width, flex: column.flex }"
             @click="column.sortable && handleSort(column.key)"
           >
-            <text class="header-title">{{ column.title }}</text>
-            <text v-if="column.sortable" class="sort-icon">
+            <span class="header-title">{{ column.title }}</span>
+            <span v-if="column.sortable" class="sort-icon">
               {{ getSortIcon(column.key) }}
-            </text>
-          </view>
-        </view>
-      </view>
+            </span>
+          </div>
+        </div>
+      </div>
 
       <!-- Table Body -->
-      <view class="table-body">
+      <div class="table-body">
         <!-- Loading State -->
         <TableLoadingSkeleton
           v-if="quotesStore.loading"
@@ -110,7 +110,7 @@
         <!-- Data Rows -->
         <template v-else>
           <DataTableRow
-            v-for="quote in quotesStore.quotes"
+            v-for="quote in (quotesStore.quotes || [])"
             :key="quote.id"
             :item="quote"
             :columns="enhancedColumns"
@@ -124,38 +124,38 @@
           >
             <!-- Custom customer cell -->
             <template #cell-customer="{ item }">
-              <view class="customer-cell">
-                <text class="customer-name">{{ item.customer_name }}</text>
-                <text class="customer-phone">{{ item.customer_phone }}</text>
-              </view>
+              <div class="customer-cell">
+                <span class="customer-name">{{ item.customer_name }}</span>
+                <span class="customer-phone">{{ item.customer_phone }}</span>
+              </div>
             </template>
 
             <!-- Custom products cell -->
             <template #cell-products="{ item }">
-              <view class="products-cell">
-                <text class="product-count">{{ item.items?.length || 0 }} 个产品</text>
-              </view>
+              <div class="products-cell">
+                <span class="product-count">{{ item.items?.length || 0 }} 个产品</span>
+              </div>
             </template>
 
             <!-- Custom amount cell -->
             <template #cell-amount="{ item }">
-              <text class="amount-cell">¥{{ formatAmount(item.total_amount) }}</text>
+              <span class="amount-cell">¥{{ formatAmount(item.total_amount) }}</span>
             </template>
           </DataTableRow>
         </template>
 
         <!-- Empty State -->
-        <view v-if="!quotesStore.loading && quotesStore.quotes.length === 0" class="empty-state">
-          <text class="empty-text">暂无报价单数据</text>
-        </view>
-      </view>
+        <div v-if="!quotesStore.loading && (!quotesStore.quotes || quotesStore.quotes.length === 0)" class="empty-state">
+          <span class="empty-text">暂无报价单数据</span>
+        </div>
+      </div>
 
       <!-- Pagination -->
-      <view v-if="quotesStore.totalCount > pageSize" class="table-pagination">
-        <view class="pagination-info">
+      <div v-if="quotesStore.totalCount > pageSize" class="table-pagination">
+        <div class="pagination-info">
           共 {{ quotesStore.totalCount }} 条，第 {{ currentPage }}/{{ totalPages }} 页
-        </view>
-        <view class="pagination-controls">
+        </div>
+        <div class="pagination-controls">
           <button
             class="pagination-btn"
             :disabled="currentPage <= 1"
@@ -170,9 +170,9 @@
           >
             下一页
           </button>
-        </view>
-      </view>
-    </view>
+        </div>
+      </div>
+    </div>
 
     <!-- Batch Operations Bar -->
     <BatchOperationBar
@@ -189,23 +189,32 @@
     />
 
     <!-- Reject Modal -->
-    <modal
-      v-model:visible="showRejectModal"
-      title="拒绝报价单"
-      @confirm="confirmReject"
-      @cancel="cancelReject"
+    <div
+      v-if="showRejectModal"
+      class="modal-backdrop"
+      @click="cancelReject"
     >
-      <view class="reject-modal">
-        <text class="modal-label">拒绝原因（可选）：</text>
-        <textarea
-          v-model="rejectReason"
-          class="reject-textarea"
-          placeholder="请输入拒绝原因..."
-          maxlength="200"
-        />
-      </view>
-    </modal>
-  </view>
+      <div class="modal-container" @click.stop>
+        <div class="modal-header">
+          <h3>拒绝报价单</h3>
+          <button class="modal-close" @click="cancelReject">×</button>
+        </div>
+        <div class="reject-modal">
+          <label class="modal-label">拒绝原因（可选）：</label>
+          <textarea
+            v-model="rejectReason"
+            class="reject-textarea"
+            placeholder="请输入拒绝原因..."
+            maxlength="200"
+          />
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn cancel" @click="cancelReject">取消</button>
+          <button class="modal-btn confirm" @click="confirmReject">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -239,11 +248,10 @@ const quotesStore = useQuotesStore()
 
 // Enhanced table management
 const {
-  selectedItems,
-  selectAllChecked,
-  selectAllIndeterminate,
+  selectedIds: selectedItems,
+  selectAll: selectAllChecked,
+  indeterminate: selectAllIndeterminate,
   toggleSelection,
-  selectAll,
   clearSelection
 } = useTableEnhancements()
 
@@ -424,11 +432,12 @@ function handleRowAction(actionKey: string, quote: Quote) {
 }
 
 function handleSelectAll(event: any) {
-  const checked = event.detail ? event.detail.value : event
-  selectAll(
-    quotesStore.quotes.map(q => q.id),
-    checked
-  )
+  const checked = event.detail ? event.detail.value : event.target.checked
+  if (checked) {
+    (quotesStore.quotes || []).forEach(q => toggleSelection(q.id))
+  } else {
+    clearSelection()
+  }
 }
 
 function handleSort(columnKey: string) {
@@ -481,17 +490,11 @@ async function handleBatchExport() {
     batchProgress.value = 100
     batchProgressText.value = '导出完成'
 
-    uni.showToast({
-      title: `成功导出 ${selectedItems.value.length} 个报价单`,
-      icon: 'success'
-    })
+    console.log(`成功导出 ${selectedItems.value.length} 个报价单`)
 
     clearSelection()
   } catch (error) {
-    uni.showToast({
-      title: '批量导出失败',
-      icon: 'none'
-    })
+    console.error('批量导出失败', error)
   } finally {
     setTimeout(() => {
       batchOperating.value = false
@@ -521,18 +524,12 @@ async function handleBatchApprove() {
     batchProgress.value = 100
     batchProgressText.value = '批准完成'
 
-    uni.showToast({
-      title: `成功批准 ${selectedItems.value.length} 个报价单`,
-      icon: 'success'
-    })
+    console.log(`成功批准 ${selectedItems.value.length} 个报价单`)
 
     clearSelection()
     loadQuotes() // Refresh the table
   } catch (error) {
-    uni.showToast({
-      title: '批量批准失败',
-      icon: 'none'
-    })
+    console.error('批量批准失败', error)
   } finally {
     setTimeout(() => {
       batchOperating.value = false
@@ -543,20 +540,17 @@ async function handleBatchApprove() {
 }
 
 // Handle filter changes
-function handleStatusChange(e: any) {
-  statusIndex.value = e.detail.value
+function handleStatusChange(e?: any) {
   currentPage.value = 1
   loadQuotes()
 }
 
-function handleStartDateChange(e: any) {
-  startDate.value = e.detail.value
+function handleStartDateChange(e?: any) {
   currentPage.value = 1
   loadQuotes()
 }
 
-function handleEndDateChange(e: any) {
-  endDate.value = e.detail.value
+function handleEndDateChange(e?: any) {
   currentPage.value = 1
   loadQuotes()
 }
@@ -583,39 +577,24 @@ function handleSortChange(sortConfig: { key: string; order: 'asc' | 'desc' }) {
 
 // Handle actions
 function handleView(quote: Quote) {
-  uni.navigateTo({
-    url: `/pages/admin/quotes/detail?id=${quote.id}`
-  })
+  router.push(`/admin/quotes/detail?id=${quote.id}`)
 }
 
 function handleEdit(quote: Quote) {
-  uni.navigateTo({
-    url: `/pages/admin/quotes/edit?id=${quote.id}`
-  })
+  router.push(`/admin/quotes/edit?id=${quote.id}`)
 }
 
 async function handleApprove(quote: Quote) {
-  uni.showModal({
-    title: '确认批准',
-    content: `确定要批准报价单 ${quote.quote_number} 吗？`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          await quotesStore.approveQuote(quote.id)
-          uni.showToast({
-            title: '批准成功',
-            icon: 'success'
-          })
-          loadQuotes()
-        } catch (error) {
-          uni.showToast({
-            title: '批准失败',
-            icon: 'none'
-          })
-        }
-      }
+  const confirmed = confirm(`确定要批准报价单 ${quote.quote_number} 吗？`)
+  if (confirmed) {
+    try {
+      await quotesStore.approveQuote(quote.id)
+      console.log('批准成功')
+      loadQuotes()
+    } catch (error) {
+      console.error('批准失败', error)
     }
-  })
+  }
 }
 
 function handleReject(quote: Quote) {
@@ -629,17 +608,11 @@ async function confirmReject() {
 
   try {
     await quotesStore.rejectQuote(selectedQuote.value.id, rejectReason.value)
-    uni.showToast({
-      title: '拒绝成功',
-      icon: 'success'
-    })
+    console.log('拒绝成功')
     showRejectModal.value = false
     loadQuotes()
   } catch (error) {
-    uni.showToast({
-      title: '拒绝失败',
-      icon: 'none'
-    })
+    console.error('拒绝失败', error)
   }
 }
 
@@ -657,15 +630,9 @@ async function handleExport() {
       startDate: startDate.value,
       endDate: endDate.value
     })
-    uni.showToast({
-      title: '导出成功',
-      icon: 'success'
-    })
+    console.log('导出成功')
   } catch (error) {
-    uni.showToast({
-      title: '导出失败',
-      icon: 'none'
-    })
+    console.error('导出失败', error)
   } finally {
     exporting.value = false
   }
@@ -1087,9 +1054,100 @@ function getStatusLabel(status: string): string {
     }
   }
 
+  // Modal backdrop and container
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    min-width: 400px;
+    max-width: 500px;
+    margin: 20px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 0;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: $text-color-secondary;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+
+    .modal-btn {
+      padding: 8px 16px;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+
+      &.cancel {
+        background: white;
+        color: $text-color-secondary;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+      }
+
+      &.confirm {
+        background: $primary-color;
+        color: white;
+        border-color: $primary-color;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
+      }
+    }
+  }
+
   // Reject modal
   .reject-modal {
-    padding: 20px 0;
+    padding: 20px 24px;
 
     .modal-label {
       display: block;
@@ -1111,6 +1169,23 @@ function getStatusLabel(status: string): string {
         border-color: $primary-color;
         outline: none;
       }
+    }
+  }
+
+  // Filter select style
+  .filter-select, .filter-date {
+    width: 100%;
+    padding: 10px 16px;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:focus {
+      border-color: $primary-color;
+      outline: none;
     }
   }
 }

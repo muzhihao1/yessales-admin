@@ -1,132 +1,119 @@
 <template>
-  <view class="customers-page">
+  <div class="customers-page">
     <!-- Header -->
-    <view class="page-header">
-      <view class="header-content">
-        <text class="page-title">客户管理</text>
-        <view class="header-stats">
-          <text class="stat-item">
-            <text class="stat-value">{{ customersStore.totalCount }}</text>
-            <text class="stat-label">总客户</text>
-          </text>
-          <text class="stat-item">
-            <text class="stat-value">{{ customersStore.statistics.active }}</text>
-            <text class="stat-label">活跃客户</text>
-          </text>
-          <text class="stat-item">
-            <text class="stat-value">{{ customersStore.statistics.business }}</text>
-            <text class="stat-label">企业客户</text>
-          </text>
-          <text class="stat-item">
-            <text class="stat-value"
-              >¥{{ formatAmount(customersStore.statistics.total_revenue) }}</text
+    <div class="page-header">
+      <div class="header-content">
+        <span class="page-title">客户管理</span>
+        <div class="header-stats">
+          <span class="stat-item">
+            <span class="stat-value">{{ customersStore.totalCount }}</span>
+            <span class="stat-label">总客户</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">{{ customersStore.statistics?.active || 0 }}</span>
+            <span class="stat-label">活跃客户</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">{{ customersStore.statistics?.business || 0 }}</span>
+            <span class="stat-label">企业客户</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value"
+              >¥{{ formatAmount(customersStore.statistics?.total_revenue || 0) }}</span
             >
-            <text class="stat-label">总成交额</text>
-          </text>
-        </view>
-      </view>
-      <view class="header-actions">
+            <span class="stat-label">总成交额</span>
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
         <button class="action-btn add-btn" @click="handleAddCustomer">
-          <text class="btn-icon">+</text>
+          <span class="btn-icon">+</span>
           新增客户
         </button>
         <button class="action-btn import-btn" @click="handleImport">
-          <text class="btn-icon">📥</text>
+          <span class="btn-icon">📥</span>
           导入客户
         </button>
-        <button class="action-btn export-btn" @click="handleExport" :loading="exporting">
-          <text class="btn-icon">📊</text>
+        <button class="action-btn export-btn" @click="handleExport" :disabled="exporting">
+          <span class="btn-icon">📊</span>
           导出数据
         </button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Filters -->
-    <view class="filters-section">
-      <view class="filters-row">
-        <view class="filter-item">
+    <div class="filters-section">
+      <div class="filters-row">
+        <div class="filter-item">
           <input
             v-model="searchQuery"
             class="search-input"
             placeholder="搜索姓名、电话、公司"
             @input="debounceSearch"
           />
-        </view>
-        <view class="filter-item">
-          <picker
-            mode="selector"
-            :range="customerTypeOptions"
-            :range-key="'label'"
-            :value="customerTypeIndex"
+        </div>
+        <div class="filter-item">
+          <select
+            v-model="customerTypeIndex"
+            class="filter-select"
             @change="handleCustomerTypeChange"
           >
-            <view class="filter-picker">
-              <text>{{ customerTypeOptions[customerTypeIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
-          <picker
-            mode="selector"
-            :range="statusOptions"
-            :range-key="'label'"
-            :value="statusIndex"
+            <option v-for="(option, index) in (customerTypeOptions || [])" :key="option.value" :value="index">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <select
+            v-model="statusIndex"
+            class="filter-select"
             @change="handleStatusChange"
           >
-            <view class="filter-picker">
-              <text>{{ statusOptions[statusIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
-          <picker
-            mode="selector"
-            :range="sourceOptions"
-            :range-key="'label'"
-            :value="sourceIndex"
+            <option v-for="(option, index) in (statusOptions || [])" :key="option.value" :value="index">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <select
+            v-model="sourceIndex"
+            class="filter-select"
             @change="handleSourceChange"
           >
-            <view class="filter-picker">
-              <text>{{ sourceOptions[sourceIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
+            <option v-for="(option, index) in (sourceOptions || [])" :key="option.value" :value="index">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        <div class="filter-item">
           <input
             v-model="cityFilter"
             class="search-input"
             placeholder="城市筛选"
             @input="debounceSearch"
           />
-        </view>
+        </div>
         <button class="filter-reset" @click="resetFilters">重置</button>
-      </view>
+      </div>
 
       <!-- Advanced Filters Toggle -->
-      <view class="advanced-filters" v-if="showAdvancedFilters">
-        <view class="advanced-filters-row">
-          <view class="filter-item">
-            <text class="filter-label">创建时间</text>
-            <view class="date-range">
-              <picker mode="date" :value="startDate" @change="handleStartDateChange">
-                <view class="date-picker">
-                  <text>{{ startDate || '开始日期' }}</text>
-                </view>
-              </picker>
-              <text class="date-separator">至</text>
-              <picker mode="date" :value="endDate" @change="handleEndDateChange">
-                <view class="date-picker">
-                  <text>{{ endDate || '结束日期' }}</text>
-                </view>
-              </picker>
-            </view>
-          </view>
-          <view class="filter-item">
-            <text class="filter-label">成交金额</text>
-            <view class="amount-range">
+      <div class="advanced-filters" v-if="showAdvancedFilters">
+        <div class="advanced-filters-row">
+          <div class="filter-item">
+            <span class="filter-label">创建时间</span>
+            <div class="date-range">
+              <div class="date-picker" @click="handleStartDateClick">
+                <span>{{ startDate || '开始日期' }}</span>
+              </div>
+              <span class="date-separator">至</span>
+              <div class="date-picker" @click="handleEndDateClick">
+                <span>{{ endDate || '结束日期' }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="filter-item">
+            <span class="filter-label">成交金额</span>
+            <div class="amount-range">
               <input
                 v-model="minAmount"
                 class="amount-input"
@@ -134,7 +121,7 @@
                 type="number"
                 @input="debounceSearch"
               />
-              <text class="amount-separator">-</text>
+              <span class="amount-separator">-</span>
               <input
                 v-model="maxAmount"
                 class="amount-input"
@@ -142,34 +129,35 @@
                 type="number"
                 @input="debounceSearch"
               />
-            </view>
-          </view>
-          <view class="filter-checkbox">
-            <checkbox v-model="hasQuotesOnly" @change="handleHasQuotesChange" color="#007AFF" />
-            <text class="checkbox-label">仅显示有报价记录的客户</text>
-          </view>
-        </view>
-      </view>
+            </div>
+          </div>
+          <div class="filter-checkbox">
+            <input type="checkbox" v-model="hasQuotesOnly" @change="handleHasQuotesChange" />
+            <span class="checkbox-label">仅显示有报价记录的客户</span>
+          </div>
+        </div>
+      </div>
 
       <button class="advanced-toggle" @click="showAdvancedFilters = !showAdvancedFilters">
         {{ showAdvancedFilters ? '收起高级筛选' : '展开高级筛选' }}
-        <text class="toggle-icon">{{ showAdvancedFilters ? '▲' : '▼' }}</text>
+        <span class="toggle-icon">{{ showAdvancedFilters ? '▲' : '▼' }}</span>
       </button>
-    </view>
+    </div>
 
     <!-- Enhanced Data Table -->
-    <view class="enhanced-table">
+    <div class="enhanced-table">
       <!-- Table Header -->
-      <view class="table-header">
-        <view class="header-row">
-          <view v-if="selectedItems.length > 0" class="header-selector">
-            <checkbox
+      <div class="table-header">
+        <div class="header-row">
+          <div v-if="(selectedItems || []).length > 0" class="header-selector">
+            <input
+              type="checkbox"
               :checked="selectAllChecked"
               :indeterminate="selectAllIndeterminate"
               @change="handleSelectAll"
             />
-          </view>
-          <view
+          </div>
+          <div
             v-for="column in columns"
             :key="column.key"
             class="header-cell"
@@ -177,107 +165,103 @@
             :style="{ width: column.width, flex: column.flex }"
             @click="column.sortable && handleSort(column.key)"
           >
-            <text class="header-title">{{ column.label }}</text>
-            <text v-if="column.sortable" class="sort-icon">
+            <span class="header-title">{{ column.label }}</span>
+            <span v-if="column.sortable" class="sort-icon">
               {{ getSortIcon(column.key) }}
-            </text>
-          </view>
-        </view>
-      </view>
+            </span>
+          </div>
+        </div>
+      </div>
 
       <!-- Table Body -->
-      <view class="table-body">
+      <div class="table-body">
         <!-- Loading State -->
-        <TableLoadingSkeleton
-          v-if="customersStore.loading"
-          :rows="pageSize"
-          :columns="columns.length"
-          :has-selection="true"
-          :show-header="false"
-        />
+        <div v-if="customersStore.loading" class="loading-state">
+          <span>加载中...</span>
+        </div>
 
         <!-- Data Rows -->
         <template v-else>
-          <DataTableRow
-            v-for="customer in customersStore.customers"
+          <div
+            v-for="customer in (customersStore.customers || [])"
             :key="customer.id"
-            :item="customer"
-            :columns="columns"
-            :selectable="true"
-            :selected="selectedItems.includes(customer.id)"
-            :actions="customerActions"
-            :touch-optimized="true"
-            @select="handleRowSelect"
-            @click="handleRowClick"
-            @action="handleRowAction"
+            class="table-row"
+            @click="handleRowClick(customer)"
           >
-            <!-- Custom customer info cell -->
-            <template #cell-customer="{ item }">
-              <view class="customer-cell">
-                <view class="customer-main">
-                  <text class="customer-name">{{
-                    customersStore.getCustomerDisplayName(item)
-                  }}</text>
-                  <text class="customer-phone">{{ item.phone }}</text>
-                </view>
-                <view class="customer-tags">
-                  <view :class="['customer-type-tag', `type-${item.customer_type}`]">
-                    <text>{{ getCustomerTypeLabel(item.customer_type) }}</text>
-                  </view>
-                </view>
-              </view>
-            </template>
+            <div class="row-content">
+              <div class="row-checkbox">
+                <input
+                  type="checkbox"
+                  :checked="(selectedItems || []).includes(customer.id)"
+                  @change="handleRowSelect($event.target.checked, customer)"
+                />
+              </div>
+              <!-- Customer info cell -->
+              <div class="customer-cell">
+                <div class="customer-main">
+                  <span class="customer-name">{{
+                    customersStore.getCustomerDisplayName(customer)
+                  }}</span>
+                  <span class="customer-phone">{{ customer.phone }}</span>
+                </div>
+                <div class="customer-tags">
+                  <div :class="['customer-type-tag', `type-${customer.customer_type}`]">
+                    <span>{{ getCustomerTypeLabel(customer.customer_type) }}</span>
+                  </div>
+                </div>
+              </div>
 
-            <!-- Custom contact cell -->
-            <template #cell-contact="{ item }">
-              <view class="contact-cell">
-                <text v-if="item.email" class="contact-item">📧 {{ item.email }}</text>
-                <text v-if="item.wechat_id" class="contact-item">💬 {{ item.wechat_id }}</text>
-                <text v-if="item.address" class="contact-item"
-                  >📍 {{ item.city }}{{ item.district }}</text
+              <!-- Contact cell -->
+              <div class="contact-cell">
+                <span v-if="customer.email" class="contact-item">📧 {{ customer.email }}</span>
+                <span v-if="customer.wechat_id" class="contact-item">💬 {{ customer.wechat_id }}</span>
+                <span v-if="customer.address" class="contact-item"
+                  >📍 {{ customer.city }}{{ customer.district }}</span
                 >
-              </view>
-            </template>
+              </div>
 
-            <!-- Custom business metrics cell -->
-            <template #cell-business_metrics="{ item }">
-              <view class="metrics-cell">
-                <text class="metric-item">
-                  <text class="metric-value">{{ item.total_quotes || 0 }}</text>
-                  <text class="metric-label">报价</text>
-                </text>
-                <text class="metric-item">
-                  <text class="metric-value">¥{{ formatAmount(item.total_amount || 0) }}</text>
-                  <text class="metric-label">成交额</text>
-                </text>
-              </view>
-            </template>
+              <!-- Business metrics cell -->
+              <div class="metrics-cell">
+                <span class="metric-item">
+                  <span class="metric-value">{{ customer.total_quotes || 0 }}</span>
+                  <span class="metric-label">报价</span>
+                </span>
+                <span class="metric-item">
+                  <span class="metric-value">¥{{ formatAmount(customer.total_amount || 0) }}</span>
+                  <span class="metric-label">成交额</span>
+                </span>
+              </div>
 
-            <!-- Custom last activity cell -->
-            <template #cell-last_activity="{ item }">
-              <text class="date-cell">
-                {{ item.last_quote_at ? formatDate(item.last_quote_at) : '无记录' }}
-              </text>
-            </template>
-          </DataTableRow>
+              <!-- Last activity cell -->
+              <span class="date-cell">
+                {{ customer.last_quote_at ? formatDate(customer.last_quote_at) : '无记录' }}
+              </span>
+
+              <!-- Actions cell -->
+              <div class="actions-cell">
+                <button class="action-btn action-view" @click.stop="handleView(customer)">查看</button>
+                <button class="action-btn action-export" @click.stop="handleExportSingle(customer)">导出</button>
+              </div>
+            </div>
+          </div>
         </template>
 
         <!-- Empty State -->
-        <view
-          v-if="!customersStore.loading && customersStore.customers.length === 0"
+        <div
+          v-if="!customersStore.loading && (!customersStore.customers || customersStore.customers.length === 0)"
           class="empty-state"
         >
-          <text class="empty-text">暂无客户数据</text>
+          <span class="empty-text">暂无客户数据</span>
           <button class="empty-action" @click="handleAddCustomer">新增客户</button>
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Pagination -->
-      <view v-if="customersStore.totalCount > pageSize" class="table-pagination">
-        <view class="pagination-info">
+      <div v-if="customersStore.totalCount > pageSize" class="table-pagination">
+        <div class="pagination-info">
           共 {{ customersStore.totalCount }} 条，第 {{ currentPage }}/{{ totalPages }} 页
-        </view>
-        <view class="pagination-controls">
+        </div>
+        <div class="pagination-controls">
           <button
             class="pagination-btn"
             :disabled="currentPage <= 1"
@@ -292,176 +276,196 @@
           >
             下一页
           </button>
-        </view>
-      </view>
-    </view>
+        </div>
+      </div>
+    </div>
 
     <!-- Batch Operations Bar -->
-    <BatchOperationBar
-      :selected-count="selectedItems.length"
-      :operations="batchOperations"
-      :show-progress="batchOperating"
-      :current-progress="batchProgress"
-      :progress-text="batchProgressText"
-      :select-all-checked="selectAllChecked"
-      :select-all-indeterminate="selectAllIndeterminate"
-      @operation="handleBatchOperation"
-      @clear-selection="clearSelection"
-      @select-all="handleSelectAll"
-    />
+    <div v-if="(selectedItems || []).length > 0" class="batch-operations-bar">
+      <div class="batch-info">
+        <span>已选择 {{ (selectedItems || []).length }} 项</span>
+      </div>
+      <div class="batch-actions">
+        <button class="batch-btn export-btn" @click="handleBatchExport">批量导出</button>
+        <button class="batch-btn clear-btn" @click="clearSelection">清空选择</button>
+      </div>
+    </div>
 
     <!-- Add Customer Modal -->
-    <modal
-      v-model:visible="showAddModal"
-      title="新增客户"
-      @confirm="confirmAddCustomer"
-      @cancel="cancelAddCustomer"
+    <div
+      v-if="showAddModal"
+      class="modal-backdrop"
+      @click.self="cancelAddCustomer"
     >
-      <view class="customer-form">
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">客户姓名 *</text>
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">新增客户</span>
+          <button class="modal-close" @click="cancelAddCustomer">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="customer-form">
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">客户姓名 *</span>
             <input v-model="newCustomer.name" class="form-input" placeholder="请输入客户姓名" />
-          </view>
-          <view class="form-item">
-            <text class="form-label">联系电话 *</text>
+          </div>
+          <div class="form-item">
+            <span class="form-label">联系电话 *</span>
             <input
               v-model="newCustomer.phone"
               class="form-input"
               placeholder="请输入手机号"
               type="tel"
             />
-          </view>
-        </view>
+          </div>
+        </div>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">客户类型 *</text>
-            <picker
-              mode="selector"
-              :range="customerTypeOptions.slice(1)"
-              :range-key="'label'"
-              :value="newCustomerTypeIndex"
-              @change="handleNewCustomerTypeChange"
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">客户类型 *</span>
+            <select
+              v-model="newCustomerTypeIndex"
+              class="form-select"
+              @change="handleNewCustomerTypeSelect"
             >
-              <view class="form-picker">
-                <text>{{
-                  customerTypeOptions[newCustomerTypeIndex + 1]?.label || '请选择类型'
-                }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
-          <view class="form-item">
-            <text class="form-label">客户来源</text>
-            <picker
-              mode="selector"
-              :range="sourceOptions.slice(1)"
-              :range-key="'label'"
-              :value="newCustomerSourceIndex"
-              @change="handleNewCustomerSourceChange"
+              <option
+                v-for="(option, index) in customerTypeOptions.slice(1)"
+                :key="option.value"
+                :value="index"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          <div class="form-item">
+            <span class="form-label">客户来源</span>
+            <select
+              v-model="newCustomerSourceIndex"
+              class="form-select"
+              @change="handleNewCustomerSourceSelect"
             >
-              <view class="form-picker">
-                <text>{{ sourceOptions[newCustomerSourceIndex + 1]?.label || '请选择来源' }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
-        </view>
+              <option
+                v-for="(option, index) in sourceOptions.slice(1)"
+                :key="option.value"
+                :value="index"
+              >
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
 
-        <view class="form-item" v-if="newCustomer.customer_type === 'business'">
-          <text class="form-label">公司名称</text>
+        <div class="form-item" v-if="newCustomer.customer_type === 'business'">
+          <span class="form-label">公司名称</span>
           <input v-model="newCustomer.company" class="form-input" placeholder="请输入公司名称" />
-        </view>
+        </div>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">邮箱地址</text>
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">邮箱地址</span>
             <input
               v-model="newCustomer.email"
               class="form-input"
               placeholder="请输入邮箱"
               type="email"
             />
-          </view>
-          <view class="form-item">
-            <text class="form-label">微信号</text>
+          </div>
+          <div class="form-item">
+            <span class="form-label">微信号</span>
             <input v-model="newCustomer.wechat_id" class="form-input" placeholder="请输入微信号" />
-          </view>
-        </view>
+          </div>
+        </div>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">城市</text>
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">城市</span>
             <input v-model="newCustomer.city" class="form-input" placeholder="请输入城市" />
-          </view>
-          <view class="form-item">
-            <text class="form-label">区域</text>
+          </div>
+          <div class="form-item">
+            <span class="form-label">区域</span>
             <input v-model="newCustomer.district" class="form-input" placeholder="请输入区域" />
-          </view>
-        </view>
+          </div>
+        </div>
 
-        <view class="form-item">
-          <text class="form-label">详细地址</text>
+        <div class="form-item">
+          <span class="form-label">详细地址</span>
           <input v-model="newCustomer.address" class="form-input" placeholder="请输入详细地址" />
-        </view>
+        </div>
 
-        <view class="form-item">
-          <text class="form-label">备注信息</text>
+        <div class="form-item">
+          <span class="form-label">备注信息</span>
           <textarea
             v-model="newCustomer.notes"
             class="form-textarea"
             placeholder="请输入备注信息..."
             maxlength="200"
           />
-        </view>
-      </view>
-    </modal>
+        </div>
+        </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="cancelAddCustomer">取消</button>
+          <button class="btn-confirm" @click="confirmAddCustomer">确定</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Export Options Modal -->
-    <modal
-      v-model:visible="showExportModal"
-      title="导出客户数据"
-      @confirm="confirmExport"
-      @cancel="cancelExport"
+    <div
+      v-if="showExportModal"
+      class="modal-backdrop"
+      @click.self="cancelExport"
     >
-      <view class="export-form">
-        <view class="form-item">
-          <text class="form-label">导出格式</text>
-          <picker
-            mode="selector"
-            :range="exportFormatOptions"
-            :range-key="'label'"
-            :value="exportFormatIndex"
-            @change="handleExportFormatChange"
-          >
-            <view class="form-picker">
-              <text>{{ exportFormatOptions[exportFormatIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">导出客户数据</span>
+          <button class="modal-close" @click="cancelExport">×</button>
+        </div>
+        <div class="modal-body">
+          <div class="export-form">
+            <div class="form-item">
+              <span class="form-label">导出格式</span>
+              <select
+                v-model="exportFormatIndex"
+                class="form-select"
+                @change="handleExportFormatSelect"
+              >
+                <option
+                  v-for="(option, index) in exportFormatOptions"
+                  :key="option.value"
+                  :value="index"
+                >
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
 
-        <view class="form-checkboxes">
-          <text class="form-section-title">包含数据</text>
-          <view class="checkbox-group">
-            <view class="checkbox-item">
-              <checkbox v-model="exportOptions.includeQuoteHistory" color="#007AFF" />
-              <text class="checkbox-label">报价历史</text>
-            </view>
-            <view class="checkbox-item">
-              <checkbox v-model="exportOptions.includeActivities" color="#007AFF" />
-              <text class="checkbox-label">活动记录</text>
-            </view>
-          </view>
-        </view>
+            <div class="form-checkboxes">
+              <span class="form-section-title">包含数据</span>
+              <div class="checkbox-group">
+                <div class="checkbox-item">
+                  <input type="checkbox" v-model="exportOptions.includeQuoteHistory" />
+                  <span class="checkbox-label">报价历史</span>
+                </div>
+                <div class="checkbox-item">
+                  <input type="checkbox" v-model="exportOptions.includeActivities" />
+                  <span class="checkbox-label">活动记录</span>
+                </div>
+              </div>
+            </div>
 
-        <view class="form-note">
-          <text>导出将包含当前筛选条件下的所有客户数据</text>
-        </view>
-      </view>
-    </modal>
-  </view>
+            <div class="form-note">
+              <span>导出将包含当前筛选条件下的所有客户数据</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-cancel" @click="cancelExport">取消</button>
+          <button class="btn-confirm" @click="confirmExport">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -469,14 +473,15 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCustomersStore } from '@/stores/customers'
 import type { CreateCustomerData, Customer, CustomerExportData } from '@/types/customer'
-import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
-import DataTableRow from '@/components/admin/DataTableRow.vue'
-import ActionButtonGroup from '@/components/admin/ActionButtonGroup.vue'
-import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
-import { useTableEnhancements } from '@/composables/useTableEnhancements'
-import { commonActions, commonBatchOperations } from '@/utils/common-actions'
-import type { TableColumn } from '@/components/admin/DataTableRow.vue'
-import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
+// Removed unused imports for cleaner web implementation
+// import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
+// import DataTableRow from '@/components/admin/DataTableRow.vue' 
+// import ActionButtonGroup from '@/components/admin/ActionButtonGroup.vue'
+// import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
+// import { useTableEnhancements } from '@/composables/useTableEnhancements'
+// import { commonActions, commonBatchOperations } from '@/utils/common-actions'
+// import type { TableColumn } from '@/components/admin/DataTableRow.vue'
+// import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
 /**
  * 客户管理页面 - 增强表格版本
@@ -494,73 +499,59 @@ import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 const router = useRouter()
 const customersStore = useCustomersStore()
 
-// Enhanced table management
-const {
-  selectedItems,
-  selectAllChecked,
-  selectAllIndeterminate,
-  toggleSelection,
-  selectAll,
-  clearSelection,
-  handleRowSelect: baseHandleRowSelect
-} = useTableEnhancements()
+// Simple state management for table selection
+const selectedItems = ref<string[]>([])
+const selectAllChecked = computed(() => {
+  const customerIds = (customersStore.customers || []).map(c => c.id)
+  return customerIds.length > 0 && selectedItems.value.length === customerIds.length
+})
+const selectAllIndeterminate = computed(() => {
+  const customerIds = (customersStore.customers || []).map(c => c.id)
+  return selectedItems.value.length > 0 && selectedItems.value.length < customerIds.length
+})
 
-// Table configuration
-const columns: TableColumn[] = [
-  {
-    key: 'customer',
-    label: '客户信息',
-    width: '250px',
-    type: 'text'
-  },
-  {
-    key: 'contact',
-    label: '联系方式',
-    width: '200px',
-    type: 'text'
-  },
-  {
-    key: 'status',
-    label: '状态',
-    width: '100px',
-    align: 'center',
-    type: 'status'
-  },
-  {
-    key: 'source',
-    label: '来源',
-    width: '100px',
-    align: 'center',
-    type: 'status'
-  },
-  {
-    key: 'business_metrics',
-    label: '业务数据',
-    width: '150px',
-    align: 'center',
-    type: 'text'
-  },
-  {
-    key: 'last_activity',
-    label: '最后活动',
-    width: '120px',
-    sortable: true,
-    type: 'date'
-  },
-  {
-    key: 'created_at',
-    label: '创建时间',
-    width: '120px',
-    sortable: true,
-    type: 'date'
+function toggleSelection(id: string) {
+  const index = selectedItems.value.indexOf(id)
+  if (index > -1) {
+    selectedItems.value.splice(index, 1)
+  } else {
+    selectedItems.value.push(id)
   }
+}
+
+function selectAll(ids: string[], checked: boolean) {
+  if (checked) {
+    selectedItems.value = [...ids]
+  } else {
+    selectedItems.value = []
+  }
+}
+
+function clearSelection() {
+  selectedItems.value = []
+}
+
+// Simplified table configuration without complex types
+const columns = [
+  { key: 'customer', label: '客户信息', width: '250px' },
+  { key: 'contact', label: '联系方式', width: '200px' },
+  { key: 'status', label: '状态', width: '100px' },
+  { key: 'source', label: '来源', width: '100px' },
+  { key: 'business_metrics', label: '业务数据', width: '150px' },
+  { key: 'last_activity', label: '最后活动', width: '120px', sortable: true },
+  { key: 'created_at', label: '创建时间', width: '120px', sortable: true }
 ]
 
 // Actions configuration (PRD compliant - only view and export)
-const customerActions: ActionItem[] = [commonActions.customers.view, commonActions.customers.export]
+const customerActions = [
+  { key: 'view', label: '查看', type: 'primary' },
+  { key: 'export', label: '导出', type: 'default' }
+]
 
 // Batch operations (customers support export only per PRD)
-const batchOperations = commonBatchOperations.customers
+const batchOperations = [
+  { key: 'export', label: '批量导出', type: 'primary' }
+]
 
 // Sort state
 const sortKey = ref('')
@@ -720,33 +711,45 @@ async function loadCustomers() {
 
 // Handle filter changes
 function handleCustomerTypeChange(e: any) {
-  customerTypeIndex.value = e.detail.value
+  customerTypeIndex.value = e.target.value
   currentPage.value = 1
   loadCustomers()
 }
 
 function handleStatusChange(e: any) {
-  statusIndex.value = e.detail.value
+  statusIndex.value = e.target.value
   currentPage.value = 1
   loadCustomers()
 }
 
 function handleSourceChange(e: any) {
-  sourceIndex.value = e.detail.value
+  sourceIndex.value = e.target.value
   currentPage.value = 1
   loadCustomers()
 }
 
-function handleStartDateChange(e: any) {
-  startDate.value = e.detail.value
-  currentPage.value = 1
-  loadCustomers()
+function handleStartDateClick() {
+  const dateInput = document.createElement('input')
+  dateInput.type = 'date'
+  dateInput.value = startDate.value
+  dateInput.onchange = (e: any) => {
+    startDate.value = e.target.value
+    currentPage.value = 1
+    loadCustomers()
+  }
+  dateInput.click()
 }
 
-function handleEndDateChange(e: any) {
-  endDate.value = e.detail.value
-  currentPage.value = 1
-  loadCustomers()
+function handleEndDateClick() {
+  const dateInput = document.createElement('input')
+  dateInput.type = 'date'
+  dateInput.value = endDate.value
+  dateInput.onchange = (e: any) => {
+    endDate.value = e.target.value
+    currentPage.value = 1
+    loadCustomers()
+  }
+  dateInput.click()
 }
 
 function handleHasQuotesChange() {
@@ -793,9 +796,9 @@ function handleRowAction(actionKey: string, customer: Customer) {
 }
 
 function handleSelectAll(event: any) {
-  const checked = event.detail ? event.detail.value : event
+  const checked = event.target ? event.target.checked : event
   selectAll(
-    customersStore.customers.map(c => c.id),
+    (customersStore.customers || []).map(c => c.id),
     checked
   )
 }
@@ -850,15 +853,11 @@ async function handleExportSingle(customer: Customer) {
     batchProgress.value = 100
     batchProgressText.value = '导出完成'
 
-    uni.showToast({
-      title: '导出成功',
-      icon: 'success'
-    })
+    console.log('导出成功')
+    alert('导出成功')
   } catch (error) {
-    uni.showToast({
-      title: '导出失败',
-      icon: 'none'
-    })
+    console.error('导出失败:', error)
+    alert('导出失败')
   } finally {
     setTimeout(() => {
       batchOperating.value = false
@@ -873,11 +872,11 @@ async function handleBatchExport() {
   try {
     batchOperating.value = true
     batchProgress.value = 0
-    batchProgressText.value = `导出 ${selectedItems.value.length} 个客户...`
+    batchProgressText.value = `导出 ${(selectedItems.value || []).length} 个客户...`
 
     const exportData: CustomerExportData = {
       ...exportOptions.value,
-      customerIds: selectedItems.value
+      customerIds: selectedItems.value || []
     }
 
     // Simulate progress
@@ -893,17 +892,13 @@ async function handleBatchExport() {
     batchProgress.value = 100
     batchProgressText.value = '导出完成'
 
-    uni.showToast({
-      title: `成功导出 ${selectedItems.value.length} 个客户`,
-      icon: 'success'
-    })
+    console.log(`成功导出 ${(selectedItems.value || []).length} 个客户`)
+    alert(`成功导出 ${(selectedItems.value || []).length} 个客户`)
 
     clearSelection()
   } catch (error) {
-    uni.showToast({
-      title: '批量导出失败',
-      icon: 'none'
-    })
+    console.error('批量导出失败:', error)
+    alert('批量导出失败')
   } finally {
     setTimeout(() => {
       batchOperating.value = false
@@ -915,86 +910,56 @@ async function handleBatchExport() {
 
 // Handle customer actions
 function handleView(customer: Customer) {
-  uni.navigateTo({
-    url: `/pages/admin/customers/detail?id=${customer.id}`
-  })
+  router.push(`/admin/customers/detail?id=${customer.id}`)
 }
 
 function handleEdit(customer: Customer) {
-  uni.navigateTo({
-    url: `/pages/admin/customers/edit?id=${customer.id}`
-  })
+  router.push(`/admin/customers/edit?id=${customer.id}`)
 }
 
 function handleCreateQuote(customer: Customer) {
   // Navigate to quote creation with pre-filled customer info
-  uni.navigateTo({
-    url: `/pages/admin/quotes/edit?customer_id=${customer.id}`
-  })
+  router.push(`/admin/quotes/edit?customer_id=${customer.id}`)
 }
 
 async function handleActivate(customer: Customer) {
   try {
     await customersStore.updateCustomerStatus(customer.id, 'active')
-    uni.showToast({
-      title: '启用成功',
-      icon: 'success'
-    })
+    console.log('启用成功')
+    alert('启用成功')
     loadCustomers()
   } catch (error) {
-    uni.showToast({
-      title: '启用失败',
-      icon: 'none'
-    })
+    console.error('启用失败:', error)
+    alert('启用失败')
   }
 }
 
 async function handleDeactivate(customer: Customer) {
-  uni.showModal({
-    title: '确认停用',
-    content: `确定要停用客户 ${customer.name} 吗？`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          await customersStore.updateCustomerStatus(customer.id, 'inactive')
-          uni.showToast({
-            title: '停用成功',
-            icon: 'success'
-          })
-          loadCustomers()
-        } catch (error) {
-          uni.showToast({
-            title: '停用失败',
-            icon: 'none'
-          })
-        }
-      }
+  if (confirm(`确定要停用客户 ${customer.name} 吗？`)) {
+    try {
+      await customersStore.updateCustomerStatus(customer.id, 'inactive')
+      console.log('停用成功')
+      alert('停用成功')
+      loadCustomers()
+    } catch (error) {
+      console.error('停用失败:', error)
+      alert('停用失败')
     }
-  })
+  }
 }
 
 async function handleDelete(customer: Customer) {
-  uni.showModal({
-    title: '确认删除',
-    content: `确定要删除客户 ${customer.name} 吗？此操作不可撤销。`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          await customersStore.deleteCustomer(customer.id)
-          uni.showToast({
-            title: '删除成功',
-            icon: 'success'
-          })
-          loadCustomers()
-        } catch (error) {
-          uni.showToast({
-            title: '删除失败',
-            icon: 'none'
-          })
-        }
-      }
+  if (confirm(`确定要删除客户 ${customer.name} 吗？此操作不可撤销。`)) {
+    try {
+      await customersStore.deleteCustomer(customer.id)
+      console.log('删除成功')
+      alert('删除成功')
+      loadCustomers()
+    } catch (error) {
+      console.error('删除失败:', error)
+      alert('删除失败')
     }
-  })
+  }
 }
 
 // Handle modals
@@ -1017,38 +982,29 @@ function handleAddCustomer() {
   showAddModal.value = true
 }
 
-function handleNewCustomerTypeChange(e: any) {
-  newCustomerTypeIndex.value = e.detail.value
-  newCustomer.value.customer_type = customerTypeOptions[e.detail.value + 1].value as any
+function handleNewCustomerTypeSelect() {
+  newCustomer.value.customer_type = customerTypeOptions[newCustomerTypeIndex.value + 1].value as any
 }
 
-function handleNewCustomerSourceChange(e: any) {
-  newCustomerSourceIndex.value = e.detail.value
-  newCustomer.value.source = sourceOptions[e.detail.value + 1].value as any
+function handleNewCustomerSourceSelect() {
+  newCustomer.value.source = sourceOptions[newCustomerSourceIndex.value + 1].value as any
 }
 
 async function confirmAddCustomer() {
   if (!newCustomer.value.name || !newCustomer.value.phone) {
-    uni.showToast({
-      title: '请填写必填项',
-      icon: 'none'
-    })
+    alert('请填写必填项')
     return
   }
 
   try {
     await customersStore.createCustomer(newCustomer.value)
-    uni.showToast({
-      title: '添加成功',
-      icon: 'success'
-    })
+    console.log('添加成功')
+    alert('添加成功')
     showAddModal.value = false
     loadCustomers()
   } catch (error) {
-    uni.showToast({
-      title: '添加失败',
-      icon: 'none'
-    })
+    console.error('添加失败:', error)
+    alert('添加失败')
   }
 }
 
@@ -1057,19 +1013,15 @@ function cancelAddCustomer() {
 }
 
 function handleImport() {
-  uni.showToast({
-    title: '导入功能开发中',
-    icon: 'none'
-  })
+  alert('导入功能开发中')
 }
 
 function handleExport() {
   showExportModal.value = true
 }
 
-function handleExportFormatChange(e: any) {
-  exportFormatIndex.value = e.detail.value
-  exportOptions.value.format = exportFormatOptions[e.detail.value].value as any
+function handleExportFormatSelect() {
+  exportOptions.value.format = exportFormatOptions[exportFormatIndex.value].value as any
 }
 
 async function confirmExport() {
@@ -1087,16 +1039,12 @@ async function confirmExport() {
     }
 
     await customersStore.exportCustomers(exportData)
-    uni.showToast({
-      title: '导出成功',
-      icon: 'success'
-    })
+    console.log('导出成功')
+    alert('导出成功')
     showExportModal.value = false
   } catch (error) {
-    uni.showToast({
-      title: '导出失败',
-      icon: 'none'
-    })
+    console.error('导出失败:', error)
+    alert('导出失败')
   } finally {
     exporting.value = false
   }
@@ -1276,6 +1224,22 @@ function getSourceLabel(source: string): string {
           border: 1px solid $border-color;
           border-radius: 6px;
           font-size: 14px;
+          transition: all 0.3s ease;
+
+          &:focus {
+            border-color: $primary-color;
+            outline: none;
+          }
+        }
+
+        .filter-select {
+          width: 100%;
+          padding: 10px 16px;
+          border: 1px solid $border-color;
+          border-radius: 6px;
+          font-size: 14px;
+          background: white;
+          cursor: pointer;
           transition: all 0.3s ease;
 
           &:focus {
@@ -1568,12 +1532,192 @@ function getSourceLabel(source: string): string {
     }
   }
 
+  // Table row styles
+  .table-row {
+    border-bottom: 1px solid var(--border-color-light, #e9ecef);
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: var(--color-grey-25, #f8f9fa);
+    }
+
+    .row-content {
+      display: flex;
+      align-items: center;
+      padding: 12px;
+      gap: 16px;
+
+      .row-checkbox {
+        flex: none;
+        width: 48px;
+        display: flex;
+        justify-content: center;
+      }
+    }
+  }
+
+  .loading-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    color: var(--text-color-secondary, #6c757d);
+  }
+
+  .batch-operations-bar {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    z-index: 1000;
+
+    .batch-info {
+      font-size: 14px;
+      color: var(--text-color-primary, #495057);
+      font-weight: 500;
+    }
+
+    .batch-actions {
+      display: flex;
+      gap: 12px;
+
+      .batch-btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &.export-btn {
+          background: var(--color-primary, #007aff);
+          color: white;
+
+          &:hover {
+            background: var(--color-primary-dark, #0056b3);
+          }
+        }
+
+        &.clear-btn {
+          background: var(--color-grey-200, #e9ecef);
+          color: var(--text-color-secondary, #6c757d);
+
+          &:hover {
+            background: var(--color-grey-300, #dee2e6);
+          }
+        }
+      }
+    }
+  }
+
+  // Modal styles
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+
+    .modal {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      width: 90vw;
+      max-height: 90vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 24px;
+        border-bottom: 1px solid var(--border-color-light, #e9ecef);
+
+        .modal-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: var(--text-color-primary, #495057);
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 24px;
+          cursor: pointer;
+          color: var(--text-color-secondary, #6c757d);
+
+          &:hover {
+            color: var(--text-color-primary, #495057);
+          }
+        }
+      }
+
+      .modal-body {
+        padding: 24px;
+        overflow-y: auto;
+        flex: 1;
+      }
+
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        padding: 20px 24px;
+        border-top: 1px solid var(--border-color-light, #e9ecef);
+
+        .btn-cancel {
+          padding: 10px 20px;
+          background: var(--color-grey-200, #e9ecef);
+          color: var(--text-color-secondary, #6c757d);
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+
+          &:hover {
+            background: var(--color-grey-300, #dee2e6);
+          }
+        }
+
+        .btn-confirm {
+          padding: 10px 20px;
+          background: var(--color-primary, #007aff);
+          color: white;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+
+          &:hover {
+            background: var(--color-primary-dark, #0056b3);
+          }
+        }
+      }
+    }
+  }
+
   // Custom cell styles
   .customer-cell {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    flex: 1;
+    min-width: 250px;
 
     .customer-main {
       display: flex;
@@ -1617,6 +1761,8 @@ function getSourceLabel(source: string): string {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
+    min-width: 200px;
 
     .contact-item {
       font-size: 12px;
@@ -1666,6 +1812,8 @@ function getSourceLabel(source: string): string {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
+    min-width: 150px;
 
     .metric-item {
       display: flex;
@@ -1688,6 +1836,8 @@ function getSourceLabel(source: string): string {
   .date-cell {
     font-size: 13px;
     color: $text-color-secondary;
+    flex: 1;
+    min-width: 120px;
   }
 
   .actions-cell {
@@ -1788,6 +1938,21 @@ function getSourceLabel(source: string): string {
         border: 1px solid $border-color;
         border-radius: 6px;
         font-size: 14px;
+
+        &:focus {
+          border-color: $primary-color;
+          outline: none;
+        }
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
 
         &:focus {
           border-color: $primary-color;

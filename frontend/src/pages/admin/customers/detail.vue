@@ -1,88 +1,88 @@
 <template>
-  <view class="customer-detail-page">
+  <div class="customer-detail-page">
     <!-- Loading state -->
-    <view v-if="loading" class="loading-container">
-      <text class="loading-text">加载中...</text>
-    </view>
+    <div v-if="loading" class="loading-container">
+      <span class="loading-text">加载中...</span>
+    </div>
 
     <!-- Error state -->
-    <view v-else-if="error" class="error-container">
-      <text class="error-text">{{ error }}</text>
+    <div v-else-if="error" class="error-container">
+      <span class="error-text">{{ error }}</span>
       <button class="retry-btn" @click="loadCustomer">重试</button>
-    </view>
+    </div>
 
     <!-- Customer details -->
-    <view v-else-if="customer" class="customer-content">
+    <div v-else-if="customer" class="customer-content">
       <!-- Header -->
-      <view class="detail-header">
-        <view class="header-info">
-          <text class="customer-name">{{ customersStore.getCustomerDisplayName(customer) }}</text>
-          <view class="customer-badges">
-            <view :class="['type-badge', `type-${customer.customer_type}`]">
-              <text>{{ getCustomerTypeLabel(customer.customer_type) }}</text>
-            </view>
-            <view :class="['status-badge', `status-${customer.status}`]">
-              <text>{{ getStatusLabel(customer.status) }}</text>
-            </view>
-            <view :class="['source-badge', `source-${customer.source}`]">
-              <text>{{ getSourceLabel(customer.source) }}</text>
-            </view>
-          </view>
-        </view>
-        <view class="header-actions">
+      <div class="detail-header">
+        <div class="header-info">
+          <span class="customer-name">{{ customersStore.getCustomerDisplayName(customer) }}</span>
+          <div class="customer-badges">
+            <div :class="['type-badge', `type-${customer.customer_type}`]">
+              <span>{{ getCustomerTypeLabel(customer.customer_type) }}</span>
+            </div>
+            <div :class="['status-badge', `status-${customer.status}`]">
+              <span>{{ getStatusLabel(customer.status) }}</span>
+            </div>
+            <div :class="['source-badge', `source-${customer.source}`]">
+              <span>{{ getSourceLabel(customer.source) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="header-actions">
           <button class="action-btn action-edit" @click="handleEdit">编辑客户</button>
           <button class="action-btn action-quote" @click="handleCreateQuote">新建报价</button>
           <button class="action-btn action-contact" @click="handleAddContact">记录联系</button>
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Basic Information -->
-      <view class="detail-section">
-        <text class="section-title">基本信息</text>
-        <view class="info-grid">
-          <view class="info-item">
-            <text class="info-label">客户姓名</text>
-            <text class="info-value">{{ customer.name }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">联系电话</text>
-            <text class="info-value">{{ customer.phone }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">电子邮箱</text>
-            <text class="info-value">{{ customer.email || '-' }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">微信号</text>
-            <text class="info-value">{{ customer.wechat_id || '-' }}</text>
-          </view>
-          <view class="info-item" v-if="customer.customer_type === 'business'">
-            <text class="info-label">公司名称</text>
-            <text class="info-value">{{ customer.company || '-' }}</text>
-          </view>
-          <view class="info-item" v-if="customer.customer_type === 'business'">
-            <text class="info-label">营业执照</text>
-            <text class="info-value">{{ customer.business_license || '-' }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">所在城市</text>
-            <text class="info-value">{{ customer.city || '-' }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">所在区域</text>
-            <text class="info-value">{{ customer.district || '-' }}</text>
-          </view>
-          <view class="info-item full-width">
-            <text class="info-label">详细地址</text>
-            <text class="info-value">{{ customer.address || '-' }}</text>
-          </view>
-        </view>
-      </view>
+      <div class="detail-section">
+        <span class="section-title">基本信息</span>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">客户姓名</span>
+            <span class="info-value">{{ customer.name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">联系电话</span>
+            <span class="info-value">{{ customer.phone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">电子邮箱</span>
+            <span class="info-value">{{ customer.email || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">微信号</span>
+            <span class="info-value">{{ customer.wechat_id || '-' }}</span>
+          </div>
+          <div class="info-item" v-if="customer.customer_type === 'business'">
+            <span class="info-label">公司名称</span>
+            <span class="info-value">{{ customer.company || '-' }}</span>
+          </div>
+          <div class="info-item" v-if="customer.customer_type === 'business'">
+            <span class="info-label">营业执照</span>
+            <span class="info-value">{{ customer.business_license || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">所在城市</span>
+            <span class="info-value">{{ customer.city || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">所在区域</span>
+            <span class="info-value">{{ customer.district || '-' }}</span>
+          </div>
+          <div class="info-item full-width">
+            <span class="info-label">详细地址</span>
+            <span class="info-value">{{ customer.address || '-' }}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Business Statistics -->
-      <view class="detail-section">
-        <text class="section-title">业务统计</text>
-        <view class="stats-grid">
+      <div class="detail-section">
+        <span class="section-title">业务统计</span>
+        <div class="stats-grid">
           <StatCard
             title="总报价数"
             :value="customer.total_quotes || 0"
@@ -107,179 +107,177 @@
             icon="📍"
             theme="default"
           />
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Contact Preferences -->
-      <view class="detail-section" v-if="customer.preferred_contact_method">
-        <text class="section-title">联系偏好</text>
-        <view class="info-grid">
-          <view class="info-item">
-            <text class="info-label">偏好联系方式</text>
-            <text class="info-value">{{
+      <div class="detail-section" v-if="customer.preferred_contact_method">
+        <span class="section-title">联系偏好</span>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">偏好联系方式</span>
+            <span class="info-value">{{
               getContactMethodLabel(customer.preferred_contact_method)
-            }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">联系时间偏好</text>
-            <text class="info-value">{{ customer.contact_time_preference || '-' }}</text>
-          </view>
-        </view>
-      </view>
+            }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">联系时间偏好</span>
+            <span class="info-value">{{ customer.contact_time_preference || '-' }}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Notes -->
-      <view class="detail-section" v-if="customer.notes">
-        <text class="section-title">备注信息</text>
-        <text class="notes-content">{{ customer.notes }}</text>
-      </view>
+      <div class="detail-section" v-if="customer.notes">
+        <span class="section-title">备注信息</span>
+        <span class="notes-content">{{ customer.notes }}</span>
+      </div>
 
       <!-- Quote History -->
-      <view class="detail-section">
-        <view class="section-header">
-          <text class="section-title">报价历史</text>
-          <text class="section-count">({{ customer.quotes?.length || 0 }})</text>
-        </view>
+      <div class="detail-section">
+        <div class="section-header">
+          <span class="section-title">报价历史</span>
+          <span class="section-count">({{ customer.quotes?.length || 0 }})</span>
+        </div>
 
-        <view v-if="customer.quotes && customer.quotes.length > 0" class="quotes-list">
-          <view
+        <div v-if="customer.quotes && customer.quotes.length > 0" class="quotes-list">
+          <div
             v-for="quote in customer.quotes"
             :key="quote.id"
             class="quote-item"
             @click="handleViewQuote(quote)"
           >
-            <view class="quote-main">
-              <text class="quote-number">{{ quote.quote_number }}</text>
-              <text class="quote-amount">¥{{ formatAmount(quote.total_amount) }}</text>
-            </view>
-            <view class="quote-details">
-              <text class="quote-items">{{ quote.items_count }} 个产品</text>
-              <text class="quote-date">{{ formatDate(quote.created_at) }}</text>
-            </view>
-            <view :class="['quote-status', `status-${quote.status}`]">
-              <text>{{ getQuoteStatusLabel(quote.status) }}</text>
-            </view>
-          </view>
-        </view>
+            <div class="quote-main">
+              <span class="quote-number">{{ quote.quote_number }}</span>
+              <span class="quote-amount">¥{{ formatAmount(quote.total_amount) }}</span>
+            </div>
+            <div class="quote-details">
+              <span class="quote-items">{{ quote.items_count }} 个产品</span>
+              <span class="quote-date">{{ formatDate(quote.created_at) }}</span>
+            </div>
+            <div :class="['quote-status', `status-${quote.status}`]">
+              <span>{{ getQuoteStatusLabel(quote.status) }}</span>
+            </div>
+          </div>
+        </div>
 
-        <view v-else class="empty-state">
-          <text class="empty-text">暂无报价记录</text>
+        <div v-else class="empty-state">
+          <span class="empty-text">暂无报价记录</span>
           <button class="empty-action" @click="handleCreateQuote">创建第一个报价</button>
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Recent Activities -->
-      <view class="detail-section">
-        <view class="section-header">
-          <text class="section-title">最近活动</text>
-          <text class="section-count">({{ customer.recent_activities?.length || 0 }})</text>
-        </view>
+      <div class="detail-section">
+        <div class="section-header">
+          <span class="section-title">最近活动</span>
+          <span class="section-count">({{ customer.recent_activities?.length || 0 }})</span>
+        </div>
 
-        <view
+        <div
           v-if="customer.recent_activities && customer.recent_activities.length > 0"
           class="activities-list"
         >
-          <view
+          <div
             v-for="activity in customer.recent_activities"
             :key="activity.id"
             class="activity-item"
           >
-            <view class="activity-icon">
-              <text>{{ getActivityIcon(activity.type) }}</text>
-            </view>
-            <view class="activity-content">
-              <text class="activity-description">{{ activity.description }}</text>
-              <text class="activity-date">{{ formatDateTime(activity.created_at) }}</text>
-              <text v-if="activity.created_by" class="activity-user">
+            <div class="activity-icon">
+              <span>{{ getActivityIcon(activity.type) }}</span>
+            </div>
+            <div class="activity-content">
+              <span class="activity-description">{{ activity.description }}</span>
+              <span class="activity-date">{{ formatDateTime(activity.created_at) }}</span>
+              <span v-if="activity.created_by" class="activity-user">
                 操作人: {{ activity.created_by || '系统' }}
-              </text>
-            </view>
-          </view>
-        </view>
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <view v-else class="empty-state">
-          <text class="empty-text">暂无活动记录</text>
-        </view>
-      </view>
+        <div v-else class="empty-state">
+          <span class="empty-text">暂无活动记录</span>
+        </div>
+      </div>
 
       <!-- Timeline -->
-      <view class="detail-section">
-        <text class="section-title">客户时间线</text>
-        <view class="timeline">
-          <view class="timeline-item">
-            <view class="timeline-dot"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">客户创建</text>
-              <text class="timeline-date">{{ formatDateTime(customer.created_at) }}</text>
-              <text class="timeline-user">创建人: {{ customer.created_by_name || '系统' }}</text>
-            </view>
-          </view>
+      <div class="detail-section">
+        <span class="section-title">客户时间线</span>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">客户创建</span>
+              <span class="timeline-date">{{ formatDateTime(customer.created_at) }}</span>
+              <span class="timeline-user">创建人: {{ customer.created_by_name || '系统' }}</span>
+            </div>
+          </div>
 
-          <view v-if="customer.updated_at !== customer.created_at" class="timeline-item">
-            <view class="timeline-dot timeline-dot-info"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">信息更新</text>
-              <text class="timeline-date">{{ formatDateTime(customer.updated_at) }}</text>
-              <text class="timeline-user">更新人: {{ customer.updated_by_name || '系统' }}</text>
-            </view>
-          </view>
+          <div v-if="customer.updated_at !== customer.created_at" class="timeline-item">
+            <div class="timeline-dot timeline-dot-info"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">信息更新</span>
+              <span class="timeline-date">{{ formatDateTime(customer.updated_at) }}</span>
+              <span class="timeline-user">更新人: {{ customer.updated_by_name || '系统' }}</span>
+            </div>
+          </div>
 
-          <view v-if="customer.last_quote_at" class="timeline-item">
-            <view class="timeline-dot timeline-dot-success"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">最后报价</text>
-              <text class="timeline-date">{{ formatDateTime(customer.last_quote_at) }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
+          <div v-if="customer.last_quote_at" class="timeline-item">
+            <div class="timeline-dot timeline-dot-success"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">最后报价</span>
+              <span class="timeline-date">{{ formatDateTime(customer.last_quote_at) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Add Contact Activity Modal -->
-    <modal
-      v-model:visible="showContactModal"
-      title="记录联系活动"
-      @confirm="confirmAddContact"
-      @cancel="cancelAddContact"
-    >
-      <view class="contact-form">
-        <view class="form-item">
-          <text class="form-label">活动类型</text>
-          <picker
-            mode="selector"
-            :range="contactTypeOptions"
-            :range-key="'label'"
-            :value="contactTypeIndex"
-            @change="handleContactTypeChange"
-          >
-            <view class="form-picker">
-              <text>{{ contactTypeOptions[contactTypeIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
+    <div v-if="showContactModal" class="modal-overlay" @click.self="cancelAddContact">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>记录联系活动</h3>
+          <button class="modal-close" @click="cancelAddContact">&times;</button>
+        </div>
+        <div class="contact-form">
+        <div class="form-item">
+          <span class="form-label">活动类型</span>
+          <select v-model="contactTypeIndex" class="form-select" @change="handleContactTypeChange">
+            <option v-for="(option, index) in contactTypeOptions" :key="index" :value="index">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
 
-        <view class="form-item">
-          <text class="form-label">活动描述</text>
+        <div class="form-item">
+          <span class="form-label">活动描述</span>
           <textarea
             v-model="contactDescription"
             class="form-textarea"
             placeholder="请输入联系内容和结果..."
             maxlength="500"
           />
-        </view>
+        </div>
 
-        <view class="form-item">
-          <text class="form-label">联系时间</text>
-          <picker mode="date" :value="contactDate" @change="handleContactDateChange">
-            <view class="form-picker">
-              <text>{{ contactDate || '选择日期' }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-      </view>
-    </modal>
-  </view>
+        <div class="form-item">
+          <span class="form-label">联系时间</span>
+          <input 
+            type="date" 
+            v-model="contactDate" 
+            class="form-input" 
+            @change="handleContactDateChange"
+          />
+        </div>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-cancel" @click="cancelAddContact">取消</button>
+          <button class="modal-btn modal-confirm" @click="confirmAddContact">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -345,22 +343,16 @@ async function loadCustomer(id?: string) {
 // Handle actions
 function handleEdit() {
   if (!customer.value) return
-  uni.navigateTo({
-    url: `/pages/admin/customers/edit?id=${customer.value.id}`
-  })
+  router.push(`/admin/customers/edit?id=${customer.value.id}`)
 }
 
 function handleCreateQuote() {
   if (!customer.value) return
-  uni.navigateTo({
-    url: `/pages/admin/quotes/edit?customer_id=${customer.value.id}`
-  })
+  router.push(`/admin/quotes/edit?customer_id=${customer.value.id}`)
 }
 
 function handleViewQuote(quote: CustomerQuoteSummary) {
-  uni.navigateTo({
-    url: `/pages/admin/quotes/detail?id=${quote.id}`
-  })
+  router.push(`/admin/quotes/detail?id=${quote.id}`)
 }
 
 function handleAddContact() {
@@ -380,10 +372,8 @@ function handleContactDateChange(e: any) {
 
 async function confirmAddContact() {
   if (!customer.value || !contactDescription.value) {
-    uni.showToast({
-      title: '请填写活动描述',
-      icon: 'none'
-    })
+    console.log('请填写活动描述')
+    alert('请填写活动描述')
     return
   }
 
@@ -398,19 +388,15 @@ async function confirmAddContact() {
       }
     })
 
-    uni.showToast({
-      title: '活动记录成功',
-      icon: 'success'
-    })
+    console.log('活动记录成功')
+    alert('活动记录成功')
 
     showContactModal.value = false
     // Reload customer to get updated activities
     loadCustomer()
   } catch (error) {
-    uni.showToast({
-      title: '记录活动失败',
-      icon: 'none'
-    })
+    console.error('记录活动失败:', error)
+    alert('记录活动失败')
   }
 }
 
@@ -953,8 +939,102 @@ function getActivityIcon(type: string): string {
     }
   }
 
+  // Modal styles
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: $text-color-secondary;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: $text-color;
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid $border-color;
+
+    .modal-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.modal-cancel {
+        background: white;
+        color: $text-color-secondary;
+        border: 1px solid $border-color;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+      }
+
+      &.modal-confirm {
+        background: $primary-color;
+        color: white;
+        border: 1px solid $primary-color;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
+      }
+    }
+  }
+
   // Contact form styles
   .contact-form {
+    padding: 20px 24px;
     .form-item {
       margin-bottom: 20px;
 
@@ -998,6 +1078,21 @@ function getActivityIcon(type: string): string {
         .picker-arrow {
           font-size: 12px;
           color: $text-color-secondary;
+        }
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+
+        &:focus {
+          border-color: $primary-color;
+          outline: none;
         }
       }
     }

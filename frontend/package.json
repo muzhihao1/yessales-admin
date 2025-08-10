@@ -1,17 +1,13 @@
 {
   "name": "yessales-frontend",
   "version": "1.0.1",
-  "description": "YesSales（耶氏台球斗南销售中心报价系统）Frontend - Vue 3 + UniApp + Supabase",
+  "description": "YesSales（耶氏台球斗南销售中心报价系统）Frontend - Vue 3 + Supabase",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 3001",
-    "dev:h5": "vite --config vite.config.standard.ts --host 0.0.0.0 --port 3001",
-    "dev:mp-weixin": "uni",
-    "build": "vite build --config vite.config.standard.ts",
-    "build:h5": "vite build --config vite.config.standard.ts",
-    "build:mp-weixin": "uni build",
-    "type-check": "echo 'TypeScript compatibility issue resolved. Strict type checking temporarily disabled for CI/CD. Run type-check:strict for full validation.' && exit 0",
-    "type-check:strict": "vue-tsc --noEmit",
+    "build": "vite build",
+    "build:analyze": "vite build --mode analyze",
+    "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .eslintignore",
     "format": "prettier --write src/",
     "validate": "npm run type-check && npm run lint && prettier --check src/",
@@ -33,10 +29,8 @@
     "vue-tsc": "^2.0.29"
   },
   "devDependencies": {
-    "@dcloudio/types": "^3.4.19",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
-    "@uni-helper/uni-types": "^1.0.0-alpha.6",
     "@vitejs/plugin-legacy": "^5.4.1",
     "@vue/eslint-config-typescript": "^13.0.0",
     "autoprefixer": "^10.4.19",
@@ -61,7 +55,6 @@
   ],
   "keywords": [
     "vue3",
-    "uniapp",
     "supabase",
     "typescript",
     "billiards",

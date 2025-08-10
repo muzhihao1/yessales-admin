@@ -3,20 +3,20 @@
   Focused, mobile-optimized customer data collection
 -->
 <template>
-  <view class="step-customer">
-    <view class="step-header">
-      <text class="step-title">客户信息</text>
-      <text class="step-subtitle">请填写客户的基本信息，带 * 为必填项</text>
-    </view>
+  <div class="step-customer">
+    <div class="step-header">
+      <h2 class="step-title">客户信息</h2>
+      <p class="step-subtitle">请填写客户的基本信息，带 * 为必填项</p>
+    </div>
 
     <!-- Essential Information First -->
-    <view class="customer-card">
-      <view class="card-title">
-        <text class="title-icon">👤</text>
-        <text class="title-text">基本信息</text>
-      </view>
+    <div class="customer-card">
+      <div class="card-title">
+        <span class="title-icon">👤</span>
+        <h3 class="title-text">基本信息</h3>
+      </div>
 
-      <view class="form-group">
+      <div class="form-group">
         <SalesInput
           v-model="localForm.customerName"
           label="客户姓名 *"
@@ -27,9 +27,9 @@
           @blur="validateName"
         >
           <template #suffix>
-            <view v-if="localForm.customerName && !errors.customerName" class="success-icon">
+            <span v-if="localForm.customerName && !errors.customerName" class="success-icon">
               ✓
-            </view>
+            </span>
           </template>
         </SalesInput>
 
@@ -45,46 +45,27 @@
           @blur="validatePhone"
         >
           <template #suffix>
-            <view v-if="isValidPhone && !errors.customerPhone" class="success-icon"> ✓ </view>
+            <span v-if="isValidPhone && !errors.customerPhone" class="success-icon"> ✓ </span>
           </template>
           <template #help>
-            <text v-if="localForm.customerPhone && !errors.customerPhone" class="format-hint">
+            <span v-if="localForm.customerPhone && !errors.customerPhone" class="format-hint">
               {{ formatPhoneDisplay(localForm.customerPhone) }}
-            </text>
+            </span>
           </template>
         </SalesInput>
-      </view>
+      </div>
 
-      <!-- Customer Type Selection -->
-      <view class="form-group">
-        <text class="group-label">客户类型</text>
-        <text class="group-hint">选择合适的客户类型，享受对应优惠</text>
-
-        <view class="customer-types">
-          <view
-            v-for="type in customerTypes"
-            :key="type.value"
-            class="type-card"
-            :class="{ 'type-card--selected': localForm.customerType === type.value }"
-            @click="selectCustomerType(type.value)"
-          >
-            <text class="type-icon">{{ type.icon }}</text>
-            <text class="type-name">{{ type.label }}</text>
-            <text class="type-discount" v-if="type.discount"> {{ type.discount }}% 优惠 </text>
-          </view>
-        </view>
-      </view>
-    </view>
+    </div>
 
     <!-- Contact Information (Progressive Disclosure) -->
-    <view class="customer-card">
-      <view class="card-title">
-        <text class="title-icon">📞</text>
-        <text class="title-text">联系方式</text>
-        <text class="optional-badge">选填</text>
-      </view>
+    <div class="customer-card">
+      <div class="card-title">
+        <span class="title-icon">📞</span>
+        <h3 class="title-text">联系方式</h3>
+        <span class="optional-badge">选填</span>
+      </div>
 
-      <view class="form-group">
+      <div class="form-group">
         <SalesInput
           v-model="localForm.customerWechat"
           label="微信号"
@@ -93,7 +74,7 @@
           @blur="validateWechat"
         >
           <template #prefix>
-            <text class="input-icon">💬</text>
+            <span class="input-icon">💬</span>
           </template>
           <template #suffix>
             <SalesButton
@@ -116,24 +97,24 @@
           @blur="validateEmail"
         >
           <template #prefix>
-            <text class="input-icon">📧</text>
+            <span class="input-icon">📧</span>
           </template>
         </SalesInput>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Address Information (Collapsible) -->
-    <view class="customer-card">
-      <view class="card-title" @click="showAddressSection = !showAddressSection">
-        <text class="title-icon">📍</text>
-        <text class="title-text">地址信息</text>
-        <text class="optional-badge">选填</text>
-        <text class="collapse-icon">{{ showAddressSection ? '▲' : '▼' }}</text>
-      </view>
+    <div class="customer-card">
+      <div class="card-title" @click="showAddressSection = !showAddressSection">
+        <span class="title-icon">📍</span>
+        <h3 class="title-text">地址信息</h3>
+        <span class="optional-badge">选填</span>
+        <span class="collapse-icon">{{ showAddressSection ? '▲' : '▼' }}</span>
+      </div>
 
-      <view v-if="showAddressSection" class="address-content">
+      <div v-if="showAddressSection" class="address-content">
         <!-- Simplified Location Picker -->
-        <view class="location-row">
+        <div class="location-row">
           <SalesSelector
             v-model="localForm.customerProvince"
             label="省份"
@@ -151,7 +132,7 @@
             @change="handleCityChange"
             class="location-select"
           />
-        </view>
+        </div>
 
         <SalesInput
           v-model="localForm.customerAddress"
@@ -181,26 +162,20 @@
           :show-count="true"
           :auto-height="true"
         />
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Quick Actions -->
-    <view class="quick-actions">
-      <view class="save-option" @click="toggleSaveCustomer">
-        <view class="checkbox" :class="{ 'checkbox--checked': localForm.saveCustomer }">
-          <text v-if="localForm.saveCustomer" class="checkbox-check">✓</text>
-        </view>
-        <text class="option-text">保存客户信息，便于下次使用</text>
-      </view>
-    </view>
+    <div class="quick-actions">
+      <div class="save-option" @click="toggleSaveCustomer">
+        <div class="checkbox" :class="{ 'checkbox--checked': localForm.saveCustomer }">
+          <span v-if="localForm.saveCustomer" class="checkbox-check">✓</span>
+        </div>
+        <span class="option-text">保存客户信息，便于下次使用</span>
+      </div>
+    </div>
 
-    <!-- Mobile CTA -->
-    <view class="step-actions">
-      <SalesButton type="primary" :block="true" @click="handleNext" :disabled="!isValidStep">
-        下一步：选择产品
-      </SalesButton>
-    </view>
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -219,7 +194,6 @@ interface CustomerForm {
   customerProvince: string
   customerCity: string
   customerAddress: string
-  customerType: 'individual' | 'company' | 'dealer' | 'club'
   customerRemark: string
   saveCustomer: boolean
 }
@@ -246,7 +220,6 @@ const localForm = reactive({
   customerProvince: props.form.customerProvince || '',
   customerCity: props.form.customerCity || '',
   customerAddress: props.form.customerAddress || '',
-  customerType: props.form.customerType || 'individual',
   customerRemark: props.form.customerRemark || '',
   saveCustomer: props.form.saveCustomer || true
 })
@@ -255,37 +228,6 @@ const localForm = reactive({
 const showAddressSection = ref(false)
 const locationLoading = ref(false)
 
-// Customer types with benefits
-const customerTypes = [
-  {
-    value: 'individual',
-    label: '个人客户',
-    icon: '👤',
-    discount: 0,
-    description: '个人购买'
-  },
-  {
-    value: 'company',
-    label: '企业客户',
-    icon: '🏢',
-    discount: 5,
-    description: '企业采购'
-  },
-  {
-    value: 'dealer',
-    label: '经销商',
-    icon: '🤝',
-    discount: 10,
-    description: '批发合作'
-  },
-  {
-    value: 'club',
-    label: '俱乐部',
-    icon: '🎯',
-    discount: 8,
-    description: '场馆采购'
-  }
-]
 
 // Mock location data
 const provinceOptions = ref([
@@ -418,16 +360,6 @@ const validateEmail = () => {
   return true
 }
 
-const selectCustomerType = (type: string) => {
-  localForm.customerType = type as CustomerForm['customerType']
-  emitFormUpdate()
-
-  // Show discount feedback
-  const selectedType = customerTypes.find(t => t.value === type)
-  if (selectedType?.discount > 0) {
-    toast.success(`已选择${selectedType.label}，享${selectedType.discount}%优惠`, 2000)
-  }
-}
 
 const formatPhoneDisplay = (phone: string) => {
   if (phone.length === 11) {
@@ -625,60 +557,6 @@ watch(
   margin-top: $spacing-xs;
 }
 
-// Customer Types
-.customer-types {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: $spacing-sm;
-}
-
-.type-card {
-  @include card;
-  padding: $spacing-base;
-  text-align: center;
-  cursor: pointer;
-  transition: $transition-base;
-  border: 2px solid transparent;
-  position: relative;
-
-  &:active {
-    transform: scale(0.98);
-  }
-
-  &--selected {
-    border-color: $primary-color;
-    background-color: $primary-bg;
-  }
-}
-
-.type-icon {
-  font-size: $font-size-extra-large;
-  display: block;
-  margin-bottom: $spacing-xs;
-}
-
-.type-name {
-  font-size: $font-size-small;
-  font-weight: $font-weight-medium;
-  color: $text-color;
-  display: block;
-  margin-bottom: $spacing-xs;
-
-  .type-card--selected & {
-    color: $primary-color;
-    font-weight: $font-weight-semibold;
-  }
-}
-
-.type-discount {
-  font-size: $font-size-extra-small;
-  color: $success-color;
-  font-weight: $font-weight-medium;
-  background-color: $success-bg;
-  padding: 2px 6px;
-  border-radius: 8px;
-  display: inline-block;
-}
 
 // Address Section
 .address-content {
@@ -738,12 +616,6 @@ watch(
   color: $text-color;
 }
 
-// Step Actions
-.step-actions {
-  margin-top: $spacing-xl;
-  padding-top: $spacing-lg;
-  border-top: 1px solid $border-color-lighter;
-}
 
 // Animations
 @keyframes slideDown {
@@ -761,10 +633,6 @@ watch(
 
 // Responsive Design
 @media (max-width: $breakpoint-sm) {
-  .customer-types {
-    grid-template-columns: 1fr;
-  }
-
   .location-row {
     grid-template-columns: 1fr;
     gap: $spacing-sm;
@@ -772,12 +640,6 @@ watch(
 
   .customer-card {
     padding: $spacing-base;
-  }
-}
-
-@media (min-width: $breakpoint-lg) {
-  .customer-types {
-    grid-template-columns: repeat(4, 1fr);
   }
 }
 
@@ -794,7 +656,6 @@ watch(
 }
 
 /* Focus states for keyboard navigation */
-.type-card:focus,
 .save-option:focus {
   outline: 2px solid $primary-color;
   outline-offset: 2px;

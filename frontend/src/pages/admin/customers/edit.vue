@@ -1,41 +1,41 @@
 <template>
-  <view class="customer-edit-page">
+  <div class="customer-edit-page">
     <!-- Header -->
-    <view class="page-header">
-      <text class="page-title">{{ isEditMode ? '编辑客户' : '新增客户' }}</text>
-      <view class="header-actions">
+    <div class="page-header">
+      <span class="page-title">{{ isEditMode ? '编辑客户' : '新增客户' }}</span>
+      <div class="header-actions">
         <button class="action-btn cancel-btn" @click="handleCancel">取消</button>
         <button class="action-btn save-btn" @click="handleSave" :loading="saving">
           {{ isEditMode ? '更新' : '保存' }}
         </button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Loading state -->
-    <view v-if="loading && isEditMode" class="loading-container">
-      <text class="loading-text">加载客户信息中...</text>
-    </view>
+    <div v-if="loading && isEditMode" class="loading-container">
+      <span class="loading-text">加载客户信息中...</span>
+    </div>
 
     <!-- Edit Form -->
-    <view v-else class="form-container">
+    <div v-else class="form-container">
       <!-- Basic Information -->
-      <view class="form-section">
-        <text class="section-title">基本信息</text>
+      <div class="form-section">
+        <span class="section-title">基本信息</span>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">客户姓名 *</text>
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">客户姓名 *</span>
             <input
               v-model="formData.name"
               class="form-input"
               placeholder="请输入客户姓名"
               :class="{ error: errors.name }"
             />
-            <text v-if="errors.name" class="error-text">{{ errors.name }}</text>
-          </view>
+            <span v-if="errors.name" class="error-text">{{ errors.name }}</span>
+          </div>
 
-          <view class="form-item">
-            <text class="form-label">联系电话 *</text>
+          <div class="form-item">
+            <span class="form-label">联系电话 *</span>
             <input
               v-model="formData.phone"
               class="form-input"
@@ -43,148 +43,137 @@
               type="tel"
               :class="{ error: errors.phone }"
             />
-            <text v-if="errors.phone" class="error-text">{{ errors.phone }}</text>
-          </view>
-        </view>
+            <span v-if="errors.phone" class="error-text">{{ errors.phone }}</span>
+          </div>
+        </div>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">客户类型 *</text>
-            <picker
-              mode="selector"
-              :range="customerTypeOptions"
-              :range-key="'label'"
-              :value="customerTypeIndex"
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">客户类型 *</span>
+            <select 
+              v-model="customerTypeIndex" 
+              class="form-select" 
+              :class="{ error: errors.customer_type }"
               @change="handleCustomerTypeChange"
             >
-              <view class="form-picker" :class="{ error: errors.customer_type }">
-                <text>{{ customerTypeOptions[customerTypeIndex].label }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-            <text v-if="errors.customer_type" class="error-text">{{ errors.customer_type }}</text>
-          </view>
+              <option v-for="(option, index) in customerTypeOptions" :key="index" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+            <span v-if="errors.customer_type" class="error-text">{{ errors.customer_type }}</span>
+          </div>
 
-          <view class="form-item">
-            <text class="form-label">客户状态</text>
-            <picker
-              mode="selector"
-              :range="statusOptions"
-              :range-key="'label'"
-              :value="statusIndex"
+          <div class="form-item">
+            <span class="form-label">客户状态</span>
+            <select 
+              v-model="statusIndex" 
+              class="form-select" 
               @change="handleStatusChange"
             >
-              <view class="form-picker">
-                <text>{{ statusOptions[statusIndex].label }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
-        </view>
+              <option v-for="(option, index) in statusOptions" :key="index" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">客户来源</text>
-            <picker
-              mode="selector"
-              :range="sourceOptions"
-              :range-key="'label'"
-              :value="sourceIndex"
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">客户来源</span>
+            <select 
+              v-model="sourceIndex" 
+              class="form-select" 
               @change="handleSourceChange"
             >
-              <view class="form-picker">
-                <text>{{ sourceOptions[sourceIndex].label }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
+              <option v-for="(option, index) in sourceOptions" :key="index" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
 
-          <view class="form-item" v-if="formData.customer_type === 'individual'">
-            <text class="form-label">性别</text>
-            <picker
-              mode="selector"
-              :range="genderOptions"
-              :range-key="'label'"
-              :value="genderIndex"
+          <div class="form-item" v-if="formData.customer_type === 'individual'">
+            <span class="form-label">性别</span>
+            <select 
+              v-model="genderIndex" 
+              class="form-select" 
               @change="handleGenderChange"
             >
-              <view class="form-picker">
-                <text>{{ genderOptions[genderIndex].label }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
-        </view>
+              <option v-for="(option, index) in genderOptions" :key="index" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+        </div>
 
         <!-- Business specific fields -->
-        <view v-if="formData.customer_type === 'business'" class="business-fields">
-          <view class="form-row">
-            <view class="form-item">
-              <text class="form-label">公司名称 *</text>
+        <div v-if="formData.customer_type === 'business'" class="business-fields">
+          <div class="form-row">
+            <div class="form-item">
+              <span class="form-label">公司名称 *</span>
               <input
                 v-model="formData.company"
                 class="form-input"
                 placeholder="请输入公司名称"
                 :class="{ error: errors.company }"
               />
-              <text v-if="errors.company" class="error-text">{{ errors.company }}</text>
-            </view>
+              <span v-if="errors.company" class="error-text">{{ errors.company }}</span>
+            </div>
 
-            <view class="form-item">
-              <text class="form-label">法定代表人</text>
+            <div class="form-item">
+              <span class="form-label">法定代表人</span>
               <input
                 v-model="formData.legal_representative"
                 class="form-input"
                 placeholder="请输入法定代表人"
               />
-            </view>
-          </view>
+            </div>
+          </div>
 
-          <view class="form-row">
-            <view class="form-item">
-              <text class="form-label">营业执照号</text>
+          <div class="form-row">
+            <div class="form-item">
+              <span class="form-label">营业执照号</span>
               <input
                 v-model="formData.business_license"
                 class="form-input"
                 placeholder="请输入营业执照号"
               />
-            </view>
+            </div>
 
-            <view class="form-item">
-              <text class="form-label">税务登记号</text>
+            <div class="form-item">
+              <span class="form-label">税务登记号</span>
               <input v-model="formData.tax_id" class="form-input" placeholder="请输入税务登记号" />
-            </view>
-          </view>
-        </view>
+            </div>
+          </div>
+        </div>
 
         <!-- Individual specific fields -->
-        <view v-if="formData.customer_type === 'individual'" class="individual-fields">
-          <view class="form-row">
-            <view class="form-item">
-              <text class="form-label">出生日期</text>
-              <picker mode="date" :value="formData.birthday" @change="handleBirthdayChange">
-                <view class="form-picker">
-                  <text>{{ formData.birthday || '选择出生日期' }}</text>
-                  <text class="picker-arrow">▼</text>
-                </view>
-              </picker>
-            </view>
+        <div v-if="formData.customer_type === 'individual'" class="individual-fields">
+          <div class="form-row">
+            <div class="form-item">
+              <span class="form-label">出生日期</span>
+              <input 
+                type="date" 
+                v-model="formData.birthday" 
+                class="form-input" 
+                @change="handleBirthdayChange"
+              />
+            </div>
 
-            <view class="form-item">
-              <text class="form-label">职业</text>
+            <div class="form-item">
+              <span class="form-label">职业</span>
               <input v-model="formData.occupation" class="form-input" placeholder="请输入职业" />
-            </view>
-          </view>
-        </view>
-      </view>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Contact Information -->
-      <view class="form-section">
-        <text class="section-title">联系方式</text>
+      <div class="form-section">
+        <span class="section-title">联系方式</span>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">电子邮箱</text>
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">电子邮箱</span>
             <input
               v-model="formData.email"
               class="form-input"
@@ -192,92 +181,96 @@
               type="email"
               :class="{ error: errors.email }"
             />
-            <text v-if="errors.email" class="error-text">{{ errors.email }}</text>
-          </view>
+            <span v-if="errors.email" class="error-text">{{ errors.email }}</span>
+          </div>
 
-          <view class="form-item">
-            <text class="form-label">微信号</text>
+          <div class="form-item">
+            <span class="form-label">微信号</span>
             <input v-model="formData.wechat_id" class="form-input" placeholder="请输入微信号" />
-          </view>
-        </view>
+          </div>
+        </div>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">偏好联系方式</text>
-            <picker
-              mode="selector"
-              :range="contactMethodOptions"
-              :range-key="'label'"
-              :value="contactMethodIndex"
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">偏好联系方式</span>
+            <select 
+              v-model="contactMethodIndex" 
+              class="form-select" 
               @change="handleContactMethodChange"
             >
-              <view class="form-picker">
-                <text>{{ contactMethodOptions[contactMethodIndex].label }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
+              <option v-for="(option, index) in contactMethodOptions" :key="index" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
 
-          <view class="form-item">
-            <text class="form-label">联系时间偏好</text>
+          <div class="form-item">
+            <span class="form-label">联系时间偏好</span>
             <input
               v-model="formData.contact_time_preference"
               class="form-input"
               placeholder="如：工作日上午9-12点"
             />
-          </view>
-        </view>
-      </view>
+          </div>
+        </div>
+      </div>
 
       <!-- Address Information -->
-      <view class="form-section">
-        <text class="section-title">地址信息</text>
+      <div class="form-section">
+        <span class="section-title">地址信息</span>
 
-        <view class="form-row">
-          <view class="form-item">
-            <text class="form-label">城市</text>
+        <div class="form-row">
+          <div class="form-item">
+            <span class="form-label">城市</span>
             <input v-model="formData.city" class="form-input" placeholder="请输入城市" />
-          </view>
+          </div>
 
-          <view class="form-item">
-            <text class="form-label">区域</text>
+          <div class="form-item">
+            <span class="form-label">区域</span>
             <input v-model="formData.district" class="form-input" placeholder="请输入区域/区县" />
-          </view>
-        </view>
+          </div>
+        </div>
 
-        <view class="form-item">
-          <text class="form-label">详细地址</text>
+        <div class="form-item">
+          <span class="form-label">详细地址</span>
           <input v-model="formData.address" class="form-input" placeholder="请输入详细地址" />
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Additional Information -->
-      <view class="form-section">
-        <text class="section-title">备注信息</text>
+      <div class="form-section">
+        <span class="section-title">备注信息</span>
 
-        <view class="form-item">
-          <text class="form-label">备注</text>
+        <div class="form-item">
+          <span class="form-label">备注</span>
           <textarea
             v-model="formData.notes"
             class="form-textarea"
             placeholder="请输入客户备注信息..."
             maxlength="500"
           />
-          <text class="char-count">{{ (formData.notes || '').length }}/500</text>
-        </view>
-      </view>
-    </view>
+          <span class="char-count">{{ (formData.notes || '').length }}/500</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Confirmation Modal -->
-    <modal
-      v-model:visible="showConfirmModal"
-      :title="confirmModalTitle"
-      @confirm="confirmAction"
-      @cancel="cancelAction"
-    >
-      <text>{{ confirmModalContent }}</text>
-    </modal>
-  </view>
+    <div v-if="showConfirmModal" class="modal-overlay" @click.self="cancelAction">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>{{ confirmModalTitle }}</h3>
+          <button class="modal-close" @click="cancelAction">&times;</button>
+        </div>
+        <div class="modal-body">
+          <span>{{ confirmModalContent }}</span>
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-cancel" @click="cancelAction">取消</button>
+          <button class="modal-btn modal-confirm" @click="confirmAction">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -402,10 +395,8 @@ async function loadCustomer() {
     // Set picker indices based on loaded data
     updatePickerIndices()
   } catch (error) {
-    uni.showToast({
-      title: '加载客户信息失败',
-      icon: 'none'
-    })
+    console.error('加载客户信息失败:', error)
+    alert('加载客户信息失败')
     handleCancel()
   } finally {
     loading.value = false
@@ -534,10 +525,8 @@ function clearFieldError(field: string) {
 // Actions
 async function handleSave() {
   if (!validateForm()) {
-    uni.showToast({
-      title: '请完善必填信息',
-      icon: 'none'
-    })
+    console.log('请完善必填信息')
+    alert('请完善必填信息')
     return
   }
 
@@ -552,19 +541,15 @@ async function performCreate() {
   saving.value = true
   try {
     await customersStore.createCustomer(formData as CreateCustomerData)
-    uni.showToast({
-      title: '客户创建成功',
-      icon: 'success'
-    })
+    console.log('客户创建成功')
+    alert('客户创建成功')
 
     setTimeout(() => {
-      uni.navigateBack()
+      router.back()
     }, 1500)
   } catch (error) {
-    uni.showToast({
-      title: '创建失败，请重试',
-      icon: 'none'
-    })
+    console.error('创建失败:', error)
+    alert('创建失败，请重试')
   } finally {
     saving.value = false
   }
@@ -576,19 +561,15 @@ async function performUpdate() {
   saving.value = true
   try {
     await customersStore.updateCustomer(customerId.value, formData as UpdateCustomerData)
-    uni.showToast({
-      title: '客户信息更新成功',
-      icon: 'success'
-    })
+    console.log('客户信息更新成功')
+    alert('客户信息更新成功')
 
     setTimeout(() => {
-      uni.navigateBack()
+      router.back()
     }, 1500)
   } catch (error) {
-    uni.showToast({
-      title: '更新失败，请重试',
-      icon: 'none'
-    })
+    console.error('更新失败:', error)
+    alert('更新失败，请重试')
   } finally {
     saving.value = false
   }
@@ -602,11 +583,11 @@ function handleCancel() {
     confirmModalTitle.value = '确认离开'
     confirmModalContent.value = '您有未保存的更改，确定要离开吗？'
     confirmAction.value = () => {
-      uni.navigateBack()
+      router.back()
     }
     showConfirmModal.value = true
   } else {
-    uni.navigateBack()
+    router.back()
   }
 }
 
@@ -822,6 +803,27 @@ function cancelAction() {
           }
         }
 
+        .form-select {
+          width: 100%;
+          padding: 12px 16px;
+          border: 1px solid $border-color;
+          border-radius: 6px;
+          font-size: 14px;
+          background: white;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:focus {
+            border-color: $primary-color;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+          }
+
+          &.error {
+            border-color: $danger-color;
+          }
+        }
+
         .error-text {
           display: block;
           margin-top: 4px;
@@ -843,6 +845,106 @@ function cancelAction() {
         margin-top: 16px;
         padding-top: 16px;
         border-top: 1px solid #f0f0f0;
+      }
+    }
+  }
+
+  // Modal styles
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: $text-color-secondary;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: $text-color;
+      }
+    }
+  }
+
+  .modal-body {
+    padding: 20px 24px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: $text-color;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid $border-color;
+
+    .modal-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.modal-cancel {
+        background: white;
+        color: $text-color-secondary;
+        border: 1px solid $border-color;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+      }
+
+      &.modal-confirm {
+        background: $primary-color;
+        color: white;
+        border: 1px solid $primary-color;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
       }
     }
   }

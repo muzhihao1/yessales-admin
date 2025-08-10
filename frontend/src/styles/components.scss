@@ -1,0 +1,482 @@
+// Professional Component Styles for YesSales
+// Using the design tokens for consistent styling
+
+@import './design-tokens.scss';
+
+// Base Component Mixins
+@mixin component-base {
+  box-sizing: border-box;
+  font-family: $font-family-primary;
+}
+
+@mixin focus-ring {
+  outline: 2px solid $primary-500;
+  outline-offset: 2px;
+}
+
+@mixin button-base {
+  @include component-base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: $radius-lg;
+  font-weight: $font-medium;
+  line-height: $leading-none;
+  cursor: pointer;
+  transition: all $transition-base;
+  text-decoration: none;
+  user-select: none;
+  
+  &:focus-visible {
+    @include focus-ring;
+  }
+  
+  &:disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+@mixin button-size($height, $padding-x, $font-size) {
+  height: $height;
+  padding: 0 $padding-x;
+  font-size: $font-size;
+  min-width: calc(#{$height} * 2);
+}
+
+@mixin input-base {
+  @include component-base;
+  width: 100%;
+  border: 1px solid $gray-300;
+  border-radius: $radius-md;
+  background-color: $white;
+  color: $gray-900;
+  font-size: $text-base;
+  line-height: $leading-normal;
+  transition: all $transition-base;
+  
+  &::placeholder {
+    color: $gray-500;
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: $primary-500;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+  }
+  
+  &:disabled {
+    background-color: $gray-100;
+    color: $gray-500;
+    cursor: not-allowed;
+  }
+  
+  &.error {
+    border-color: $error;
+    
+    &:focus {
+      border-color: $error;
+      box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+    }
+  }
+}
+
+@mixin card-base {
+  background-color: $white;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-base;
+  border: 1px solid $gray-200;
+  overflow: hidden;
+}
+
+// Button Components
+.btn {
+  @include button-base;
+  
+  // Sizes
+  &--sm {
+    @include button-size($button-height-sm, $space-3, $text-sm);
+  }
+  
+  &--base {
+    @include button-size($button-height-base, $space-6, $text-base);
+  }
+  
+  &--lg {
+    @include button-size($button-height-lg, $space-8, $text-lg);
+  }
+  
+  // Variants
+  &--primary {
+    background-color: $primary-500;
+    color: $white;
+    
+    &:hover:not(:disabled) {
+      background-color: $primary-600;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+    
+    &:active {
+      background-color: $primary-700;
+      transform: translateY(0);
+    }
+  }
+  
+  &--secondary {
+    background-color: $secondary-500;
+    color: $white;
+    
+    &:hover:not(:disabled) {
+      background-color: $secondary-600;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+    
+    &:active {
+      background-color: $secondary-700;
+      transform: translateY(0);
+    }
+  }
+  
+  &--success {
+    background-color: $success;
+    color: $white;
+    
+    &:hover:not(:disabled) {
+      background-color: $success-dark;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+  
+  &--danger {
+    background-color: $error;
+    color: $white;
+    
+    &:hover:not(:disabled) {
+      background-color: $error-dark;
+      transform: translateY(-1px);
+      box-shadow: $shadow-md;
+    }
+  }
+  
+  &--outline {
+    background-color: transparent;
+    border: 2px solid $primary-500;
+    color: $primary-500;
+    
+    &:hover:not(:disabled) {
+      background-color: $primary-50;
+      border-color: $primary-600;
+      color: $primary-600;
+    }
+    
+    &:active {
+      background-color: $primary-100;
+    }
+  }
+  
+  &--ghost {
+    background-color: transparent;
+    color: $primary-500;
+    
+    &:hover:not(:disabled) {
+      background-color: $primary-50;
+    }
+    
+    &:active {
+      background-color: $primary-100;
+    }
+  }
+  
+  // Full width
+  &--block {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  // Loading state
+  &--loading {
+    position: relative;
+    pointer-events: none;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1rem;
+      height: 1rem;
+      margin: -0.5rem 0 0 -0.5rem;
+      border: 2px solid currentColor;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    .btn__text {
+      opacity: 0;
+    }
+  }
+}
+
+// Input Components
+.input {
+  @include input-base;
+  
+  &--sm {
+    height: $input-height-sm;
+    padding: 0 $space-3;
+    font-size: $text-sm;
+  }
+  
+  &--base {
+    height: $input-height-base;
+    padding: 0 $space-4;
+    font-size: $text-base;
+  }
+  
+  &--lg {
+    height: $input-height-lg;
+    padding: 0 $space-5;
+    font-size: $text-lg;
+  }
+}
+
+.textarea {
+  @include input-base;
+  min-height: 5rem;
+  padding: $space-3 $space-4;
+  resize: vertical;
+  line-height: $leading-relaxed;
+}
+
+// Form Components
+.form-group {
+  margin-bottom: $space-6;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.form-label {
+  display: block;
+  margin-bottom: $space-2;
+  font-size: $text-sm;
+  font-weight: $font-medium;
+  color: $gray-700;
+  
+  &.required {
+    &::after {
+      content: ' *';
+      color: $error;
+    }
+  }
+}
+
+.form-error {
+  margin-top: $space-1;
+  font-size: $text-xs;
+  color: $error;
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+}
+
+.form-help {
+  margin-top: $space-1;
+  font-size: $text-xs;
+  color: $gray-600;
+}
+
+// Card Components
+.card {
+  @include card-base;
+  
+  &__header {
+    padding: $card-padding-base;
+    border-bottom: 1px solid $gray-200;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+  
+  &__body {
+    padding: $card-padding-base;
+  }
+  
+  &__footer {
+    padding: $card-padding-base;
+    border-top: 1px solid $gray-200;
+    background-color: $gray-50;
+  }
+  
+  &--elevated {
+    box-shadow: $shadow-lg;
+  }
+  
+  &--interactive {
+    cursor: pointer;
+    transition: all $transition-base;
+    
+    &:hover {
+      box-shadow: $shadow-md;
+      transform: translateY(-2px);
+    }
+  }
+}
+
+// Badge Components
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: $space-1 $space-2;
+  border-radius: $radius-full;
+  font-size: $text-xs;
+  font-weight: $font-medium;
+  line-height: $leading-none;
+  
+  &--primary {
+    background-color: $primary-100;
+    color: $primary-800;
+  }
+  
+  &--success {
+    background-color: #E8F5E8;
+    color: #2E7D32;
+  }
+  
+  &--warning {
+    background-color: #FFF3E0;
+    color: #F57C00;
+  }
+  
+  &--error {
+    background-color: #FFEBEE;
+    color: #C62828;
+  }
+  
+  &--gray {
+    background-color: $gray-100;
+    color: $gray-800;
+  }
+}
+
+// Progress Components
+.progress {
+  width: 100%;
+  height: $space-2;
+  background-color: $gray-200;
+  border-radius: $radius-full;
+  overflow: hidden;
+  
+  &__bar {
+    height: 100%;
+    background: linear-gradient(90deg, $primary-500, $primary-400);
+    border-radius: inherit;
+    transition: width $transition-base;
+  }
+  
+  &--sm {
+    height: $space-1;
+  }
+  
+  &--lg {
+    height: $space-3;
+  }
+}
+
+// List Components
+.list {
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: $space-4;
+    border-bottom: 1px solid $gray-200;
+    transition: background-color $transition-fast;
+    
+    &:last-child {
+      border-bottom: none;
+    }
+    
+    &:hover {
+      background-color: $gray-50;
+    }
+    
+    &--active {
+      background-color: $primary-50;
+      border-color: $primary-200;
+    }
+    
+    &--clickable {
+      cursor: pointer;
+      
+      &:active {
+        background-color: $gray-100;
+      }
+    }
+  }
+}
+
+// Animations
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in $transition-base;
+}
+
+.animate-slide-up {
+  animation: slide-up $transition-base;
+}
+
+// Responsive Utilities
+@mixin mobile-only {
+  @media (max-width: #{$breakpoint-sm - 1px}) {
+    @content;
+  }
+}
+
+@mixin tablet-up {
+  @media (min-width: $breakpoint-sm) {
+    @content;
+  }
+}
+
+@mixin desktop-up {
+  @media (min-width: $breakpoint-lg) {
+    @content;
+  }
+}

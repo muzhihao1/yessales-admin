@@ -26,19 +26,14 @@ export function initializeApi(): void {
       // 统一处理认证失败
       if (!response.success && response.error?.code === 'UNAUTHORIZED') {
         // 清除本地存储的认证信息
-        uni.removeStorageSync('supabase.auth.token')
+        localStorage.removeItem('supabase.auth.token')
 
-        // 可以在这里触发全局事件或跳转到登录页
-        uni.showToast({
-          title: '登录已过期，请重新登录',
-          icon: 'none'
-        })
-
+        // 显示登录过期消息
+        console.warn('登录已过期，请重新登录')
+        
         // 延迟跳转到登录页
         setTimeout(() => {
-          uni.reLaunch({
-            url: '/pages/auth/login'
-          })
+          window.location.href = '/admin/login'
         }, 1500)
       }
 

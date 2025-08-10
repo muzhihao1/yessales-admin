@@ -3,7 +3,9 @@ import vue from '@vitejs/plugin-vue'
 import { resolve } from 'path'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue()
+  ],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
@@ -13,8 +15,15 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     rollupOptions: {
-      input: resolve(__dirname, 'index.html')
-    }
+      output: {
+        manualChunks: {
+          vendor: ['vue', 'vue-router', 'pinia'],
+          supabase: ['@supabase/supabase-js']
+        }
+      }
+    },
+    sourcemap: false,
+    minify: 'terser'
   },
   server: {
     port: 3001,

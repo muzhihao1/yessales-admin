@@ -1,36 +1,67 @@
+@import './design-tokens.scss';
+@import './components.scss';
 @import './variables.scss';
 @import './mixins.scss';
 
-* {
+// CSS Reset - Professional Grade
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-page {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  font-size: $font-size-base;
-  color: $text-color;
-  background-color: $bg-color;
+// Root font size for rem calculations
+html {
+  font-size: 16px; // Base font size
+  line-height: $leading-normal;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-view, scroll-view, swiper, button, input, textarea, label, navigator, image {
+body {
+  font-family: $font-family-primary;
+  font-size: $text-base;
+  font-weight: $font-normal;
+  color: $gray-900;
+  background-color: $gray-50;
+  line-height: $leading-normal;
+  overflow-x: hidden;
+}
+
+// Legacy page element for compatibility
+page {
+  font-family: $font-family-primary;
+  font-size: $text-base;
+  color: $gray-900;
+  background-color: $gray-50;
+}
+
+// Standard HTML elements
+div, span, section, article, aside, header, footer, nav, main {
   box-sizing: border-box;
 }
 
 button {
   font-size: inherit;
+  font-family: inherit;
   background-color: transparent;
-  &::after {
-    border: none;
+  border: none;
+  cursor: pointer;
+  
+  &:focus-visible {
+    @include focus-ring;
   }
 }
 
-input, textarea {
+input, textarea, select {
   font-size: inherit;
   font-family: inherit;
+  color: inherit;
 }
 
 .admin- {
@@ -151,199 +182,258 @@ input, textarea {
   justify-content: space-between;
 }
 
-// 销售端样式
-.sales- {
-  &container {
+// Professional Application Styles Using New Design System
+.app {
+  &-container {
     width: 100%;
     min-height: 100vh;
-    background-color: $bg-color-page;
+    background-color: $gray-50;
+    font-family: $font-family-primary;
   }
 
-  &page {
-    padding: $spacing-base;
+  &-page {
+    padding: $space-4;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
-  &card {
-    @include card;
-    margin-bottom: $spacing-base;
+  &-header {
+    background-color: $white;
+    box-shadow: $shadow-sm;
+    border-bottom: 1px solid $gray-200;
   }
 
-  &section {
-    margin-bottom: $spacing-lg;
+  &-section {
+    margin-bottom: $space-8;
     
-    &-title {
-      font-size: $font-size-large;
-      font-weight: $font-weight-semibold;
-      color: $text-color;
-      margin-bottom: $spacing-base;
-      padding-bottom: $spacing-sm;
-      border-bottom: 2px solid $primary-color;
+    &__title {
+      font-size: $text-2xl;
+      font-weight: $font-semibold;
+      color: $gray-900;
+      margin-bottom: $space-6;
+      padding-bottom: $space-3;
+      border-bottom: 3px solid $primary-500;
+      display: inline-block;
+    }
+  }
+}
+
+// Professional Sales Interface
+.sales {
+  &-container {
+    @extend .app-container;
+  }
+
+  &-page {
+    @extend .app-page;
+  }
+
+  &-card {
+    @extend .card;
+    margin-bottom: $space-6;
+    
+    &--interactive {
+      @extend .card--interactive;
     }
   }
 
-  &form {
-    &-item {
-      margin-bottom: $spacing-md;
+  &-section {
+    @extend .app-section;
+  }
+
+  // Professional Form Styling
+  &-form {
+    &__group {
+      @extend .form-group;
     }
 
-    &-label {
-      display: block;
-      margin-bottom: $spacing-xs;
-      font-size: $font-size-base;
-      font-weight: $font-weight-medium;
-      color: $text-color-secondary;
+    &__label {
+      @extend .form-label;
+      font-size: $text-sm;
+      color: $gray-700;
       
-      &.required::before {
-        content: '*';
-        color: $danger-color;
-        margin-right: 4px;
+      &--required {
+        @extend .form-label;
+        
+        &::after {
+          content: ' *';
+          color: $error;
+        }
       }
     }
 
-    &-control {
-      width: 100%;
+    &__input {
+      @extend .input;
+      
+      &--error {
+        @extend .input;
+        border-color: $error;
+      }
     }
 
-    &-error {
-      margin-top: $spacing-xs;
-      font-size: $font-size-small;
-      color: $danger-color;
+    &__textarea {
+      @extend .textarea;
     }
 
-    &-help {
-      margin-top: $spacing-xs;
-      font-size: $font-size-small;
-      color: $text-color-regular;
+    &__error {
+      @extend .form-error;
+    }
+
+    &__help {
+      @extend .form-help;
     }
   }
 
-  &btn {
-    @include button-base;
-    font-size: $font-size-base;
-    height: 44px;
-    padding: 0 $spacing-lg;
+  // Professional Button System
+  &-btn {
+    @extend .btn;
     
-    &-primary {
-      @include button-variant($primary-color);
+    &--primary {
+      @extend .btn--primary;
     }
     
-    &-success {
-      @include button-variant($success-color);
+    &--secondary {
+      @extend .btn--secondary;
     }
     
-    &-danger {
-      @include button-variant($danger-color);
-    }
-    
-    &-default {
-      background-color: $bg-color-white;
-      color: $text-color;
-      border: 1px solid $border-color;
+    &--success {
+      @extend .btn;
+      background-color: $success;
+      color: $white;
       
-      &:hover:not([disabled]) {
-        border-color: $primary-color;
-        color: $primary-color;
+      &:hover:not(:disabled) {
+        background-color: $success-dark;
+        transform: translateY(-1px);
+        box-shadow: $shadow-md;
       }
     }
     
-    &-block {
-      display: block;
-      width: 100%;
+    &--danger {
+      @extend .btn--danger;
     }
     
-    &-large {
-      height: 52px;
-      font-size: $font-size-large;
-      padding: 0 $spacing-xl;
+    &--outline {
+      @extend .btn--outline;
+    }
+    
+    &--ghost {
+      @extend .btn--ghost;
+    }
+    
+    &--block {
+      @extend .btn--block;
+    }
+    
+    &--sm {
+      @extend .btn--sm;
+    }
+    
+    &--lg {
+      @extend .btn--lg;
     }
   }
 
-  &input {
-    @include input-base;
-    
-    &-textarea {
-      min-height: 100px;
-      padding: $spacing-sm $spacing-base;
-      resize: vertical;
-      line-height: 1.5;
-    }
-  }
-
-  &list {
-    background-color: $bg-color-white;
-    border-radius: $border-radius-base;
-    overflow: hidden;
-    
-    &-item {
-      padding: $spacing-base;
-      border-bottom: 1px solid $border-color-lighter;
-      transition: $transition-base;
-      
-      &:last-child {
-        border-bottom: none;
-      }
-      
-      &:active {
-        background-color: $bg-color;
-      }
-    }
-  }
-
-  &product {
-    &-card {
+  // Professional Product Cards
+  &-product {
+    &__card {
+      @extend .card--interactive;
       display: flex;
       align-items: center;
-      padding: $spacing-base;
-      background-color: $bg-color-white;
-      border-radius: $border-radius-base;
-      box-shadow: $box-shadow-base;
-      margin-bottom: $spacing-sm;
+      padding: $space-4;
+      margin-bottom: $space-3;
+      transition: all $transition-base;
       
-      &-image {
-        width: 80px;
-        height: 80px;
-        border-radius: $border-radius-base;
-        object-fit: cover;
-        margin-right: $spacing-base;
+      &:hover {
+        box-shadow: $shadow-lg;
       }
       
-      &-info {
+      &__image {
+        width: 80px;
+        height: 80px;
+        border-radius: $radius-xl;
+        object-fit: cover;
+        margin-right: $space-4;
+        background-color: $gray-100;
+      }
+      
+      &__info {
         flex: 1;
       }
       
-      &-name {
-        font-size: $font-size-medium;
-        font-weight: $font-weight-medium;
-        color: $text-color;
-        margin-bottom: $spacing-xs;
+      &__name {
+        font-size: $text-lg;
+        font-weight: $font-semibold;
+        color: $gray-900;
+        margin-bottom: $space-1;
       }
       
-      &-model {
-        font-size: $font-size-small;
-        color: $text-color-secondary;
-        margin-bottom: $spacing-xs;
+      &__model {
+        font-size: $text-sm;
+        color: $gray-600;
+        margin-bottom: $space-2;
       }
       
-      &-price {
-        font-size: $font-size-large;
-        font-weight: $font-weight-semibold;
-        color: $danger-color;
+      &__price {
+        font-size: $text-xl;
+        font-weight: $font-bold;
+        color: $primary-600;
       }
     }
   }
 
-  &empty {
-    padding: $spacing-xl;
-    text-align: center;
-    color: $text-color-regular;
+  // Professional List Styling
+  &-list {
+    background-color: $white;
+    border-radius: $radius-xl;
+    overflow: hidden;
+    box-shadow: $shadow-base;
     
-    &-icon {
-      font-size: 48px;
-      margin-bottom: $spacing-base;
+    &__item {
+      @extend .list__item;
+    }
+  }
+
+  // Professional Empty States
+  &-empty {
+    padding: $space-12;
+    text-align: center;
+    color: $gray-500;
+    
+    &__icon {
+      font-size: 4rem;
+      margin-bottom: $space-4;
+      opacity: 0.6;
     }
     
-    &-text {
-      font-size: $font-size-base;
+    &__title {
+      font-size: $text-lg;
+      font-weight: $font-medium;
+      color: $gray-700;
+      margin-bottom: $space-2;
+    }
+    
+    &__text {
+      font-size: $text-base;
+      line-height: $leading-relaxed;
+    }
+  }
+
+  // Professional Status Indicators
+  &-status {
+    &--pending {
+      @extend .badge--warning;
+    }
+    
+    &--approved {
+      @extend .badge--success;
+    }
+    
+    &--rejected {
+      @extend .badge--error;
+    }
+    
+    &--draft {
+      @extend .badge--gray;
     }
   }
 }

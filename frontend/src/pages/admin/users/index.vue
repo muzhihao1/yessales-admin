@@ -1,92 +1,96 @@
 <template>
-  <view class="users-page">
+  <div class="users-page">
     <!-- Header -->
-    <view class="page-header">
-      <view class="header-content">
-        <text class="page-title">用户管理</text>
-        <view class="header-stats">
-          <text class="stat-item">
-            <text class="stat-value">{{ usersStore.totalCount }}</text>
-            <text class="stat-label">总用户</text>
-          </text>
-          <text class="stat-item">
-            <text class="stat-value">{{ usersStore.statistics.active }}</text>
-            <text class="stat-label">活跃用户</text>
-          </text>
-          <text class="stat-item">
-            <text class="stat-value">{{
+    <div class="page-header">
+      <div class="header-content">
+        <span class="page-title">用户管理</span>
+        <div class="header-stats">
+          <span class="stat-item">
+            <span class="stat-value">{{ usersStore.totalCount }}</span>
+            <span class="stat-label">总用户</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">{{ usersStore.statistics.active }}</span>
+            <span class="stat-label">活跃用户</span>
+          </span>
+          <span class="stat-item">
+            <span class="stat-value">{{
               usersStore.statistics.admin + usersStore.statistics.sales_manager
-            }}</text>
-            <text class="stat-label">管理员</text>
-          </text>
-        </view>
-      </view>
-      <view class="header-actions">
+            }}</span>
+            <span class="stat-label">管理员</span>
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
         <button class="action-btn add-btn" @click="handleAddUser">
-          <text class="btn-icon">+</text>
+          <span class="btn-icon">+</span>
           添加用户
         </button>
         <button class="action-btn invite-btn" @click="handleInviteUser">
-          <text class="btn-icon">📧</text>
+          <span class="btn-icon">📧</span>
           邀请用户
         </button>
         <button class="action-btn export-btn" @click="handleExport" :loading="exporting">
-          <text class="btn-icon">📊</text>
+          <span class="btn-icon">📊</span>
           导出数据
         </button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Filters -->
-    <view class="filters-section">
-      <view class="filters-row">
-        <view class="filter-item">
+    <div class="filters-section">
+      <div class="filters-row">
+        <div class="filter-item">
           <input
             v-model="searchQuery"
             class="search-input"
             placeholder="搜索姓名、邮箱或手机号"
             @input="debounceSearch"
           />
-        </view>
-        <view class="filter-item">
-          <picker
-            mode="selector"
-            :range="roleOptions"
-            :range-key="'label'"
-            :value="roleIndex"
-            @change="handleRoleChange"
-          >
-            <view class="filter-picker">
-              <text>{{ roleOptions[roleIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
-          <picker
-            mode="selector"
-            :range="statusOptions"
-            :range-key="'label'"
-            :value="statusIndex"
-            @change="handleStatusChange"
-          >
-            <view class="filter-picker">
-              <text>{{ statusOptions[statusIndex].label }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="filter-item">
+        </div>
+        <div class="filter-item">
+          <div class="filter-picker" @click="showRoleSelect = !showRoleSelect">
+            <span>{{ roleOptions[roleIndex].label }}</span>
+            <span class="picker-arrow">▼</span>
+          </div>
+          <div v-if="showRoleSelect" class="picker-options">
+            <div 
+              v-for="(option, index) in roleOptions" 
+              :key="index"
+              class="picker-option"
+              @click="selectRole(option, index)"
+            >
+              {{ option.label }}
+            </div>
+          </div>
+        </div>
+        <div class="filter-item">
+          <div class="filter-picker" @click="showStatusSelect = !showStatusSelect">
+            <span>{{ statusOptions[statusIndex].label }}</span>
+            <span class="picker-arrow">▼</span>
+          </div>
+          <div v-if="showStatusSelect" class="picker-options">
+            <div 
+              v-for="(option, index) in statusOptions" 
+              :key="index"
+              class="picker-option"
+              @click="selectStatus(option, index)"
+            >
+              {{ option.label }}
+            </div>
+          </div>
+        </div>
+        <div class="filter-item">
           <input
             v-model="departmentFilter"
             class="search-input"
             placeholder="部门筛选"
             @input="debounceSearch"
           />
-        </view>
+        </div>
         <button class="filter-reset" @click="resetFilters">重置</button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Data Table -->
     <DataTable
@@ -101,49 +105,49 @@
       @sort-change="handleSortChange"
     >
       <template #user="{ row }">
-        <view class="user-cell">
-          <view class="user-avatar">
-            <image v-if="row.avatar" :src="row.avatar" class="avatar-img" />
-            <text v-else class="avatar-placeholder">
+        <div class="user-cell">
+          <div class="user-avatar">
+            <img v-if="row.avatar" :src="row.avatar" class="avatar-img" />
+            <span v-else class="avatar-placeholder">
               {{ row.name.charAt(0).toUpperCase() }}
-            </text>
-          </view>
-          <view class="user-info">
-            <text class="user-name">{{ row.name }}</text>
-            <text class="user-email">{{ row.email }}</text>
-            <text v-if="row.phone" class="user-phone">{{ row.phone }}</text>
-          </view>
-        </view>
+            </span>
+          </div>
+          <div class="user-info">
+            <span class="user-name">{{ row.name }}</span>
+            <span class="user-email">{{ row.email }}</span>
+            <span v-if="row.phone" class="user-phone">{{ row.phone }}</span>
+          </div>
+        </div>
       </template>
 
       <template #role="{ row }">
-        <view :class="['role-badge', `role-${row.role}`]">
-          <text>{{ getRoleLabel(row.role) }}</text>
-        </view>
+        <div :class="['role-badge', `role-${row.role}`]">
+          <span>{{ getRoleLabel(row.role) }}</span>
+        </div>
       </template>
 
       <template #status="{ row }">
-        <view :class="['status-badge', `status-${row.status}`]">
-          <text>{{ getStatusLabel(row.status) }}</text>
-        </view>
+        <div :class="['status-badge', `status-${row.status}`]">
+          <span>{{ getStatusLabel(row.status) }}</span>
+        </div>
       </template>
 
       <template #department="{ row }">
-        <text class="department-cell">{{ row.department || '-' }}</text>
+        <span class="department-cell">{{ row.department || '-' }}</span>
       </template>
 
       <template #last_login="{ row }">
-        <text class="date-cell">
+        <span class="date-cell">
           {{ row.last_login_at ? formatDate(row.last_login_at) : '从未登录' }}
-        </text>
+        </span>
       </template>
 
       <template #created_at="{ row }">
-        <text class="date-cell">{{ formatDate(row.created_at) }}</text>
+        <span class="date-cell">{{ formatDate(row.created_at) }}</span>
       </template>
 
       <template #actions="{ row }">
-        <view class="actions-cell">
+        <div class="actions-cell">
           <button class="action-btn action-view" @click="handleView(row)">查看</button>
           <button class="action-btn action-edit" @click="handleEdit(row)">编辑</button>
           <button
@@ -170,103 +174,117 @@
           >
             删除
           </button>
-        </view>
+        </div>
       </template>
     </DataTable>
 
     <!-- Add User Modal -->
-    <modal
-      v-model:visible="showAddModal"
-      title="添加用户"
-      @confirm="confirmAddUser"
-      @cancel="cancelAddUser"
-    >
-      <view class="user-form">
-        <view class="form-item">
-          <text class="form-label">姓名 *</text>
-          <input v-model="newUser.name" class="form-input" placeholder="请输入用户姓名" />
-        </view>
-        <view class="form-item">
-          <text class="form-label">邮箱 *</text>
-          <input
-            v-model="newUser.email"
-            class="form-input"
-            placeholder="请输入邮箱地址"
-            type="email"
-          />
-        </view>
-        <view class="form-item">
-          <text class="form-label">手机号</text>
-          <input v-model="newUser.phone" class="form-input" placeholder="请输入手机号" />
-        </view>
-        <view class="form-item">
-          <text class="form-label">角色 *</text>
-          <picker
-            mode="selector"
-            :range="roleOptions.slice(1)"
-            :range-key="'label'"
-            :value="newUserRoleIndex"
-            @change="handleNewUserRoleChange"
-          >
-            <view class="form-picker">
-              <text>{{ roleOptions[newUserRoleIndex + 1]?.label || '请选择角色' }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="form-item">
-          <text class="form-label">部门</text>
-          <input v-model="newUser.department" class="form-input" placeholder="请输入部门" />
-        </view>
-        <view class="form-item">
-          <text class="form-label">职位</text>
-          <input v-model="newUser.position" class="form-input" placeholder="请输入职位" />
-        </view>
-        <view class="form-checkbox">
-          <checkbox v-model="newUser.send_invite" color="#007AFF" />
-          <text class="checkbox-label">发送邀请邮件</text>
-        </view>
-      </view>
-    </modal>
+    <div v-if="showAddModal" class="modal-overlay" @click.self="cancelAddUser">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>添加用户</h3>
+          <button class="modal-close" @click="cancelAddUser">&times;</button>
+        </div>
+        <div class="user-form">
+          <div class="form-item">
+            <span class="form-label">姓名 *</span>
+            <input v-model="newUser.name" class="form-input" placeholder="请输入用户姓名" />
+          </div>
+          <div class="form-item">
+            <span class="form-label">邮箱 *</span>
+            <input
+              v-model="newUser.email"
+              class="form-input"
+              placeholder="请输入邮箱地址"
+              type="email"
+            />
+          </div>
+          <div class="form-item">
+            <span class="form-label">手机号</span>
+            <input v-model="newUser.phone" class="form-input" placeholder="请输入手机号" />
+          </div>
+          <div class="form-item">
+            <span class="form-label">角色 *</span>
+            <div class="form-picker" @click="showNewUserRoleSelect = !showNewUserRoleSelect">
+              <span>{{ roleOptions[newUserRoleIndex + 1]?.label || '请选择角色' }}</span>
+              <span class="picker-arrow">▼</span>
+            </div>
+            <div v-if="showNewUserRoleSelect" class="picker-options">
+              <div 
+                v-for="(option, index) in roleOptions.slice(1)" 
+                :key="index"
+                class="picker-option"
+                @click="selectNewUserRole(option, index)"
+              >
+                {{ option.label }}
+              </div>
+            </div>
+          </div>
+          <div class="form-item">
+            <span class="form-label">部门</span>
+            <input v-model="newUser.department" class="form-input" placeholder="请输入部门" />
+          </div>
+          <div class="form-item">
+            <span class="form-label">职位</span>
+            <input v-model="newUser.position" class="form-input" placeholder="请输入职位" />
+          </div>
+          <div class="form-checkbox">
+            <input type="checkbox" v-model="newUser.send_invite" />
+            <span class="checkbox-label">发送邀请邮件</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="cancelAddUser">取消</button>
+          <button class="btn btn-primary" @click="confirmAddUser">确认</button>
+        </div>
+      </div>
+    </div>
 
     <!-- Invite User Modal -->
-    <modal
-      v-model:visible="showInviteModal"
-      title="邀请用户"
-      @confirm="confirmInviteUser"
-      @cancel="cancelInviteUser"
-    >
-      <view class="invite-form">
-        <view class="form-item">
-          <text class="form-label">邮箱地址 *</text>
-          <input
-            v-model="inviteEmail"
-            class="form-input"
-            placeholder="请输入邀请邮箱"
-            type="email"
-          />
-        </view>
-        <view class="form-item">
-          <text class="form-label">角色 *</text>
-          <picker
-            mode="selector"
-            :range="roleOptions.slice(1)"
-            :range-key="'label'"
-            :value="inviteRoleIndex"
-            @change="handleInviteRoleChange"
-          >
-            <view class="form-picker">
-              <text>{{ roleOptions[inviteRoleIndex + 1]?.label || '请选择角色' }}</text>
-              <text class="picker-arrow">▼</text>
-            </view>
-          </picker>
-        </view>
-        <view class="form-note">
-          <text>邀请邮件将发送到指定邮箱，用户可通过邮件中的链接完成注册。</text>
-        </view>
-      </view>
-    </modal>
-  </view>
+    <div v-if="showInviteModal" class="modal-overlay" @click.self="cancelInviteUser">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>邀请用户</h3>
+          <button class="modal-close" @click="cancelInviteUser">&times;</button>
+        </div>
+        <div class="invite-form">
+          <div class="form-item">
+            <span class="form-label">邮箱地址 *</span>
+            <input
+              v-model="inviteEmail"
+              class="form-input"
+              placeholder="请输入邀请邮箱"
+              type="email"
+            />
+          </div>
+          <div class="form-item">
+            <span class="form-label">角色 *</span>
+            <div class="form-picker" @click="showInviteRoleSelect = !showInviteRoleSelect">
+              <span>{{ roleOptions[inviteRoleIndex + 1]?.label || '请选择角色' }}</span>
+              <span class="picker-arrow">▼</span>
+            </div>
+            <div v-if="showInviteRoleSelect" class="picker-options">
+              <div 
+                v-for="(option, index) in roleOptions.slice(1)" 
+                :key="index"
+                class="picker-option"
+                @click="selectInviteRole(option, index)"
+              >
+                {{ option.label }}
+              </div>
+            </div>
+          </div>
+          <div class="form-note">
+            <span>邀请邮件将发送到指定邮箱，用户可通过邮件中的链接完成注册。</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" @click="cancelInviteUser">取消</button>
+          <button class="btn btn-primary" @click="confirmInviteUser">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -353,6 +371,12 @@ const statusOptions = [
 const showAddModal = ref(false)
 const showInviteModal = ref(false)
 
+// Custom dropdown states
+const showRoleSelect = ref(false)
+const showStatusSelect = ref(false)
+const showNewUserRoleSelect = ref(false)
+const showInviteRoleSelect = ref(false)
+
 // Form states
 const newUser = ref<CreateUserData>({
   email: '',
@@ -412,16 +436,29 @@ async function loadUsers() {
 }
 
 // Handle filter changes
-function handleRoleChange(e: any) {
-  roleIndex.value = e.detail.value
+function selectRole(option: any, index: number) {
+  roleIndex.value = index
+  showRoleSelect.value = false
   currentPage.value = 1
   loadUsers()
 }
 
-function handleStatusChange(e: any) {
-  statusIndex.value = e.detail.value
+function selectStatus(option: any, index: number) {
+  statusIndex.value = index
+  showStatusSelect.value = false
   currentPage.value = 1
   loadUsers()
+}
+
+function selectNewUserRole(option: any, index: number) {
+  newUserRoleIndex.value = index
+  newUser.value.role = option.value as any
+  showNewUserRoleSelect.value = false
+}
+
+function selectInviteRole(option: any, index: number) {
+  inviteRoleIndex.value = index
+  showInviteRoleSelect.value = false
 }
 
 function resetFilters() {
@@ -446,103 +483,63 @@ function handleSortChange(sortConfig: { key: string; order: 'asc' | 'desc' }) {
 
 // Handle user actions
 function handleView(user: User) {
-  uni.navigateTo({
-    url: `/pages/admin/users/detail?id=${user.id}`
-  })
+  router.push(`/admin/users/detail?id=${user.id}`)
 }
 
 function handleEdit(user: User) {
-  uni.navigateTo({
-    url: `/pages/admin/users/edit?id=${user.id}`
-  })
+  router.push(`/admin/users/edit?id=${user.id}`)
 }
 
 async function handleActivate(user: User) {
   try {
     await usersStore.activateUser(user.id)
-    uni.showToast({
-      title: '启用成功',
-      icon: 'success'
-    })
+    console.log('启用成功')
+    alert('启用成功')
     loadUsers()
   } catch (error) {
-    uni.showToast({
-      title: '启用失败',
-      icon: 'none'
-    })
+    console.error('启用失败:', error)
+    alert('启用失败')
   }
 }
 
 async function handleDeactivate(user: User) {
-  uni.showModal({
-    title: '确认禁用',
-    content: `确定要禁用用户 ${user.name} 吗？`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          await usersStore.deactivateUser(user.id)
-          uni.showToast({
-            title: '禁用成功',
-            icon: 'success'
-          })
-          loadUsers()
-        } catch (error) {
-          uni.showToast({
-            title: '禁用失败',
-            icon: 'none'
-          })
-        }
-      }
+  if (confirm(`确定要禁用用户 ${user.name} 吗？`)) {
+    try {
+      await usersStore.deactivateUser(user.id)
+      console.log('禁用成功')
+      alert('禁用成功')
+      loadUsers()
+    } catch (error) {
+      console.error('禁用失败:', error)
+      alert('禁用失败')
     }
-  })
+  }
 }
 
 async function handleResetPassword(user: User) {
-  uni.showModal({
-    title: '重置密码',
-    content: `确定要重置用户 ${user.name} 的密码吗？`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          const result = await usersStore.resetUserPassword(user.id)
-          uni.showModal({
-            title: '密码重置成功',
-            content: `临时密码：${result.temporary_password}\n请通知用户尽快修改密码`,
-            showCancel: false
-          })
-        } catch (error) {
-          uni.showToast({
-            title: '重置失败',
-            icon: 'none'
-          })
-        }
-      }
+  if (confirm(`确定要重置用户 ${user.name} 的密码吗？`)) {
+    try {
+      const result = await usersStore.resetUserPassword(user.id)
+      alert(`密码重置成功\n临时密码：${result.temporary_password}\n请通知用户尽快修改密码`)
+    } catch (error) {
+      console.error('重置失败:', error)
+      alert('重置失败')
     }
-  })
+  }
 }
 
 async function handleDelete(user: User) {
-  uni.showModal({
-    title: '确认删除',
-    content: `确定要删除用户 ${user.name} 吗？此操作不可撤销。`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          await usersStore.deleteUser(user.id)
-          uni.showToast({
-            title: '删除成功',
-            icon: 'success'
-          })
-          loadUsers()
-        } catch (error) {
-          uni.showToast({
-            title: '删除失败',
-            icon: 'none'
-          })
-        }
-      }
+  if (confirm(`确定要删除用户 ${user.name} 吗？此操作不可撤销。`)) {
+    try {
+      await usersStore.deleteUser(user.id)
+      console.log('删除成功')
+      alert('删除成功')
+      loadUsers()
+    } catch (error) {
+      console.error('删除失败:', error)
+      alert('删除失败')
     }
-  })
+  }
 }
 
 // Handle modals
@@ -560,33 +557,21 @@ function handleAddUser() {
   showAddModal.value = true
 }
 
-function handleNewUserRoleChange(e: any) {
-  newUserRoleIndex.value = e.detail.value
-  newUser.value.role = roleOptions[e.detail.value + 1].value as any
-}
-
 async function confirmAddUser() {
   if (!newUser.value.name || !newUser.value.email) {
-    uni.showToast({
-      title: '请填写必填项',
-      icon: 'none'
-    })
+    alert('请填写必填项')
     return
   }
 
   try {
     await usersStore.createUser(newUser.value)
-    uni.showToast({
-      title: '添加成功',
-      icon: 'success'
-    })
+    console.log('添加成功')
+    alert('添加成功')
     showAddModal.value = false
     loadUsers()
   } catch (error) {
-    uni.showToast({
-      title: '添加失败',
-      icon: 'none'
-    })
+    console.error('添加失败:', error)
+    alert('添加失败')
   }
 }
 
@@ -600,32 +585,21 @@ function handleInviteUser() {
   showInviteModal.value = true
 }
 
-function handleInviteRoleChange(e: any) {
-  inviteRoleIndex.value = e.detail.value
-}
-
 async function confirmInviteUser() {
   if (!inviteEmail.value) {
-    uni.showToast({
-      title: '请输入邮箱',
-      icon: 'none'
-    })
+    alert('请输入邮箱')
     return
   }
 
   const selectedRole = roleOptions[inviteRoleIndex.value + 1].value
   try {
     await usersStore.inviteUser(inviteEmail.value, selectedRole)
-    uni.showToast({
-      title: '邀请发送成功',
-      icon: 'success'
-    })
+    console.log('邀请发送成功')
+    alert('邀请发送成功')
     showInviteModal.value = false
   } catch (error) {
-    uni.showToast({
-      title: '邀请发送失败',
-      icon: 'none'
-    })
+    console.error('邀请发送失败:', error)
+    alert('邀请发送失败')
   }
 }
 
@@ -642,15 +616,11 @@ async function handleExport() {
       search: searchQuery.value,
       department: departmentFilter.value
     })
-    uni.showToast({
-      title: '导出成功',
-      icon: 'success'
-    })
+    console.log('导出成功')
+    alert('导出成功')
   } catch (error) {
-    uni.showToast({
-      title: '导出失败',
-      icon: 'none'
-    })
+    console.error('导出失败:', error)
+    alert('导出失败')
   } finally {
     exporting.value = false
   }
@@ -821,6 +791,7 @@ function getStatusLabel(status: string): string {
         }
 
         .filter-picker {
+          position: relative;
           display: flex;
           justify-content: space-between;
           align-items: center;
@@ -838,6 +809,33 @@ function getStatusLabel(status: string): string {
           .picker-arrow {
             font-size: 12px;
             color: $text-color-secondary;
+          }
+        }
+        
+        .picker-options {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          z-index: 10;
+          background: white;
+          border: 1px solid $border-color;
+          border-top: none;
+          border-radius: 0 0 6px 6px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          max-height: 200px;
+          overflow-y: auto;
+          
+          .picker-option {
+            padding: 8px 16px;
+            font-size: 14px;
+            color: $text-color;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            
+            &:hover {
+              background-color: #f5f5f5;
+            }
           }
         }
       }
@@ -1176,6 +1174,172 @@ function getStatusLabel(status: string): string {
         width: 60px;
         text-align: center;
       }
+    }
+  }
+
+  // Modal styles
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: $text-color-secondary;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+  }
+
+  .modal-footer {
+    padding: 20px 24px;
+    border-top: 1px solid $border-color;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+
+    .btn {
+      padding: 8px 16px;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.btn-secondary {
+        background: white;
+        color: $text-color-secondary;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+      }
+
+      &.btn-primary {
+        background: $primary-color;
+        color: white;
+        border-color: $primary-color;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
+      }
+    }
+  }
+
+  .user-form,
+  .invite-form {
+    padding: 20px 24px;
+
+    .form-item {
+      position: relative;
+      margin-bottom: 20px;
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: $text-color;
+        font-weight: 500;
+      }
+
+      .form-input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        font-size: 14px;
+
+        &:focus {
+          border-color: $primary-color;
+          outline: none;
+        }
+      }
+
+      .form-picker {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover {
+          border-color: $primary-color;
+        }
+
+        .picker-arrow {
+          font-size: 12px;
+          color: $text-color-secondary;
+        }
+      }
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+
+      .checkbox-label {
+        font-size: 14px;
+        color: $text-color;
+      }
+    }
+
+    .form-note {
+      margin-top: 16px;
+      padding: 12px;
+      background: #f8f9fa;
+      border-radius: 6px;
+      font-size: 13px;
+      color: $text-color-secondary;
+      line-height: 1.5;
     }
   }
 }

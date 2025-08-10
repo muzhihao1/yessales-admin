@@ -1,45 +1,44 @@
 <template>
-  <view class="login-container">
-    <view class="login-wrapper">
-      <view class="login-header">
-        <image class="logo" src="/static/logo.png" mode="aspectFit" />
-        <text class="title">耶氏台球报价系统</text>
-        <text class="subtitle">管理员登录</text>
-      </view>
+  <div class="login-container">
+    <div class="login-wrapper">
+      <div class="login-header">
+        <img class="logo" src="/logo.svg" alt="耶氏台球" />
+        <h1 class="title">耶氏台球报价系统</h1>
+        <p class="subtitle">管理员登录</p>
+      </div>
 
       <form class="login-form" @submit.prevent="handleLogin">
-        <view class="form-item">
-          <view class="form-label">用户名</view>
+        <div class="form-item">
+          <label class="form-label">用户名</label>
           <input
             v-model="formData.username"
             class="form-input"
             type="text"
             placeholder="请输入用户名"
             :disabled="isLoading"
-            @confirm="handleLogin"
+            @keyup.enter="handleLogin"
           />
-        </view>
+        </div>
 
-        <view class="form-item">
-          <view class="form-label">密码</view>
+        <div class="form-item">
+          <label class="form-label">密码</label>
           <input
             v-model="formData.password"
             class="form-input"
             type="password"
             placeholder="请输入密码"
             :disabled="isLoading"
-            @confirm="handleLogin"
+            @keyup.enter="handleLogin"
           />
-        </view>
+        </div>
 
-        <view v-if="errorMessage" class="error-message">
+        <div v-if="errorMessage" class="error-message">
           {{ errorMessage }}
-        </view>
+        </div>
 
         <button
           class="login-button"
-          type="primary"
-          :loading="isLoading"
+          type="submit"
           :disabled="!canSubmit"
           @click="handleLogin"
         >
@@ -47,11 +46,11 @@
         </button>
       </form>
 
-      <view class="login-footer">
-        <text class="copyright">© 2024 耶氏台球斗南销售中心</text>
-      </view>
-    </view>
-  </view>
+      <div class="login-footer">
+        <p class="copyright">© 2024 耶氏台球斗南销售中心</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -108,15 +107,8 @@ const handleLogin = async () => {
       // 获取redirect参数，如果没有则默认跳转到仪表盘
       const redirectPath = (route.query.redirect as string) || '/admin/dashboard'
 
-      // 在标准web环境中使用vue-router
-      if (typeof window !== 'undefined' && window.location) {
-        router.push(redirectPath)
-      } else {
-        // 在UniApp环境中使用uni API
-        uni.reLaunch({
-          url: redirectPath.replace('/admin', '/pages/admin')
-        })
-      }
+      // 使用Vue Router进行导航
+      router.push(redirectPath)
     } else {
       errorMessage.value = result.error || '登录失败'
     }
@@ -136,15 +128,8 @@ onMounted(async () => {
   if (authStore.isAdmin) {
     console.log('✅ 已登录用户访问登录页，自动重定向')
 
-    // 在标准web环境中使用vue-router
-    if (typeof window !== 'undefined' && window.location) {
-      router.push('/admin/dashboard')
-    } else {
-      // 在UniApp环境中使用uni API
-      uni.reLaunch({
-        url: '/pages/admin/dashboard/index'
-      })
-    }
+    // 使用Vue Router进行导航
+    router.push('/admin/dashboard')
   }
 })
 </script>

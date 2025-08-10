@@ -1,8 +1,8 @@
 <template>
-  <view class="sales-container">
+  <div class="sales-container">
     <!-- Use the enhanced QuoteWizard component for better UX -->
     <QuoteWizard />
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">

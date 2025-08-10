@@ -1,73 +1,76 @@
 <template>
-  <view class="admin-layout">
+  <div class="admin-layout">
     <!-- 顶部导航栏 -->
-    <view class="admin-header">
-      <view class="header-left">
-        <view class="menu-toggle" @click="toggleSidebar">
-          <text class="iconfont icon-menu">☰</text>
-        </view>
-        <text class="header-title">耶氏台球报价系统</text>
-      </view>
+    <div class="admin-header">
+      <div class="header-left">
+        <div class="menu-toggle" @click="toggleSidebar">
+          <span class="iconfont icon-menu">☰</span>
+        </div>
+        <span class="header-title">耶氏台球报价系统</span>
+      </div>
 
-      <view class="header-right">
-        <view class="user-info" @click="showUserMenu = !showUserMenu">
-          <text class="user-name">{{ authStore.userName }}</text>
-          <text class="user-role">{{
+      <div class="header-right">
+        <div class="user-info" @click="showUserMenu = !showUserMenu">
+          <span class="user-name">{{ authStore.userName }}</span>
+          <span class="user-role">{{
             authStore.user?.role === 'admin' ? '管理员' : '销售员'
-          }}</text>
-        </view>
+          }}</span>
+        </div>
 
         <!-- 用户菜单 -->
-        <view v-if="showUserMenu" class="user-menu">
-          <view class="menu-item" @click="handleProfile">
-            <text class="iconfont icon-user">👤</text>
-            <text>个人信息</text>
-          </view>
-          <view class="menu-item" @click="handlePassword">
-            <text class="iconfont icon-lock">🔒</text>
-            <text>修改密码</text>
-          </view>
-          <view class="menu-divider"></view>
-          <view class="menu-item" @click="handleLogout">
-            <text class="iconfont icon-logout">🚪</text>
-            <text>退出登录</text>
-          </view>
-        </view>
-      </view>
-    </view>
+        <div v-if="showUserMenu" class="user-menu">
+          <div class="menu-item" @click="handleProfile">
+            <span class="iconfont icon-user">👤</span>
+            <span>个人信息</span>
+          </div>
+          <div class="menu-item" @click="handlePassword">
+            <span class="iconfont icon-lock">🔒</span>
+            <span>修改密码</span>
+          </div>
+          <div class="menu-divider"></div>
+          <div class="menu-item" @click="handleLogout">
+            <span class="iconfont icon-logout">🚪</span>
+            <span>退出登录</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 侧边栏 -->
-    <view :class="['admin-sidebar', { collapsed: sidebarCollapsed }]">
-      <scroll-view scroll-y class="sidebar-scroll">
-        <view class="sidebar-menu">
-          <view
+    <div :class="['admin-sidebar', { collapsed: sidebarCollapsed }]">
+      <div class="sidebar-scroll">
+        <div class="sidebar-menu">
+          <div
             v-for="item in menuItems"
             :key="item.path"
             :class="['menu-item', { active: currentPath === item.path }]"
             @click="navigateTo(item.path)"
           >
-            <text class="menu-icon">{{ item.icon }}</text>
-            <text v-if="!sidebarCollapsed" class="menu-text">{{ item.title }}</text>
-          </view>
-        </view>
-      </scroll-view>
-    </view>
+            <span class="menu-icon">{{ item.icon }}</span>
+            <span v-if="!sidebarCollapsed" class="menu-text">{{ item.title }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- 主要内容区域 -->
-    <view :class="['admin-content', { 'sidebar-collapsed': sidebarCollapsed }]">
+    <div :class="['admin-content', { 'sidebar-collapsed': sidebarCollapsed }]">
       <slot></slot>
-    </view>
+    </div>
 
     <!-- 遮罩层（移动端） -->
-    <view v-if="showSidebarMask" class="sidebar-mask" @click="sidebarCollapsed = true"></view>
-  </view>
+    <div v-if="showSidebarMask" class="sidebar-mask" @click="sidebarCollapsed = true"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+const router = useRouter()
+const route = useRoute()
 
 const sidebarCollapsed = ref(false)
 const showUserMenu = ref(false)
@@ -82,37 +85,37 @@ const menuItems = [
   {
     title: '仪表盘',
     icon: '📊',
-    path: '/pages/admin/dashboard/index'
+    path: '/admin/dashboard'
   },
   {
     title: '报价单管理',
     icon: '📋',
-    path: '/pages/admin/quotes/index'
+    path: '/admin/quotes'
   },
   {
     title: '产品管理',
     icon: '📦',
-    path: '/pages/admin/products/index'
+    path: '/admin/products'
   },
   {
     title: '客户管理',
     icon: '👥',
-    path: '/pages/admin/customers/index'
+    path: '/admin/customers'
   },
   {
     title: '用户管理',
     icon: '👤',
-    path: '/pages/admin/users/index'
+    path: '/admin/users'
   },
   {
     title: '操作日志',
     icon: '📝',
-    path: '/pages/admin/logs/index'
+    path: '/admin/logs'
   },
   {
     title: '系统设置',
     icon: '⚙️',
-    path: '/pages/admin/settings/index'
+    path: '/admin/settings'
   }
 ]
 
@@ -124,7 +127,8 @@ const navigateTo = (path: string) => {
   if (currentPath.value === path) return
 
   currentPath.value = path
-  uni.navigateTo({ url: path })
+  // 使用Vue Router替代uni.navigateTo
+  router.push(path)
 
   // 移动端导航后自动收起侧边栏
   if (isMobile.value) {
@@ -134,29 +138,28 @@ const navigateTo = (path: string) => {
 
 const handleProfile = () => {
   showUserMenu.value = false
-  uni.navigateTo({ url: '/pages/admin/profile/index' })
+  // 使用Vue Router替代uni.navigateTo
+  router.push('/admin/profile')
 }
 
 const handlePassword = () => {
   showUserMenu.value = false
-  uni.navigateTo({ url: '/pages/admin/password/index' })
+  // 使用Vue Router替代uni.navigateTo
+  router.push('/admin/password')
 }
 
-const handleLogout = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要退出登录吗？',
-    success: res => {
-      if (res.confirm) {
-        authStore.logout()
-      }
-    }
-  })
+const handleLogout = async () => {
+  // 使用Web标准confirm替代uni.showModal
+  const confirmed = confirm('确定要退出登录吗？')
+  if (confirmed) {
+    await authStore.logout()
+  }
 }
 
 const checkScreenSize = () => {
-  const systemInfo = uni.getSystemInfoSync()
-  isMobile.value = systemInfo.windowWidth < 768
+  // 使用标准Web API替代uni.getSystemInfoSync()
+  const windowWidth = window.innerWidth
+  isMobile.value = windowWidth < 768
 
   // 移动端默认收起侧边栏
   if (isMobile.value) {
@@ -174,22 +177,19 @@ const handleClickOutside = (e: any) => {
 onMounted(() => {
   checkScreenSize()
 
-  // 获取当前页面路径
-  const pages = getCurrentPages()
-  if (pages.length > 0) {
-    const currentPage = pages[pages.length - 1]
-    currentPath.value = '/' + currentPage.route
-  }
+  // 使用Vue Router获取当前路径
+  currentPath.value = route.path
 
-  // 监听窗口大小变化
-  uni.onWindowResize(checkScreenSize)
+  // 使用Web标准API监听窗口大小变化
+  window.addEventListener('resize', checkScreenSize)
 
   // 监听点击事件
   document.addEventListener('click', handleClickOutside)
 })
 
 onUnmounted(() => {
-  uni.offWindowResize(checkScreenSize)
+  // 移除窗口大小变化监听
+  window.removeEventListener('resize', checkScreenSize)
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
@@ -333,6 +333,7 @@ onUnmounted(() => {
 
   .sidebar-scroll {
     height: 100%;
+    overflow-y: auto;
   }
 
   .sidebar-menu {

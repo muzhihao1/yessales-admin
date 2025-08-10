@@ -1,5 +1,5 @@
 <template>
-  <view class="sales-form-item">
+  <div class="sales-form-item">
     <label v-if="label" class="sales-form-label" :class="{ required: required }">
       {{ label }}
     </label>
@@ -15,9 +15,9 @@
       @blur="handleBlur"
       @focus="handleFocus"
     />
-    <view v-if="error" class="sales-form-error">{{ error }}</view>
-    <view v-if="help && !error" class="sales-form-help">{{ help }}</view>
-  </view>
+    <div v-if="error" class="sales-form-error">{{ error }}</div>
+    <div v-if="help && !error" class="sales-form-help">{{ help }}</div>
+  </div>
 </template>
 
 <script setup lang="ts">

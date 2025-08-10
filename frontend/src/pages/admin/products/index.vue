@@ -1,79 +1,75 @@
 <template>
-  <view class="products-page">
+  <div class="products-page">
     <AdminLayout>
       <!-- 页面标题 -->
-      <view class="page-header">
-        <view class="header-left">
-          <text class="page-title">产品管理</text>
-          <text class="page-subtitle">管理台球桌、地毯和配件产品</text>
-        </view>
-        <view class="header-right">
+      <div class="page-header">
+        <div class="header-left">
+          <span class="page-title">产品管理</span>
+          <span class="page-subtitle">管理台球桌、地毯和配件产品</span>
+        </div>
+        <div class="header-right">
           <button class="admin-btn admin-btn-primary" @click="handleCreate">
-            <text>+ 添加产品</text>
+            <span>+ 添加产品</span>
           </button>
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- 搜索和筛选 -->
-      <view class="filter-section admin-card">
-        <view class="filter-row">
-          <view class="filter-item filter-search">
+      <div class="filter-section admin-card">
+        <div class="filter-row">
+          <div class="filter-item filter-search">
             <input
               v-model="searchKeyword"
               class="search-input"
               type="text"
               placeholder="搜索产品名称或型号"
-              @confirm="handleSearch"
+              @input="handleSearch"
             />
             <button class="search-btn" @click="handleSearch">搜索</button>
-          </view>
+          </div>
 
-          <view class="filter-item">
-            <picker
-              mode="selector"
-              :range="categoryOptions"
-              :value="categoryIndex"
+          <div class="filter-item">
+            <select
+              v-model="categoryIndex"
+              class="filter-select"
               @change="handleCategoryChange"
             >
-              <view class="filter-picker">
-                <text>{{ selectedCategory || '全部分类' }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
+              <option v-for="(option, index) in categoryOptions" :key="option" :value="index">
+                {{ option }}
+              </option>
+            </select>
+          </div>
 
-          <view class="filter-item">
-            <picker
-              mode="selector"
-              :range="statusOptions"
-              range-key="label"
-              :value="statusIndex"
+          <div class="filter-item">
+            <select
+              v-model="statusIndex"
+              class="filter-select"
               @change="handleStatusChange"
             >
-              <view class="filter-picker">
-                <text>{{ statusOptions[statusIndex].label }}</text>
-                <text class="picker-arrow">▼</text>
-              </view>
-            </picker>
-          </view>
+              <option v-for="(option, index) in statusOptions" :key="option.value" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
 
           <button class="filter-reset" @click="handleReset">重置</button>
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Enhanced Products Table -->
-      <view class="enhanced-table admin-card">
+      <div class="enhanced-table admin-card">
         <!-- Table Header -->
-        <view class="table-header">
-          <view class="header-row">
-            <view v-if="selectedItems.length > 0" class="header-selector">
-              <checkbox
+        <div class="table-header">
+          <div class="header-row">
+            <div v-if="selectedItems.length > 0" class="header-selector">
+              <input
+                type="checkbox"
                 :checked="selectAllChecked"
                 :indeterminate="selectAllIndeterminate"
                 @change="handleSelectAll"
               />
-            </view>
-            <view
+            </div>
+            <div
               v-for="column in tableColumns"
               :key="column.key"
               class="header-cell"
@@ -81,21 +77,21 @@
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
-              <text class="header-title">{{ column.title }}</text>
-              <text v-if="column.sortable" class="sort-icon">
+              <span class="header-title">{{ column.title }}</span>
+              <span v-if="column.sortable" class="sort-icon">
                 {{ getSortIcon(column.key) }}
-              </text>
-            </view>
-          </view>
-        </view>
+              </span>
+            </div>
+          </div>
+        </div>
 
         <!-- Table Body -->
-        <view class="table-body">
+        <div class="table-body">
           <!-- Loading State -->
           <TableLoadingSkeleton
             v-if="productsStore.isLoading"
             :rows="productsStore.pageSize"
-            :columns="tableColumns.length"
+            :columns="tableColumns"
             :has-selection="true"
             :show-header="false"
           />
@@ -103,7 +99,7 @@
           <!-- Data Rows -->
           <template v-else>
             <DataTableRow
-              v-for="product in productsStore.filteredProducts"
+              v-for="product in (productsStore.filteredProducts || [])"
               :key="product.id"
               :item="product"
               :columns="enhancedColumns"
@@ -117,43 +113,43 @@
             >
               <!-- Custom product image cell -->
               <template #cell-image="{ item }">
-                <image
+                <img
                   v-if="item.image_url"
                   :src="item.image_url"
-                  mode="aspectFill"
                   class="product-image"
+                  alt="产品图片"
                 />
-                <view v-else class="product-image-placeholder">
-                  <text>📷</text>
-                </view>
+                <div v-else class="product-image-placeholder">
+                  <span>📷</span>
+                </div>
               </template>
 
               <!-- Custom product info cell -->
               <template #cell-name="{ item }">
-                <view class="product-info">
-                  <text class="product-name">{{ item.name }}</text>
-                  <text class="product-model">型号: {{ item.model }}</text>
-                </view>
+                <div class="product-info">
+                  <span class="product-name">{{ item.name }}</span>
+                  <span class="product-model">型号: {{ item.model }}</span>
+                </div>
               </template>
             </DataTableRow>
           </template>
 
           <!-- Empty State -->
-          <view
-            v-if="!productsStore.isLoading && productsStore.filteredProducts.length === 0"
+          <div
+            v-if="!productsStore.isLoading && (!productsStore.filteredProducts || productsStore.filteredProducts.length === 0)"
             class="empty-state"
           >
-            <text class="empty-text">暂无产品数据</text>
+            <span class="empty-text">暂无产品数据</span>
             <button class="empty-action" @click="handleCreate">添加产品</button>
-          </view>
-        </view>
+          </div>
+        </div>
 
         <!-- Pagination -->
-        <view v-if="productsStore.total > productsStore.pageSize" class="table-pagination">
-          <view class="pagination-info">
+        <div v-if="productsStore.total > productsStore.pageSize" class="table-pagination">
+          <div class="pagination-info">
             共 {{ productsStore.total }} 条，第 {{ productsStore.currentPage }}/{{ totalPages }} 页
-          </view>
-          <view class="pagination-controls">
+          </div>
+          <div class="pagination-controls">
             <button
               class="pagination-btn"
               :disabled="productsStore.currentPage <= 1"
@@ -168,9 +164,9 @@
             >
               下一页
             </button>
-          </view>
-        </view>
-      </view>
+          </div>
+        </div>
+      </div>
 
       <!-- Batch Operations Bar -->
       <BatchOperationBar
@@ -187,9 +183,9 @@
       />
 
       <!-- 错误提示 -->
-      <view v-if="productsStore.error" class="error-message">
-        <text>{{ productsStore.error }}</text>
-      </view>
+      <div v-if="productsStore.error" class="error-message">
+        <span>{{ productsStore.error }}</span>
+      </div>
 
       <!-- Enhanced Confirmation Dialog -->
       <EnhancedConfirmationDialog
@@ -226,11 +222,12 @@
         @update:visible="val => (progressModal.visible = val)"
       />
     </AdminLayout>
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useProductsStore } from '@/stores/products'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
@@ -256,15 +253,15 @@ import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
  * @author Terminal 3 (Admin Frontend Team)
  */
 
+const router = useRouter()
 const productsStore = useProductsStore()
 
 // Enhanced table management
 const {
-  selectedItems,
-  selectAllChecked,
-  selectAllIndeterminate,
+  selectedIds: selectedItems,
+  selectAll: selectAllChecked,
+  indeterminate: selectAllIndeterminate,
   toggleSelection,
-  selectAll,
   clearSelection
 } = useTableEnhancements()
 
@@ -407,28 +404,20 @@ function handleRowSelect(selected: boolean, product: any) {
 }
 
 function handleRowClick(product: any) {
-  uni.navigateTo({
-    url: `/pages/admin/products/detail?id=${product.id}`
-  })
+  router.push(`/admin/products/detail?id=${product.id}`)
 }
 
 function handleRowAction(actionKey: string, product: any) {
   switch (actionKey) {
     case 'view':
-      uni.navigateTo({
-        url: `/pages/admin/products/detail?id=${product.id}`
-      })
+      router.push(`/admin/products/detail?id=${product.id}`)
       break
     case 'edit':
-      uni.navigateTo({
-        url: `/pages/admin/products/edit?id=${product.id}`
-      })
+      router.push(`/admin/products/edit?id=${product.id}`)
       break
     case 'images':
       // Navigate to image management page
-      uni.navigateTo({
-        url: `/pages/admin/products/images?id=${product.id}`
-      })
+      router.push(`/admin/products/images?id=${product.id}`)
       break
     case 'delete':
       handleDeleteProduct(product)
@@ -439,11 +428,12 @@ function handleRowAction(actionKey: string, product: any) {
 }
 
 function handleSelectAll(event: any) {
-  const checked = event.detail ? event.detail.value : event
-  selectAll(
-    productsStore.filteredProducts.map(p => p.id),
-    checked
-  )
+  const checked = event.detail ? event.detail.value : event.target.checked
+  if (checked) {
+    (productsStore.filteredProducts || []).forEach(p => toggleSelection(p.id))
+  } else {
+    clearSelection()
+  }
 }
 
 function handleSort(columnKey: string) {
@@ -587,17 +577,13 @@ async function handleBatchEnable() {
     batchProgress.value = 100
     batchProgressText.value = '启用完成'
 
-    uni.showToast({
-      title: `成功启用 ${selectedItems.value.length} 个产品`,
-      icon: 'success'
-    })
+    console.log(`成功启用 ${selectedItems.value.length} 个产品`)
+    alert(`成功启用 ${selectedItems.value.length} 个产品`)
 
     clearSelection()
   } catch (error) {
-    uni.showToast({
-      title: '批量启用失败',
-      icon: 'none'
-    })
+    console.error('批量启用失败')
+    alert('批量启用失败')
   } finally {
     setTimeout(() => {
       batchOperating.value = false
@@ -618,17 +604,13 @@ async function handleBatchDisable() {
     batchProgress.value = 100
     batchProgressText.value = '停用完成'
 
-    uni.showToast({
-      title: `成功停用 ${selectedItems.value.length} 个产品`,
-      icon: 'success'
-    })
+    console.log(`成功停用 ${selectedItems.value.length} 个产品`)
+    alert(`成功停用 ${selectedItems.value.length} 个产品`)
 
     clearSelection()
   } catch (error) {
-    uni.showToast({
-      title: '批量停用失败',
-      icon: 'none'
-    })
+    console.error('批量停用失败')
+    alert('批量停用失败')
   } finally {
     setTimeout(() => {
       batchOperating.value = false
@@ -760,22 +742,16 @@ async function handleDeleteProduct(product: any) {
       try {
         const result = await productsStore.deleteProduct(product.id)
         if (result.success) {
-          uni.showToast({
-            title: '产品删除成功',
-            icon: 'success'
-          })
+          console.log('产品删除成功')
+          alert('产品删除成功')
           confirmDialog.value.visible = false
         } else {
-          uni.showToast({
-            title: result.error || '删除失败',
-            icon: 'none'
-          })
+          console.error(result.error || '删除失败')
+          alert(result.error || '删除失败')
         }
       } catch (error) {
-        uni.showToast({
-          title: '删除操作失败',
-          icon: 'none'
-        })
+        console.error('删除操作失败')
+        alert('删除操作失败')
       }
     }
   }
@@ -808,9 +784,7 @@ const handleReset = () => {
 }
 
 const handleCreate = () => {
-  uni.navigateTo({
-    url: '/pages/admin/products/edit'
-  })
+  router.push('/admin/products/edit')
 }
 
 // Enhanced dialog event handlers
@@ -846,10 +820,8 @@ function handleProgressModalRetry() {
 function handleProgressModalDownload(link: any) {
   console.log('Download file:', link.name)
   // In real implementation, trigger actual download
-  uni.showToast({
-    title: '开始下载文件',
-    icon: 'success'
-  })
+  console.log('开始下载文件')
+  alert('开始下载文件')
 }
 
 // 页面加载

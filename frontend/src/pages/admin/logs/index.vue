@@ -1,36 +1,36 @@
 <template>
-  <view class="logs-page">
+  <div class="logs-page">
     <!-- Header with controls -->
-    <view class="page-header">
-      <view class="header-left">
-        <text class="page-title">操作日志</text>
-        <view class="stats-summary" v-if="statistics">
-          <text class="stat-item">总计: {{ statistics.total_entries }}</text>
-          <text class="stat-item error-count">错误: {{ statistics.entries_by_level.error + statistics.entries_by_level.critical }}</text>
-          <text class="stat-item security-count">安全事件: {{ statistics.security_events }}</text>
-        </view>
-      </view>
+    <div class="page-header">
+      <div class="header-left">
+        <span class="page-title">操作日志</span>
+        <div class="stats-summary" v-if="statistics">
+          <span class="stat-item">总计: {{ statistics.total_entries }}</span>
+          <span class="stat-item error-count">错误: {{ statistics.entries_by_level.error + statistics.entries_by_level.critical }}</span>
+          <span class="stat-item security-count">安全事件: {{ statistics.security_events }}</span>
+        </div>
+      </div>
       
-      <view class="header-actions">
+      <div class="header-actions">
         <!-- Real-time indicator -->
         <RealtimeIndicator />
         
         <!-- Auto-refresh toggle -->
-        <view 
+        <div 
           class="refresh-toggle"
           :class="{ active: autoRefresh }"
           @click="toggleAutoRefresh"
         >
-          <text class="refresh-icon">🔄</text>
-          <text class="refresh-text">{{ autoRefresh ? '自动刷新' : '手动刷新' }}</text>
-        </view>
+          <span class="refresh-icon">🔄</span>
+          <span class="refresh-text">{{ autoRefresh ? '自动刷新' : '手动刷新' }}</span>
+        </div>
         
         <!-- Export button -->
         <button 
           class="export-btn"
           @click="showExportModal"
         >
-          <text>导出日志</text>
+          <span>导出日志</span>
         </button>
         
         <!-- Refresh button -->
@@ -39,27 +39,27 @@
           @click="refreshLogs"
           :disabled="loading"
         >
-          <text>{{ loading ? '刷新中...' : '刷新' }}</text>
+          <span>{{ loading ? '刷新中...' : '刷新' }}</span>
         </button>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- Filters and search -->
-    <view class="filters-section">
-      <view class="filter-row">
+    <div class="filters-section">
+      <div class="filter-row">
         <!-- Search input -->
-        <view class="search-container">
+        <div class="search-container">
           <input 
             v-model="searchTerm"
             placeholder="搜索日志内容、用户、资源..."
             class="search-input"
             @input="onSearchInput"
           />
-          <text class="search-icon">🔍</text>
-        </view>
+          <span class="search-icon">🔍</span>
+        </div>
         
         <!-- Quick filters -->
-        <view class="quick-filters">
+        <div class="quick-filters">
           <button 
             v-for="level in quickLevelFilters"
             :key="level"
@@ -67,161 +67,177 @@
             :class="{ active: isLevelSelected(level) }"
             @click="toggleLevelFilter(level)"
           >
-            <view 
+            <div 
               class="filter-dot"
               :style="{ backgroundColor: getLogLevelColor(level) }"
-            ></view>
-            <text>{{ getLogLevelText(level) }}</text>
+            ></div>
+            <span>{{ getLogLevelText(level) }}</span>
           </button>
-        </view>
+        </div>
         
         <!-- Advanced filters toggle -->
         <button 
           class="advanced-toggle"
           @click="showAdvancedFilters = !showAdvancedFilters"
         >
-          <text>高级筛选</text>
-          <text class="toggle-icon">{{ showAdvancedFilters ? '▼' : '▶' }}</text>
+          <span>高级筛选</span>
+          <span class="toggle-icon">{{ showAdvancedFilters ? '▼' : '▶' }}</span>
         </button>
-      </view>
+      </div>
       
       <!-- Advanced filters -->
-      <view v-if="showAdvancedFilters" class="advanced-filters">
-        <view class="filter-group">
-          <text class="filter-label">分类</text>
-          <picker 
-            mode="multiSelector"
-            :range="categoryOptions"
-            range-key="label"
-            @change="onCategoryChange"
-          >
-            <view class="picker-display">
+      <div v-if="showAdvancedFilters" class="advanced-filters">
+        <div class="filter-group">
+          <span class="filter-label">分类</span>
+          <div class="filter-picker" @click="showCategorySelect = !showCategorySelect">
+            <span :class="['picker-text', { placeholder: !selectedCategories.length }]">
               {{ selectedCategories.length ? `已选择 ${selectedCategories.length} 个分类` : '选择分类' }}
-            </view>
-          </picker>
-        </view>
+            </span>
+            <span class="picker-arrow">▼</span>
+          </div>
+          <div v-if="showCategorySelect" class="picker-options">
+            <div 
+              v-for="(option, index) in categoryOptions" 
+              :key="index"
+              class="picker-option"
+              @click="toggleCategory(option.value, index)"
+            >
+              <input 
+                type="checkbox" 
+                :checked="selectedCategories.includes(option.value)"
+                @click.stop
+              />
+              <span>{{ option.label }}</span>
+            </div>
+          </div>
+        </div>
         
-        <view class="filter-group">
-          <text class="filter-label">操作</text>
-          <picker 
-            mode="multiSelector"
-            :range="actionOptions"
-            range-key="label"
-            @change="onActionChange"
-          >
-            <view class="picker-display">
+        <div class="filter-group">
+          <span class="filter-label">操作</span>
+          <div class="filter-picker" @click="showActionSelect = !showActionSelect">
+            <span :class="['picker-text', { placeholder: !selectedActions.length }]">
               {{ selectedActions.length ? `已选择 ${selectedActions.length} 个操作` : '选择操作' }}
-            </view>
-          </picker>
-        </view>
-        
-        <view class="filter-group">
-          <text class="filter-label">时间范围</text>
-          <view class="date-range">
-            <picker 
-              mode="date"
-              :value="dateFrom"
-              @change="onDateFromChange"
+            </span>
+            <span class="picker-arrow">▼</span>
+          </div>
+          <div v-if="showActionSelect" class="picker-options">
+            <div 
+              v-for="(option, index) in actionOptions" 
+              :key="index"
+              class="picker-option"
+              @click="toggleAction(option.value, index)"
             >
-              <view class="date-picker">
-                {{ dateFrom || '开始日期' }}
-              </view>
-            </picker>
-            <text class="date-separator">至</text>
-            <picker 
-              mode="date"
-              :value="dateTo"
-              @change="onDateToChange"
-            >
-              <view class="date-picker">
-                {{ dateTo || '结束日期' }}
-              </view>
-            </picker>
-          </view>
-        </view>
+              <input 
+                type="checkbox" 
+                :checked="selectedActions.includes(option.value)"
+                @click.stop
+              />
+              <span>{{ option.label }}</span>
+            </div>
+          </div>
+        </div>
         
-        <view class="filter-actions">
+        <div class="filter-group">
+          <span class="filter-label">时间范围</span>
+          <div class="date-range">
+            <input 
+              type="date" 
+              v-model="dateFrom"
+              class="date-picker"
+              placeholder="开始日期"
+            />
+            <span class="date-separator">至</span>
+            <input 
+              type="date" 
+              v-model="dateTo"
+              class="date-picker"
+              placeholder="结束日期"
+            />
+          </div>
+        </div>
+        
+        <div class="filter-actions">
           <button class="clear-btn" @click="clearAllFilters">
-            <text>清除筛选</text>
+            <span>清除筛选</span>
           </button>
           <button class="apply-btn" @click="applyFilters">
-            <text>应用筛选</text>
+            <span>应用筛选</span>
           </button>
-        </view>
-      </view>
-    </view>
+        </div>
+      </div>
+    </div>
 
     <!-- Statistics cards -->
-    <view v-if="statistics && !showAdvancedFilters" class="stats-cards">
-      <view class="stat-card">
-        <view class="stat-header">
-          <text class="stat-title">日志级别分布</text>
-        </view>
-        <view class="level-stats">
-          <view 
+    <div v-if="statistics && !showAdvancedFilters" class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">日志级别分布</span>
+        </div>
+        <div class="level-stats">
+          <div 
             v-for="(count, level) in statistics.entries_by_level"
             :key="level"
             class="level-stat"
           >
-            <view 
+            <div 
               class="level-dot"
               :style="{ backgroundColor: getLogLevelColor(level) }"
-            ></view>
-            <text class="level-name">{{ getLogLevelText(level) }}</text>
-            <text class="level-count">{{ count }}</text>
-          </view>
-        </view>
-      </view>
+            ></div>
+            <span class="level-name">{{ getLogLevelText(level) }}</span>
+            <span class="level-count">{{ count }}</span>
+          </div>
+        </div>
+      </div>
       
-      <view class="stat-card">
-        <view class="stat-header">
-          <text class="stat-title">活跃用户</text>
-        </view>
-        <view class="user-stats">
-          <view 
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">活跃用户</span>
+        </div>
+        <div class="user-stats">
+          <div 
             v-for="user in statistics.top_users.slice(0, 5)"
             :key="user.user_id"
             class="user-stat"
           >
-            <text class="user-name">{{ user.user_name }}</text>
-            <text class="user-count">{{ user.count }}</text>
-          </view>
-        </view>
-      </view>
+            <span class="user-name">{{ user.user_name }}</span>
+            <span class="user-count">{{ user.count }}</span>
+          </div>
+        </div>
+      </div>
       
-      <view class="stat-card">
-        <view class="stat-header">
-          <text class="stat-title">错误摘要</text>
-        </view>
-        <view class="error-stats">
-          <view 
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">错误摘要</span>
+        </div>
+        <div class="error-stats">
+          <div 
             v-for="error in statistics.error_summary"
             :key="error.error_code"
             class="error-stat"
           >
-            <text class="error-code">{{ error.error_code }}</text>
-            <text class="error-count">{{ error.count }}</text>
-            <text class="error-time">{{ formatTime(error.last_occurrence) }}</text>
-          </view>
-        </view>
-      </view>
-    </view>
+            <span class="error-code">{{ error.error_code }}</span>
+            <span class="error-count">{{ error.count }}</span>
+            <span class="error-time">{{ formatTime(error.last_occurrence) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Loading state -->
-    <view v-if="loading" class="loading-container">
-      <text class="loading-text">加载日志中...</text>
-    </view>
+    <div v-if="loading" class="loading-container">
+      <span class="loading-text">加载日志中...</span>
+    </div>
 
     <!-- Error state -->
-    <view v-if="error" class="error-container">
-      <text class="error-text">{{ error }}</text>
+    <div v-if="error" class="error-container">
+      <span class="error-text">{{ error }}</span>
       <button class="retry-btn" @click="refreshLogs">
-        <text>重试</text>
+        <span>重试</span>
       </button>
-    </view>
+    </div>
 
     <!-- Logs table -->
-    <view v-if="!loading && !error" class="logs-table-container">
+    <div v-if="!loading && !error" class="logs-table-container">
       <DataTable
         :columns="logColumns"
         :data="paginatedLogs"
@@ -231,67 +247,67 @@
       >
         <!-- Custom column renders -->
         <template #level="{ row }">
-          <view class="level-badge" :class="`level-${row.level}`">
-            <view 
+          <div class="level-badge" :class="`level-${row.level}`">
+            <div 
               class="level-dot"
               :style="{ backgroundColor: getLogLevelColor(row.level) }"
-            ></view>
-            <text>{{ getLogLevelText(row.level) }}</text>
-          </view>
+            ></div>
+            <span>{{ getLogLevelText(row.level) }}</span>
+          </div>
         </template>
         
         <template #user="{ row }">
-          <view v-if="row.user_name" class="user-info">
-            <text class="user-name">{{ row.user_name }}</text>
-            <text class="user-role">{{ row.user_role }}</text>
-          </view>
-          <text v-else class="system-user">系统</text>
+          <div v-if="row.user_name" class="user-info">
+            <span class="user-name">{{ row.user_name }}</span>
+            <span class="user-role">{{ row.user_role }}</span>
+          </div>
+          <span v-else class="system-user">系统</span>
         </template>
         
         <template #action="{ row }">
-          <view class="action-info">
-            <text class="category">{{ getCategoryText(row.category) }}</text>
-            <text class="action">{{ getActionText(row.action) }}</text>
-          </view>
+          <div class="action-info">
+            <span class="category">{{ getCategoryText(row.category) }}</span>
+            <span class="action">{{ getActionText(row.action) }}</span>
+          </div>
         </template>
         
         <template #resource="{ row }">
-          <view v-if="row.resource_name" class="resource-info">
-            <text class="resource-name">{{ row.resource_name }}</text>
-            <text class="resource-type">{{ row.resource_type }}</text>
-          </view>
-          <text v-else class="no-resource">-</text>
+          <div v-if="row.resource_name" class="resource-info">
+            <span class="resource-name">{{ row.resource_name }}</span>
+            <span class="resource-type">{{ row.resource_type }}</span>
+          </div>
+          <span v-else class="no-resource">-</span>
         </template>
         
         <template #timestamp="{ row }">
-          <view class="time-info">
-            <text class="time">{{ formatTime(row.timestamp) }}</text>
-            <text class="date">{{ formatDate(row.timestamp) }}</text>
-          </view>
+          <div class="time-info">
+            <span class="time">{{ formatTime(row.timestamp) }}</span>
+            <span class="date">{{ formatDate(row.timestamp) }}</span>
+          </div>
         </template>
         
         <template #actions="{ row }">
-          <view class="row-actions">
+          <div class="row-actions">
             <button 
               class="action-btn view"
               @click.stop="viewLogDetails(row)"
             >
-              <text>详情</text>
+              <span>详情</span>
             </button>
             <button 
               v-if="row.level === 'error' || row.level === 'critical'"
               class="action-btn resolve"
               @click.stop="resolveError(row)"
             >
-              <text>处理</text>
+              <span>处理</span>
             </button>
-          </view>
+          </div>
         </template>
       </DataTable>
-    </view>
+    </div>
 
     <!-- Pagination -->
-    <view v-if="!loading && hasLogs" class="pagination-container">
+    <div v-if="!loading && hasLogs" class="pagination-container">
       <DataPagination
         :current-page="currentPage"
         :total-pages="totalPages"
@@ -300,7 +316,7 @@
         @page-change="changePage"
         @page-size-change="changePageSize"
       />
-    </view>
+    </div>
 
     <!-- Log details modal -->
     <LogDetailsModal
@@ -318,11 +334,12 @@
       @close="closeExportModal"
       @export="exportLogs"
     />
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useLogsStore } from '@/stores/logs'
 import { usePermissions } from '@/composables/usePermissions'
 import DataTable from '@/components/common/DataTable.vue'
@@ -332,7 +349,8 @@ import LogDetailsModal from '@/components/admin/LogDetailsModal.vue'
 import LogExportModal from '@/components/admin/LogExportModal.vue'
 import type { LogAction, LogCategory, LogEntry, LogFilter, LogLevel } from '@/types/logs'
 
-// Store and permissions
+// Store, router and permissions
+const router = useRouter()
 const logsStore = useLogsStore()
 const { checkPermission } = usePermissions()
 
@@ -346,6 +364,10 @@ const selectedCategories = ref<LogCategory[]>([])
 const selectedActions = ref<LogAction[]>([])
 const dateFrom = ref('')
 const dateTo = ref('')
+
+// Custom dropdown states
+const showCategorySelect = ref(false)
+const showActionSelect = ref(false)
 
 // Quick filter levels
 const quickLevelFilters: LogLevel[] = ['critical', 'error', 'warn', 'info']
@@ -456,22 +478,20 @@ function onSearchInput() {
 
 let searchTimeout: NodeJS.Timeout | null = null
 
-function onCategoryChange(event: any) {
-  const indices = event.detail.value
-  selectedCategories.value = indices.map((i: number) => categoryOptions.value[i].value)
+function toggleCategory(value: LogCategory, index: number) {
+  if (selectedCategories.value.includes(value)) {
+    selectedCategories.value = selectedCategories.value.filter(cat => cat !== value)
+  } else {
+    selectedCategories.value.push(value)
+  }
 }
 
-function onActionChange(event: any) {
-  const indices = event.detail.value
-  selectedActions.value = indices.map((i: number) => actionOptions.value[i].value)
-}
-
-function onDateFromChange(event: any) {
-  dateFrom.value = event.detail.value
-}
-
-function onDateToChange(event: any) {
-  dateTo.value = event.detail.value
+function toggleAction(value: LogAction, index: number) {
+  if (selectedActions.value.includes(value)) {
+    selectedActions.value = selectedActions.value.filter(action => action !== value)
+  } else {
+    selectedActions.value.push(value)
+  }
 }
 
 function applyFilters() {
@@ -524,19 +544,11 @@ function closeDetailsModal() {
 }
 
 function resolveError(log: LogEntry) {
-  uni.showModal({
-    title: '处理错误',
-    content: '确认要将此错误标记为已处理吗？',
-    success: (res) => {
-      if (res.confirm) {
-        // Implementation for resolving error
-        uni.showToast({
-          title: '错误已标记为已处理',
-          icon: 'success'
-        })
-      }
-    }
-  })
+  if (confirm('确认要将此错误标记为已处理吗？')) {
+    // Implementation for resolving error
+    console.log('错误已标记为已处理')
+    alert('错误已标记为已处理')
+  }
 }
 
 function showExportModal() {
@@ -570,11 +582,9 @@ function formatDate(timestamp: string): string {
 onMounted(async () => {
   // Check permissions
   if (!checkPermission.canPerformAction('read', 'logs')) {
-    uni.showToast({
-      title: '权限不足',
-      icon: 'none'
-    })
-    uni.navigateBack()
+    console.warn('权限不足')
+    alert('权限不足')
+    router.back()
     return
   }
   
@@ -590,11 +600,6 @@ onUnmounted(() => {
   if (searchTimeout) {
     clearTimeout(searchTimeout)
   }
-})
-
-// Navigation title
-uni.setNavigationBarTitle({
-  title: '操作日志'
 })
 </script>
 
@@ -870,6 +875,70 @@ uni.setNavigationBarTitle({
         border: 1px solid $primary-color;
         background: $primary-color;
         color: white;
+      }
+    }
+    
+    // Custom dropdown styles
+    .filter-picker {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 12px;
+      border: 1px solid $border-color;
+      border-radius: $border-radius-sm;
+      background: $bg-color-white;
+      font-size: $font-size-small;
+      color: $text-color-secondary;
+      min-width: 150px;
+      cursor: pointer;
+      
+      &:hover {
+        border-color: $primary-color;
+      }
+      
+      .picker-text {
+        &.placeholder {
+          color: $text-color-placeholder;
+        }
+      }
+      
+      .picker-arrow {
+        font-size: 10px;
+      }
+    }
+    
+    .picker-options {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      background: white;
+      border: 1px solid $border-color;
+      border-top: none;
+      border-radius: 0 0 $border-radius-sm $border-radius-sm;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      
+      .picker-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        font-size: $font-size-small;
+        color: $text-color;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        
+        &:hover {
+          background-color: $bg-color;
+        }
+        
+        input[type="checkbox"] {
+          margin: 0;
+        }
       }
     }
   }

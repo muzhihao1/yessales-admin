@@ -1,38 +1,38 @@
 <template>
-  <view class="settings-page">
+  <div class="settings-page">
     <!-- Header with actions -->
-    <view class="page-header">
-      <view class="header-left">
-        <text class="page-title">系统设置</text>
-        <text class="page-subtitle">{{ categoryInfo.description }}</text>
-      </view>
+    <div class="page-header">
+      <div class="header-left">
+        <span class="page-title">系统设置</span>
+        <span class="page-subtitle">{{ categoryInfo.description }}</span>
+      </div>
 
-      <view class="header-actions">
+      <div class="header-actions">
         <!-- Real-time indicator -->
         <RealtimeIndicator />
 
         <!-- Import/Export actions -->
-        <view class="import-export-actions">
+        <div class="import-export-actions">
           <button class="action-btn export" @click="showExportModal">
-            <text class="btn-icon">📤</text>
-            <text>导出设置</text>
+            <span class="btn-icon">📤</span>
+            <span>导出设置</span>
           </button>
 
           <button class="action-btn import" @click="showImportModal">
-            <text class="btn-icon">📥</text>
-            <text>导入设置</text>
+            <span class="btn-icon">📥</span>
+            <span>导入设置</span>
           </button>
-        </view>
+        </div>
 
         <!-- Save actions -->
-        <view class="save-actions">
+        <div class="save-actions">
           <button
             class="action-btn reset"
             @click="resetCurrentCategory"
             :disabled="loading || saving"
           >
-            <text class="btn-icon">🔄</text>
-            <text>重置</text>
+            <span class="btn-icon">🔄</span>
+            <span>重置</span>
           </button>
 
           <button
@@ -40,67 +40,67 @@
             @click="saveCurrentSettings"
             :disabled="loading || saving || !hasUnsavedChanges"
           >
-            <text class="btn-icon">💾</text>
-            <text>{{ saving ? '保存中...' : '保存设置' }}</text>
+            <span class="btn-icon">💾</span>
+            <span>{{ saving ? '保存中...' : '保存设置' }}</span>
           </button>
-        </view>
-      </view>
-    </view>
+        </div>
+      </div>
+    </div>
 
     <!-- Settings navigation and content -->
-    <view class="settings-container">
+    <div class="settings-container">
       <!-- Category sidebar -->
-      <view class="settings-sidebar">
-        <view class="sidebar-header">
-          <text class="sidebar-title">设置分类</text>
-        </view>
+      <div class="settings-sidebar">
+        <div class="sidebar-header">
+          <span class="sidebar-title">设置分类</span>
+        </div>
 
-        <view class="category-list">
-          <view
+        <div class="category-list">
+          <div
             v-for="(info, category) in SETTINGS_CATEGORIES"
             :key="category"
             class="category-item"
             :class="{ active: currentCategory === category }"
             @click="selectCategory(category)"
           >
-            <view class="category-icon">
-              <text>{{ info.icon }}</text>
-            </view>
-            <view class="category-content">
-              <text class="category-title">{{ info.title }}</text>
-              <text class="category-desc">{{ info.description }}</text>
-            </view>
-            <view v-if="hasChangesInCategory(category)" class="category-indicator">
-              <text class="indicator-dot">●</text>
-            </view>
-          </view>
-        </view>
-      </view>
+            <div class="category-icon">
+              <span>{{ info.icon }}</span>
+            </div>
+            <div class="category-content">
+              <span class="category-title">{{ info.title }}</span>
+              <span class="category-desc">{{ info.description }}</span>
+            </div>
+            <div v-if="hasChangesInCategory(category)" class="category-indicator">
+              <span class="indicator-dot">●</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Settings content -->
-      <view class="settings-content">
+      <div class="settings-content">
         <!-- Loading state -->
-        <view v-if="loading" class="loading-container">
-          <text class="loading-text">加载设置中...</text>
-        </view>
+        <div v-if="loading" class="loading-container">
+          <span class="loading-text">加载设置中...</span>
+        </div>
 
         <!-- Error state -->
-        <view v-if="error" class="error-container">
-          <text class="error-text">{{ error }}</text>
+        <div v-if="error" class="error-container">
+          <span class="error-text">{{ error }}</span>
           <button class="retry-btn" @click="refreshSettings">
-            <text>重试</text>
+            <span>重试</span>
           </button>
-        </view>
+        </div>
 
         <!-- Settings form -->
-        <view v-if="!loading && !error" class="settings-form">
+        <div v-if="!loading && !error" class="settings-form">
           <!-- Category header -->
-          <view class="category-header">
-            <view class="category-info">
-              <text class="category-icon-large">{{ categoryInfo.icon }}</text>
-              <view class="category-text">
-                <view class="category-title-row">
-                  <text class="category-title">{{ categoryInfo.title }}</text>
+          <div class="category-header">
+            <div class="category-info">
+              <span class="category-icon-large">{{ categoryInfo.icon }}</span>
+              <div class="category-text">
+                <div class="category-title-row">
+                  <span class="category-title">{{ categoryInfo.title }}</span>
                   <SettingsHelpTooltip
                     :title="categoryInfo.title + ' 设置指南'"
                     :content="getCategoryHelpContent(currentCategory)"
@@ -114,88 +114,88 @@
                     @reset-default="resetCurrentCategory"
                     @apply-recommended="() => handleApplySuggestion('apply-recommended')"
                   />
-                </view>
-                <text class="category-description">{{ categoryInfo.description }}</text>
-              </view>
-            </view>
+                </div>
+                <span class="category-description">{{ categoryInfo.description }}</span>
+              </div>
+            </div>
 
-            <view class="category-actions">
+            <div class="category-actions">
               <button class="history-btn" @click="showChangeHistory">
-                <text class="btn-icon">📋</text>
-                <text>变更历史</text>
+                <span class="btn-icon">📋</span>
+                <span>变更历史</span>
               </button>
-            </view>
-          </view>
+            </div>
+          </div>
 
           <!-- Settings groups -->
-          <view class="settings-groups">
+          <div class="settings-groups">
             <!-- General Settings -->
-            <view v-if="currentCategory === 'general'" class="settings-group">
+            <div v-if="currentCategory === 'general'" class="settings-group">
               <GeneralSettings :settings="currentCategorySettings" @update="onSettingUpdate" />
-            </view>
+            </div>
 
             <!-- Business Rules -->
-            <view v-if="currentCategory === 'business'" class="settings-group">
+            <div v-if="currentCategory === 'business'" class="settings-group">
               <BusinessRulesSettings :settings="businessRules" @update="onBusinessRuleUpdate" />
-            </view>
+            </div>
 
             <!-- Security Settings -->
-            <view v-if="currentCategory === 'security'" class="settings-group">
+            <div v-if="currentCategory === 'security'" class="settings-group">
               <SecuritySettings :settings="securitySettings" @update="onSecuritySettingUpdate" />
-            </view>
+            </div>
 
             <!-- Notification Settings -->
-            <view v-if="currentCategory === 'notification'" class="settings-group">
+            <div v-if="currentCategory === 'notification'" class="settings-group">
               <NotificationSettings
                 :settings="notificationSettings"
                 @update="onNotificationSettingUpdate"
               />
-            </view>
+            </div>
 
             <!-- Integration Settings -->
-            <view v-if="currentCategory === 'integration'" class="settings-group">
+            <div v-if="currentCategory === 'integration'" class="settings-group">
               <IntegrationSettings
                 :settings="integrationSettings"
                 @update="onIntegrationSettingUpdate"
               />
-            </view>
+            </div>
 
             <!-- Appearance Settings -->
-            <view v-if="currentCategory === 'appearance'" class="settings-group">
+            <div v-if="currentCategory === 'appearance'" class="settings-group">
               <AppearanceSettings
                 :settings="appearanceSettings"
                 @update="onAppearanceSettingUpdate"
               />
-            </view>
+            </div>
 
             <!-- Backup Settings -->
-            <view v-if="currentCategory === 'backup'" class="settings-group">
+            <div v-if="currentCategory === 'backup'" class="settings-group">
               <BackupSettings :settings="backupSettings" @update="onBackupSettingUpdate" />
-            </view>
+            </div>
 
             <!-- Maintenance Settings -->
-            <view v-if="currentCategory === 'maintenance'" class="settings-group">
+            <div v-if="currentCategory === 'maintenance'" class="settings-group">
               <MaintenanceSettings
                 :settings="maintenanceSettings"
                 @update="onMaintenanceSettingUpdate"
               />
-            </view>
-          </view>
+            </div>
+          </div>
 
           <!-- Settings footer -->
-          <view class="settings-footer">
-            <view class="footer-info">
-              <text class="info-text"> 最后更新: {{ formatLastUpdate() }} </text>
-              <text v-if="hasUnsavedChanges" class="unsaved-indicator"> 有未保存的更改 </text>
-            </view>
+          <div class="settings-footer">
+            <div class="footer-info">
+              <span class="info-text"> 最后更新: {{ formatLastUpdate() }} </span>
+              <span v-if="hasUnsavedChanges" class="unsaved-indicator"> 有未保存的更改 </span>
+            </div>
 
-            <view class="footer-actions">
+            <div class="footer-actions">
               <button
                 class="footer-btn secondary"
                 @click="discardChanges"
                 :disabled="!hasUnsavedChanges"
               >
-                <text>取消更改</text>
+                <span>取消更改</span>
               </button>
 
               <button
@@ -203,13 +203,13 @@
                 @click="saveCurrentSettings"
                 :disabled="!hasUnsavedChanges || saving"
               >
-                <text>保存更改</text>
+                <span>保存更改</span>
               </button>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- UX Enhancement: Validation Feedback -->
     <SettingsValidationFeedback
@@ -263,11 +263,12 @@
       @confirm="onConfirmAction"
       @cancel="closeConfirmDialog"
     />
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 import { usePermissions } from '@/composables/usePermissions'
 import RealtimeIndicator from '@/components/admin/RealtimeIndicator.vue'
@@ -291,6 +292,7 @@ import { SETTINGS_CATEGORIES } from '@/types/settings'
 // Store and permissions
 const settingsStore = useSettingsStore()
 const { checkPermission } = usePermissions()
+const router = useRouter()
 
 // Extract store state and methods
 const {
@@ -508,10 +510,8 @@ async function handleExportSettings(categories: SettingsCategory[]) {
     // Simulate file download
     const filename = `settings_export_${new Date().toISOString().split('T')[0]}.json`
 
-    uni.showToast({
-      title: `设置已导出: ${filename}`,
-      icon: 'success'
-    })
+    console.log(`设置已导出: ${filename}`)
+    alert(`设置已导出: ${filename}`)
 
     console.log('Exported settings:', exportData)
   } catch (error) {
@@ -539,10 +539,8 @@ async function handleImportSettings(importData: SettingsExportData) {
       message += `, ${result.error_count} 项失败`
     }
 
-    uni.showToast({
-      title: message,
-      icon: result.success ? 'success' : 'none'
-    })
+    console.log(message)
+    alert(message)
 
     if (result.errors.length > 0) {
       console.error('Import errors:', result.errors)
@@ -692,20 +690,17 @@ function getCategoryRelatedSettings(
 
 // Watch for category changes
 watch(currentCategory, () => {
-  uni.setNavigationBarTitle({
-    title: `系统设置 - ${categoryInfo.value.title}`
-  })
+  // Update page title for web
+  document.title = `系统设置 - ${categoryInfo.value.title}`
 })
 
 // Lifecycle
 onMounted(async () => {
   // Check permissions
   if (!checkPermission.canPerformAction('read', 'settings')) {
-    uni.showToast({
-      title: '权限不足',
-      icon: 'none'
-    })
-    uni.navigateBack()
+    console.log('权限不足')
+    alert('权限不足')
+    router.back()
     return
   }
 

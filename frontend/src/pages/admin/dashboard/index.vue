@@ -1,123 +1,125 @@
 <template>
-  <view class="dashboard-page">
+  <div class="dashboard-page">
     <AdminLayout>
       <!-- 页面标题 -->
-      <view class="page-header">
-        <text class="page-title">仪表盘</text>
-        <text class="page-subtitle">欢迎回来，{{ authStore.adminUser?.name || '管理员' }}</text>
-      </view>
+      <div class="page-header">
+        <span class="page-title">仪表盘</span>
+        <span class="page-subtitle">欢迎回来，{{ authStore.adminUser?.name || '管理员' }}</span>
+      </div>
 
       <!-- 统计卡片 -->
-      <view class="stat-cards">
-        <view class="stat-card" v-for="stat in statistics" :key="stat.key">
-          <view class="stat-icon" :style="{ backgroundColor: stat.bgColor }">
-            <text :style="{ color: stat.color }">{{ stat.icon }}</text>
-          </view>
-          <view class="stat-content">
-            <text class="stat-value">{{ stat.value }}</text>
-            <text class="stat-label">{{ stat.label }}</text>
-          </view>
-          <view class="stat-trend" v-if="stat.trend">
-            <text :class="['trend-value', stat.trend > 0 ? 'up' : 'down']">
+      <div class="stat-cards">
+        <div class="stat-card" v-for="stat in statistics" :key="stat.key">
+          <div class="stat-icon" :style="{ backgroundColor: stat.bgColor }">
+            <span :style="{ color: stat.color }">{{ stat.icon }}</span>
+          </div>
+          <div class="stat-content">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-label">{{ stat.label }}</span>
+          </div>
+          <div class="stat-trend" v-if="stat.trend">
+            <span :class="['trend-value', stat.trend > 0 ? 'up' : 'down']">
               {{ stat.trend > 0 ? '+' : '' }}{{ stat.trend }}%
-            </text>
-            <text class="trend-label">较上月</text>
-          </view>
-        </view>
-      </view>
+            </span>
+            <span class="trend-label">较上月</span>
+          </div>
+        </div>
+      </div>
 
       <!-- 图表区域 -->
-      <view class="chart-section">
-        <view class="chart-card">
-          <view class="card-header">
-            <text class="card-title">销售趋势</text>
-            <view class="chart-tabs">
-              <text
+      <div class="chart-section">
+        <div class="chart-card">
+          <div class="card-header">
+            <span class="card-title">销售趋势</span>
+            <div class="chart-tabs">
+              <span
                 v-for="tab in chartTabs"
                 :key="tab.key"
                 :class="['tab-item', { active: activeChartTab === tab.key }]"
                 @click="activeChartTab = tab.key"
               >
                 {{ tab.label }}
-              </text>
-            </view>
-          </view>
-          <view class="chart-container">
+              </span>
+            </div>
+          </div>
+          <div class="chart-container">
             <!-- 这里将集成 ECharts 图表 -->
-            <view class="chart-placeholder">
-              <text>销售趋势图表</text>
-            </view>
-          </view>
-        </view>
-      </view>
+            <div class="chart-placeholder">
+              <span>销售趋势图表</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- 最近报价单 -->
-      <view class="recent-section">
-        <view class="section-header">
-          <text class="section-title">最近报价单</text>
-          <text class="section-link" @click="navigateToQuotes">查看全部 →</text>
-        </view>
+      <div class="recent-section">
+        <div class="section-header">
+          <span class="section-title">最近报价单</span>
+          <span class="section-link" @click="navigateToQuotes">查看全部 →</span>
+        </div>
 
-        <view class="quote-list">
-          <view v-if="recentQuotes.length === 0" class="empty-state">
-            <text class="empty-text">暂无报价单数据</text>
-          </view>
+        <div class="quote-list">
+          <div v-if="recentQuotes.length === 0" class="empty-state">
+            <span class="empty-text">暂无报价单数据</span>
+          </div>
 
-          <view v-else class="quote-table">
-            <view class="table-header">
-              <text class="col col-no">报价单号</text>
-              <text class="col col-customer">客户</text>
-              <text class="col col-amount">金额</text>
-              <text class="col col-status">状态</text>
-              <text class="col col-date">创建时间</text>
-              <text class="col col-action">操作</text>
-            </view>
+          <div v-else class="quote-table">
+            <div class="table-header">
+              <span class="col col-no">报价单号</span>
+              <span class="col col-customer">客户</span>
+              <span class="col col-amount">金额</span>
+              <span class="col col-status">状态</span>
+              <span class="col col-date">创建时间</span>
+              <span class="col col-action">操作</span>
+            </div>
 
-            <view v-for="quote in recentQuotes" :key="quote.id" class="table-row">
-              <text class="col col-no">{{ quote.quote_no }}</text>
-              <text class="col col-customer">{{ quote.customer?.name || '-' }}</text>
-              <text class="col col-amount">¥{{ quote.total_price.toFixed(2) }}</text>
-              <view class="col col-status">
-                <text :class="['status-badge', `status-${quote.status}`]">
+            <div v-for="quote in recentQuotes" :key="quote.id" class="table-row">
+              <span class="col col-no">{{ quote.quote_no }}</span>
+              <span class="col col-customer">{{ quote.customer?.name || '-' }}</span>
+              <span class="col col-amount">¥{{ quote.total_price.toFixed(2) }}</span>
+              <div class="col col-status">
+                <span :class="['status-badge', `status-${quote.status}`]">
                   {{ getStatusText(quote.status) }}
-                </text>
-              </view>
-              <text class="col col-date">{{ formatDate(quote.created_at) }}</text>
-              <view class="col col-action">
-                <text class="action-link" @click="viewQuote(quote.id)">查看</text>
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
+                </span>
+              </div>
+              <span class="col col-date">{{ formatDate(quote.created_at) }}</span>
+              <div class="col col-action">
+                <span class="action-link" @click="viewQuote(quote.id)">查看</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- 快捷操作 -->
-      <view class="quick-actions">
-        <text class="section-title">快捷操作</text>
-        <view class="action-grid">
-          <view
+      <div class="quick-actions">
+        <span class="section-title">快捷操作</span>
+        <div class="action-grid">
+          <div
             v-for="action in quickActions"
             :key="action.key"
             class="action-item"
             @click="handleQuickAction(action.key)"
           >
-            <view class="action-icon" :style="{ backgroundColor: action.bgColor }">
-              <text :style="{ color: action.color }">{{ action.icon }}</text>
-            </view>
-            <text class="action-label">{{ action.label }}</text>
-          </view>
-        </view>
-      </view>
+            <div class="action-icon" :style="{ backgroundColor: action.bgColor }">
+              <span :style="{ color: action.color }">{{ action.icon }}</span>
+            </div>
+            <span class="action-label">{{ action.label }}</span>
+          </div>
+        </div>
+      </div>
     </AdminLayout>
-  </view>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import AdminLayout from '@/components/admin/AdminLayout.vue'
 import { useAuthStore } from '@/composables/useAuth'
 
 const authStore = useAuthStore()
+const router = useRouter()
 
 const activeChartTab = ref('week')
 const recentQuotes = ref<any[]>([])
@@ -218,26 +220,27 @@ const formatDate = (dateStr: string) => {
 }
 
 const navigateToQuotes = () => {
-  uni.navigateTo({ url: '/pages/admin/quotes/index' })
+  router.push('/admin/quotes')
 }
 
 const viewQuote = (id: string) => {
-  uni.navigateTo({ url: `/pages/admin/quotes/detail?id=${id}` })
+  router.push(`/admin/quotes/detail?id=${id}`)
 }
 
 const handleQuickAction = (key: string) => {
   switch (key) {
     case 'new-quote':
-      uni.navigateTo({ url: '/pages/sales/quote/create' })
+      router.push('/sales/quote/create')
       break
     case 'add-product':
-      uni.navigateTo({ url: '/pages/admin/products/edit' })
+      router.push('/admin/products/edit')
       break
     case 'view-reports':
-      uni.navigateTo({ url: '/pages/admin/reports/index' })
+      router.push('/admin/reports')
       break
     case 'export-data':
-      uni.showToast({ title: '功能开发中', icon: 'none' })
+      console.log('功能开发中')
+      alert('功能开发中')
       break
   }
 }

@@ -1,27 +1,27 @@
 <template>
-  <view class="quote-detail-page">
+  <div class="quote-detail-page">
     <!-- Loading state -->
-    <view v-if="loading" class="loading-container">
-      <text class="loading-text">加载中...</text>
-    </view>
+    <div v-if="loading" class="loading-container">
+      <span class="loading-text">加载中...</span>
+    </div>
 
     <!-- Error state -->
-    <view v-else-if="error" class="error-container">
-      <text class="error-text">{{ error }}</text>
+    <div v-else-if="error" class="error-container">
+      <span class="error-text">{{ error }}</span>
       <button class="retry-btn" @click="loadQuote">重试</button>
-    </view>
+    </div>
 
     <!-- Quote details -->
-    <view v-else-if="quote" class="quote-content">
+    <div v-else-if="quote" class="quote-content">
       <!-- Header -->
-      <view class="detail-header">
-        <view class="header-info">
-          <text class="quote-number">{{ quote.quote_number }}</text>
-          <view :class="['status-badge', `status-${quote.status}`]">
-            <text>{{ getStatusLabel(quote.status) }}</text>
-          </view>
-        </view>
-        <view class="header-actions">
+      <div class="detail-header">
+        <div class="header-info">
+          <span class="quote-number">{{ quote.quote_number }}</span>
+          <div :class="['status-badge', `status-${quote.status}`]">
+            <span>{{ getStatusLabel(quote.status) }}</span>
+          </div>
+        </div>
+        <div class="header-actions">
           <button
             v-if="quote.status === 'submitted'"
             class="action-btn action-approve"
@@ -44,148 +44,153 @@
             编辑报价
           </button>
           <button class="action-btn action-print" @click="handlePrint">打印报价单</button>
-        </view>
-      </view>
+        </div>
+      </div>
 
       <!-- Customer Information -->
-      <view class="detail-section">
-        <text class="section-title">客户信息</text>
-        <view class="info-grid">
-          <view class="info-item">
-            <text class="info-label">客户姓名</text>
-            <text class="info-value">{{ quote.customer_name }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">联系电话</text>
-            <text class="info-value">{{ quote.customer_phone }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">电子邮箱</text>
-            <text class="info-value">{{ quote.customer_email || '-' }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">公司名称</text>
-            <text class="info-value">{{ quote.customer_company || '-' }}</text>
-          </view>
-          <view class="info-item">
-            <text class="info-label">送货地址</text>
-            <text class="info-value">{{ quote.delivery_address || '-' }}</text>
-          </view>
-        </view>
-      </view>
+      <div class="detail-section">
+        <span class="section-title">客户信息</span>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">客户姓名</span>
+            <span class="info-value">{{ quote.customer_name }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">联系电话</span>
+            <span class="info-value">{{ quote.customer_phone }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">电子邮箱</span>
+            <span class="info-value">{{ quote.customer_email || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">公司名称</span>
+            <span class="info-value">{{ quote.customer_company || '-' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">送货地址</span>
+            <span class="info-value">{{ quote.delivery_address || '-' }}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Product Items -->
-      <view class="detail-section">
-        <text class="section-title">产品明细</text>
-        <view class="products-table">
-          <view class="table-header">
-            <text class="col col-product">产品</text>
-            <text class="col col-quantity">数量</text>
-            <text class="col col-price">单价</text>
-            <text class="col col-subtotal">小计</text>
-          </view>
-          <view v-for="item in quote.items" :key="item.id" class="table-row">
-            <view class="col col-product">
-              <text class="product-name">{{ item.product_name }}</text>
-              <text class="product-sku">SKU: {{ item.product_sku }}</text>
-            </view>
-            <text class="col col-quantity">{{ item.quantity }}</text>
-            <text class="col col-price">¥{{ formatAmount(item.unit_price) }}</text>
-            <text class="col col-subtotal">¥{{ formatAmount(item.subtotal) }}</text>
-          </view>
-        </view>
-      </view>
+      <div class="detail-section">
+        <span class="section-title">产品明细</span>
+        <div class="products-table">
+          <div class="table-header">
+            <span class="col col-product">产品</span>
+            <span class="col col-quantity">数量</span>
+            <span class="col col-price">单价</span>
+            <span class="col col-subtotal">小计</span>
+          </div>
+          <div v-for="item in quote.items" :key="item.id" class="table-row">
+            <div class="col col-product">
+              <span class="product-name">{{ item.product_name }}</span>
+              <span class="product-sku">SKU: {{ item.product_sku }}</span>
+            </div>
+            <span class="col col-quantity">{{ item.quantity }}</span>
+            <span class="col col-price">¥{{ formatAmount(item.unit_price) }}</span>
+            <span class="col col-subtotal">¥{{ formatAmount(item.subtotal) }}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Summary -->
-      <view class="detail-section">
-        <view class="summary-grid">
-          <view class="summary-item">
-            <text class="summary-label">小计</text>
-            <text class="summary-value">¥{{ formatAmount(quote.subtotal) }}</text>
-          </view>
-          <view class="summary-item">
-            <text class="summary-label">税额 ({{ (quote.tax_rate * 100).toFixed(0) }}%)</text>
-            <text class="summary-value">¥{{ formatAmount(quote.tax_amount) }}</text>
-          </view>
-          <view class="summary-item summary-total">
-            <text class="summary-label">总计</text>
-            <text class="summary-value">¥{{ formatAmount(quote.total_amount) }}</text>
-          </view>
-        </view>
-      </view>
+      <div class="detail-section">
+        <div class="summary-grid">
+          <div class="summary-item">
+            <span class="summary-label">小计</span>
+            <span class="summary-value">¥{{ formatAmount(quote.subtotal) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="summary-label">税额 ({{ (quote.tax_rate * 100).toFixed(0) }}%)</span>
+            <span class="summary-value">¥{{ formatAmount(quote.tax_amount) }}</span>
+          </div>
+          <div class="summary-item summary-total">
+            <span class="summary-label">总计</span>
+            <span class="summary-value">¥{{ formatAmount(quote.total_amount) }}</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Notes -->
-      <view v-if="quote.notes" class="detail-section">
-        <text class="section-title">备注信息</text>
-        <text class="notes-content">{{ quote.notes }}</text>
-      </view>
+      <div v-if="quote.notes" class="detail-section">
+        <span class="section-title">备注信息</span>
+        <span class="notes-content">{{ quote.notes }}</span>
+      </div>
 
       <!-- Terms and Conditions -->
-      <view v-if="quote.terms_conditions" class="detail-section">
-        <text class="section-title">条款和条件</text>
-        <text class="terms-content">{{ quote.terms_conditions }}</text>
-      </view>
+      <div v-if="quote.terms_conditions" class="detail-section">
+        <span class="section-title">条款和条件</span>
+        <span class="terms-content">{{ quote.terms_conditions }}</span>
+      </div>
 
       <!-- Timeline -->
-      <view class="detail-section">
-        <text class="section-title">时间线</text>
-        <view class="timeline">
-          <view class="timeline-item">
-            <view class="timeline-dot"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">创建时间</text>
-              <text class="timeline-date">{{ formatDateTime(quote.created_at) }}</text>
-              <text class="timeline-user">{{ quote.created_by_name || '系统' }}</text>
-            </view>
-          </view>
-          <view v-if="quote.submitted_at" class="timeline-item">
-            <view class="timeline-dot"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">提交审批</text>
-              <text class="timeline-date">{{ formatDateTime(quote.submitted_at) }}</text>
-            </view>
-          </view>
-          <view v-if="quote.approved_at" class="timeline-item">
-            <view class="timeline-dot timeline-dot-success"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">批准通过</text>
-              <text class="timeline-date">{{ formatDateTime(quote.approved_at) }}</text>
-              <text class="timeline-user">{{ quote.approved_by_name || '系统' }}</text>
-            </view>
-          </view>
-          <view v-if="quote.rejected_at" class="timeline-item">
-            <view class="timeline-dot timeline-dot-danger"></view>
-            <view class="timeline-content">
-              <text class="timeline-title">拒绝审批</text>
-              <text class="timeline-date">{{ formatDateTime(quote.rejected_at) }}</text>
-              <text class="timeline-user">{{ quote.rejected_by_name || '系统' }}</text>
-              <text v-if="quote.rejection_reason" class="timeline-reason">
+      <div class="detail-section">
+        <span class="section-title">时间线</span>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">创建时间</span>
+              <span class="timeline-date">{{ formatDateTime(quote.created_at) }}</span>
+              <span class="timeline-user">{{ quote.created_by_name || '系统' }}</span>
+            </div>
+          </div>
+          <div v-if="quote.submitted_at" class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">提交审批</span>
+              <span class="timeline-date">{{ formatDateTime(quote.submitted_at) }}</span>
+            </div>
+          </div>
+          <div v-if="quote.approved_at" class="timeline-item">
+            <div class="timeline-dot timeline-dot-success"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">批准通过</span>
+              <span class="timeline-date">{{ formatDateTime(quote.approved_at) }}</span>
+              <span class="timeline-user">{{ quote.approved_by_name || '系统' }}</span>
+            </div>
+          </div>
+          <div v-if="quote.rejected_at" class="timeline-item">
+            <div class="timeline-dot timeline-dot-danger"></div>
+            <div class="timeline-content">
+              <span class="timeline-title">拒绝审批</span>
+              <span class="timeline-date">{{ formatDateTime(quote.rejected_at) }}</span>
+              <span class="timeline-user">{{ quote.rejected_by_name || '系统' }}</span>
+              <span v-if="quote.rejection_reason" class="timeline-reason">
                 原因：{{ quote.rejection_reason }}
-              </text>
-            </view>
-          </view>
-        </view>
-      </view>
-    </view>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Reject Modal -->
-    <modal
-      v-model:visible="showRejectModal"
-      title="拒绝报价单"
-      @confirm="confirmReject"
-      @cancel="cancelReject"
-    >
-      <view class="reject-modal">
-        <text class="modal-label">拒绝原因（可选）：</text>
-        <textarea
-          v-model="rejectReason"
-          class="reject-textarea"
-          placeholder="请输入拒绝原因..."
-          maxlength="200"
-        />
-      </view>
-    </modal>
-  </view>
+    <div v-if="showRejectModal" class="modal-overlay" @click.self="cancelReject">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>拒绝报价单</h3>
+          <button class="modal-close" @click="cancelReject">&times;</button>
+        </div>
+        <div class="reject-modal">
+          <span class="modal-label">拒绝原因（可选）：</span>
+          <textarea
+            v-model="rejectReason"
+            class="reject-textarea"
+            placeholder="请输入拒绝原因..."
+            maxlength="200"
+          />
+        </div>
+        <div class="modal-footer">
+          <button class="modal-btn modal-cancel" @click="cancelReject">取消</button>
+          <button class="modal-btn modal-confirm" @click="confirmReject">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -240,36 +245,24 @@ async function loadQuote(id?: string) {
 // Handle actions
 function handleEdit() {
   if (!quote.value) return
-  uni.navigateTo({
-    url: `/pages/admin/quotes/edit?id=${quote.value.id}`
-  })
+  router.push(`/admin/quotes/edit?id=${quote.value.id}`)
 }
 
 async function handleApprove() {
   if (!quote.value) return
 
-  uni.showModal({
-    title: '确认批准',
-    content: `确定要批准报价单 ${quote.value.quote_number} 吗？`,
-    success: async res => {
-      if (res.confirm) {
-        try {
-          await quotesStore.approveQuote(quote.value!.id)
-          uni.showToast({
-            title: '批准成功',
-            icon: 'success'
-          })
-          // Reload quote to get updated status
-          loadQuote()
-        } catch (error) {
-          uni.showToast({
-            title: '批准失败',
-            icon: 'none'
-          })
-        }
-      }
+  if (confirm(`确定要批准报价单 ${quote.value.quote_number} 吗？`)) {
+    try {
+      await quotesStore.approveQuote(quote.value!.id)
+      console.log('批准成功')
+      alert('批准成功')
+      // Reload quote to get updated status
+      loadQuote()
+    } catch (error) {
+      console.error('批准失败:', error)
+      alert('批准失败')
     }
-  })
+  }
 }
 
 function handleReject() {
@@ -282,18 +275,14 @@ async function confirmReject() {
 
   try {
     await quotesStore.rejectQuote(quote.value.id, rejectReason.value)
-    uni.showToast({
-      title: '拒绝成功',
-      icon: 'success'
-    })
+    console.log('拒绝成功')
+    alert('拒绝成功')
     showRejectModal.value = false
     // Reload quote to get updated status
     loadQuote()
   } catch (error) {
-    uni.showToast({
-      title: '拒绝失败',
-      icon: 'none'
-    })
+    console.error('拒绝失败:', error)
+    alert('拒绝失败')
   }
 }
 
@@ -304,10 +293,8 @@ function cancelReject() {
 
 function handlePrint() {
   // TODO: Implement print functionality
-  uni.showToast({
-    title: '打印功能开发中',
-    icon: 'none'
-  })
+  console.log('打印功能开发中')
+  alert('打印功能开发中')
 }
 
 // Utility functions
@@ -698,9 +685,101 @@ function getStatusLabel(status: string): string {
     }
   }
 
+  // Modal styles
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 0;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid $border-color;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: $text-color-secondary;
+      cursor: pointer;
+      padding: 0;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: $text-color;
+      }
+    }
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 20px 24px;
+    border-top: 1px solid $border-color;
+
+    .modal-btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+
+      &.modal-cancel {
+        background: white;
+        color: $text-color-secondary;
+        border: 1px solid $border-color;
+
+        &:hover {
+          background: #f5f5f5;
+        }
+      }
+
+      &.modal-confirm {
+        background: $primary-color;
+        color: white;
+        border: 1px solid $primary-color;
+
+        &:hover {
+          background: darken($primary-color, 10%);
+        }
+      }
+    }
+  }
+
   // Reject modal
   .reject-modal {
-    padding: 20px 0;
 
     .modal-label {
       display: block;

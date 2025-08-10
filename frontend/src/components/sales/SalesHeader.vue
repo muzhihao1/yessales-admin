@@ -1,28 +1,29 @@
 <template>
-  <view class="sales-header">
-    <view class="sales-header-content">
-      <view class="sales-header-left" @click="handleBack">
-        <text v-if="showBack" class="sales-header-back-icon">‹</text>
+  <div class="sales-header">
+    <div class="sales-header-content">
+      <div class="sales-header-left" @click="handleBack">
+        <span v-if="showBack" class="sales-header-back-icon">‹</span>
         <slot name="left"></slot>
-      </view>
+      </div>
 
-      <view class="sales-header-center">
-        <text class="sales-header-title">{{ title }}</text>
+      <div class="sales-header-center">
+        <span class="sales-header-title">{{ title }}</span>
         <slot name="center"></slot>
-      </view>
+      </div>
 
-      <view class="sales-header-right">
+      <div class="sales-header-right">
         <slot name="right"></slot>
-      </view>
-    </view>
+      </div>
+    </div>
 
     <!-- 占位元素，防止内容被固定头部遮挡 -->
-    <view v-if="fixed" class="sales-header-placeholder"></view>
-  </view>
+    <div v-if="fixed" class="sales-header-placeholder"></div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { defineEmits, defineProps } from 'vue'
+import { useRouter } from 'vue-router'
 
 interface Props {
   title?: string
@@ -44,17 +45,17 @@ const emit = defineEmits<{
   back: []
 }>()
 
+const router = useRouter()
+
 const handleBack = () => {
   if (props.showBack) {
-    uni.navigateBack({
-      delta: 1,
-      fail: () => {
-        // 如果无法返回，则跳转到首页
-        uni.switchTab({
-          url: '/pages/sales/index'
-        })
-      }
-    })
+    // Try to go back in history
+    if (window.history.length > 1) {
+      router.back()
+    } else {
+      // If no history, navigate to sales home
+      router.replace('/sales')
+    }
     emit('back')
   }
 }
@@ -116,8 +117,7 @@ const handleBack = () => {
   }
 }
 
-// H5 平台不需要适配状态栏
-/* #ifdef H5 */
+// Web platform - no need for status bar adaptation
 .sales-header {
   &-content {
     padding-top: 0;
@@ -129,5 +129,4 @@ const handleBack = () => {
     height: 44px;
   }
 }
-/* #endif */
 </style>

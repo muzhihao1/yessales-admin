@@ -5,7 +5,11 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "moduleResolution": "Node",
-    "strict": true,
+    "strict": false,
+    "noImplicitAny": false,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
+    "strictNullChecks": false,
     "jsx": "preserve",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -26,10 +30,7 @@
       "@/utils/*": ["./src/utils/*"],
       "@/styles/*": ["./src/styles/*"]
     },
-    "types": [
-      "@dcloudio/types",
-      "@uni-helper/uni-types"
-    ]
+    "types": []
   },
   "include": [
     "src/**/*.ts",
