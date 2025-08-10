@@ -570,7 +570,7 @@ onMounted(() => {
 // Price Sticky
 .price-sticky {
   position: fixed;
-  top: calc(44px + var(--status-bar-height, 0) + 80px);
+  top: 120px; /* Fixed positioning for Web environment */
   right: $spacing-base;
   background-color: $primary-color;
   color: white;

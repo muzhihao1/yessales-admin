@@ -117,6 +117,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { toast, navigation } from '@/utils/platform-adapter'
 
 const router = useRouter()
 const recentQuotes = ref<any[]>([])
@@ -129,9 +130,7 @@ function createQuote() {
   if (typeof window !== 'undefined' && window.location) {
     router.push('/sales/quote/create')
   } else {
-    uni.navigateTo({
-      url: '/pages/sales/quote/create'
-    })
+    navigation.navigateTo('/pages/sales/quote/create')
   }
 }
 
@@ -142,9 +141,7 @@ function viewHistory() {
   if (typeof window !== 'undefined' && window.location) {
     router.push('/sales/history')
   } else {
-    uni.navigateTo({
-      url: '/pages/sales/history/index'
-    })
+    navigation.navigateTo('/pages/sales/history/index')
   }
 }
 
@@ -152,37 +149,25 @@ function viewHistory() {
 function quickProduct() {
   console.log('🎱 产品目录')
   // TODO: 实现产品目录功能
-  uni.showToast({
-    title: '产品目录功能开发中',
-    icon: 'none'
-  })
+  toast.show('产品目录功能开发中', 'none')
 }
 
 function quickCustomer() {
   console.log('👤 客户信息')
   // TODO: 实现客户信息功能
-  uni.showToast({
-    title: '客户信息功能开发中',
-    icon: 'none'
-  })
+  toast.show('客户信息功能开发中', 'none')
 }
 
 function quickCalculator() {
   console.log('🧮 价格计算')
   // TODO: 实现价格计算器
-  uni.showToast({
-    title: '价格计算功能开发中',
-    icon: 'none'
-  })
+  toast.show('价格计算功能开发中', 'none')
 }
 
 function quickContact() {
   console.log('📞 联系我们')
   // TODO: 实现联系功能
-  uni.showToast({
-    title: '联系功能开发中',
-    icon: 'none'
-  })
+  toast.show('联系功能开发中', 'none')
 }
 
 function viewQuoteDetail(id: string) {
@@ -192,9 +177,7 @@ function viewQuoteDetail(id: string) {
   if (typeof window !== 'undefined' && window.location) {
     router.push(`/sales/quote/preview?id=${id}`)
   } else {
-    uni.navigateTo({
-      url: `/pages/sales/quote/preview?id=${id}`
-    })
+    navigation.navigateTo(`/pages/sales/quote/preview?id=${id}`)
   }
 }
 

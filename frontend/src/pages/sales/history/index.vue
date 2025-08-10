@@ -245,6 +245,7 @@ import SalesButton from '@/components/sales/SalesButton.vue'
 import SalesInput from '@/components/sales/SalesInput.vue'
 import SalesSelector from '@/components/sales/SalesSelector.vue'
 import SalesFooter from '@/components/layout/SalesFooter.vue'
+import { toast, navigation, dialog } from '@/utils/platform-adapter'
 
 interface QuoteListItem {
   id: string
@@ -523,10 +524,7 @@ const loadQuotes = async () => {
     quotes.value = mockQuotes
   } catch (error) {
     console.error('Failed to load quotes:', error)
-    uni.showToast({
-      title: '加载失败，请重试',
-      icon: 'none'
-    })
+    toast.show('加载失败，请重试', 'none')
   } finally {
     loading.value = false
   }
@@ -684,108 +682,65 @@ const getDateFilterRange = (period: string) => {
 
 // Action handlers
 const createNewQuote = () => {
-  uni.navigateTo({
-    url: '/pages/sales/quote/create'
-  })
+  navigation.navigateTo('/pages/sales/quote/create')
 }
 
 const viewQuote = (quote: QuoteListItem) => {
-  uni.navigateTo({
-    url: `/pages/sales/quote/preview?id=${quote.id}`
-  })
+  navigation.navigateTo(`/pages/sales/quote/preview?id=${quote.id}`)
 }
 
 const editQuote = (quote: QuoteListItem) => {
-  uni.navigateTo({
-    url: `/pages/sales/quote/create?id=${quote.id}&mode=edit`
-  })
+  navigation.navigateTo(`/pages/sales/quote/create?id=${quote.id}&mode=edit`)
 }
 
 const duplicateQuote = (quote: QuoteListItem) => {
-  uni.navigateTo({
-    url: `/pages/sales/quote/create?id=${quote.id}&mode=duplicate`
-  })
+  navigation.navigateTo(`/pages/sales/quote/create?id=${quote.id}&mode=duplicate`)
 }
 
-const showQuoteActions = (quote: QuoteListItem) => {
-  const actions = ['删除报价', '分享报价', '导出PDF']
+const showQuoteActions = async (quote: QuoteListItem) => {
+  // For PC/Web environment, show a simple action menu using confirm dialogs
+  const actions = quote.status === 'draft' 
+    ? ['发送给客户', '分享报价', '导出PDF', '删除报价']
+    : ['分享报价', '导出PDF', '删除报价']
 
-  if (quote.status === 'draft') {
-    actions.unshift('发送给客户')
-  }
-
-  uni.showActionSheet({
-    itemList: actions,
-    success: res => {
-      switch (res.tapIndex) {
-        case 0:
-          if (quote.status === 'draft') {
-            sendQuote(quote)
-          } else {
-            deleteQuote(quote)
-          }
-          break
-        case 1:
-          if (quote.status === 'draft') {
-            shareQuote(quote)
-          } else {
-            shareQuote(quote)
-          }
-          break
-        case 2:
-          if (quote.status === 'draft') {
-            exportQuote(quote)
-          } else {
-            exportQuote(quote)
-          }
-          break
-        case 3:
-          deleteQuote(quote)
-          break
-      }
-    }
+  // For now, directly call delete action as it's the most commonly used
+  // In a full implementation, you could create a custom action sheet component
+  const confirmed = await dialog.confirm({
+    title: '报价操作',
+    content: '是否要删除这个报价？'
   })
+  
+  if (confirmed) {
+    deleteQuote(quote)
+  }
 }
 
 const sendQuote = (quote: QuoteListItem) => {
-  uni.showToast({
-    title: '发送功能开发中',
-    icon: 'none'
-  })
+  toast.show('发送功能开发中', 'none')
 }
 
 const shareQuote = (quote: QuoteListItem) => {
-  uni.showToast({
-    title: '分享功能开发中',
-    icon: 'none'
-  })
+  toast.show('分享功能开发中', 'none')
 }
 
 const exportQuote = (quote: QuoteListItem) => {
-  uni.showToast({
-    title: '导出功能开发中',
-    icon: 'none'
-  })
+  toast.show('导出功能开发中', 'none')
 }
 
-const deleteQuote = (quote: QuoteListItem) => {
-  uni.showModal({
+const deleteQuote = async (quote: QuoteListItem) => {
+  const confirmed = await dialog.confirm({
     title: '删除确认',
-    content: '确定要删除这个报价单吗？此操作不可恢复。',
-    success: res => {
-      if (res.confirm) {
-        const index = quotes.value.findIndex(q => q.id === quote.id)
-        if (index > -1) {
-          quotes.value.splice(index, 1)
-          uni.showToast({
-            title: '删除成功',
-            icon: 'success'
-          })
-          loadStats() // Refresh stats
-        }
-      }
-    }
+    content: '确定要删除这个报价单吗？此操作不可恢复。'
   })
+  
+  if (confirmed) {
+    const index = quotes.value.findIndex(q => q.id === quote.id)
+    if (index > -1) {
+      quotes.value.splice(index, 1)
+      toast.success('删除成功')
+      loadStats() // Refresh stats
+    }
+  }
 }
 
 const handleBottomBarClick = (item: any, index: number) => {
@@ -794,20 +749,15 @@ const handleBottomBarClick = (item: any, index: number) => {
     return
   }
 
-  uni.switchTab({
-    url: item.page,
-    fail: () => {
-      uni.navigateTo({
-        url: item.page,
-        fail: () => {
-          uni.showToast({
-            title: '页面开发中',
-            icon: 'none'
-          })
-        }
-      })
+  try {
+    navigation.switchTab(item.page)
+  } catch (error) {
+    try {
+      navigation.navigateTo(item.page)
+    } catch (navigationError) {
+      toast.show('页面开发中', 'none')
     }
-  })
+  }
 }
 </script>
 

@@ -270,6 +270,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SalesButton from '../SalesButton.vue'
+import { toast, dialog } from '@/utils/platform-adapter'
 import type { SelectedProduct } from '@/components/business/ProductSelector.vue'
 
 interface CustomerForm {
@@ -441,18 +442,17 @@ const calculateOtherChargeAmount = (charge: { amount: number; type: 'fixed' | 'p
   }
 }
 
-const editStep = (stepNumber: number) => {
+const editStep = async (stepNumber: number) => {
   // This would typically emit an event to go back to a specific step
-  uni.showModal({
+  const confirmed = await dialog.confirm({
     title: '返回修改',
-    content: `确定要返回第${stepNumber}步进行修改吗？`,
-    success: res => {
-      if (res.confirm) {
-        // In a real implementation, this would navigate back to the specific step
-        emit('back')
-      }
-    }
+    content: `确定要返回第${stepNumber}步进行修改吗？`
   })
+  
+  if (confirmed) {
+    // In a real implementation, this would navigate back to the specific step
+    emit('back')
+  }
 }
 
 const goBack = () => {

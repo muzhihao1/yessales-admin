@@ -265,6 +265,7 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref, watch } from 'vue'
 import SalesButton from '../SalesButton.vue'
+import { toast } from '@/utils/platform-adapter'
 import type { SelectedProduct } from '@/components/business/ProductSelector.vue'
 import type { Category, Product } from '@/types/api'
 
@@ -448,10 +449,7 @@ const getSelectedQuantity = (productId: string) => {
 
 const quickAddProduct = (product: Product) => {
   if (isProductDisabled(product.id)) {
-    uni.showToast({
-      title: `最多选择${props.maxSelection}种产品`,
-      icon: 'none'
-    })
+    toast.show(`最多选择${props.maxSelection}种产品`, 'none')
     return
   }
 
@@ -472,19 +470,12 @@ const quickAddProduct = (product: Product) => {
   localSelectedProducts.value.push(newItem)
   emitUpdate()
 
-  uni.showToast({
-    title: '已添加到选择',
-    icon: 'success',
-    duration: 1000
-  })
+  toast.show('已添加到选择', 'success', 1000)
 }
 
 const handleProductSelect = (product: Product) => {
   if (isProductDisabled(product.id)) {
-    uni.showToast({
-      title: `最多选择${props.maxSelection}种产品`,
-      icon: 'none'
-    })
+    toast.show(`最多选择${props.maxSelection}种产品`, 'none')
     return
   }
 
@@ -552,10 +543,7 @@ const confirmSkuSelection = () => {
   emitUpdate()
   closeSkuModal()
 
-  uni.showToast({
-    title: editingIndex.value !== -1 ? '已更新选择' : '已添加到选择',
-    icon: 'success'
-  })
+  toast.success(editingIndex.value !== -1 ? '已更新选择' : '已添加到选择')
 }
 
 const removeSelectedItem = (index: number) => {
@@ -579,10 +567,7 @@ const goBack = () => {
 
 const handleNext = () => {
   if (localSelectedProducts.value.length === 0) {
-    uni.showToast({
-      title: '请选择至少一个产品',
-      icon: 'none'
-    })
+    toast.show('请选择至少一个产品', 'none')
     return
   }
 

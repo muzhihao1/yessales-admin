@@ -4,54 +4,65 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-YesSales (耶氏台球斗南销售中心报价系统) is a comprehensive quotation management system for a billiards sales center. The system consists of multiple frontends (sales and admin) built with Vue 3 + UniApp and a Supabase backend.
+YesSales (耶氏台球斗南销售中心报价系统) is a comprehensive quotation management system for a billiards sales center. The system consists of a modern web application built with Vue 3 + PWA capabilities and a Supabase backend.
 
 ## Architecture
 
-### Multi-Terminal System
-- **Terminal 1**: Backend (Supabase PostgreSQL + Edge Functions)
-- **Terminal 2**: Sales Frontend (UniApp H5/WeChat Mini Program) - In Development
-- **Terminal 3**: Admin Frontend (UniApp H5/Web) - Primary Focus
+### Modern Web Application Architecture
+- **Backend**: Supabase (PostgreSQL + Edge Functions + Storage + Auth)
+- **Frontend**: Vue 3 + PWA Web Application with responsive design
+- **Deployment**: Static web hosting with progressive enhancement
 
 ### Tech Stack
-- **Frontend**: Vue 3 + TypeScript + UniApp + Pinia
+- **Frontend**: Vue 3 + TypeScript + Pinia + Element Plus/Naive UI
+- **PWA Features**: Service Workers, App Manifest, Offline Support
+- **Styling**: Modern CSS + Responsive Design (Mobile-first)
 - **Backend**: Supabase (PostgreSQL + Edge Functions + Storage + Auth)
-- **Build Tools**: Vite + TypeScript + ESLint + Prettier
-- **Deployment**: Production scripts with automated CI/CD workflows
+- **Build Tools**: Vite + TypeScript + ESLint + Prettier + PWA Plugin
+- **Deployment**: Static hosting (Netlify/Vercel/CDN) with automated CI/CD
 
 ## Directory Structure
 
 ```
 /
-├── frontend/          # Terminal 3 - Admin interface (Vue3 + UniApp)
-├── backend/           # Terminal 1 - Supabase backend
-│   ├── supabase/     # Database migrations, functions, config
-│   ├── scripts/      # Database and backup scripts
-│   └── docs/         # Backend documentation
-├── shared/            # Shared types, API clients, mock data
-├── docs/              # Project documentation
-└── supabase/          # Additional Supabase functions
+├── frontend/          # Vue 3 + PWA Web Application
+│   ├── src/
+│   │   ├── components/    # Reusable Vue components
+│   │   ├── views/        # Page components  
+│   │   ├── router/       # Vue Router configuration
+│   │   ├── stores/       # Pinia state management
+│   │   ├── api/          # API client methods
+│   │   ├── utils/        # Utility functions
+│   │   └── styles/       # Global styles and themes
+│   ├── public/           # Static assets and PWA manifest
+│   └── dist/            # Production build output
+├── backend/             # Supabase backend services
+│   ├── supabase/       # Database migrations, functions, config
+│   ├── scripts/        # Database and backup scripts
+│   └── docs/           # Backend documentation
+├── shared/              # Shared types, API clients, mock data
+└── docs/                # Project documentation
 ```
 
 ## Development Commands
 
-### Frontend Development (Terminal 3 - Admin)
+### Frontend Development
 ```bash
 cd frontend/
 
 # Development
-npm run dev:h5                    # H5 development server (port 3001)
-npm run dev:mp-weixin            # WeChat mini program development
+npm run dev                      # Development server with HMR (port 3001)
+npm run preview                  # Preview production build locally
 
-# Production Build
-npm run build                     # Standard build with optimizations
-npm run build:h5                 # H5 production build
-./scripts/build-production.sh    # Full production build with validation
+# Production Build  
+npm run build                    # Production build with PWA optimization
+npm run build:analyze           # Build with bundle analyzer
+./scripts/build-production.sh   # Full production build with validation
 
 # Code Quality
-npm run type-check               # TypeScript checking
-npm run lint                     # ESLint + Prettier
-npm run validate                 # Complete validation pipeline
+npm run type-check              # TypeScript checking
+npm run lint                    # ESLint + Prettier
+npm run validate                # Complete validation pipeline
 ```
 
 ### Backend Development (Terminal 1)
@@ -89,8 +100,10 @@ cd backend/scripts/
 - **Production**: Environment files and deployment scripts handle configuration
 
 ### Key Configuration Files
-- `frontend/vite.config.standard.ts` - Production Vite config
-- `frontend/package.json` - Dependencies and scripts
+- `frontend/vite.config.ts` - Vite configuration with PWA plugin
+- `frontend/package.json` - Dependencies and scripts  
+- `frontend/tsconfig.json` - TypeScript configuration
+- `frontend/public/manifest.json` - PWA manifest
 - `backend/supabase/config.toml` - Supabase local development
 - `backend/supabase/migrations/` - Database schema versions
 
@@ -106,9 +119,10 @@ The frontend uses a sophisticated build system with multiple verification stages
 5. **Deployment Packaging**: Automated deployment package with scripts
 
 ### Build Configurations
-- **Standard Mode**: `vite.config.standard.ts` for production deployment
-- **UniApp Mode**: `vite.config.ts` for UniApp hybrid development
+- **Production**: `vite.config.ts` optimized for PWA and static deployment
 - **Development**: Hot module replacement with API proxy to Supabase
+- **PWA**: Service worker generation and manifest configuration
+- **Bundle Analysis**: Rollup bundle analyzer for optimization insights
 
 ## Database Schema
 
@@ -149,9 +163,9 @@ cd backend && supabase start
 cd frontend && npm install
 
 # 3. Start development server
-npm run dev:h5
+npm run dev
 
-# 4. Access admin interface at http://localhost:3001
+# 4. Access web application at http://localhost:3001
 ```
 
 ### Making Changes
@@ -171,7 +185,9 @@ cd frontend/
 ### Vue 3 Patterns
 - **Composition API**: Primary pattern for all components
 - **Pinia Stores**: Centralized state management with TypeScript
-- **UniApp Components**: Cross-platform UI component system
+- **UI Library Components**: Element Plus/Naive UI component system
+- **Vue Router**: Client-side routing with navigation guards
+- **Responsive Design**: Mobile-first CSS with breakpoint management
 - **TypeScript**: Strict typing throughout the application
 
 ### State Management
