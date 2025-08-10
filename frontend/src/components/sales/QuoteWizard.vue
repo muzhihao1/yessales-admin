@@ -187,7 +187,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, readonly, ref } from 'vue'
 import SalesHeader from './SalesHeader.vue'
 import SalesButton from './SalesButton.vue'
 import StepCustomer from './wizard/StepCustomer.vue'
@@ -200,7 +200,7 @@ import { QuotesApi } from '@/api'
 import { analytics, navigation, storage, toast } from '@/utils/platform-adapter'
 
 // Wizard configuration
-const totalSteps = 4
+const totalSteps = readonly(ref(4))
 const currentStep = ref(1)
 const submitting = ref(false)
 
@@ -212,7 +212,7 @@ const steps = [
 ]
 
 // Form data
-const customerForm = reactive({
+let customerForm = reactive({
   customerName: '',
   customerPhone: '',
   customerWechat: '',
@@ -235,7 +235,7 @@ const customerErrors = reactive({
 
 const selectedProducts = ref<SelectedProduct[]>([])
 
-const pricingConfig = reactive({
+let pricingConfig = reactive({
   discountType: 'percentage' as 'percentage' | 'fixed',
   discountValue: 0,
   taxRate: 13,

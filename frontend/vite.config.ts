@@ -6,6 +6,15 @@ export default defineConfig({
   plugins: [
     vue()
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        quietDeps: true,
+        silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions'],
+      }
+    }
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')

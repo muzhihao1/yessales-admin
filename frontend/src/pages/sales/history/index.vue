@@ -762,6 +762,7 @@ const handleBottomBarClick = (item: any, index: number) => {
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:color';
 @import '@/styles/variables.scss';
 @import '@/styles/mixins.scss';
 

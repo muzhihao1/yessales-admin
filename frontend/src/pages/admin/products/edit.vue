@@ -397,6 +397,7 @@ const handleDocumentClick = (event: Event) => {
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:color';
 @import '@/styles/variables.scss';
 @import '@/styles/mixins.scss';
 
@@ -548,7 +549,7 @@ const handleDocumentClick = (event: Event) => {
       }
 
       &:active {
-        background-color: lighten($primary-color, 40%);
+        background-color: color.adjust($primary-color, $lightness: 40%);
       }
     }
   }
@@ -671,7 +672,7 @@ const handleDocumentClick = (event: Event) => {
 
     &:hover {
       border-color: $primary-color;
-      background-color: lighten($bg-color, 2%);
+      background-color: color.adjust($bg-color, $lightness: 2%);
     }
 
     .upload-icon {

@@ -379,6 +379,7 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+@use 'sass:color';
 @import '@/styles/variables.scss';
 @import '@/styles/mixins.scss';
 
@@ -493,7 +494,7 @@ defineExpose({
     }
 
     &.selected {
-      background-color: lighten($primary-color, 45%);
+      background-color: color.adjust($primary-color, $lightness: 45%);
     }
   }
 }
