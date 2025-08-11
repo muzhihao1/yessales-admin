@@ -205,6 +205,7 @@ const props = defineProps<Props>()
 
 const emit = defineEmits<{
   'update:form': [form: CustomerForm]
+  'update:errors': [errors: Record<string, string>]
   next: []
   validate: []
 }>()
@@ -256,7 +257,7 @@ const isValidPhone = computed(() => {
   return /^1[3-9]\d{9}$/.test(localForm.customerPhone)
 })
 
-const isValidStep = computed(() => {
+const _isValidStep = computed(() => {
   return (
     localForm.customerName.trim().length >= 2 &&
     isValidPhone.value &&
@@ -265,6 +266,19 @@ const isValidStep = computed(() => {
   )
 })
 
+// Helper function to clear specific error
+const clearError = (fieldName: string) => {
+  const updatedErrors = { ...props.errors }
+  delete updatedErrors[fieldName]
+  emit('update:errors', updatedErrors)
+}
+
+// Helper function to set specific error
+const setError = (fieldName: string, message: string) => {
+  const updatedErrors = { ...props.errors, [fieldName]: message }
+  emit('update:errors', updatedErrors)
+}
+
 // Methods
 const handleNameInput = (value: string | Event) => {
   // Handle both string values and event objects
@@ -272,7 +286,7 @@ const handleNameInput = (value: string | Event) => {
     typeof value === 'string' ? value : (value.target as HTMLInputElement)?.value || ''
   localForm.customerName = inputValue.trim()
   if (inputValue.trim()) {
-    props.errors.customerName = ''
+    clearError('customerName')
   }
   emitFormUpdate()
 }
@@ -284,7 +298,7 @@ const handlePhoneInput = (value: string | Event) => {
   const phoneNumber = inputValue.replace(/\D/g, '')
   localForm.customerPhone = phoneNumber
   if (phoneNumber) {
-    props.errors.customerPhone = ''
+    clearError('customerPhone')
   }
   emitFormUpdate()
 }
@@ -293,26 +307,26 @@ const validateName = () => {
   const name = localForm.customerName.trim()
 
   if (!name) {
-    props.errors.customerName = '请输入客户姓名'
+    setError('customerName', '请输入客户姓名')
     return false
   }
 
   if (name.length < 2) {
-    props.errors.customerName = '姓名至少2个字符'
+    setError('customerName', '姓名至少2个字符')
     return false
   }
 
   if (name.length > 20) {
-    props.errors.customerName = '姓名不能超过20个字符'
+    setError('customerName', '姓名不能超过20个字符')
     return false
   }
 
   if (!/^[\u4e00-\u9fa5a-zA-Z\s]+$/.test(name)) {
-    props.errors.customerName = '姓名只能包含中文、英文和空格'
+    setError('customerName', '姓名只能包含中文、英文和空格')
     return false
   }
 
-  props.errors.customerName = ''
+  clearError('customerName')
   return true
 }
 
@@ -320,16 +334,16 @@ const validatePhone = () => {
   const phone = localForm.customerPhone.trim()
 
   if (!phone) {
-    props.errors.customerPhone = '请输入手机号码'
+    setError('customerPhone', '请输入手机号码')
     return false
   }
 
   if (!isValidPhone.value) {
-    props.errors.customerPhone = '请输入正确的11位手机号码'
+    setError('customerPhone', '请输入正确的11位手机号码')
     return false
   }
 
-  props.errors.customerPhone = ''
+  clearError('customerPhone')
   return true
 }
 
@@ -337,11 +351,11 @@ const validateWechat = () => {
   const wechat = localForm.customerWechat.trim()
 
   if (wechat && wechat.length < 6) {
-    props.errors.customerWechat = '微信号至少6位'
+    setError('customerWechat', '微信号至少6位')
     return false
   }
 
-  props.errors.customerWechat = ''
+  clearError('customerWechat')
   return true
 }
 
@@ -349,11 +363,11 @@ const validateEmail = () => {
   const email = localForm.customerEmail.trim()
 
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    props.errors.customerEmail = '请输入正确的邮箱格式'
+    setError('customerEmail', '请输入正确的邮箱格式')
     return false
   }
 
-  props.errors.customerEmail = ''
+  clearError('customerEmail')
   return true
 }
 
@@ -393,7 +407,7 @@ const getCurrentLocation = () => {
 
   location
     .getCurrentPosition()
-    .then(res => {
+    .then(_res => {
       // Simulate reverse geocoding
       setTimeout(() => {
         localForm.customerAddress = '昆明市五华区东风西路123号'
@@ -422,7 +436,7 @@ const emitFormUpdate = () => {
   emit('update:form', formData)
 }
 
-const handleNext = () => {
+const _handleNext = () => {
   if (validateName() && validatePhone() && validateWechat() && validateEmail()) {
     emit('next')
   }

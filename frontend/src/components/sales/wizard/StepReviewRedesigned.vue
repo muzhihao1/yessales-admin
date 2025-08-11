@@ -162,7 +162,7 @@
             </button>
             <div v-show="showProductDetails" class="details-content">
               <div
-                v-for="(item, index) in selectedProducts"
+                v-for="(item, _index) in selectedProducts"
                 :key="`${item.product.id}-${item.skuId}`"
                 class="product-item"
               >

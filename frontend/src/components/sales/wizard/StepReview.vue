@@ -83,7 +83,7 @@
 
       <view class="products-list">
         <view
-          v-for="(item, index) in selectedProducts"
+          v-for="(item, _index) in selectedProducts"
           :key="`${item.product.id}-${item.skuId || 'default'}`"
           class="product-item"
         >
@@ -270,7 +270,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SalesButton from '../SalesButton.vue'
-import { dialog, toast } from '@/utils/platform-adapter'
+import { toast as _toast, dialog } from '@/utils/platform-adapter'
 import type { SelectedProduct } from '@/components/business/ProductSelector.vue'
 
 interface CustomerForm {

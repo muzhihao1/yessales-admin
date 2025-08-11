@@ -272,7 +272,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { reactive as _reactive, computed, onMounted, ref, watch } from 'vue'
 import SalesButton from '../SalesButton.vue'
 import { toast } from '@/utils/platform-adapter'
 import { ProductsApi } from '@/api/products'

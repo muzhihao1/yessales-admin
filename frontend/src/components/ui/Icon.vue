@@ -10,8 +10,9 @@
     :aria-hidden="!ariaLabel"
     :aria-label="ariaLabel"
     role="img"
-    v-html="iconSvg"
-  />
+  >
+    <span v-html="iconSvg" />
+  </component>
 </template>
 
 <script setup lang="ts">
