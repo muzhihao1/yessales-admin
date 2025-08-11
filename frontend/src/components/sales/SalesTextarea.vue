@@ -39,7 +39,7 @@ interface Props {
   showCount?: boolean
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   modelValue: '',
   maxlength: 500,
   required: false,

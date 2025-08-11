@@ -83,7 +83,7 @@
 
       <view class="products-list">
         <view
-          v-for="(item, _index) in selectedProducts"
+          v-for="item in selectedProducts"
           :key="`${item.product.id}-${item.skuId || 'default'}`"
           class="product-item"
         >
