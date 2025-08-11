@@ -29,11 +29,7 @@
           </div>
 
           <div class="filter-item">
-            <select
-              v-model="categoryIndex"
-              class="filter-select"
-              @change="handleCategoryChange"
-            >
+            <select v-model="categoryIndex" class="filter-select" @change="handleCategoryChange">
               <option v-for="(option, index) in categoryOptions" :key="option" :value="index">
                 {{ option }}
               </option>
@@ -41,11 +37,7 @@
           </div>
 
           <div class="filter-item">
-            <select
-              v-model="statusIndex"
-              class="filter-select"
-              @change="handleStatusChange"
-            >
+            <select v-model="statusIndex" class="filter-select" @change="handleStatusChange">
               <option v-for="(option, index) in statusOptions" :key="option.value" :value="index">
                 {{ option.label }}
               </option>
@@ -99,7 +91,7 @@
           <!-- Data Rows -->
           <template v-else>
             <DataTableRow
-              v-for="product in (productsStore.filteredProducts || [])"
+              v-for="product in productsStore.filteredProducts || []"
               :key="product.id"
               :item="product"
               :columns="enhancedColumns"
@@ -136,7 +128,10 @@
 
           <!-- Empty State -->
           <div
-            v-if="!productsStore.isLoading && (!productsStore.filteredProducts || productsStore.filteredProducts.length === 0)"
+            v-if="
+              !productsStore.isLoading &&
+              (!productsStore.filteredProducts || productsStore.filteredProducts.length === 0)
+            "
             class="empty-state"
           >
             <span class="empty-text">暂无产品数据</span>
@@ -430,7 +425,7 @@ function handleRowAction(actionKey: string, product: any) {
 function handleSelectAll(event: any) {
   const checked = event.detail ? event.detail.value : event.target.checked
   if (checked) {
-    (productsStore.filteredProducts || []).forEach(p => toggleSelection(p.id))
+    ;(productsStore.filteredProducts || []).forEach(p => toggleSelection(p.id))
   } else {
     clearSelection()
   }

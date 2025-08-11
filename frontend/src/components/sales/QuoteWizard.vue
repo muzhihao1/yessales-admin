@@ -17,11 +17,11 @@
             <span class="total-steps">{{ totalSteps }}</span>
           </div>
         </div>
-        
+
         <div class="progress-track">
           <div class="progress-fill" :style="{ width: `${(currentStep / totalSteps) * 100}%` }" />
         </div>
-        
+
         <div class="progress-steps">
           <div
             v-for="(step, index) in steps"
@@ -35,8 +35,13 @@
           >
             <div class="step-indicator">
               <div class="step-icon">
-                <svg v-if="currentStep > index + 1" class="check-icon" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                <svg
+                  v-if="currentStep > index + 1"
+                  class="check-icon"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                 </svg>
                 <span v-else class="step-number">{{ index + 1 }}</span>
               </div>
@@ -131,7 +136,7 @@
           :disabled="submitting"
         >
           <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12l4.58-4.59z"/>
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12l4.58-4.59z" />
           </svg>
           <span>上一步</span>
         </button>
@@ -148,7 +153,7 @@
         >
           <span>下一步</span>
           <svg class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12l-4.58 4.59z"/>
+            <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12l-4.58 4.59z" />
           </svg>
         </button>
 
@@ -161,17 +166,22 @@
           <div v-if="submitting" class="loading-spinner"></div>
           <span>{{ submitting ? '生成中...' : '生成报价' }}</span>
           <svg v-if="!submitting" class="nav-icon" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
           </svg>
         </button>
       </div>
     </div>
 
     <!-- Professional Price Summary (hidden on review step) -->
-    <div v-if="currentStep >= 2 && currentStep < 4 && selectedProducts.length > 0" class="price-summary-card">
+    <div
+      v-if="currentStep >= 2 && currentStep < 4 && selectedProducts.length > 0"
+      class="price-summary-card"
+    >
       <div class="summary-header">
         <svg class="summary-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"/>
+          <path
+            d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z"
+          />
         </svg>
         <span class="summary-title">报价合计</span>
       </div>
@@ -212,7 +222,7 @@ const steps = [
 ]
 
 // Form data
-let customerForm = reactive({
+const customerForm = reactive({
   customerName: '',
   customerPhone: '',
   customerWechat: '',
@@ -235,7 +245,7 @@ const customerErrors = reactive({
 
 const selectedProducts = ref<SelectedProduct[]>([])
 
-let pricingConfig = reactive({
+const pricingConfig = reactive({
   discountType: 'percentage' as 'percentage' | 'fixed',
   discountValue: 0,
   taxRate: 13,
@@ -327,7 +337,8 @@ const mappedCustomerData = computed(() => ({
   name: customerForm.customerName,
   phone: customerForm.customerPhone,
   email: customerForm.customerEmail || undefined,
-  type: customerForm.customerType === 'individual' ? 'individual' as const : 'business' as const,
+  type:
+    customerForm.customerType === 'individual' ? ('individual' as const) : ('business' as const),
   province: customerForm.customerProvince || undefined,
   city: customerForm.customerCity || undefined,
   address: customerForm.customerAddress || undefined,
@@ -566,7 +577,7 @@ onMounted(() => {
   box-shadow: $shadow-lg;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -577,7 +588,7 @@ onMounted(() => {
     background: rgba($white, 0.1);
     border-radius: 50%;
   }
-  
+
   &::after {
     content: '';
     position: absolute;
@@ -588,7 +599,7 @@ onMounted(() => {
     background: rgba($white, 0.05);
     border-radius: 50%;
   }
-  
+
   @media (min-width: $breakpoint-md) {
     padding: $space-4 $space-6 $space-5;
   }
@@ -612,7 +623,7 @@ onMounted(() => {
   font-size: $text-2xl;
   font-weight: $font-bold;
   margin: 0;
-  
+
   @media (min-width: $breakpoint-md) {
     font-size: $text-3xl;
   }
@@ -626,13 +637,13 @@ onMounted(() => {
   padding: $space-2 $space-4;
   border-radius: $radius-full;
   backdrop-filter: blur(10px);
-  
+
   .current-step,
   .total-steps {
     font-size: $text-lg;
     font-weight: $font-bold;
   }
-  
+
   .step-separator {
     font-size: $text-base;
     opacity: 0.7;
@@ -646,7 +657,7 @@ onMounted(() => {
   border-radius: $radius-full;
   overflow: hidden;
   margin-bottom: $space-4;
-  
+
   .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, $white, rgba($white, 0.9));
@@ -660,7 +671,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: $space-4;
-  
+
   @media (max-width: $breakpoint-sm) {
     gap: $space-2;
   }
@@ -673,12 +684,12 @@ onMounted(() => {
   text-align: center;
   opacity: 0.6;
   transition: all $transition-base;
-  
+
   &--completed,
   &--active {
     opacity: 1;
   }
-  
+
   &--active {
     transform: scale(1.05);
   }
@@ -699,39 +710,39 @@ onMounted(() => {
   transition: all $transition-base;
   backdrop-filter: blur(10px);
   border: 2px solid rgba($white, 0.2);
-  
+
   .progress-step--completed & {
     background: $white;
     color: $primary-600;
     border-color: $white;
   }
-  
+
   .progress-step--active & {
     background: rgba($white, 0.25);
     border-color: $white;
     box-shadow: 0 0 20px rgba($white, 0.3);
   }
-  
+
   .check-icon {
     width: 24px;
     height: 24px;
   }
-  
+
   .step-number {
     font-size: $text-lg;
     font-weight: $font-bold;
     color: currentColor;
   }
-  
+
   @media (max-width: $breakpoint-sm) {
     width: 40px;
     height: 40px;
-    
+
     .check-icon {
       width: 20px;
       height: 20px;
     }
-    
+
     .step-number {
       font-size: $text-base;
     }
@@ -743,17 +754,17 @@ onMounted(() => {
     font-size: $text-base;
     font-weight: $font-semibold;
     margin-bottom: $space-1;
-    
+
     @media (max-width: $breakpoint-sm) {
       font-size: $text-sm;
     }
   }
-  
+
   .step-description {
     font-size: $text-xs;
     opacity: 0.8;
     line-height: $leading-tight;
-    
+
     @media (max-width: $breakpoint-sm) {
       display: none;
     }
@@ -765,7 +776,7 @@ onMounted(() => {
   max-width: 800px;
   margin: 0 auto;
   padding: $space-6 $space-4;
-  
+
   @media (min-width: $breakpoint-md) {
     padding: $space-8 $space-6;
   }
@@ -781,7 +792,7 @@ onMounted(() => {
 
 .step-container {
   padding: $space-8;
-  
+
   @media (max-width: $breakpoint-sm) {
     padding: $space-6;
   }
@@ -792,7 +803,7 @@ onMounted(() => {
   margin-bottom: $space-8;
   padding-bottom: $space-6;
   border-bottom: 2px solid $gray-200;
-  
+
   .step-icon-large {
     width: 80px;
     height: 80px;
@@ -805,25 +816,25 @@ onMounted(() => {
     margin: 0 auto $space-4;
     box-shadow: $shadow-lg;
   }
-  
+
   .step-title {
     font-size: $text-2xl;
     font-weight: $font-bold;
     color: $gray-900;
     margin: 0 0 $space-2;
-    
+
     @media (min-width: $breakpoint-md) {
       font-size: $text-3xl;
     }
   }
-  
+
   .step-subtitle {
     font-size: $text-base;
     color: $gray-600;
     line-height: $leading-relaxed;
     max-width: 500px;
     margin: 0 auto;
-    
+
     @media (min-width: $breakpoint-md) {
       font-size: $text-lg;
     }
@@ -842,7 +853,7 @@ onMounted(() => {
   z-index: $z-index-fixed;
   padding: $space-4;
   padding-bottom: calc(#{$space-4} + #{$safe-area-bottom});
-  
+
   @media (min-width: $breakpoint-md) {
     padding: $space-6;
     padding-bottom: calc(#{$space-6} + #{$safe-area-bottom});
@@ -870,47 +881,47 @@ onMounted(() => {
   border: none;
   cursor: pointer;
   transition: all $transition-base;
-  
+
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
-  
+
   .nav-icon {
     width: 20px;
     height: 20px;
     flex-shrink: 0;
   }
-  
+
   &--secondary {
     background: $gray-100;
     color: $gray-700;
     border: 2px solid $gray-300;
-    
+
     &:hover:not(:disabled) {
       background: $gray-200;
       border-color: $gray-400;
       transform: translateY(-1px);
     }
   }
-  
+
   &--primary {
     background: linear-gradient(135deg, $primary-500, $primary-600);
     color: $white;
     border: 2px solid $primary-600;
     min-width: 120px;
-    
+
     &:hover:not(:disabled) {
       background: linear-gradient(135deg, $primary-600, $primary-700);
       transform: translateY(-1px);
       box-shadow: $shadow-lg;
     }
-    
+
     &--submit {
       background: linear-gradient(135deg, $success, $success-dark);
       border-color: $success-dark;
       position: relative;
-      
+
       &:hover:not(:disabled) {
         background: linear-gradient(135deg, $success-dark, $success);
       }
@@ -921,7 +932,7 @@ onMounted(() => {
 .nav-progress {
   flex: 1;
   text-align: center;
-  
+
   .nav-step-info {
     font-size: $text-sm;
     color: $gray-600;
@@ -954,14 +965,14 @@ onMounted(() => {
   animation: slideInRight 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   backdrop-filter: blur(10px);
   border: 1px solid rgba($white, 0.1);
-  
+
   @media (max-width: $breakpoint-md) {
     right: $space-4;
     top: 120px;
     min-width: 160px;
     padding: $space-4;
   }
-  
+
   @media (max-width: $breakpoint-sm) {
     position: static;
     margin: $space-4 $space-4 0;
@@ -974,13 +985,13 @@ onMounted(() => {
   align-items: center;
   gap: $space-2;
   margin-bottom: $space-4;
-  
+
   .summary-icon {
     width: 20px;
     height: 20px;
     opacity: 0.9;
   }
-  
+
   .summary-title {
     font-size: $text-sm;
     font-weight: $font-medium;
@@ -993,12 +1004,12 @@ onMounted(() => {
   align-items: baseline;
   gap: $space-1;
   margin-bottom: $space-3;
-  
+
   .currency {
     font-size: $text-lg;
     font-weight: $font-semibold;
   }
-  
+
   .price {
     font-size: $text-2xl;
     font-weight: $font-bold;
@@ -1039,38 +1050,38 @@ onMounted(() => {
   .wizard-progress {
     padding: $space-2 $space-3 $space-3;
   }
-  
+
   .wizard-title {
     font-size: $text-xl;
   }
-  
+
   .step-counter {
     padding: $space-1 $space-3;
-    
+
     .current-step,
     .total-steps {
       font-size: $text-base;
     }
   }
-  
+
   .progress-steps {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  
+
   .nav-container {
     gap: $space-2;
   }
-  
+
   .nav-btn {
     height: $button-height-sm;
     padding: 0 $space-4;
     font-size: $text-sm;
-    
+
     .nav-icon {
       width: 16px;
       height: 16px;
     }
-    
+
     &--primary {
       min-width: 100px;
     }
@@ -1085,11 +1096,11 @@ onMounted(() => {
   .nav-btn {
     transition: none;
   }
-  
+
   .price-summary-card {
     animation: none;
   }
-  
+
   .loading-spinner {
     animation: none;
   }
@@ -1101,11 +1112,11 @@ onMounted(() => {
   .price-summary-card {
     display: none;
   }
-  
+
   .quote-wizard {
     background: $white;
   }
-  
+
   .wizard-progress {
     background: $gray-100;
     color: $gray-900;

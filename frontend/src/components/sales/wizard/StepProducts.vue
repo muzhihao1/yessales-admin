@@ -22,7 +22,7 @@
         <span class="title-icon">🔍</span>
         <h3 class="title-text">搜索筛选</h3>
       </div>
-      
+
       <div class="form-group">
         <div class="search-box">
           <span class="search-icon">🔍</span>
@@ -69,7 +69,7 @@
         <h3 class="title-text">已选产品</h3>
         <span class="optional-badge">{{ localSelectedProducts.length }}种</span>
       </div>
-      
+
       <div class="summary-header" @click="showSelectedDetails = !showSelectedDetails">
         <span class="summary-total"> 合计：¥{{ selectedTotal.toFixed(2) }} </span>
         <span class="collapse-icon">{{ showSelectedDetails ? '▲' : '▼' }}</span>
@@ -112,163 +112,163 @@
         <span class="title-icon">🛍️</span>
         <h3 class="title-text">产品目录</h3>
       </div>
-      
+
       <div class="products-container">
-      <!-- Loading State -->
-      <div v-if="loading" class="loading-state">
-        <div class="loading-spinner"></div>
-        <span class="loading-text">加载产品中...</span>
+        <!-- Loading State -->
+        <div v-if="loading" class="loading-state">
+          <div class="loading-spinner"></div>
+          <span class="loading-text">加载产品中...</span>
+        </div>
+
+        <!-- Empty State -->
+        <div v-else-if="filteredProducts.length === 0" class="empty-state">
+          <span class="empty-icon">📦</span>
+          <span class="empty-title">没有找到产品</span>
+          <span class="empty-subtitle">
+            {{ searchKeyword ? '尝试其他搜索关键词' : '该分类暂无产品' }}
+          </span>
+          <SalesButton v-if="searchKeyword" type="plain" @click="clearSearch" size="small">
+            清除搜索条件
+          </SalesButton>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div v-else class="product-grid">
+          <div
+            v-for="product in filteredProducts"
+            :key="product.id"
+            class="product-card"
+            :class="{
+              'product-card--selected': isProductSelected(product.id),
+              'product-card--disabled': isProductDisabled(product.id)
+            }"
+            @click="handleProductSelect(product)"
+          >
+            <!-- Product Image with Badge -->
+            <div class="card-image-wrapper">
+              <img
+                class="card-image"
+                :src="product.image || '/static/images/default-product.png'"
+                style="object-fit: cover"
+                loading="lazy"
+                alt="Product image"
+              />
+
+              <!-- Selection Badge -->
+              <div v-if="isProductSelected(product.id)" class="selection-badge">
+                <span class="badge-text">{{ getSelectedQuantity(product.id) }}</span>
+              </div>
+
+              <!-- Quick Add Button -->
+              <div v-else class="quick-add-btn" @click.stop="quickAddProduct(product)">
+                <span class="add-icon">+</span>
+              </div>
+
+              <!-- Price Tag -->
+              <div class="price-tag">
+                <span class="price-text">¥{{ product.price }}</span>
+              </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="card-info">
+              <span class="product-name">{{ product.name }}</span>
+              <span class="product-model">{{ product.model }}</span>
+              <div class="product-meta">
+                <span class="product-unit">{{ product.unit || '个' }}</span>
+                <span v-if="product.stock" class="product-stock"> 库存: {{ product.stock }} </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Load More -->
+          <div v-if="hasMore && !loading" class="load-more">
+            <SalesButton type="plain" @click="loadMore"> 加载更多产品 </SalesButton>
+          </div>
+        </div>
       </div>
 
-      <!-- Empty State -->
-      <div v-else-if="filteredProducts.length === 0" class="empty-state">
-        <span class="empty-icon">📦</span>
-        <span class="empty-title">没有找到产品</span>
-        <span class="empty-subtitle">
-          {{ searchKeyword ? '尝试其他搜索关键词' : '该分类暂无产品' }}
-        </span>
-        <SalesButton v-if="searchKeyword" type="plain" @click="clearSearch" size="small">
-          清除搜索条件
-        </SalesButton>
-      </div>
+      <!-- SKU Selection Modal -->
+      <div v-if="showSkuModal && selectedProduct" class="modal-overlay" @click="closeSkuModal">
+        <div class="sku-modal" @click.stop>
+          <div class="sku-header">
+            <span class="sku-title">选择规格</span>
+            <div class="sku-close" @click="closeSkuModal">
+              <span>×</span>
+            </div>
+          </div>
 
-      <!-- Product Cards Grid -->
-      <div v-else class="product-grid">
-        <div
-          v-for="product in filteredProducts"
-          :key="product.id"
-          class="product-card"
-          :class="{
-            'product-card--selected': isProductSelected(product.id),
-            'product-card--disabled': isProductDisabled(product.id)
-          }"
-          @click="handleProductSelect(product)"
-        >
-          <!-- Product Image with Badge -->
-          <div class="card-image-wrapper">
+          <div class="sku-product">
             <img
-              class="card-image"
-              :src="product.image || '/static/images/default-product.png'"
+              class="sku-image"
+              :src="selectedProduct.image || '/static/images/default-product.png'"
               style="object-fit: cover"
-              loading="lazy"
               alt="Product image"
             />
-
-            <!-- Selection Badge -->
-            <div v-if="isProductSelected(product.id)" class="selection-badge">
-              <span class="badge-text">{{ getSelectedQuantity(product.id) }}</span>
-            </div>
-
-            <!-- Quick Add Button -->
-            <div v-else class="quick-add-btn" @click.stop="quickAddProduct(product)">
-              <span class="add-icon">+</span>
-            </div>
-
-            <!-- Price Tag -->
-            <div class="price-tag">
-              <span class="price-text">¥{{ product.price }}</span>
+            <div class="sku-info">
+              <span class="sku-name">{{ selectedProduct.name }}</span>
+              <span class="sku-model">{{ selectedProduct.model }}</span>
+              <span class="sku-base-price">基础价格：¥{{ selectedProduct.price }}</span>
             </div>
           </div>
 
-          <!-- Product Info -->
-          <div class="card-info">
-            <span class="product-name">{{ product.name }}</span>
-            <span class="product-model">{{ product.model }}</span>
-            <div class="product-meta">
-              <span class="product-unit">{{ product.unit || '个' }}</span>
-              <span v-if="product.stock" class="product-stock"> 库存: {{ product.stock }} </span>
+          <!-- SKU Options -->
+          <div v-if="selectedProduct.skuOptions?.length" class="sku-options">
+            <span class="option-label">规格选择</span>
+            <div class="option-grid">
+              <div
+                v-for="sku in selectedProduct.skuOptions"
+                :key="sku.id"
+                class="option-item"
+                :class="{ 'option-item--selected': selectedSkuId === sku.id }"
+                @click="selectSku(sku)"
+              >
+                <span class="option-name">{{ sku.name }}</span>
+                <span v-if="sku.price" class="option-price">
+                  {{ sku.price > 0 ? '+' : '' }}¥{{ sku.price }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
-      
-        <!-- Load More -->
-        <div v-if="hasMore && !loading" class="load-more">
-          <SalesButton type="plain" @click="loadMore"> 加载更多产品 </SalesButton>
-        </div>
-      </div>
-    </div>
 
-    <!-- SKU Selection Modal -->
-    <div v-if="showSkuModal && selectedProduct" class="modal-overlay" @click="closeSkuModal">
-      <div class="sku-modal" @click.stop>
-        <div class="sku-header">
-          <span class="sku-title">选择规格</span>
-          <div class="sku-close" @click="closeSkuModal">
-            <span>×</span>
-          </div>
-        </div>
-
-        <div class="sku-product">
-          <img
-            class="sku-image"
-            :src="selectedProduct.image || '/static/images/default-product.png'"
-            style="object-fit: cover"
-            alt="Product image"
-          />
-          <div class="sku-info">
-            <span class="sku-name">{{ selectedProduct.name }}</span>
-            <span class="sku-model">{{ selectedProduct.model }}</span>
-            <span class="sku-base-price">基础价格：¥{{ selectedProduct.price }}</span>
-          </div>
-        </div>
-
-        <!-- SKU Options -->
-        <div v-if="selectedProduct.skuOptions?.length" class="sku-options">
-          <span class="option-label">规格选择</span>
-          <div class="option-grid">
-            <div
-              v-for="sku in selectedProduct.skuOptions"
-              :key="sku.id"
-              class="option-item"
-              :class="{ 'option-item--selected': selectedSkuId === sku.id }"
-              @click="selectSku(sku)"
-            >
-              <span class="option-name">{{ sku.name }}</span>
-              <span v-if="sku.price" class="option-price">
-                {{ sku.price > 0 ? '+' : '' }}¥{{ sku.price }}
-              </span>
+          <!-- Quantity Selector -->
+          <div class="quantity-section">
+            <span class="quantity-label">数量</span>
+            <div class="quantity-controls">
+              <SalesButton
+                size="small"
+                type="default"
+                @click="decreaseQuantity"
+                :disabled="modalQuantity <= 1"
+              >
+                -
+              </SalesButton>
+              <input
+                v-model.number="modalQuantity"
+                type="number"
+                class="quantity-input"
+                min="1"
+                @blur="validateQuantity"
+              />
+              <SalesButton size="small" type="default" @click="increaseQuantity"> + </SalesButton>
             </div>
           </div>
-        </div>
 
-        <!-- Quantity Selector -->
-        <div class="quantity-section">
-          <span class="quantity-label">数量</span>
-          <div class="quantity-controls">
-            <SalesButton
-              size="small"
-              type="default"
-              @click="decreaseQuantity"
-              :disabled="modalQuantity <= 1"
-            >
-              -
-            </SalesButton>
-            <input
-              v-model.number="modalQuantity"
-              type="number"
-              class="quantity-input"
-              min="1"
-              @blur="validateQuantity"
-            />
-            <SalesButton size="small" type="default" @click="increaseQuantity"> + </SalesButton>
+          <!-- Price Preview -->
+          <div class="price-preview">
+            <span class="preview-label">小计：</span>
+            <span class="preview-price">¥{{ modalSubtotal.toFixed(2) }}</span>
           </div>
-        </div>
 
-        <!-- Price Preview -->
-        <div class="price-preview">
-          <span class="preview-label">小计：</span>
-          <span class="preview-price">¥{{ modalSubtotal.toFixed(2) }}</span>
-        </div>
-
-        <!-- Modal Actions -->
-        <div class="sku-actions">
-          <SalesButton type="default" @click="closeSkuModal"> 取消 </SalesButton>
-          <SalesButton type="primary" @click="confirmSkuSelection"> 确认添加 </SalesButton>
+          <!-- Modal Actions -->
+          <div class="sku-actions">
+            <SalesButton type="default" @click="closeSkuModal"> 取消 </SalesButton>
+            <SalesButton type="primary" @click="confirmSkuSelection"> 确认添加 </SalesButton>
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script setup lang="ts">
@@ -318,11 +318,11 @@ const editingIndex = ref(-1)
 const generateMockProducts = (categoryId?: string) => {
   const mockProducts: Product[] = []
   const productNames = {
-    '台球桌': ['星牌台球桌', '乔氏台球桌', '亚林台球桌', '康溪台球桌'],
-    '球杆': ['高端枫木球杆', '专业碳纤维球杆', '初学者套装球杆', '定制雕花球杆'],
-    '台球': ['亚美利加台球', '比利时aramith球', '国产优质台球', '练习专用球'],
-    '地毯': ['专业台球毯', '耐磨型毯面', '高档羊毛毯', '维护用绒毯'],
-    '其他配件': ['台球三角架', '球杆架', '台球刷', '球杆皮头', '台呢清洁剂', '球杆保养油']
+    台球桌: ['星牌台球桌', '乔氏台球桌', '亚林台球桌', '康溪台球桌'],
+    球杆: ['高端枫木球杆', '专业碳纤维球杆', '初学者套装球杆', '定制雕花球杆'],
+    台球: ['亚美利加台球', '比利时aramith球', '国产优质台球', '练习专用球'],
+    地毯: ['专业台球毯', '耐磨型毯面', '高档羊毛毯', '维护用绒毯'],
+    其他配件: ['台球三角架', '球杆架', '台球刷', '球杆皮头', '台呢清洁剂', '球杆保养油']
   }
 
   const categoryNames = categoryId === 'all' ? Object.keys(productNames) : [categoryId || '台球桌']
@@ -332,7 +332,7 @@ const generateMockProducts = (categoryId?: string) => {
       mockProducts.push({
         id: `${cat}-${i}`,
         name,
-        model: `${cat.substring(0,2).toUpperCase()}-${Math.random().toString(36).substring(7)}`,
+        model: `${cat.substring(0, 2).toUpperCase()}-${Math.random().toString(36).substring(7)}`,
         price: Math.floor(Math.random() * 5000) + 500,
         unit: cat === '台球桌' ? '张' : cat === '球杆' ? '支' : '个',
         category: cat,
@@ -604,7 +604,6 @@ const emitUpdate = () => {
   emit('update:selectedProducts', [...localSelectedProducts.value])
 }
 
-
 // Watch for external changes
 watch(
   () => props.selectedProducts,
@@ -711,11 +710,11 @@ onMounted(() => {
   color: $gray-900;
   background: transparent;
   border: none;
-  
+
   &::placeholder {
     color: $gray-500;
   }
-  
+
   &:focus {
     outline: none;
   }
@@ -730,7 +729,7 @@ onMounted(() => {
   color: $gray-500;
   font-size: $text-lg;
   cursor: pointer;
-  
+
   &:hover {
     color: $gray-700;
   }
@@ -741,7 +740,7 @@ onMounted(() => {
   overflow-y: hidden;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  
+
   &::-webkit-scrollbar {
     display: none;
   }
@@ -793,7 +792,7 @@ onMounted(() => {
   border-radius: $radius-lg;
   margin-bottom: $space-4;
   transition: $transition-base;
-  
+
   &:hover {
     background-color: $gray-100;
   }
@@ -1042,7 +1041,6 @@ onMounted(() => {
   text-align: center;
   padding: $spacing-lg 0;
 }
-
 
 // Modal Overlay
 .modal-overlay {

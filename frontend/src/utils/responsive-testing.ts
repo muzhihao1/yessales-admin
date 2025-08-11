@@ -6,7 +6,7 @@
  */
 
 import { computed, nextTick, reactive, ref } from 'vue'
-import { type DeviceInfo, useDeviceDetection } from './device-detection'
+import { type DeviceInfo as _DeviceInfo, useDeviceDetection } from './device-detection'
 
 /**
  * Responsive breakpoint definition

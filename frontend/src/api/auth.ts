@@ -5,7 +5,8 @@ import type { ApiResponse, LoginRequest, LoginResponse } from '@/types/api'
 import type { User } from '@/types/models'
 
 // 检查是否使用 Mock API
-const useMockApi = !import.meta.env.VITE_USE_REAL_API || import.meta.env.VITE_USE_REAL_API === 'false'
+const useMockApi =
+  !import.meta.env.VITE_USE_REAL_API || import.meta.env.VITE_USE_REAL_API === 'false'
 
 export class AuthApi {
   static async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
@@ -58,7 +59,7 @@ export class AuthApi {
       }
     } catch (error: any) {
       console.error('Login error:', error)
-      
+
       // 如果 Supabase 连接失败，fallback 到 Mock API
       if (error.message?.includes('Failed to fetch') || error.name?.includes('FetchError')) {
         console.log('🔧 Supabase connection failed, falling back to Mock API')

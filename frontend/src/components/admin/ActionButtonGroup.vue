@@ -280,7 +280,7 @@ onUnmounted(() => {
 })
 
 // 预定义的常用操作配置（符合PRD要求）
-const commonActions = {
+const _commonActions = {
   // 报价单管理操作 (PRD Line 829)
   quotes: {
     view: { key: 'view', label: '查看详情', icon: 'eye', type: 'default' as const },

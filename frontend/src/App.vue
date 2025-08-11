@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
-import { setupRouteGuards } from '@/utils/route-guards'
+import { setupRouteGuards as _setupRouteGuards } from '@/utils/route-guards'
 import { useAuthStore } from '@/stores/auth'
 import { realtimeService } from '@/services/realtime'
 import { domainRouter } from '@/utils/domain-router'

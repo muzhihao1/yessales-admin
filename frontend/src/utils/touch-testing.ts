@@ -177,7 +177,7 @@ const DEFAULT_TOUCH_CONFIG: TouchTestConfig = {
  * Touch testing state
  */
 const config = ref<TouchTestConfig>(DEFAULT_TOUCH_CONFIG)
-const activeGestures = reactive<Map<number, TouchGestureEvent>>(new Map())
+const _activeGestures = reactive<Map<number, TouchGestureEvent>>(new Map())
 const testResults = reactive<TouchInteractionTest[]>([])
 const touchTargetResults = reactive<TouchTargetTest[]>([])
 const isTestingActive = ref(false)

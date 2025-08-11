@@ -35,11 +35,7 @@
           />
         </div>
         <div class="filter-item">
-          <select
-            v-model="statusIndex"
-            class="filter-select"
-            @change="handleStatusChange"
-          >
+          <select v-model="statusIndex" class="filter-select" @change="handleStatusChange">
             <option v-for="(option, index) in statusOptions" :key="option.value" :value="index">
               {{ option.label }}
             </option>
@@ -110,7 +106,7 @@
         <!-- Data Rows -->
         <template v-else>
           <DataTableRow
-            v-for="quote in (quotesStore.quotes || [])"
+            v-for="quote in quotesStore.quotes || []"
             :key="quote.id"
             :item="quote"
             :columns="enhancedColumns"
@@ -145,7 +141,10 @@
         </template>
 
         <!-- Empty State -->
-        <div v-if="!quotesStore.loading && (!quotesStore.quotes || quotesStore.quotes.length === 0)" class="empty-state">
+        <div
+          v-if="!quotesStore.loading && (!quotesStore.quotes || quotesStore.quotes.length === 0)"
+          class="empty-state"
+        >
           <span class="empty-text">暂无报价单数据</span>
         </div>
       </div>
@@ -189,11 +188,7 @@
     />
 
     <!-- Reject Modal -->
-    <div
-      v-if="showRejectModal"
-      class="modal-backdrop"
-      @click="cancelReject"
-    >
+    <div v-if="showRejectModal" class="modal-backdrop" @click="cancelReject">
       <div class="modal-container" @click.stop>
         <div class="modal-header">
           <h3>拒绝报价单</h3>
@@ -434,7 +429,7 @@ function handleRowAction(actionKey: string, quote: Quote) {
 function handleSelectAll(event: any) {
   const checked = event.detail ? event.detail.value : event.target.checked
   if (checked) {
-    (quotesStore.quotes || []).forEach(q => toggleSelection(q.id))
+    ;(quotesStore.quotes || []).forEach(q => toggleSelection(q.id))
   } else {
     clearSelection()
   }
@@ -1173,7 +1168,8 @@ function getStatusLabel(status: string): string {
   }
 
   // Filter select style
-  .filter-select, .filter-date {
+  .filter-select,
+  .filter-date {
     width: 100%;
     padding: 10px 16px;
     border: 1px solid $border-color;

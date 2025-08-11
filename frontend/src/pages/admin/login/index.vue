@@ -36,12 +36,7 @@
           {{ errorMessage }}
         </div>
 
-        <button
-          class="login-button"
-          type="submit"
-          :disabled="!canSubmit"
-          @click="handleLogin"
-        >
+        <button class="login-button" type="submit" :disabled="!canSubmit" @click="handleLogin">
           {{ isLoading ? '登录中...' : '登 录' }}
         </button>
       </form>

@@ -58,29 +58,33 @@
             class="filter-select"
             @change="handleCustomerTypeChange"
           >
-            <option v-for="(option, index) in (customerTypeOptions || [])" :key="option.value" :value="index">
+            <option
+              v-for="(option, index) in customerTypeOptions || []"
+              :key="option.value"
+              :value="index"
+            >
               {{ option.label }}
             </option>
           </select>
         </div>
         <div class="filter-item">
-          <select
-            v-model="statusIndex"
-            class="filter-select"
-            @change="handleStatusChange"
-          >
-            <option v-for="(option, index) in (statusOptions || [])" :key="option.value" :value="index">
+          <select v-model="statusIndex" class="filter-select" @change="handleStatusChange">
+            <option
+              v-for="(option, index) in statusOptions || []"
+              :key="option.value"
+              :value="index"
+            >
               {{ option.label }}
             </option>
           </select>
         </div>
         <div class="filter-item">
-          <select
-            v-model="sourceIndex"
-            class="filter-select"
-            @change="handleSourceChange"
-          >
-            <option v-for="(option, index) in (sourceOptions || [])" :key="option.value" :value="index">
+          <select v-model="sourceIndex" class="filter-select" @change="handleSourceChange">
+            <option
+              v-for="(option, index) in sourceOptions || []"
+              :key="option.value"
+              :value="index"
+            >
               {{ option.label }}
             </option>
           </select>
@@ -183,7 +187,7 @@
         <!-- Data Rows -->
         <template v-else>
           <div
-            v-for="customer in (customersStore.customers || [])"
+            v-for="customer in customersStore.customers || []"
             :key="customer.id"
             class="table-row"
             @click="handleRowClick(customer)"
@@ -214,7 +218,9 @@
               <!-- Contact cell -->
               <div class="contact-cell">
                 <span v-if="customer.email" class="contact-item">📧 {{ customer.email }}</span>
-                <span v-if="customer.wechat_id" class="contact-item">💬 {{ customer.wechat_id }}</span>
+                <span v-if="customer.wechat_id" class="contact-item"
+                  >💬 {{ customer.wechat_id }}</span
+                >
                 <span v-if="customer.address" class="contact-item"
                   >📍 {{ customer.city }}{{ customer.district }}</span
                 >
@@ -239,8 +245,12 @@
 
               <!-- Actions cell -->
               <div class="actions-cell">
-                <button class="action-btn action-view" @click.stop="handleView(customer)">查看</button>
-                <button class="action-btn action-export" @click.stop="handleExportSingle(customer)">导出</button>
+                <button class="action-btn action-view" @click.stop="handleView(customer)">
+                  查看
+                </button>
+                <button class="action-btn action-export" @click.stop="handleExportSingle(customer)">
+                  导出
+                </button>
               </div>
             </div>
           </div>
@@ -248,7 +258,10 @@
 
         <!-- Empty State -->
         <div
-          v-if="!customersStore.loading && (!customersStore.customers || customersStore.customers.length === 0)"
+          v-if="
+            !customersStore.loading &&
+            (!customersStore.customers || customersStore.customers.length === 0)
+          "
           class="empty-state"
         >
           <span class="empty-text">暂无客户数据</span>
@@ -292,11 +305,7 @@
     </div>
 
     <!-- Add Customer Modal -->
-    <div
-      v-if="showAddModal"
-      class="modal-backdrop"
-      @click.self="cancelAddCustomer"
-    >
+    <div v-if="showAddModal" class="modal-backdrop" @click.self="cancelAddCustomer">
       <div class="modal">
         <div class="modal-header">
           <span class="modal-title">新增客户</span>
@@ -304,104 +313,116 @@
         </div>
         <div class="modal-body">
           <div class="customer-form">
-        <div class="form-row">
-          <div class="form-item">
-            <span class="form-label">客户姓名 *</span>
-            <input v-model="newCustomer.name" class="form-input" placeholder="请输入客户姓名" />
-          </div>
-          <div class="form-item">
-            <span class="form-label">联系电话 *</span>
-            <input
-              v-model="newCustomer.phone"
-              class="form-input"
-              placeholder="请输入手机号"
-              type="tel"
-            />
-          </div>
-        </div>
+            <div class="form-row">
+              <div class="form-item">
+                <span class="form-label">客户姓名 *</span>
+                <input v-model="newCustomer.name" class="form-input" placeholder="请输入客户姓名" />
+              </div>
+              <div class="form-item">
+                <span class="form-label">联系电话 *</span>
+                <input
+                  v-model="newCustomer.phone"
+                  class="form-input"
+                  placeholder="请输入手机号"
+                  type="tel"
+                />
+              </div>
+            </div>
 
-        <div class="form-row">
-          <div class="form-item">
-            <span class="form-label">客户类型 *</span>
-            <select
-              v-model="newCustomerTypeIndex"
-              class="form-select"
-              @change="handleNewCustomerTypeSelect"
-            >
-              <option
-                v-for="(option, index) in customerTypeOptions.slice(1)"
-                :key="option.value"
-                :value="index"
-              >
-                {{ option.label }}
-              </option>
-            </select>
-          </div>
-          <div class="form-item">
-            <span class="form-label">客户来源</span>
-            <select
-              v-model="newCustomerSourceIndex"
-              class="form-select"
-              @change="handleNewCustomerSourceSelect"
-            >
-              <option
-                v-for="(option, index) in sourceOptions.slice(1)"
-                :key="option.value"
-                :value="index"
-              >
-                {{ option.label }}
-              </option>
-            </select>
-          </div>
-        </div>
+            <div class="form-row">
+              <div class="form-item">
+                <span class="form-label">客户类型 *</span>
+                <select
+                  v-model="newCustomerTypeIndex"
+                  class="form-select"
+                  @change="handleNewCustomerTypeSelect"
+                >
+                  <option
+                    v-for="(option, index) in customerTypeOptions.slice(1)"
+                    :key="option.value"
+                    :value="index"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-item">
+                <span class="form-label">客户来源</span>
+                <select
+                  v-model="newCustomerSourceIndex"
+                  class="form-select"
+                  @change="handleNewCustomerSourceSelect"
+                >
+                  <option
+                    v-for="(option, index) in sourceOptions.slice(1)"
+                    :key="option.value"
+                    :value="index"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+              </div>
+            </div>
 
-        <div class="form-item" v-if="newCustomer.customer_type === 'business'">
-          <span class="form-label">公司名称</span>
-          <input v-model="newCustomer.company" class="form-input" placeholder="请输入公司名称" />
-        </div>
+            <div class="form-item" v-if="newCustomer.customer_type === 'business'">
+              <span class="form-label">公司名称</span>
+              <input
+                v-model="newCustomer.company"
+                class="form-input"
+                placeholder="请输入公司名称"
+              />
+            </div>
 
-        <div class="form-row">
-          <div class="form-item">
-            <span class="form-label">邮箱地址</span>
-            <input
-              v-model="newCustomer.email"
-              class="form-input"
-              placeholder="请输入邮箱"
-              type="email"
-            />
-          </div>
-          <div class="form-item">
-            <span class="form-label">微信号</span>
-            <input v-model="newCustomer.wechat_id" class="form-input" placeholder="请输入微信号" />
-          </div>
-        </div>
+            <div class="form-row">
+              <div class="form-item">
+                <span class="form-label">邮箱地址</span>
+                <input
+                  v-model="newCustomer.email"
+                  class="form-input"
+                  placeholder="请输入邮箱"
+                  type="email"
+                />
+              </div>
+              <div class="form-item">
+                <span class="form-label">微信号</span>
+                <input
+                  v-model="newCustomer.wechat_id"
+                  class="form-input"
+                  placeholder="请输入微信号"
+                />
+              </div>
+            </div>
 
-        <div class="form-row">
-          <div class="form-item">
-            <span class="form-label">城市</span>
-            <input v-model="newCustomer.city" class="form-input" placeholder="请输入城市" />
-          </div>
-          <div class="form-item">
-            <span class="form-label">区域</span>
-            <input v-model="newCustomer.district" class="form-input" placeholder="请输入区域" />
-          </div>
-        </div>
+            <div class="form-row">
+              <div class="form-item">
+                <span class="form-label">城市</span>
+                <input v-model="newCustomer.city" class="form-input" placeholder="请输入城市" />
+              </div>
+              <div class="form-item">
+                <span class="form-label">区域</span>
+                <input v-model="newCustomer.district" class="form-input" placeholder="请输入区域" />
+              </div>
+            </div>
 
-        <div class="form-item">
-          <span class="form-label">详细地址</span>
-          <input v-model="newCustomer.address" class="form-input" placeholder="请输入详细地址" />
-        </div>
+            <div class="form-item">
+              <span class="form-label">详细地址</span>
+              <input
+                v-model="newCustomer.address"
+                class="form-input"
+                placeholder="请输入详细地址"
+              />
+            </div>
 
-        <div class="form-item">
-          <span class="form-label">备注信息</span>
-          <textarea
-            v-model="newCustomer.notes"
-            class="form-textarea"
-            placeholder="请输入备注信息..."
-            maxlength="200"
-          />
-        </div>
-        </div>
+            <div class="form-item">
+              <span class="form-label">备注信息</span>
+              <textarea
+                v-model="newCustomer.notes"
+                class="form-textarea"
+                placeholder="请输入备注信息..."
+                maxlength="200"
+              />
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button class="btn-cancel" @click="cancelAddCustomer">取消</button>
@@ -411,11 +432,7 @@
     </div>
 
     <!-- Export Options Modal -->
-    <div
-      v-if="showExportModal"
-      class="modal-backdrop"
-      @click.self="cancelExport"
-    >
+    <div v-if="showExportModal" class="modal-backdrop" @click.self="cancelExport">
       <div class="modal">
         <div class="modal-header">
           <span class="modal-title">导出客户数据</span>
@@ -475,7 +492,7 @@ import { useCustomersStore } from '@/stores/customers'
 import type { CreateCustomerData, Customer, CustomerExportData } from '@/types/customer'
 // Removed unused imports for cleaner web implementation
 // import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
-// import DataTableRow from '@/components/admin/DataTableRow.vue' 
+// import DataTableRow from '@/components/admin/DataTableRow.vue'
 // import ActionButtonGroup from '@/components/admin/ActionButtonGroup.vue'
 // import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
 // import { useTableEnhancements } from '@/composables/useTableEnhancements'
@@ -549,9 +566,7 @@ const customerActions = [
 ]
 
 // Batch operations (customers support export only per PRD)
-const batchOperations = [
-  { key: 'export', label: '批量导出', type: 'primary' }
-]
+const batchOperations = [{ key: 'export', label: '批量导出', type: 'primary' }]
 
 // Sort state
 const sortKey = ref('')

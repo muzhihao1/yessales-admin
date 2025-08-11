@@ -49,8 +49,8 @@
                 <span class="picker-arrow">▼</span>
               </div>
               <div v-if="showCategorySelect" class="picker-options">
-                <div 
-                  v-for="(option, index) in categoryOptions" 
+                <div
+                  v-for="(option, index) in categoryOptions"
                   :key="index"
                   class="picker-option"
                   @click.stop="selectCategory(option, index)"
@@ -81,8 +81,8 @@
                   <span class="picker-arrow">▼</span>
                 </div>
                 <div v-if="showUnitSelect" class="picker-options">
-                  <div 
-                    v-for="(option, index) in unitOptions" 
+                  <div
+                    v-for="(option, index) in unitOptions"
                     :key="index"
                     class="picker-option"
                     @click.stop="selectUnit(option, index)"
@@ -121,12 +121,12 @@
                 <span class="upload-icon">+</span>
                 <span class="upload-text">上传图片</span>
               </button>
-              <input 
-                ref="fileInput" 
-                type="file" 
-                accept="image/*" 
-                @change="handleImageUpload" 
-                style="display: none;" 
+              <input
+                ref="fileInput"
+                type="file"
+                accept="image/*"
+                @change="handleImageUpload"
+                style="display: none"
               />
 
               <p class="upload-tips">建议尺寸：800x800px，支持 JPG、PNG 格式</p>
@@ -140,11 +140,7 @@
             <div class="admin-form-item">
               <div class="switch-item">
                 <label class="switch-label">是否上架</label>
-                <input
-                  type="checkbox"
-                  v-model="formData.is_active"
-                  class="form-switch"
-                />
+                <input type="checkbox" v-model="formData.is_active" class="form-switch" />
               </div>
               <p class="form-help">下架后产品将不在销售端显示</p>
             </div>
@@ -152,14 +148,12 @@
 
           <!-- 操作按钮 -->
           <div class="form-actions">
-            <button
-              class="admin-btn admin-btn-primary"
-              type="submit"
-              :disabled="isSubmitting"
-            >
+            <button class="admin-btn admin-btn-primary" type="submit" :disabled="isSubmitting">
               {{ isSubmitting ? '保存中...' : '保存' }}
             </button>
-            <button type="button" class="admin-btn admin-btn-default" @click="handleCancel">取消</button>
+            <button type="button" class="admin-btn admin-btn-default" @click="handleCancel">
+              取消
+            </button>
           </div>
         </form>
       </div>
@@ -280,7 +274,7 @@ const chooseImage = () => {
 const handleImageUpload = async (event: Event) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0]
-  
+
   if (!file) return
 
   // 验证文件类型
@@ -297,7 +291,7 @@ const handleImageUpload = async (event: Event) => {
 
   try {
     console.log('开始上传图片...')
-    
+
     // 创建预览URL
     const previewUrl = URL.createObjectURL(file)
     formData.value.image_url = previewUrl
@@ -374,7 +368,7 @@ onMounted(() => {
   if (productId.value) {
     loadProduct()
   }
-  
+
   // 添加文档点击监听器以关闭下拉框
   document.addEventListener('click', handleDocumentClick)
 })
@@ -387,7 +381,7 @@ onUnmounted(() => {
 // 处理文档点击事件以关闭下拉框
 const handleDocumentClick = (event: Event) => {
   const target = event.target as HTMLElement
-  
+
   // 如果点击的不是下拉框或其内部元素，关闭所有下拉框
   if (!target.closest('.form-picker')) {
     showCategorySelect.value = false

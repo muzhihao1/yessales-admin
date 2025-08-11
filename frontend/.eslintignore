@@ -3,8 +3,10 @@ node_modules/
 
 # Build outputs
 dist/
+deploy/
 unpackage/
 build/
+.vercel/
 
 # Auto-generated files
 *.d.ts

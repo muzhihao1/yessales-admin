@@ -220,7 +220,7 @@ defineExpose({
 })
 
 // 预定义的常用批量操作（符合PRD要求）
-const commonBatchOperations: Record<string, BatchOperation[]> = {
+const _commonBatchOperations: Record<string, BatchOperation[]> = {
   // 报价单管理批量操作
   quotes: [
     {

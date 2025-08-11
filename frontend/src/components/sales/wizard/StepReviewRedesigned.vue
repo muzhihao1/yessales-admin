@@ -80,7 +80,9 @@
             <div class="info-row">
               <div class="info-item">
                 <span class="info-label">客户类型</span>
-                <span class="info-value customer-type">{{ getCustomerTypeName(customerData.type) }}</span>
+                <span class="info-value customer-type">{{
+                  getCustomerTypeName(customerData.type)
+                }}</span>
               </div>
               <div class="info-item" v-if="customerData.email">
                 <span class="info-label">邮箱</span>
@@ -88,17 +90,14 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Collapsible address details -->
           <div v-if="hasAddressInfo" class="customer-details">
-            <button 
-              class="details-toggle" 
-              @click="showCustomerDetails = !showCustomerDetails"
-            >
+            <button class="details-toggle" @click="showCustomerDetails = !showCustomerDetails">
               <span>地址信息</span>
-              <Icon 
-                name="chevron-down" 
-                :class="['toggle-icon', { 'toggle-icon--rotated': showCustomerDetails }]" 
+              <Icon
+                name="chevron-down"
+                :class="['toggle-icon', { 'toggle-icon--rotated': showCustomerDetails }]"
               />
             </button>
             <div v-show="showCustomerDetails" class="details-content">
@@ -151,22 +150,19 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Collapsible detailed product list -->
           <div class="products-details">
-            <button 
-              class="details-toggle" 
-              @click="showProductDetails = !showProductDetails"
-            >
+            <button class="details-toggle" @click="showProductDetails = !showProductDetails">
               <span>产品明细</span>
-              <Icon 
-                name="chevron-down" 
-                :class="['toggle-icon', { 'toggle-icon--rotated': showProductDetails }]" 
+              <Icon
+                name="chevron-down"
+                :class="['toggle-icon', { 'toggle-icon--rotated': showProductDetails }]"
               />
             </button>
             <div v-show="showProductDetails" class="details-content">
-              <div 
-                v-for="(item, index) in selectedProducts" 
+              <div
+                v-for="(item, index) in selectedProducts"
                 :key="`${item.product.id}-${item.skuId}`"
                 class="product-item"
               >
@@ -180,7 +176,9 @@
                 <div class="product-pricing">
                   <div class="pricing-line">
                     <span class="price-unit">单价: ¥{{ item.price }}</span>
-                    <span class="price-qty">数量: {{ item.quantity }}{{ item.product.unit || '个' }}</span>
+                    <span class="price-qty"
+                      >数量: {{ item.quantity }}{{ item.product.unit || '个' }}</span
+                    >
                   </div>
                   <div class="price-subtotal">小计: ¥{{ item.subtotal.toFixed(2) }}</div>
                 </div>
@@ -214,7 +212,7 @@
               <span class="line-value savings">-¥{{ discountAmount.toFixed(2) }}</span>
             </div>
           </div>
-          
+
           <div class="pricing-section">
             <h4 class="section-title">税费</h4>
             <div class="pricing-line">
@@ -226,7 +224,7 @@
               <span class="line-value">+¥{{ pricingConfig.deliveryFee.toFixed(2) }}</span>
             </div>
           </div>
-          
+
           <div class="pricing-total">
             <div class="total-line">
               <span class="total-label">合计金额</span>
@@ -248,7 +246,9 @@
           <div class="terms-grid">
             <div class="term-item">
               <span class="term-label">报价有效期</span>
-              <span class="term-value">{{ quoteData.validityDays }}天 (至{{ formatExpiryDate() }})</span>
+              <span class="term-value"
+                >{{ quoteData.validityDays }}天 (至{{ formatExpiryDate() }})</span
+              >
             </div>
             <div class="term-item">
               <span class="term-label">付款条件</span>
@@ -288,8 +288,8 @@
           <Icon name="arrow-left" size="sm" />
           返回修改
         </button>
-        <button 
-          class="action-btn action-btn--primary" 
+        <button
+          class="action-btn action-btn--primary"
           @click="confirmQuote"
           :disabled="isSubmitting"
         >
@@ -355,38 +355,38 @@ const showProductDetails = ref(false)
 const isSubmitting = ref(false)
 
 // Computed values
-const hasAddressInfo = computed(() => 
-  props.customerData.province || props.customerData.city || props.customerData.address
+const hasAddressInfo = computed(
+  () => props.customerData.province || props.customerData.city || props.customerData.address
 )
 
-const totalQuantity = computed(() => 
+const totalQuantity = computed(() =>
   props.selectedProducts.reduce((sum, item) => sum + item.quantity, 0)
 )
 
-const productsSubtotal = computed(() => 
+const productsSubtotal = computed(() =>
   props.selectedProducts.reduce((sum, item) => sum + item.subtotal, 0)
 )
 
 const discountAmount = computed(() => {
   const { discountType, discountValue } = props.pricingConfig
   if (discountValue <= 0) return 0
-  
-  return discountType === 'percentage' 
-    ? (productsSubtotal.value * discountValue / 100)
+
+  return discountType === 'percentage'
+    ? (productsSubtotal.value * discountValue) / 100
     : discountValue
 })
 
-const afterDiscountTotal = computed(() => 
+const afterDiscountTotal = computed(() =>
   Math.max(0, productsSubtotal.value - discountAmount.value)
 )
 
 const taxAmount = computed(() => {
   const base = props.pricingConfig.taxIncluded ? productsSubtotal.value : afterDiscountTotal.value
-  return base * props.pricingConfig.taxRate / 100
+  return (base * props.pricingConfig.taxRate) / 100
 })
 
-const finalTotal = computed(() => 
-  afterDiscountTotal.value + taxAmount.value + props.pricingConfig.deliveryFee
+const finalTotal = computed(
+  () => afterDiscountTotal.value + taxAmount.value + props.pricingConfig.deliveryFee
 )
 
 // Methods
@@ -397,7 +397,7 @@ const getCustomerTypeName = (type: string) => {
 const formatDate = (date: Date) => {
   return date.toLocaleDateString('zh-CN', {
     year: 'numeric',
-    month: '2-digit', 
+    month: '2-digit',
     day: '2-digit'
   })
 }
@@ -430,7 +430,7 @@ const previewQuote = () => {
 
 const confirmQuote = async () => {
   if (isSubmitting.value) return
-  
+
   isSubmitting.value = true
   try {
     emit('confirm')
@@ -455,52 +455,52 @@ const confirmQuote = async () => {
   color: $white;
   padding: $space-4 $space-4 $space-5;
   margin-top: calc(44px + #{$safe-area-top}); // Account for nav header
-  
+
   .progress-content {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     gap: $space-4;
   }
-  
+
   .progress-info {
     display: flex;
     align-items: flex-start;
     gap: $space-3;
     flex: 1;
   }
-  
+
   .progress-icon {
     color: $success-light;
     flex-shrink: 0;
   }
-  
+
   .progress-title {
     font-size: $text-lg;
     font-weight: $font-semibold;
     margin: 0 0 $space-1;
     color: $white;
   }
-  
+
   .progress-subtitle {
     font-size: $text-sm;
     color: $success-light;
     margin: 0;
     line-height: 1.4;
   }
-  
+
   .progress-total {
     text-align: right;
     flex-shrink: 0;
   }
-  
+
   .total-label {
     font-size: $text-xs;
     color: $success-light;
     display: block;
     margin-bottom: $space-1;
   }
-  
+
   .total-amount {
     font-size: $text-xl;
     font-weight: $font-bold;
@@ -521,7 +521,7 @@ const confirmQuote = async () => {
   border: 1px solid $gray-200;
   margin-bottom: $space-4;
   overflow: hidden;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -549,7 +549,8 @@ const confirmQuote = async () => {
   color: $primary-500;
 }
 
-.edit-btn, .preview-btn {
+.edit-btn,
+.preview-btn {
   display: flex;
   align-items: center;
   gap: $space-1;
@@ -561,12 +562,12 @@ const confirmQuote = async () => {
   border-radius: $radius-base;
   cursor: pointer;
   transition: $transition-base;
-  
+
   &:hover {
     background: $primary-100;
     border-color: $primary-300;
   }
-  
+
   &:active {
     transform: translateY(1px);
   }
@@ -587,7 +588,7 @@ const confirmQuote = async () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: $space-3;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -597,7 +598,7 @@ const confirmQuote = async () => {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: $space-4;
-  
+
   .meta-item {
     margin-bottom: 0;
   }
@@ -628,7 +629,7 @@ const confirmQuote = async () => {
   grid-template-columns: 1fr 1fr;
   gap: $space-4;
   margin-bottom: $space-4;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -651,7 +652,7 @@ const confirmQuote = async () => {
   font-size: $text-sm;
   color: $gray-900;
   font-weight: $font-medium;
-  
+
   &.customer-type {
     color: $primary-500;
     background: $primary-50;
@@ -678,7 +679,7 @@ const confirmQuote = async () => {
   border-top: 1px solid $gray-100;
   cursor: pointer;
   transition: $transition-base;
-  
+
   &:hover {
     color: $primary-500;
   }
@@ -687,7 +688,7 @@ const confirmQuote = async () => {
 .toggle-icon {
   color: $gray-600;
   transition: transform 0.2s ease-out;
-  
+
   &--rotated {
     transform: rotate(180deg);
   }
@@ -751,7 +752,7 @@ const confirmQuote = async () => {
   align-items: flex-start;
   padding: $space-4 0;
   border-bottom: 1px solid $gray-100;
-  
+
   &:last-child {
     border-bottom: none;
     padding-bottom: 0;
@@ -797,7 +798,8 @@ const confirmQuote = async () => {
   margin-bottom: $space-1;
 }
 
-.price-unit, .price-qty {
+.price-unit,
+.price-qty {
   font-size: $text-xs;
   color: $gray-600;
 }
@@ -815,7 +817,7 @@ const confirmQuote = async () => {
 
 .pricing-section {
   margin-bottom: $space-5;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -835,14 +837,14 @@ const confirmQuote = async () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: $space-2;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
-  
+
   &.discount-line .line-value {
     color: $success;
-    
+
     &.savings {
       font-weight: $font-semibold;
     }
@@ -922,7 +924,7 @@ const confirmQuote = async () => {
   background: $secondary-50;
   border-radius: $radius-base;
   border-left: 4px solid $secondary-500;
-  
+
   p {
     font-size: $text-sm;
     color: $gray-600;
@@ -1023,29 +1025,29 @@ const confirmQuote = async () => {
   cursor: pointer;
   transition: $transition-base;
   min-height: 48px; // Touch target
-  
+
   &--secondary {
     background: $gray-100;
     color: $gray-900;
     border: 1px solid $gray-300;
-    
+
     &:hover {
       background: $gray-200;
       border-color: $gray-400;
     }
   }
-  
+
   &--primary {
     background: linear-gradient(135deg, $success 0%, $success-dark 100%);
     color: $white;
     border: 1px solid $success;
-    
+
     &:hover {
       background: linear-gradient(135deg, $success-dark 0%, $success-dark 100%);
       transform: translateY(-1px);
       box-shadow: 0 4px 8px rgba($success, 0.3);
     }
-    
+
     &:disabled {
       background: $gray-300;
       color: $gray-500;
@@ -1055,7 +1057,7 @@ const confirmQuote = async () => {
       box-shadow: none;
     }
   }
-  
+
   &:active {
     transform: translateY(1px);
   }
@@ -1094,36 +1096,36 @@ const confirmQuote = async () => {
     margin: 0 auto;
     padding: $space-6;
   }
-  
+
   .review-progress {
     padding: $space-6 $space-6 $space-8;
-    
+
     .progress-content {
       max-width: 768px;
       margin: 0 auto;
     }
   }
-  
+
   .action-bar {
     .action-content {
       max-width: 768px;
       margin: 0 auto $space-3;
     }
-    
+
     .action-summary {
       max-width: 768px;
       margin: 0 auto;
     }
   }
-  
+
   .info-row {
     grid-template-columns: repeat(3, 1fr);
   }
-  
+
   .overview-stats {
     gap: $space-6;
   }
-  
+
   .terms-grid {
     grid-template-columns: 1fr 1fr;
     gap: $space-4;
@@ -1135,14 +1137,14 @@ const confirmQuote = async () => {
   .details-content {
     animation: none;
   }
-  
+
   .toggle-icon {
     transition: none;
   }
-  
+
   .action-btn {
     transition: none;
-    
+
     &:hover {
       transform: none;
     }

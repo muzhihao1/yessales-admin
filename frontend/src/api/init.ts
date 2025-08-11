@@ -30,7 +30,7 @@ export function initializeApi(): void {
 
         // 显示登录过期消息
         console.warn('登录已过期，请重新登录')
-        
+
         // 延迟跳转到登录页
         setTimeout(() => {
           window.location.href = '/admin/login'

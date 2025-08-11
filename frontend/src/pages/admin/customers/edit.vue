@@ -50,9 +50,9 @@
         <div class="form-row">
           <div class="form-item">
             <span class="form-label">客户类型 *</span>
-            <select 
-              v-model="customerTypeIndex" 
-              class="form-select" 
+            <select
+              v-model="customerTypeIndex"
+              class="form-select"
               :class="{ error: errors.customer_type }"
               @change="handleCustomerTypeChange"
             >
@@ -65,11 +65,7 @@
 
           <div class="form-item">
             <span class="form-label">客户状态</span>
-            <select 
-              v-model="statusIndex" 
-              class="form-select" 
-              @change="handleStatusChange"
-            >
+            <select v-model="statusIndex" class="form-select" @change="handleStatusChange">
               <option v-for="(option, index) in statusOptions" :key="index" :value="index">
                 {{ option.label }}
               </option>
@@ -80,11 +76,7 @@
         <div class="form-row">
           <div class="form-item">
             <span class="form-label">客户来源</span>
-            <select 
-              v-model="sourceIndex" 
-              class="form-select" 
-              @change="handleSourceChange"
-            >
+            <select v-model="sourceIndex" class="form-select" @change="handleSourceChange">
               <option v-for="(option, index) in sourceOptions" :key="index" :value="index">
                 {{ option.label }}
               </option>
@@ -93,11 +85,7 @@
 
           <div class="form-item" v-if="formData.customer_type === 'individual'">
             <span class="form-label">性别</span>
-            <select 
-              v-model="genderIndex" 
-              class="form-select" 
-              @change="handleGenderChange"
-            >
+            <select v-model="genderIndex" class="form-select" @change="handleGenderChange">
               <option v-for="(option, index) in genderOptions" :key="index" :value="index">
                 {{ option.label }}
               </option>
@@ -151,10 +139,10 @@
           <div class="form-row">
             <div class="form-item">
               <span class="form-label">出生日期</span>
-              <input 
-                type="date" 
-                v-model="formData.birthday" 
-                class="form-input" 
+              <input
+                type="date"
+                v-model="formData.birthday"
+                class="form-input"
                 @change="handleBirthdayChange"
               />
             </div>
@@ -193,9 +181,9 @@
         <div class="form-row">
           <div class="form-item">
             <span class="form-label">偏好联系方式</span>
-            <select 
-              v-model="contactMethodIndex" 
-              class="form-select" 
+            <select
+              v-model="contactMethodIndex"
+              class="form-select"
               @change="handleContactMethodChange"
             >
               <option v-for="(option, index) in contactMethodOptions" :key="index" :value="index">

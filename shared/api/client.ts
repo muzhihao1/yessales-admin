@@ -2,8 +2,8 @@ import { createClient } from '@supabase/supabase-js'
 import type { Database } from '../types/database'
 
 // Supabase 客户端配置
-const supabaseUrl = process.env.VITE_SUPABASE_URL || 'http://localhost:54321'
-const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY || ''
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost:54321'
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
 // 创建 Supabase 客户端实例
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {

@@ -54,8 +54,8 @@
             <span class="picker-arrow">▼</span>
           </div>
           <div v-if="showRoleSelect" class="picker-options">
-            <div 
-              v-for="(option, index) in roleOptions" 
+            <div
+              v-for="(option, index) in roleOptions"
               :key="index"
               class="picker-option"
               @click="selectRole(option, index)"
@@ -70,8 +70,8 @@
             <span class="picker-arrow">▼</span>
           </div>
           <div v-if="showStatusSelect" class="picker-options">
-            <div 
-              v-for="(option, index) in statusOptions" 
+            <div
+              v-for="(option, index) in statusOptions"
               :key="index"
               class="picker-option"
               @click="selectStatus(option, index)"
@@ -210,8 +210,8 @@
               <span class="picker-arrow">▼</span>
             </div>
             <div v-if="showNewUserRoleSelect" class="picker-options">
-              <div 
-                v-for="(option, index) in roleOptions.slice(1)" 
+              <div
+                v-for="(option, index) in roleOptions.slice(1)"
                 :key="index"
                 class="picker-option"
                 @click="selectNewUserRole(option, index)"
@@ -264,8 +264,8 @@
               <span class="picker-arrow">▼</span>
             </div>
             <div v-if="showInviteRoleSelect" class="picker-options">
-              <div 
-                v-for="(option, index) in roleOptions.slice(1)" 
+              <div
+                v-for="(option, index) in roleOptions.slice(1)"
                 :key="index"
                 class="picker-option"
                 @click="selectInviteRole(option, index)"
@@ -811,7 +811,7 @@ function getStatusLabel(status: string): string {
             color: $text-color-secondary;
           }
         }
-        
+
         .picker-options {
           position: absolute;
           top: 100%;
@@ -825,14 +825,14 @@ function getStatusLabel(status: string): string {
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           max-height: 200px;
           overflow-y: auto;
-          
+
           .picker-option {
             padding: 8px 16px;
             font-size: 14px;
             color: $text-color;
             cursor: pointer;
             transition: background-color 0.2s;
-            
+
             &:hover {
               background-color: #f5f5f5;
             }

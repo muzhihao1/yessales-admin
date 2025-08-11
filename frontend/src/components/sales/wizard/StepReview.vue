@@ -270,7 +270,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import SalesButton from '../SalesButton.vue'
-import { toast, dialog } from '@/utils/platform-adapter'
+import { dialog, toast } from '@/utils/platform-adapter'
 import type { SelectedProduct } from '@/components/business/ProductSelector.vue'
 
 interface CustomerForm {
@@ -448,7 +448,7 @@ const editStep = async (stepNumber: number) => {
     title: '返回修改',
     content: `确定要返回第${stepNumber}步进行修改吗？`
   })
-  
+
   if (confirmed) {
     // In a real implementation, this would navigate back to the specific step
     emit('back')

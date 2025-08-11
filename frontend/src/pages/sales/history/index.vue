@@ -245,7 +245,7 @@ import SalesButton from '@/components/sales/SalesButton.vue'
 import SalesInput from '@/components/sales/SalesInput.vue'
 import SalesSelector from '@/components/sales/SalesSelector.vue'
 import SalesFooter from '@/components/layout/SalesFooter.vue'
-import { toast, navigation, dialog } from '@/utils/platform-adapter'
+import { dialog, navigation, toast } from '@/utils/platform-adapter'
 
 interface QuoteListItem {
   id: string
@@ -699,9 +699,10 @@ const duplicateQuote = (quote: QuoteListItem) => {
 
 const showQuoteActions = async (quote: QuoteListItem) => {
   // For PC/Web environment, show a simple action menu using confirm dialogs
-  const actions = quote.status === 'draft' 
-    ? ['发送给客户', '分享报价', '导出PDF', '删除报价']
-    : ['分享报价', '导出PDF', '删除报价']
+  const actions =
+    quote.status === 'draft'
+      ? ['发送给客户', '分享报价', '导出PDF', '删除报价']
+      : ['分享报价', '导出PDF', '删除报价']
 
   // For now, directly call delete action as it's the most commonly used
   // In a full implementation, you could create a custom action sheet component
@@ -709,7 +710,7 @@ const showQuoteActions = async (quote: QuoteListItem) => {
     title: '报价操作',
     content: '是否要删除这个报价？'
   })
-  
+
   if (confirmed) {
     deleteQuote(quote)
   }
@@ -732,7 +733,7 @@ const deleteQuote = async (quote: QuoteListItem) => {
     title: '删除确认',
     content: '确定要删除这个报价单吗？此操作不可恢复。'
   })
-  
+
   if (confirmed) {
     const index = quotes.value.findIndex(q => q.id === quote.id)
     if (index > -1) {

@@ -86,7 +86,7 @@ export function hasRoutePermission(user: User | null, routePath: string): boolea
 /**
  * Get redirect path for unauthorized access
  */
-export function getRedirectPath(user: User | null, routePath: string): string {
+export function getRedirectPath(user: User | null, _routePath: string): string {
   // If user is not authenticated, redirect to login
   if (!user) {
     return '/pages/admin/login/index'

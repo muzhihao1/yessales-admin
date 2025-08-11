@@ -29,7 +29,7 @@ export const showModal = async (options: ModalOptions): Promise<ModalResult> => 
     showCancel = true,
     cancelText = '取消',
     confirmText = '确定',
-    type = 'info'
+    type: _type = 'info'
   } = options
 
   return new Promise(resolve => {

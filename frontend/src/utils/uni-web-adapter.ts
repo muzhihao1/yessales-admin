@@ -7,17 +7,17 @@ import { App } from 'vue'
 // 定义基础UniApp组件的Web实现
 const UniWebComponents = {
   // view -> div
-  'view': {
+  view: {
     name: 'view',
     template: '<div :class="$attrs.class" :style="$attrs.style" v-bind="$attrs"><slot /></div>'
   },
-  
+
   // text -> span
-  'text': {
+  text: {
     name: 'text',
     template: '<span :class="$attrs.class" :style="$attrs.style" v-bind="$attrs"><slot /></span>'
   },
-  
+
   // scroll-view -> 可滚动的div
   'scroll-view': {
     name: 'scroll-view',
@@ -45,7 +45,7 @@ const UniWebComponents = {
     computed: {
       scrollStyle() {
         return {
-          overflow: this.scrollX ? 'auto' : (this.scrollY ? 'auto' : 'hidden'),
+          overflow: this.scrollX ? 'auto' : this.scrollY ? 'auto' : 'hidden',
           whiteSpace: this.scrollX ? 'nowrap' : 'normal',
           ...(this.scrollX && { display: 'flex', flexDirection: 'row' })
         }
@@ -57,7 +57,7 @@ const UniWebComponents = {
       }
     }
   },
-  
+
   // uni-popup -> 简单弹窗实现
   'uni-popup': {
     name: 'uni-popup',
@@ -185,12 +185,12 @@ function injectStyles() {
 export function installUniWebAdapter(app: App) {
   // 注入样式
   injectStyles()
-  
+
   // 注册组件
   Object.entries(UniWebComponents).forEach(([name, component]) => {
     app.component(name, component)
   })
-  
+
   console.log('[UniWebAdapter] UniApp Web适配器已安装')
 }
 

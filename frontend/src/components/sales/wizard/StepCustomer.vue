@@ -54,7 +54,6 @@
           </template>
         </SalesInput>
       </div>
-
     </div>
 
     <!-- Contact Information (Progressive Disclosure) -->
@@ -174,7 +173,6 @@
         <span class="option-text">保存客户信息，便于下次使用</span>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -227,7 +225,6 @@ const localForm = reactive({
 // UI state
 const showAddressSection = ref(false)
 const locationLoading = ref(false)
-
 
 // Mock location data
 const provinceOptions = ref([
@@ -359,7 +356,6 @@ const validateEmail = () => {
   props.errors.customerEmail = ''
   return true
 }
-
 
 const formatPhoneDisplay = (phone: string) => {
   if (phone.length === 11) {
@@ -557,7 +553,6 @@ watch(
   margin-top: $spacing-xs;
 }
 
-
 // Address Section
 .address-content {
   animation: slideDown 0.3s ease-out;
@@ -615,7 +610,6 @@ watch(
   font-size: $font-size-base;
   color: $text-color;
 }
-
 
 // Animations
 @keyframes slideDown {

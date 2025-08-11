@@ -242,34 +242,38 @@
           <button class="modal-close" @click="cancelAddContact">&times;</button>
         </div>
         <div class="contact-form">
-        <div class="form-item">
-          <span class="form-label">活动类型</span>
-          <select v-model="contactTypeIndex" class="form-select" @change="handleContactTypeChange">
-            <option v-for="(option, index) in contactTypeOptions" :key="index" :value="index">
-              {{ option.label }}
-            </option>
-          </select>
-        </div>
+          <div class="form-item">
+            <span class="form-label">活动类型</span>
+            <select
+              v-model="contactTypeIndex"
+              class="form-select"
+              @change="handleContactTypeChange"
+            >
+              <option v-for="(option, index) in contactTypeOptions" :key="index" :value="index">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
 
-        <div class="form-item">
-          <span class="form-label">活动描述</span>
-          <textarea
-            v-model="contactDescription"
-            class="form-textarea"
-            placeholder="请输入联系内容和结果..."
-            maxlength="500"
-          />
-        </div>
+          <div class="form-item">
+            <span class="form-label">活动描述</span>
+            <textarea
+              v-model="contactDescription"
+              class="form-textarea"
+              placeholder="请输入联系内容和结果..."
+              maxlength="500"
+            />
+          </div>
 
-        <div class="form-item">
-          <span class="form-label">联系时间</span>
-          <input 
-            type="date" 
-            v-model="contactDate" 
-            class="form-input" 
-            @change="handleContactDateChange"
-          />
-        </div>
+          <div class="form-item">
+            <span class="form-label">联系时间</span>
+            <input
+              type="date"
+              v-model="contactDate"
+              class="form-input"
+              @change="handleContactDateChange"
+            />
+          </div>
         </div>
         <div class="modal-footer">
           <button class="modal-btn modal-cancel" @click="cancelAddContact">取消</button>

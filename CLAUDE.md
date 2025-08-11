@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-YesSales (耶氏台球斗南销售中心报价系统) is a comprehensive quotation management system for a billiards sales center. The system consists of a modern web application built with Vue 3 + PWA capabilities and a Supabase backend.
+YesSales (耶氏台球斗南销售中心报价系统) is a comprehensive billiards equipment quotation management system. The system enables sales representatives to create, manage, and track customer quotes while providing administrators with full oversight and data management capabilities. Built with Vue 3 + PWA for offline-capable mobile access and Supabase for real-time backend services.
 
 ## Architecture
 
@@ -52,7 +52,7 @@ cd frontend/
 
 # Development
 npm run dev                      # Development server with HMR (port 3001)
-npm run preview                  # Preview production build locally
+npm run preview                  # Preview production build locally (port 4173)
 
 # Production Build  
 npm run build                    # Production build with PWA optimization
@@ -60,9 +60,12 @@ npm run build:analyze           # Build with bundle analyzer
 ./scripts/build-production.sh   # Full production build with validation
 
 # Code Quality
-npm run type-check              # TypeScript checking
-npm run lint                    # ESLint + Prettier
+npm run type-check              # TypeScript checking (vue-tsc --noEmit)
+npm run lint                    # ESLint + Prettier with --fix
+npm run format                  # Prettier formatting
 npm run validate                # Complete validation pipeline
+npm run test:unit               # Unit tests (vitest)
+npm run test:smoke              # Smoke tests for basic functionality
 ```
 
 ### Backend Development (Terminal 1)
@@ -180,15 +183,22 @@ cd frontend/
 ./scripts/build-production.sh    # Creates optimized build with deployment package
 ```
 
-## Code Patterns
+## Code Architecture & Patterns
+
+### Application Structure
+- **Multi-Step Quote Wizard**: Core component `QuoteWizard.vue` orchestrates a 4-step quote creation process
+- **Step Components**: Modular step components (`StepCustomer`, `StepProducts`, `StepPricing`, `StepReview`) with validation
+- **Shared Components**: Reusable UI components in `components/sales/` (SalesButton, SalesHeader, SalesInput, etc.)
+- **API Layer**: Service layer pattern in `/api/` with mock data support via `VITE_USE_REAL_API` environment variable
+- **Progressive Enhancement**: PWA features with offline support and service workers
 
 ### Vue 3 Patterns
-- **Composition API**: Primary pattern for all components
+- **Composition API**: Primary pattern for all components with `<script setup lang="ts">`
 - **Pinia Stores**: Centralized state management with TypeScript
-- **UI Library Components**: Element Plus/Naive UI component system
-- **Vue Router**: Client-side routing with navigation guards
-- **Responsive Design**: Mobile-first CSS with breakpoint management
-- **TypeScript**: Strict typing throughout the application
+- **Custom Components**: Professional UI component library (SalesButton, SalesInput, SalesSelector)
+- **Vue Router**: File-based routing with dynamic imports and meta configuration
+- **Responsive Design**: Mobile-first CSS with SCSS variables and breakpoint management
+- **TypeScript**: Strict typing throughout with global type definitions in `types/global.d.ts`
 
 ### State Management
 ```typescript
@@ -223,17 +233,41 @@ export class QuoteService {
 }
 ```
 
-## Debugging & Troubleshooting
+## Critical Development Notes
 
-### Development Issues
+### UniApp Migration Artifacts
+This project was migrated from UniApp to Vue 3 + Web. Watch for:
+- **Legacy `uni.*` API calls**: Replace with web APIs (`localStorage`, `console.warn`, `window.location.href`)
+- **Component syntax**: Ensure proper Vue 3 syntax, avoid UniApp-specific tags and attributes
+- **Template validation**: Missing closing tags cause Vue compilation errors and 500 server errors
+
+### Environment Configuration
+- **Mock vs Real API**: Control via `VITE_USE_REAL_API` environment variable
+- **Supabase Config**: Use `import.meta.env` not `process.env` for Vite compatibility
+- **Global Types**: Environment variables must be declared in `src/types/global.d.ts`
+
+### Common Development Issues
 - **Port Conflicts**: Default ports are 3001 (frontend), 54321-54329 (Supabase)
-- **Build Failures**: Run validation commands to identify TypeScript/linting issues
+- **Vue Router 500 Errors**: Often caused by Vue template syntax errors in dynamically imported components
+- **Build Failures**: Run `npm run type-check` to identify TypeScript compilation errors
 - **Database Issues**: Use `supabase db reset` to restore clean state
+- **Server Start Issues**: Use explicit host binding: `--host 127.0.0.1 --port 3001`
 
-### Production Issues
-- **Build Analysis**: Check `build-report.json` for bundle size and optimization metrics
-- **Performance**: Use database performance monitoring scripts
-- **Deployment**: Review deployment logs and verify environment configuration
+### Troubleshooting Commands
+```bash
+# Check for Vue template syntax errors
+npm run type-check
+
+# Verify server is running
+netstat -an | grep 3001
+lsof -nP -iTCP:3001
+
+# Clean restart development server  
+pkill -f vite && npm run dev
+
+# Test direct file access for debugging
+curl -I http://127.0.0.1:3001/src/pages/sales/quote/create.vue
+```
 
 ## Security Considerations
 

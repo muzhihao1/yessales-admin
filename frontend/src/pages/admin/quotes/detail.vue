@@ -780,7 +780,6 @@ function getStatusLabel(status: string): string {
 
   // Reject modal
   .reject-modal {
-
     .modal-label {
       display: block;
       margin-bottom: 12px;
