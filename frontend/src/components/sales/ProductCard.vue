@@ -104,7 +104,7 @@
             选择
           </SalesButton>
 
-          <SalesButton v-else size="mini" type="default" @click.stop="handleEdit">
+          <SalesButton v-else size="small" type="default" @click.stop="handleEdit">
             编辑
           </SalesButton>
 
@@ -132,12 +132,12 @@
           {{ product.description }}
         </text>
 
-        <view v-if="product.specifications?.length" class="specifications">
+        <view v-if="product.specifications && typeof product.specifications === 'object'" class="specifications">
           <text class="spec-title">规格参数</text>
           <view class="spec-list">
-            <view v-for="spec in product.specifications" :key="spec.name" class="spec-item">
-              <text class="spec-name">{{ spec.name }}</text>
-              <text class="spec-value">{{ spec.value }}</text>
+            <view v-for="(value, key) in product.specifications" :key="key" class="spec-item">
+              <text class="spec-name">{{ key }}</text>
+              <text class="spec-value">{{ value }}</text>
             </view>
           </view>
         </view>

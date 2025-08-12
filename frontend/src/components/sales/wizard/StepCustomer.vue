@@ -78,8 +78,8 @@
           <template #suffix>
             <SalesButton
               v-if="localForm.customerWechat && !localForm.customerPhone"
-              size="mini"
-              type="plain"
+              size="small"
+              type="default"
               @click="copyWechatToPhone"
             >
               同步
@@ -91,7 +91,7 @@
           v-model="localForm.customerEmail"
           label="邮箱地址"
           placeholder="用于发送报价单"
-          type="email"
+          type="text"
           :error="errors.customerEmail"
           @blur="validateEmail"
         >
@@ -142,8 +142,8 @@
         >
           <template #suffix>
             <SalesButton
-              size="mini"
-              type="plain"
+              size="small"
+              type="default"
               @click="getCurrentLocation"
               :loading="locationLoading"
             >

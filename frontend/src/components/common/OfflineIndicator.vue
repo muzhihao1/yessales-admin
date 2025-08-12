@@ -174,7 +174,7 @@ const bannerHideTimer = ref<number>()
 /**
  * Network info
  */
-const networkInfo = computed(() => networkStatus.value)
+const networkInfo = computed(() => networkStatus)
 
 const connectionTypeText = computed(() => {
   const type = networkInfo.value.connectionType
@@ -194,9 +194,9 @@ const connectionTypeText = computed(() => {
  * Banner state
  */
 const bannerTitle = computed(() => {
-  if (isSyncing.value) {
+  if (isSyncing) {
     return '正在同步数据...'
-  } else if (isOffline.value) {
+  } else if (isOffline) {
     return '网络已断开'
   } else if (wasOffline.value) {
     return '网络已恢复'
@@ -206,9 +206,9 @@ const bannerTitle = computed(() => {
 })
 
 const bannerSubtitle = computed(() => {
-  if (isSyncing.value) {
+  if (isSyncing) {
     return `同步中 ${pendingCount.value} 项更改`
-  } else if (isOffline.value) {
+  } else if (isOffline) {
     return pendingCount.value > 0
       ? `${pendingCount.value} 项更改待同步`
       : '离线模式，数据将稍后同步'
@@ -219,7 +219,7 @@ const bannerSubtitle = computed(() => {
   }
 })
 
-const showProgress = computed(() => isSyncing.value && syncProgress.value < 100)
+const showProgress = computed(() => isSyncing && syncProgress < 100)
 const showSyncButton = computed(
   () => props.showSyncButton && (pendingCount.value > 0 || failedCount.value > 0)
 )
@@ -228,7 +228,7 @@ const showSyncButton = computed(
  * Watch network status
  */
 watch(
-  isOffline,
+  () => isOffline,
   offline => {
     if (offline) {
       // Going offline
@@ -254,12 +254,12 @@ watch(isSyncing, syncing => {
     clearBannerTimer()
   } else {
     // Hide banner after sync completes
-    if (props.autoHide && !isOffline.value) {
+    if (props.autoHide && !isOffline) {
       setBannerTimer()
     }
 
     // Mark as was offline for recovery banner
-    if (!isOffline.value) {
+    if (!isOffline) {
       wasOffline.value = true
       setTimeout(() => {
         wasOffline.value = false
@@ -294,7 +294,7 @@ function handleBannerClick() {
 }
 
 function handleSyncClick() {
-  if (isSyncing.value) {
+  if (isSyncing) {
     openStatusModal()
   } else {
     triggerSync()
@@ -354,7 +354,7 @@ function formatTime(timestamp: number): string {
  */
 onMounted(() => {
   // Initial state
-  if (isOffline.value || pendingCount.value > 0) {
+  if (isOffline || pendingCount.value > 0) {
     showNetworkBanner.value = true
   }
 })

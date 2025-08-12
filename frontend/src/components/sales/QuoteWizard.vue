@@ -361,7 +361,7 @@ const mappedQuoteData = computed(() => ({
 
 // Methods
 const goNext = () => {
-  if (canProceed.value && currentStep.value < totalSteps) {
+  if (canProceed.value && currentStep.value < totalSteps.value) {
     currentStep.value++
     saveDraft()
 
@@ -484,23 +484,22 @@ const handleSubmit = async () => {
 
   try {
     const request = {
-      customer: customerForm,
+      customer: {
+        name: customerForm.customerName,
+        phone: customerForm.customerPhone,
+        wechat: customerForm.customerWechat,
+        address: customerForm.customerAddress,
+        remark: customerForm.customerRemark
+      },
       items: selectedProducts.value.map(item => ({
         product_id: item.product.id,
-        product_name: item.product.name,
-        quantity: item.quantity,
+        type: 'product' as const,
+        name: item.product.name,
         unit_price: item.price,
+        quantity: item.quantity,
         total_price: item.subtotal
       })),
-      pricing: {
-        subtotal: subtotal.value,
-        discount:
-          pricingConfig.discountType === 'percentage'
-            ? { type: 'percentage', value: pricingConfig.discountValue }
-            : { type: 'fixed', value: pricingConfig.discountValue },
-        finalTotal: totalPrice.value
-      },
-      quote: quoteMetadata
+      remark: quoteMetadata.specialTerms
     }
 
     const response = await QuotesApi.createQuote(request)

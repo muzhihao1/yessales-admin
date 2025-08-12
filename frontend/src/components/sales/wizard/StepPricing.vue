@@ -123,8 +123,8 @@
             <SalesButton
               v-for="preset in discountPresets"
               :key="preset.value"
-              size="mini"
-              type="plain"
+              size="small"
+              type="default"
               @click="applyDiscountPreset(preset)"
             >
               {{ preset.label }}
@@ -217,14 +217,14 @@
                 <view class="charge-type-toggle">
                   <SalesButton
                     :type="charge.type === 'fixed' ? 'primary' : 'default'"
-                    size="mini"
+                    size="small"
                     @click="toggleChargeType(index, 'fixed')"
                   >
                     固定
                   </SalesButton>
                   <SalesButton
                     :type="charge.type === 'percentage' ? 'primary' : 'default'"
-                    size="mini"
+                    size="small"
                     @click="toggleChargeType(index, 'percentage')"
                   >
                     比例
@@ -240,7 +240,7 @@
                   class="charge-amount"
                 />
 
-                <SalesButton size="mini" type="danger" @click="removeOtherCharge(index)">
+                <SalesButton size="small" type="danger" @click="removeOtherCharge(index)">
                   删除
                 </SalesButton>
               </view>
