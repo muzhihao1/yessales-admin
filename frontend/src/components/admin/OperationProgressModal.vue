@@ -96,8 +96,8 @@
             <text class="error-title">错误详情:</text>
             <view class="error-list">
               <view v-for="(error, index) in displayedErrors" :key="index" class="error-item">
-                <text class="error-message">{{ error.message || error }}</text>
-                <text v-if="error.item" class="error-item-name">项目: {{ error.item }}</text>
+                <text class="error-message">{{ typeof error === 'object' ? error.message : error }}</text>
+                <text v-if="typeof error === 'object' && error.item" class="error-item-name">项目: {{ error.item }}</text>
               </view>
               <button
                 v-if="results.errors.length > maxErrorDisplay"

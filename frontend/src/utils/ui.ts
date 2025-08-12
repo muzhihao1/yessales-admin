@@ -9,6 +9,7 @@ export interface ModalOptions {
   showCancel?: boolean
   cancelText?: string
   confirmText?: string
+  confirmColor?: string
   type?: 'info' | 'warning' | 'error' | 'success'
 }
 

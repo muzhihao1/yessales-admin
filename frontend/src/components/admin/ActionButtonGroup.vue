@@ -1,5 +1,5 @@
 <template>
-  <view
+  <div
     class="action-button-group"
     :class="[`direction-${direction}`, `size-${size}`, { 'touch-optimized': touchOptimized }]"
   >
@@ -15,20 +15,19 @@
         :disabled="action.disabled || action.loading"
         @click="handleActionClick(action)"
       >
-        <uni-icons
+        <span
           v-if="action.icon"
-          :type="action.icon"
-          :size="getIconSize()"
-          :color="getIconColor(action)"
-        />
-        <text v-if="showText" class="btn-text">{{ action.label }}</text>
-        <view v-if="action.loading" class="loading-indicator">
-          <uni-icons type="spinner-cycle" :size="getIconSize()" />
-        </view>
+          class="action-icon"
+          :style="{ fontSize: getIconSize() + 'px', color: getIconColor(action) }"
+        >{{ getIconSymbol(action.icon) }}</span>
+        <span v-if="showText" class="btn-text">{{ action.label }}</span>
+        <span v-if="action.loading" class="loading-indicator">
+          <span class="spinner" :style="{ fontSize: getIconSize() + 'px' }">⟳</span>
+        </span>
       </button>
 
       <!-- 下拉菜单按钮 -->
-      <view
+      <div
         v-else
         class="dropdown-wrapper"
         :class="{ 'dropdown-open': dropdownOpen === action.key }"
@@ -38,66 +37,62 @@
           :class="`btn-${action.type || 'default'}`"
           @click="toggleDropdown(action.key)"
         >
-          <uni-icons
+          <span
             v-if="action.icon"
-            :type="action.icon"
-            :size="getIconSize()"
-            :color="getIconColor(action)"
-          />
-          <text v-if="showText" class="btn-text">{{ action.label }}</text>
-          <uni-icons
-            type="down"
-            :size="12"
+            class="action-icon"
+            :style="{ fontSize: getIconSize() + 'px', color: getIconColor(action) }"
+          >{{ getIconSymbol(action.icon) }}</span>
+          <span v-if="showText" class="btn-text">{{ action.label }}</span>
+          <span
             class="dropdown-arrow"
             :class="{ 'arrow-up': dropdownOpen === action.key }"
-          />
+            :style="{ fontSize: '12px' }"
+          >▼</span>
         </button>
 
-        <view v-if="dropdownOpen === action.key" class="dropdown-menu">
-          <view
+        <div v-if="dropdownOpen === action.key" class="dropdown-menu">
+          <div
             v-for="subAction in action.dropdown"
             :key="subAction.key"
             class="dropdown-item"
             :class="`item-${subAction.type || 'default'}`"
             @click="handleActionClick(subAction)"
           >
-            <uni-icons
+            <span
               v-if="subAction.icon"
-              :type="subAction.icon"
-              :size="16"
-              :color="getIconColor(subAction)"
-            />
-            <text class="item-text">{{ subAction.label }}</text>
-          </view>
-        </view>
-      </view>
+              class="action-icon"
+              :style="{ fontSize: '16px', color: getIconColor(subAction) }"
+            >{{ getIconSymbol(subAction.icon) }}</span>
+            <span class="item-text">{{ subAction.label }}</span>
+          </div>
+        </div>
+      </div>
     </template>
 
     <!-- 更多操作按钮 -->
-    <view v-if="hasMoreActions" class="more-actions" :class="{ 'more-open': moreActionsOpen }">
+    <div v-if="hasMoreActions" class="more-actions" :class="{ 'more-open': moreActionsOpen }">
       <button class="action-btn btn-more" @click="toggleMoreActions">
-        <uni-icons type="more-filled" :size="getIconSize()" />
+        <span class="action-icon" :style="{ fontSize: getIconSize() + 'px' }">⋯</span>
       </button>
 
-      <view v-if="moreActionsOpen" class="more-menu">
-        <view
+      <div v-if="moreActionsOpen" class="more-menu">
+        <div
           v-for="action in hiddenActions"
           :key="action.key"
           class="more-item"
           :class="`item-${action.type || 'default'}`"
           @click="handleActionClick(action)"
         >
-          <uni-icons
+          <span
             v-if="action.icon"
-            :type="action.icon"
-            :size="16"
-            :color="getIconColor(action)"
-          />
-          <text class="item-text">{{ action.label }}</text>
-        </view>
-      </view>
-    </view>
-  </view>
+            class="action-icon"
+            :style="{ fontSize: '16px', color: getIconColor(action) }"
+          >{{ getIconSymbol(action.icon) }}</span>
+          <span class="item-text">{{ action.label }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -124,7 +119,7 @@ import { showModal } from '@/utils/ui'
  * @author Terminal 3 (Admin Frontend Team)
  */
 
-interface ActionItem {
+export interface ActionItem {
   key: string
   label: string
   icon?: string
@@ -217,6 +212,24 @@ const getIconColor = (action: ActionItem) => {
   }
 
   return colorMap[action.type || 'default']
+}
+
+// 获取图标符号
+const getIconSymbol = (iconType: string) => {
+  const iconMap: Record<string, string> = {
+    eye: '👁',
+    checkmarkempty: '✓',
+    compose: '✏️',
+    trash: '🗑',
+    image: '🖼',
+    download: '⬇',
+    close: '✕',
+    refreshempty: '⟲',
+    'more-filled': '⋯',
+    'spinner-cycle': '⟳',
+    down: '▼'
+  }
+  return iconMap[iconType] || '•'
 }
 
 // 处理操作点击

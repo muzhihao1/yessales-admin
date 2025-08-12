@@ -525,9 +525,6 @@ function exportData() {
   setTimeout(() => {
     console.log('数据导出完成')
     alert('数据导出完成')
-      title: '数据导出成功',
-      icon: 'success'
-    })
   }, 2000)
 }
 

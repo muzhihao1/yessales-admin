@@ -1,9 +1,9 @@
 <template>
-  <view class="virtual-table-container" :style="containerStyle" ref="containerRef">
+  <div class="virtual-table-container" :style="containerStyle" ref="containerRef">
     <!-- Virtual List Container -->
-    <view class="virtual-list" :style="listStyle">
+    <div class="virtual-list" :style="listStyle">
       <!-- Virtual Viewport -->
-      <view class="virtual-viewport" :style="viewportStyle">
+      <div class="virtual-viewport" :style="viewportStyle">
         <!-- Loading Skeleton for Initial Load -->
         <TableLoadingSkeleton
           v-if="loading && !hasData"
@@ -19,7 +19,7 @@
             v-for="virtualItem in visibleItems"
             :key="virtualItem.id"
             :item="virtualItem"
-            :columns="columns"
+            :columns="mappedColumns"
             :selectable="selectable"
             :selected="isSelected?.(virtualItem.id) || false"
             :actions="actions"
@@ -40,49 +40,49 @@
         </template>
 
         <!-- Empty State -->
-        <view v-else-if="isEmpty" class="virtual-empty-state">
+        <div v-else-if="isEmpty" class="virtual-empty-state">
           <slot name="empty">
-            <view class="empty-content">
-              <text class="empty-icon">📄</text>
-              <text class="empty-text">暂无数据</text>
-              <text class="empty-subtitle">{{ emptyMessage || '没有找到相关内容' }}</text>
-            </view>
+            <div class="empty-content">
+              <span class="empty-icon">📄</span>
+              <span class="empty-text">暂无数据</span>
+              <span class="empty-subtitle">{{ emptyMessage || '没有找到相关内容' }}</span>
+            </div>
           </slot>
-        </view>
-      </view>
-    </view>
+        </div>
+      </div>
+    </div>
 
     <!-- Loading More Indicator -->
-    <view v-if="loading && hasData" class="virtual-loading-more">
-      <view class="loading-spinner"></view>
-      <text class="loading-text">{{ loadingText || '加载更多数据...' }}</text>
-    </view>
+    <div v-if="loading && hasData" class="virtual-loading-more">
+      <div class="loading-spinner"></div>
+      <span class="loading-text">{{ loadingText || '加载更多数据...' }}</span>
+    </div>
 
     <!-- Error State -->
-    <view v-if="error" class="virtual-error-state">
-      <text class="error-icon">⚠️</text>
-      <text class="error-text">{{ error }}</text>
+    <div v-if="error" class="virtual-error-state">
+      <span class="error-icon">⚠️</span>
+      <span class="error-text">{{ error }}</span>
       <button class="error-retry" @click="handleRetry">重试</button>
-    </view>
+    </div>
 
     <!-- Virtual Scrolling Info (Dev Mode) -->
-    <view v-if="showDebugInfo" class="virtual-debug-info">
-      <text>可见行: {{ visibleItems.length }} / {{ total }}</text>
-      <text>渲染范围: {{ virtualData.startIndex }}-{{ virtualData.endIndex }}</text>
-      <text>滚动位置: {{ Math.round(scrollTop) }}px</text>
-      <text>总高度: {{ Math.round(virtualData.totalHeight) }}px</text>
-    </view>
-  </view>
+    <div v-if="showDebugInfo" class="virtual-debug-info">
+      <span>可见行: {{ visibleItems.length }} / {{ total }}</span>
+      <span>渲染范围: {{ virtualData.startIndex }}-{{ virtualData.endIndex }}</span>
+      <span>滚动位置: {{ Math.round(scrollTop) }}px</span>
+      <span>总高度: {{ Math.round(virtualData.totalHeight) }}px</span>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, readonly } from 'vue'
 import {
   type VirtualScrollItem,
   type VirtualScrollPreset,
   useVirtualScrolling
 } from '@/composables/useVirtualScrolling'
-import DataTableRow from './DataTableRow.vue'
+import DataTableRow from '../DataTableRow.vue'
 import TableLoadingSkeleton from './TableLoadingSkeleton.vue'
 
 /**
@@ -192,6 +192,17 @@ const virtualOptions = computed(() => {
   }
 })
 
+// 将 columns 转换为 TableColumn 格式
+const mappedColumns = computed(() => {
+  return props.columns.map(col => ({
+    key: col.key,
+    label: col.title, // 映射 title 到 label
+    width: col.width,
+    align: col.align,
+    sortable: col.sortable
+  }))
+})
+
 // 使用虚拟滚动
 const {
   state,
@@ -214,16 +225,22 @@ const {
 } = useVirtualScrolling(props.loadData, virtualOptions.value)
 
 // 事件处理
-const handleRowSelect = (id: string | number, selected: boolean) => {
-  emit('select', id, selected)
+const handleRowSelect = (selected: boolean, item: Record<string, any>) => {
+  emit('select', item.id, selected)
 }
 
-const handleRowClick = (item: any, virtualIndex: number) => {
+const handleRowClick = (item: Record<string, any>) => {
+  // 可以通过 visibleItems 找到对应的 virtualIndex
+  const virtualItem = visibleItems.value.find(vi => vi.id === item.id)
+  const virtualIndex = virtualItem ? virtualItem.index : 0
   emit('click', item, virtualIndex)
 }
 
-const handleRowAction = (action: string, item: any, virtualIndex: number) => {
-  emit('action', action, item, virtualIndex)
+const handleRowAction = (actionKey: string, item: Record<string, any>) => {
+  // 可以通过 visibleItems 找到对应的 virtualIndex
+  const virtualItem = visibleItems.value.find(vi => vi.id === item.id)
+  const virtualIndex = virtualItem ? virtualItem.index : 0
+  emit('action', actionKey, item, virtualIndex)
 }
 
 const handleHeightChange = (id: string | number, height: number) => {

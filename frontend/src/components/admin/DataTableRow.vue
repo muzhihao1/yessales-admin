@@ -1,5 +1,5 @@
 <template>
-  <view
+  <div
     ref="rowRef"
     class="data-table-row"
     :class="[
@@ -16,17 +16,17 @@
     @click="handleRowClick"
   >
     <!-- 选择框 -->
-    <view v-if="selectable" class="row-cell row-selector" @click.stop>
+    <div v-if="selectable" class="row-cell row-selector" @click.stop>
       <checkbox
         :checked="selected"
         :disabled="disabled"
         @change="handleSelectionChange"
         :class="{ 'checkbox-touch': touchOptimized }"
       />
-    </view>
+    </div>
 
     <!-- 数据单元格 -->
-    <view
+    <div
       v-for="column in columns"
       :key="column.key"
       class="row-cell"
@@ -45,38 +45,38 @@
         :value="getColumnValue(column.key)"
       >
         <!-- 默认单元格内容 -->
-        <view class="cell-content">
+        <div class="cell-content">
           <!-- 状态标签 -->
-          <view
+          <div
             v-if="isStatusColumn(column.key)"
             class="status-tag"
             :class="`status-${getStatusType(getColumnValue(column.key))}`"
           >
             {{ getStatusLabel(getColumnValue(column.key)) }}
-          </view>
+          </div>
 
           <!-- 图片显示 -->
-          <image
+          <img
             v-else-if="isImageColumn(column.key)"
             :src="getColumnValue(column.key)"
             class="cell-image"
             :class="{ 'image-placeholder': !getColumnValue(column.key) }"
-            mode="aspectFit"
+            alt=""
             @error="handleImageError"
           />
 
           <!-- 价格显示 -->
-          <text v-else-if="isPriceColumn(column.key)" class="cell-price">
+          <span v-else-if="isPriceColumn(column.key)" class="cell-price">
             ¥{{ formatPrice(getColumnValue(column.key)) }}
-          </text>
+          </span>
 
           <!-- 日期显示 -->
-          <text v-else-if="isDateColumn(column.key)" class="cell-date">
+          <span v-else-if="isDateColumn(column.key)" class="cell-date">
             {{ formatDate(getColumnValue(column.key)) }}
-          </text>
+          </span>
 
           <!-- 长文本截断 -->
-          <text
+          <span
             v-else-if="isLongTextColumn(column.key)"
             class="cell-long-text"
             :class="{ 'text-expanded': expandedTexts.has(column.key) }"
@@ -87,21 +87,21 @@
                 ? getColumnValue(column.key)
                 : truncateText(getColumnValue(column.key), 50)
             }}
-            <text v-if="needsTruncation(column.key)" class="expand-toggle">
+            <span v-if="needsTruncation(column.key)" class="expand-toggle">
               {{ expandedTexts.has(column.key) ? '收起' : '展开' }}
-            </text>
-          </text>
+            </span>
+          </span>
 
           <!-- 默认文本显示 -->
-          <text v-else class="cell-text">
+          <span v-else class="cell-text">
             {{ getColumnValue(column.key) || '-' }}
-          </text>
-        </view>
+          </span>
+        </div>
       </slot>
-    </view>
+    </div>
 
     <!-- 操作按钮 -->
-    <view v-if="actions && actions.length > 0" class="row-cell row-actions">
+    <div v-if="actions && actions.length > 0" class="row-cell row-actions">
       <ActionButtonGroup
         :actions="actions"
         :item="item"
@@ -110,8 +110,8 @@
         :max-visible="maxVisibleActions"
         @action="handleAction"
       />
-    </view>
-  </view>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -214,10 +214,10 @@ const virtualRowStyle = computed(() => {
       props.virtualIndex !== undefined
         ? `translateY(${props.virtualIndex * (props.virtualHeight || 60)}px)`
         : 'none',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    position: 'absolute' as const,
+    top: '0px',
+    left: '0px', 
+    right: '0px',
     zIndex: 1
   }
 })

@@ -133,23 +133,23 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
   // 虚拟容器样式
   const containerStyle = computed(() => ({
     height: `${opts.containerHeight}px`,
-    overflow: 'auto',
-    position: 'relative'
+    overflow: 'auto' as const,
+    position: 'relative' as const
   }))
 
   // 虚拟列表样式
   const listStyle = computed(() => ({
     height: `${virtualData.value.totalHeight}px`,
-    position: 'relative'
+    position: 'relative' as const
   }))
 
   // 可视区域样式
   const viewportStyle = computed(() => ({
     transform: `translate3d(0, ${virtualData.value.offsetY}px, 0)`,
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+    position: 'absolute' as const,
+    top: '0px',
+    left: '0px',
+    right: '0px',
     minHeight: `${virtualData.value.visibleCount * opts.itemHeight}px`
   }))
 
