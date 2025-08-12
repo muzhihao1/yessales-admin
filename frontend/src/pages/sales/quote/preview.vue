@@ -22,7 +22,7 @@
           <div class="company-section">
             <img
               class="company-logo"
-              src="/static/logo.png"
+              src="/logo.svg"
                             @error="handleLogoError"
             />
             <div class="company-info">
