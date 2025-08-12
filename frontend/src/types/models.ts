@@ -2,11 +2,21 @@ export interface Customer {
   id: string
   name: string
   phone: string
+  email?: string
   wechat?: string
+  wechat_id?: string // Alias for wechat for compatibility
   address?: string
   remark?: string
   assigned_to?: string
   credit_limit?: number
+  // Additional business properties for validation
+  customer_type?: 'direct' | 'distributor' | 'partner' | 'online'
+  status?: 'active' | 'inactive' | 'prospect' | 'lost'
+  priority_level?: 'low' | 'medium' | 'high' | 'critical'
+  payment_terms?: 'cash' | '15_days' | '30_days' | '60_days' | '90_days'
+  industry?: string
+  company_size?: string
+  location?: string
   created_at: string
   updated_at?: string
 }
@@ -14,10 +24,12 @@ export interface Customer {
 export interface Product {
   id: string
   name: string
+  sku?: string // SKU code for validation
   model: string
   category: string
   categoryId?: string // For compatibility with components expecting categoryId
   price: number
+  cost?: number // Product cost for validation
   unit: string
   image?: string // Alias for image_url
   image_url?: string
@@ -26,12 +38,17 @@ export interface Product {
   isNew?: boolean // For marking new products
   stock_quantity?: number
   stock?: number // Alias for stock_quantity for component compatibility
+  min_stock_level?: number // Minimum stock level for validation
   status?: 'active' | 'inactive' | 'discontinued'
   skuOptions?: Array<{ id: string; name: string; price: number }> // For product selector compatibility
   features?: string[] // Product features list
   rating?: number // Product rating (0-5)
   originalPrice?: number // Original price before discount
   specifications?: Record<string, string> // Product specifications
+  // Additional validation properties
+  brand?: string
+  supplier?: string
+  warranty_period?: number // Warranty period in months
   created_at: string
   updated_at?: string
   skus?: ProductSku[]

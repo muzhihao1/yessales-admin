@@ -17,6 +17,15 @@ declare global {
     readonly VITE_API_RETRY_ATTEMPTS?: string
     readonly VITE_API_RETRY_DELAY?: string
     readonly VITE_ENABLE_API_CACHE?: string
+    // Production config environment variables
+    readonly VITE_API_BASE_URL?: string
+    readonly VITE_CDN_URL?: string
+    readonly VITE_APP_VERSION?: string
+    readonly VITE_BUILD_NUMBER?: string
+    readonly VITE_CONFIG_PRESET?: string
+    readonly VITE_MONITORING_ENDPOINT?: string
+    readonly VITE_ERROR_REPORTING_ENDPOINT?: string
+    readonly VITE_MONITORING_KEY?: string
     // 添加其他可能用到的环境变量
     readonly DEV: boolean
     readonly PROD: boolean

@@ -59,7 +59,7 @@ export interface TableState {
   filters: Record<string, any>
 }
 
-export interface VirtualScrollingConfig {
+export interface VirtualScrollingConfig<T extends TableItem = TableItem> {
   enabled: boolean
   preset?: VirtualScrollPreset
   itemHeight?: number
@@ -72,7 +72,7 @@ export interface VirtualScrollingConfig {
     filters?: Record<string, any>,
     sort?: { by: string; order: 'asc' | 'desc' }
   ) => Promise<{
-    items: TableItem[]
+    items: T[]
     total: number
     hasMore: boolean
   }>
@@ -347,7 +347,7 @@ export function useTableState(initialState?: Partial<TableState>) {
  * 虚拟滚动表格增强功能
  */
 export function useVirtualTableEnhancements<T extends TableItem & VirtualScrollItem>(
-  virtualConfig: VirtualScrollingConfig,
+  virtualConfig: VirtualScrollingConfig<T>,
   initialState?: Partial<TableState>
 ) {
   const selection = useTableSelection()
@@ -468,7 +468,7 @@ export function useVirtualTableEnhancements<T extends TableItem & VirtualScrollI
  */
 export function useTableEnhancements<T extends TableItem>(
   initialState?: Partial<TableState>,
-  virtualConfig?: VirtualScrollingConfig
+  virtualConfig?: VirtualScrollingConfig<T & VirtualScrollItem>
 ) {
   // 如果启用虚拟滚动，使用虚拟滚动版本
   if (virtualConfig?.enabled) {

@@ -8,7 +8,7 @@
     <!-- Error state -->
     <div v-else-if="error" class="error-container">
       <span class="error-text">{{ error }}</span>
-      <button class="retry-btn" @click="loadCustomer">重试</button>
+      <button class="retry-btn" @click="() => loadCustomer()">重试</button>
     </div>
 
     <!-- Customer details -->
@@ -84,25 +84,25 @@
         <span class="section-title">业务统计</span>
         <div class="stats-grid">
           <StatCard
-            title="总报价数"
+            label="总报价数"
             :value="customer.total_quotes || 0"
             icon="📄"
             theme="primary"
           />
           <StatCard
-            title="成交金额"
+            label="成交金额"
             :value="formatAmount(customer.total_amount || 0)"
             icon="💰"
             theme="success"
           />
           <StatCard
-            title="最后报价"
+            label="最后报价"
             :value="customer.last_quote_at ? formatDate(customer.last_quote_at) : '无记录'"
             icon="📅"
             theme="info"
           />
           <StatCard
-            title="客户来源"
+            label="客户来源"
             :value="getSourceLabel(customer.source)"
             icon="📍"
             theme="default"

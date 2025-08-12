@@ -5,8 +5,8 @@
  * all business entities and operations.
  */
 
-import type { Customer, CustomerDetail } from '@/types/customer'
-import type { Product, Quote, User } from '@/types/models'
+import type { CustomerDetail } from '@/types/customer'
+import type { Customer, Product, Quote, User } from '@/types/models'
 import type { LogEntry } from '@/types/logs'
 
 // Validation result interface
