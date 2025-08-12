@@ -352,19 +352,24 @@ class RealtimeService {
    */
   private showChangeNotification(entityType: string, action: string, name: string) {
     // Only show notifications if user is not actively editing
-    const currentPages = getCurrentPages()
-    const currentPage = currentPages[currentPages.length - 1]
+    // Web implementation - check current location path
+    const currentPath = window.location.pathname
 
     // Don't show notifications on edit pages to avoid disrupting user input
-    if (currentPage?.route?.includes('/edit')) {
+    if (currentPath.includes('/edit')) {
       return
     }
 
-    uni.showToast({
-      title: `${entityType}${action}: ${name}`,
-      icon: 'none',
-      duration: 2000
-    })
+    // Web implementation - use console log and alert for notifications
+    const message = `${entityType}${action}: ${name}`
+    console.log('Real-time notification:', message)
+    
+    // For less disruptive notifications, use a toast-like approach
+    // This could be replaced with a proper toast notification library in the future
+    if (entityType !== '用户') { // Don't show intrusive alerts for user changes
+      // You could implement a custom toast notification here
+      console.log(`📢 ${message}`)
+    }
   }
 
   /**
@@ -389,11 +394,14 @@ class RealtimeService {
     const oldStatusText = statusMap[oldStatus] || oldStatus
     const newStatusText = statusMap[newStatus] || newStatus
 
-    uni.showToast({
-      title: `${entityType} ${name} 状态变更: ${oldStatusText} → ${newStatusText}`,
-      icon: 'none',
-      duration: 3000
-    })
+    // Web implementation - use console log for status change notifications
+    const message = `${entityType} ${name} 状态变更: ${oldStatusText} → ${newStatusText}`
+    console.log('Status change notification:', message)
+    
+    // For important status changes (like approvals), show alert
+    if (newStatus === 'approved' || newStatus === 'rejected') {
+      alert(message)
+    }
   }
 
   /**
@@ -411,11 +419,11 @@ class RealtimeService {
       }, this.reconnectDelay * this.reconnectAttempts) // Exponential backoff
     } else {
       console.error('❌ Max reconnection attempts reached. Real-time updates disabled.')
-      uni.showToast({
-        title: '实时更新连接失败',
-        icon: 'none',
-        duration: 3000
-      })
+      
+      // Web implementation - use console error and alert for critical connection failures
+      const message = '实时更新连接失败'
+      console.error('Real-time connection failed:', message)
+      alert(message)
     }
   }
 

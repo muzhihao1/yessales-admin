@@ -146,9 +146,10 @@ const startAutoDismiss = () => {
 onMounted(() => {
   // Vibrate on error/warning
   if (props.vibrate && (props.type === 'error' || props.type === 'warning')) {
-    // #ifndef H5
-    uni.vibrateShort()
-    // #endif
+    // Use web vibration API
+    if ('vibrate' in navigator) {
+      navigator.vibrate(100) // Short vibration
+    }
   }
 
   startAutoDismiss()

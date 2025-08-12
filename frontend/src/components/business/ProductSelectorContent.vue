@@ -190,7 +190,8 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import type { Category, Product } from '@/types/api'
+import type { Product } from '@/types/models'
+import type { Category } from '@/types/api'
 import type { SelectedProduct } from './ProductSelector.vue'
 
 interface Props {
@@ -381,10 +382,8 @@ const confirmSelection = () => {
     selectedItems.value[editingIndex.value] = newItem
   } else {
     if (props.maxSelection && selectedItems.value.length >= props.maxSelection) {
-      uni.showToast({
-        title: `最多选择${props.maxSelection}种产品`,
-        icon: 'none'
-      })
+      console.warn(`最多选择${props.maxSelection}种产品`)
+      alert(`最多选择${props.maxSelection}种产品`)
       return
     }
     selectedItems.value.push(newItem)

@@ -200,25 +200,69 @@ const isInitialized = ref(false)
 const detectionError = ref<string | null>(null)
 
 /**
- * Detect device information using Uniapp APIs
+ * Get system information using Web APIs
+ */
+function getWebSystemInfo() {
+  const userAgent = navigator.userAgent.toLowerCase()
+  
+  // Detect platform
+  let platform: DeviceInfo['platform'] = 'web'
+  if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+    platform = 'ios'
+  } else if (userAgent.includes('android')) {
+    platform = 'android'
+  }
+
+  // Get screen dimensions
+  const screenWidth = screen.width
+  const screenHeight = screen.height
+  const windowWidth = window.innerWidth
+  const windowHeight = window.innerHeight
+  const pixelRatio = window.devicePixelRatio || 1
+
+  return {
+    platform,
+    system: navigator.platform,
+    model: navigator.userAgent,
+    brand: 'Unknown',
+    screenWidth,
+    screenHeight,
+    windowWidth,
+    windowHeight,
+    pixelRatio,
+    statusBarHeight: 0, // Not available in web
+    safeArea: {
+      top: 0,
+      bottom: screenHeight,
+      left: 0,
+      right: screenWidth
+    },
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+}
+
+/**
+ * Get network information using Web APIs
+ */
+function getWebNetworkInfo() {
+  // Use Network Information API if available
+  const connection = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection
+  
+  return {
+    networkType: connection?.effectiveType || 'unknown'
+  }
+}
+
+/**
+ * Detect device information using Web APIs
  */
 export async function detectDevice(): Promise<DeviceInfo> {
   try {
-    // Get system information
-    const systemInfo = await new Promise<UniApp.GetSystemInfoResult>((resolve, reject) => {
-      uni.getSystemInfo({
-        success: resolve,
-        fail: reject
-      })
-    })
+    // Get system information from web APIs
+    const systemInfo = getWebSystemInfo()
 
     // Get network information
-    const networkInfo = await new Promise<UniApp.GetNetworkTypeResult>(resolve => {
-      uni.getNetworkType({
-        success: resolve,
-        fail: () => resolve({ networkType: 'unknown' as any })
-      })
-    })
+    const networkInfo = getWebNetworkInfo()
 
     // Detect device capabilities
     const capabilities = await detectCapabilities()
@@ -282,7 +326,7 @@ export async function detectDevice(): Promise<DeviceInfo> {
 }
 
 /**
- * Detect device capabilities
+ * Detect device capabilities using Web APIs
  */
 async function detectCapabilities(): Promise<DeviceCapabilities> {
   const capabilities: DeviceCapabilities = {
@@ -301,61 +345,56 @@ async function detectCapabilities(): Promise<DeviceCapabilities> {
 
   // Test camera capability
   try {
-    await new Promise((resolve, reject) => {
-      uni.getSetting({
-        success: res => {
-          capabilities.camera = res.authSetting['scope.camera'] !== false
-          resolve(true)
-        },
-        fail: reject
-      })
-    })
+    capabilities.camera = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
   } catch (e) {
-    // Camera detection failed
+    capabilities.camera = false
   }
 
   // Test microphone capability
   try {
-    await new Promise((resolve, reject) => {
-      uni.getSetting({
-        success: res => {
-          capabilities.microphone = res.authSetting['scope.record'] !== false
-          resolve(true)
-        },
-        fail: reject
-      })
-    })
+    capabilities.microphone = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)
   } catch (e) {
-    // Microphone detection failed
+    capabilities.microphone = false
   }
 
   // Test GPS capability
   try {
-    await new Promise((resolve, reject) => {
-      uni.getSetting({
-        success: res => {
-          capabilities.gps = res.authSetting['scope.userLocation'] !== false
-          resolve(true)
-        },
-        fail: reject
-      })
-    })
+    capabilities.gps = !!navigator.geolocation
   } catch (e) {
-    // GPS detection failed
+    capabilities.gps = false
   }
 
   // Test vibration capability
   try {
-    capabilities.vibrate = true // Most mobile devices support vibration
+    capabilities.vibrate = !!navigator.vibrate
   } catch (e) {
-    // Vibration not supported
+    capabilities.vibrate = false
+  }
+
+  // Test gyroscope/accelerometer capability
+  try {
+    capabilities.gyroscope = !!(window as any).DeviceOrientationEvent
+    capabilities.accelerometer = !!(window as any).DeviceMotionEvent
+  } catch (e) {
+    capabilities.gyroscope = false
+    capabilities.accelerometer = false
+  }
+
+  // Test Bluetooth capability
+  try {
+    capabilities.bluetooth = !!((navigator as any).bluetooth)
+  } catch (e) {
+    capabilities.bluetooth = false
   }
 
   // Platform-specific capability detection
-  if (deviceInfo.platform === 'ios') {
-    capabilities.faceId = true // Assume modern iOS devices have Face ID capability
+  const userAgent = navigator.userAgent.toLowerCase()
+  if (userAgent.includes('iphone') || userAgent.includes('ipad')) {
+    // iOS devices - assume modern devices have biometric capabilities
+    capabilities.faceId = true 
     capabilities.fingerprint = true
-  } else if (deviceInfo.platform === 'android') {
+  } else if (userAgent.includes('android')) {
+    // Android devices
     capabilities.fingerprint = true
     capabilities.nfc = true // Most Android devices have NFC
   }
@@ -367,7 +406,7 @@ async function detectCapabilities(): Promise<DeviceCapabilities> {
  * Calculate device performance level
  */
 function calculatePerformanceLevel(
-  systemInfo: UniApp.GetSystemInfoResult
+  systemInfo: any
 ): 'high' | 'medium' | 'low' {
   // Performance scoring based on various factors
   let score = 0
@@ -414,9 +453,18 @@ function calculatePerformanceLevel(
 }
 
 /**
+ * Simple system info interface for device categorization
+ */
+interface SystemInfo {
+  windowWidth: number
+  windowHeight: number
+  pixelRatio: number
+}
+
+/**
  * Determine device category
  */
-function determineDeviceCategory(systemInfo: UniApp.GetSystemInfoResult): DeviceCategory {
+function determineDeviceCategory(systemInfo: SystemInfo): DeviceCategory {
   const width = systemInfo.windowWidth
   const height = systemInfo.windowHeight
   const pixelRatio = systemInfo.pixelRatio
@@ -461,20 +509,10 @@ export function getOrientation(): 'portrait' | 'landscape' {
  * Check if device is in dark mode
  */
 export function isDarkMode(): boolean {
-  if (typeof uni !== 'undefined') {
-    try {
-      const systemInfo = uni.getSystemInfoSync()
-      return systemInfo.theme === 'dark'
-    } catch (e) {
-      return false
-    }
-  }
-
-  // Fallback for web
+  // Use web matchMedia API for dark mode detection
   if (typeof window !== 'undefined' && window.matchMedia) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   }
-
   return false
 }
 
@@ -503,11 +541,11 @@ export function supportsFeature(feature: keyof DeviceCapabilities): boolean {
 export function getDeviceCategoryName(): string {
   if (!deviceInfo.windowWidth || !deviceInfo.windowHeight) return 'Unknown'
 
-  const systemInfo = {
+  const systemInfo: SystemInfo = {
     windowWidth: deviceInfo.windowWidth,
     windowHeight: deviceInfo.windowHeight,
     pixelRatio: deviceInfo.pixelRatio || 1
-  } as UniApp.GetSystemInfoResult
+  }
 
   const category = determineDeviceCategory(systemInfo)
   return category.name
@@ -535,8 +573,8 @@ export function useDeviceDetection() {
 
   const deviceCategory = computed(() => getDeviceCategoryName())
 
-  // Auto-initialize if not already done
-  if (!isInitialized.value && typeof uni !== 'undefined') {
+  // Auto-initialize if not already done (web environment)
+  if (!isInitialized.value && typeof window !== 'undefined') {
     detectDevice().catch(console.error)
   }
 

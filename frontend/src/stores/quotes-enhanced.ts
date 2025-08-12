@@ -345,10 +345,8 @@ export const useQuotesStore = defineStore('quotes', () => {
     const result = await updateQuote(id, updates)
 
     if (result) {
-      uni.showToast({
-        title: successMessage,
-        icon: 'success'
-      })
+      console.log(successMessage)
+      alert(successMessage)
     }
 
     return result
@@ -396,10 +394,8 @@ export const useQuotesStore = defineStore('quotes', () => {
           cache.invalidateByTag(`quote:${id}`)
           cache.invalidateByTag('quote')
 
-          uni.showToast({
-            title: '删除成功',
-            icon: 'success'
-          })
+          console.log('删除成功')
+          alert('删除成功')
         }
       }
     )
@@ -414,39 +410,30 @@ export const useQuotesStore = defineStore('quotes', () => {
         const response = await QuotesApi.exportQuotes(params)
 
         if (response.success && response.data) {
-          // Handle file download in Uniapp
-          const tempFilePath = await new Promise<string>((resolve, reject) => {
-            uni.downloadFile({
-              url: response.data as any, // Assuming API returns download URL
-              success: res => {
-                if (res.statusCode === 200) {
-                  resolve(res.tempFilePath)
-                } else {
-                  reject(new Error('下载失败'))
-                }
-              },
-              fail: reject
-            })
-          })
-
-          // Save file to local
-          uni.saveFile({
-            tempFilePath,
-            success: () => {
-              uni.showToast({
-                title: '导出成功',
-                icon: 'success'
-              })
-            },
-            fail: () => {
-              uni.showToast({
-                title: '保存失败',
-                icon: 'none'
-              })
-            }
-          })
-
-          return { success: true }
+          try {
+            // Handle file download in web browser
+            const downloadUrl = response.data as string
+            
+            // Create a temporary link element to trigger download
+            const link = document.createElement('a')
+            link.href = downloadUrl
+            link.download = `quotes_export_${new Date().toISOString().split('T')[0]}.xlsx` // Default filename
+            link.style.display = 'none'
+            
+            // Append to body, click, and remove
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            
+            console.log('导出成功')
+            alert('导出成功')
+            
+            return { success: true }
+          } catch (error) {
+            console.error('保存失败:', error)
+            alert('保存失败')
+            throw error
+          }
         } else {
           throw new Error(response.error?.message || '导出失败')
         }

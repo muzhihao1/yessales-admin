@@ -172,11 +172,9 @@ export function usePermissions() {
      * Show permission denied toast
      */
     showPermissionDenied(action?: string): void {
-      uni.showToast({
-        title: this.getPermissionDeniedMessage(action),
-        icon: 'none',
-        duration: 2000
-      })
+      const message = this.getPermissionDeniedMessage(action)
+      console.warn('Permission denied:', message)
+      alert(message)
     },
 
     /**

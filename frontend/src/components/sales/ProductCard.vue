@@ -232,11 +232,14 @@ const handleSelect = () => {
 const handleQuickAdd = () => {
   emit('quickAdd', props.product)
 
-  // Haptic feedback on supported devices
-  if (uni.vibrateShort) {
-    uni.vibrateShort({
-      type: 'light'
-    })
+  // Haptic feedback on supported devices - Web implementation
+  if ('vibrate' in navigator) {
+    try {
+      // Short vibration for light haptic feedback
+      navigator.vibrate(50) // 50ms vibration
+    } catch (error) {
+      console.warn('Vibration not supported or failed:', error)
+    }
   }
 }
 
@@ -248,12 +251,15 @@ const toggleFavorite = () => {
   const newFavoriteState = !props.isFavorite
   emit('favorite', props.product, newFavoriteState)
 
-  // Show toast feedback
-  uni.showToast({
-    title: newFavoriteState ? '已添加收藏' : '已取消收藏',
-    icon: newFavoriteState ? 'success' : 'none',
-    duration: 1000
-  })
+  // Show feedback - Web implementation
+  const message = newFavoriteState ? '已添加收藏' : '已取消收藏'
+  console.log('Favorite toggle:', message)
+  
+  // For less intrusive feedback, could implement a toast notification library
+  // For now, just log the action (could show brief alert for important actions)
+  if (newFavoriteState) {
+    console.log(`✅ Added ${props.product.name} to favorites`)
+  }
 }
 
 const toggleInfo = () => {

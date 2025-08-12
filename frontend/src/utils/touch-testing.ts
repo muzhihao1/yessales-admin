@@ -361,18 +361,23 @@ export async function testTouchTargets(): Promise<TouchTargetTest[]> {
 }
 
 /**
- * Query elements using Uniapp selector API
+ * Query elements using standard DOM APIs
  */
 async function queryElements(selector: string): Promise<any[]> {
   return new Promise(resolve => {
-    const query = uni.createSelectorQuery()
-
-    query
-      .selectAll(selector)
-      .boundingClientRect(rects => {
-        resolve(Array.isArray(rects) ? rects : [])
-      })
-      .exec()
+    const elements = document.querySelectorAll(selector)
+    const rects = Array.from(elements).map(element => {
+      const rect = element.getBoundingClientRect()
+      return {
+        left: rect.left,
+        top: rect.top,
+        right: rect.right,
+        bottom: rect.bottom,
+        width: rect.width,
+        height: rect.height
+      }
+    })
+    resolve(rects)
   })
 }
 

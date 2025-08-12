@@ -265,16 +265,12 @@ export const useSettingsStore = defineStore('settings', () => {
       // Update specialized settings
       updateSpecializedSettings()
 
-      uni.showToast({
-        title: '设置已保存',
-        icon: 'success'
-      })
+      console.log('设置已保存')
+      alert('设置已保存')
     } catch (err) {
       error.value = err instanceof Error ? err.message : '保存设置失败'
-      uni.showToast({
-        title: error.value,
-        icon: 'none'
-      })
+      console.error('保存设置失败:', error.value)
+      alert(error.value)
       console.error('Failed to update setting:', err)
     } finally {
       saving.value = false
@@ -328,16 +324,12 @@ export const useSettingsStore = defineStore('settings', () => {
       // Update specialized settings
       updateSpecializedSettings()
 
-      uni.showToast({
-        title: `已保存 ${updatedSettings.length} 项设置`,
-        icon: 'success'
-      })
+      console.log(`已保存 ${updatedSettings.length} 项设置`)
+      alert(`已保存 ${updatedSettings.length} 项设置`)
     } catch (err) {
       error.value = err instanceof Error ? err.message : '批量保存设置失败'
-      uni.showToast({
-        title: error.value,
-        icon: 'none'
-      })
+      console.error('批量保存失败:', error.value)
+      alert(error.value)
       console.error('Failed to batch update settings:', err)
     } finally {
       saving.value = false
@@ -346,39 +338,35 @@ export const useSettingsStore = defineStore('settings', () => {
 
   async function resetToDefaults(category?: SettingsCategory) {
     try {
-      uni.showModal({
-        title: '重置设置',
-        content: category
-          ? `确定要将 ${SETTINGS_CATEGORIES[category].title} 重置为默认值吗？`
-          : '确定要将所有设置重置为默认值吗？',
-        success: async res => {
-          if (res.confirm) {
-            saving.value = true
+      const confirmText = category
+        ? `确定要将 ${SETTINGS_CATEGORIES[category].title} 重置为默认值吗？`
+        : '确定要将所有设置重置为默认值吗？'
+      
+      const confirmed = confirm(`重置设置\n\n${confirmText}`)
+      
+      if (confirmed) {
+        saving.value = true
 
-            // Filter settings to reset
-            const settingsToReset = category
-              ? settings.value.filter(s => s.category === category)
-              : settings.value
+        // Filter settings to reset
+        const settingsToReset = category
+          ? settings.value.filter(s => s.category === category)
+          : settings.value
 
-            // Reset to default values
-            settingsToReset.forEach(setting => {
-              setting.value = setting.default_value
-              setting.updated_at = new Date().toISOString()
-            })
+        // Reset to default values
+        settingsToReset.forEach(setting => {
+          setting.value = setting.default_value
+          setting.updated_at = new Date().toISOString()
+        })
 
-            // Mock API call
-            await new Promise(resolve => setTimeout(resolve, 500))
+        // Mock API call
+        await new Promise(resolve => setTimeout(resolve, 500))
 
-            updateSpecializedSettings()
-            saving.value = false
+        updateSpecializedSettings()
+        saving.value = false
 
-            uni.showToast({
-              title: '设置已重置',
-              icon: 'success'
-            })
-          }
-        }
-      })
+        console.log('设置已重置')
+        alert('设置已重置')
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : '重置设置失败'
       console.error('Failed to reset settings:', err)

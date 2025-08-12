@@ -99,16 +99,21 @@ const encryption = {
 const storage = {
   async set(key: string, value: any, useSync = true): Promise<void> {
     try {
+      // Convert to JSON string for storage
+      const jsonValue = JSON.stringify(value)
+      
       if (useSync) {
-        uni.setStorageSync(key, value)
+        // Synchronous localStorage operation
+        localStorage.setItem(key, jsonValue)
       } else {
+        // Simulate async operation for compatibility
         return new Promise((resolve, reject) => {
-          uni.setStorage({
-            key,
-            data: value,
-            success: () => resolve(),
-            fail: reject
-          })
+          try {
+            localStorage.setItem(key, jsonValue)
+            resolve()
+          } catch (error) {
+            reject(error)
+          }
         })
       }
     } catch (error) {
@@ -120,14 +125,19 @@ const storage = {
   async get(key: string, useSync = true): Promise<any> {
     try {
       if (useSync) {
-        return uni.getStorageSync(key)
+        // Synchronous localStorage operation
+        const jsonValue = localStorage.getItem(key)
+        return jsonValue ? JSON.parse(jsonValue) : null
       } else {
+        // Simulate async operation for compatibility
         return new Promise((resolve, reject) => {
-          uni.getStorage({
-            key,
-            success: res => resolve(res.data),
-            fail: () => resolve(null)
-          })
+          try {
+            const jsonValue = localStorage.getItem(key)
+            resolve(jsonValue ? JSON.parse(jsonValue) : null)
+          } catch (error) {
+            console.warn('Failed to parse stored data:', error)
+            resolve(null)
+          }
         })
       }
     } catch (error) {
@@ -139,14 +149,17 @@ const storage = {
   async remove(key: string, useSync = true): Promise<void> {
     try {
       if (useSync) {
-        uni.removeStorageSync(key)
+        // Synchronous localStorage operation
+        localStorage.removeItem(key)
       } else {
+        // Simulate async operation for compatibility
         return new Promise((resolve, reject) => {
-          uni.removeStorage({
-            key,
-            success: () => resolve(),
-            fail: reject
-          })
+          try {
+            localStorage.removeItem(key)
+            resolve()
+          } catch (error) {
+            reject(error)
+          }
         })
       }
     } catch (error) {

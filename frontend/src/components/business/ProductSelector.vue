@@ -37,7 +37,8 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue'
 import ProductSelectorContent from './ProductSelectorContent.vue'
-import type { Category, Product } from '@/types/api'
+import type { Product } from '@/types/models'
+import type { Category } from '@/types/api'
 
 export interface SelectedProduct {
   product: Product

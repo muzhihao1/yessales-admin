@@ -313,15 +313,13 @@ function closeStatusModal() {
 async function triggerSync() {
   try {
     await sync()
-    uni.showToast({
-      title: '同步完成',
-      icon: 'success'
-    })
+    // Web implementation - show sync success feedback
+    console.log('Sync completed successfully: 同步完成')
+    // Could implement toast notification library here
   } catch (error) {
-    uni.showToast({
-      title: '同步失败',
-      icon: 'none'
-    })
+    // Web implementation - show sync failure feedback  
+    console.error('Sync failed: 同步失败', error)
+    alert('同步失败，请检查网络连接')
   }
 }
 

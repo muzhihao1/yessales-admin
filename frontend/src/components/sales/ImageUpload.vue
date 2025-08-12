@@ -1,37 +1,46 @@
 <template>
-  <view class="sales-image-upload">
-    <view v-if="label" class="sales-form-label" :class="{ required: required }">
+  <div class="sales-image-upload">
+    <div v-if="label" class="sales-form-label" :class="{ required: required }">
       {{ label }}
-    </view>
+    </div>
 
-    <view class="sales-image-list">
+    <div class="sales-image-list">
       <!-- 已上传的图片 -->
-      <view v-for="(item, index) in imageList" :key="index" class="sales-image-item">
-        <image
+      <div v-for="(item, index) in imageList" :key="index" class="sales-image-item">
+        <img
           :src="item.url"
-          mode="aspectFill"
           class="sales-image-preview"
           @click="previewImage(index)"
         />
-        <view v-if="!disabled" class="sales-image-delete" @click.stop="deleteImage(index)">
-          <text class="sales-image-delete-icon">×</text>
-        </view>
-      </view>
+        <div v-if="!disabled" class="sales-image-delete" @click.stop="deleteImage(index)">
+          <span class="sales-image-delete-icon">×</span>
+        </div>
+      </div>
 
       <!-- 上传按钮 -->
-      <view
+      <div
         v-if="imageList.length < maxCount && !disabled"
         class="sales-image-item sales-image-add"
         @click="chooseImage"
       >
-        <text class="sales-image-add-icon">+</text>
-        <text class="sales-image-add-text">{{ uploadText }}</text>
-      </view>
-    </view>
+        <span class="sales-image-add-icon">+</span>
+        <span class="sales-image-add-text">{{ uploadText }}</span>
+      </div>
+    </div>
 
-    <view v-if="error" class="sales-form-error">{{ error }}</view>
-    <view v-if="help && !error" class="sales-form-help">{{ help }}</view>
-  </view>
+    <!-- 隐藏的文件输入 -->
+    <input
+      ref="fileInput"
+      type="file"
+      multiple
+      accept="image/*"
+      style="display: none"
+      @change="handleFileSelect"
+    />
+
+    <div v-if="error" class="sales-form-error">{{ error }}</div>
+    <div v-if="help && !error" class="sales-form-help">{{ help }}</div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -78,6 +87,7 @@ const emit = defineEmits<{
 }>()
 
 const imageList = ref<ImageItem[]>([])
+const fileInput = ref<HTMLInputElement | null>(null)
 
 // 监听外部传入的值
 watch(
@@ -90,79 +100,97 @@ watch(
 
 // 选择图片
 const chooseImage = () => {
-  const remainCount = props.maxCount - imageList.value.length
-
-  uni.chooseImage({
-    count: remainCount,
-    sizeType: props.sizeType,
-    sourceType: props.sourceType,
-    success: async res => {
-      // 检查文件大小
-      const maxSizeBytes = props.maxSize * 1024 * 1024
-      const validFiles = res.tempFiles.filter(file => {
-        if (file.size && file.size > maxSizeBytes) {
-          uni.showToast({
-            title: `图片大小不能超过${props.maxSize}MB`,
-            icon: 'none'
-          })
-          return false
-        }
-        return true
-      })
-
-      if (validFiles.length === 0) return
-
-      // 显示加载提示
-      uni.showLoading({ title: '上传中...' })
-      emit('upload-start')
-
-      try {
-        // 上传图片
-        const uploadPromises = validFiles.map(file => uploadFile(file))
-        const results = await Promise.all(uploadPromises)
-
-        // 更新图片列表
-        const newImages = results.filter(item => item !== null) as ImageItem[]
-        const updatedList = [...imageList.value, ...newImages]
-        imageList.value = updatedList
-
-        emit('update:modelValue', updatedList)
-        emit('change', updatedList)
-
-        uni.hideLoading()
-
-        if (newImages.length > 0) {
-          uni.showToast({
-            title: '上传成功',
-            icon: 'success'
-          })
-        }
-      } catch (error) {
-        uni.hideLoading()
-        uni.showToast({
-          title: '上传失败',
-          icon: 'none'
-        })
-        emit('upload-fail', error as Error)
-      }
-    },
-    fail: () => {
-      uni.showToast({
-        title: '选择图片失败',
-        icon: 'none'
-      })
+  if (fileInput.value) {
+    // 设置文件数量限制
+    const remainCount = props.maxCount - imageList.value.length
+    if (remainCount <= 0) {
+      alert('已达到最大上传数量')
+      return
     }
+    
+    fileInput.value.click()
+  }
+}
+
+// 处理文件选择
+const handleFileSelect = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  const files = target.files
+  
+  if (!files || files.length === 0) {
+    console.warn('选择图片失败')
+    alert('选择图片失败')
+    return
+  }
+
+  // 检查文件数量限制
+  const remainCount = props.maxCount - imageList.value.length
+  const selectedFiles = Array.from(files).slice(0, remainCount)
+
+  // 检查文件大小和类型
+  const maxSizeBytes = props.maxSize * 1024 * 1024
+  const validFiles = selectedFiles.filter(file => {
+    if (!file.type.startsWith('image/')) {
+      alert('请选择图片文件')
+      return false
+    }
+    
+    if (file.size > maxSizeBytes) {
+      console.warn(`图片大小不能超过${props.maxSize}MB`)
+      alert(`图片大小不能超过${props.maxSize}MB`)
+      return false
+    }
+    return true
   })
+
+  if (validFiles.length === 0) {
+    target.value = '' // 清空input
+    return
+  }
+
+  // 显示加载提示
+  console.log('上传中...')
+  emit('upload-start')
+
+  try {
+    // 上传图片
+    const uploadPromises = validFiles.map(file => uploadFile(file))
+    const results = await Promise.all(uploadPromises)
+
+    // 更新图片列表
+    const newImages = results.filter(item => item !== null) as ImageItem[]
+    const updatedList = [...imageList.value, ...newImages]
+    imageList.value = updatedList
+
+    emit('update:modelValue', updatedList)
+    emit('change', updatedList)
+
+    console.log('上传完成')
+
+    if (newImages.length > 0) {
+      console.log('上传成功')
+      alert('上传成功')
+    }
+  } catch (error) {
+    console.error('上传失败:', error)
+    alert('上传失败')
+    emit('upload-fail', error as Error)
+  } finally {
+    target.value = '' // 清空input以允许重复选择同一文件
+  }
 }
 
 // 上传单个文件
-const uploadFile = async (file: any): Promise<ImageItem | null> => {
+const uploadFile = async (file: File): Promise<ImageItem | null> => {
   try {
+    // 创建本地URL用于预览
+    const url = URL.createObjectURL(file)
+    
     // 在实际项目中，这里应该调用真实的上传 API
-    // 目前使用 Mock 数据，直接返回本地路径
+    // 目前使用 Mock 数据，直接返回本地URL
     const mockUploadedFile: ImageItem = {
-      url: file.path,
-      path: file.path,
+      url,
+      path: url,
       size: file.size,
       name: file.name || `image_${Date.now()}.jpg`
     }
@@ -180,7 +208,7 @@ const uploadFile = async (file: any): Promise<ImageItem | null> => {
     // if (response.success && response.data) {
     //   const uploadedFile: ImageItem = {
     //     url: response.data.url,
-    //     path: file.path,
+    //     path: url,
     //     size: file.size,
     //     name: file.name,
     //   };
@@ -197,25 +225,30 @@ const uploadFile = async (file: any): Promise<ImageItem | null> => {
 // 预览图片
 const previewImage = (index: number) => {
   const urls = imageList.value.map(item => item.url)
-  uni.previewImage({
-    current: index,
-    urls
-  })
+  const currentUrl = urls[index]
+  
+  // 在新窗口中打开图片预览
+  // 简单的实现方式 - 在生产环境中可以使用更高级的图片预览组件
+  const previewWindow = window.open(currentUrl, '_blank', 'width=800,height=600,scrollbars=yes')
+  if (!previewWindow) {
+    alert('弹窗被阻止，请允许弹窗后重试')
+  }
 }
 
 // 删除图片
 const deleteImage = (index: number) => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要删除这张图片吗？',
-    success: res => {
-      if (res.confirm) {
-        imageList.value.splice(index, 1)
-        emit('update:modelValue', imageList.value)
-        emit('change', imageList.value)
-      }
+  const confirmed = confirm('确定要删除这张图片吗？')
+  if (confirmed) {
+    // 如果是本地URL，需要释放内存
+    const imageItem = imageList.value[index]
+    if (imageItem.url && imageItem.url.startsWith('blob:')) {
+      URL.revokeObjectURL(imageItem.url)
     }
-  })
+    
+    imageList.value.splice(index, 1)
+    emit('update:modelValue', imageList.value)
+    emit('change', imageList.value)
+  }
 }
 </script>
 

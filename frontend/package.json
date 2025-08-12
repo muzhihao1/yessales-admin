@@ -17,7 +17,7 @@
     "test:smoke": "vitest run src/tests/"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.43.4",
+    "@supabase/supabase-js": "^2.54.0",
     "@vitejs/plugin-vue": "^5.2.4",
     "crypto-js": "^4.2.0",
     "pinia": "^2.1.7",

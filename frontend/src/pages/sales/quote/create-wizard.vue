@@ -16,17 +16,18 @@ defineOptions({
   name: 'CreateQuoteWizard'
 })
 
-// Set page title and meta
-uni.setNavigationBarTitle({
-  title: '新建报价'
-})
+// Set page title - Web implementation
+document.title = '新建报价 - 耶氏台球报价系统'
 
-// Track page view for analytics
-uni.reportAnalytics('page_view', {
+// Track page view for analytics - Web implementation
+console.log('Analytics: Page view', {
   page_name: 'quote_create_wizard',
   page_type: 'sales',
   timestamp: Date.now()
 })
+
+// Could integrate with Google Analytics or other web analytics here
+// Example: gtag('event', 'page_view', { page_title: '新建报价' })
 </script>
 
 <style lang="scss" scoped>

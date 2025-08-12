@@ -374,16 +374,11 @@ const validDaysOptions = [
 // 方法
 function selectCategory(category: string) {
   if (hasUnsavedChanges.value) {
-    uni.showModal({
-      title: '切换分类',
-      content: '当前有未保存的更改，切换分类将丢失这些更改。确定要继续吗？',
-      success: res => {
-        if (res.confirm) {
-          discardChanges()
-          currentCategory.value = category
-        }
-      }
-    })
+    const confirmSwitch = confirm('切换分类\n当前有未保存的更改，切换分类将丢失这些更改。确定要继续吗？')
+    if (confirmSwitch) {
+      discardChanges()
+      currentCategory.value = category
+    }
   } else {
     currentCategory.value = category
   }
@@ -411,17 +406,13 @@ async function saveSettings() {
 
     hasUnsavedChanges.value = false
 
-    uni.showToast({
-      title: '设置已保存',
-      icon: 'success'
-    })
+    console.log('设置已保存')
+    alert('设置已保存')
   } catch (error) {
     console.error('保存设置失败:', error)
 
-    uni.showToast({
-      title: '保存失败',
-      icon: 'error'
-    })
+    console.error('保存失败')
+    alert('保存失败')
   } finally {
     saving.value = false
   }
@@ -458,115 +449,82 @@ function loadSettings() {
 
 function handleBack() {
   if (hasUnsavedChanges.value) {
-    uni.showModal({
-      title: '未保存更改',
-      content: '您有未保存的更改，确定要离开吗？',
-      success: res => {
-        if (res.confirm) {
-          uni.navigateBack()
-        }
-      }
-    })
+    const confirmLeave = confirm('未保存更改\n您有未保存的更改，确定要离开吗？')
+    if (confirmLeave) {
+      window.history.back()
+    }
   } else {
-    uni.navigateBack()
+    window.history.back()
   }
 }
 
 // 帮助功能
 function openUserGuide() {
-  uni.showToast({
-    title: '即将打开使用指南',
-    icon: 'none'
-  })
+  console.log('即将打开使用指南')
+  alert('即将打开使用指南')
 }
 
 function openFAQ() {
-  uni.showToast({
-    title: '即将打开常见问题',
-    icon: 'none'
-  })
+  console.log('即将打开常见问题')
+  alert('即将打开常见问题')
 }
 
 function contactSupport() {
-  uni.showActionSheet({
-    itemList: ['拨打客服电话', '发送邮件', '在线客服'],
-    success: res => {
-      const actions = ['拨打客服电话', '发送邮件', '在线客服']
-      uni.showToast({
-        title: `选择了: ${actions[res.tapIndex]}`,
-        icon: 'none'
-      })
-    }
-  })
+  const options = ['拨打客服电话', '发送邮件', '在线客服']
+  const choice = confirm(`联系客服\n\n选择方式：\n1. ${options[0]}\n2. ${options[1]}\n3. ${options[2]}\n\n点击确定选择第一个选项`)
+  if (choice) {
+    console.log(`选择了: ${options[0]}`)
+    alert(`选择了: ${options[0]}`)
+  }
 }
 
 function submitFeedback() {
-  uni.navigateTo({
-    url: '/pages/sales/feedback/index'
-  })
+  window.location.href = '/pages/sales/feedback/index'
 }
 
 // 系统功能
 function checkUpdate() {
-  uni.showLoading({
-    title: '检查中...'
-  })
+  console.log('检查中...')
+  alert('正在检查更新...')
 
   setTimeout(() => {
-    uni.hideLoading()
-    uni.showToast({
-      title: '已是最新版本',
-      icon: 'success'
-    })
+    console.log('已是最新版本')
+    alert('已是最新版本')
   }, 2000)
 }
 
 function openPrivacyPolicy() {
-  uni.showToast({
-    title: '即将打开隐私政策',
-    icon: 'none'
-  })
+  console.log('即将打开隐私政策')
+  alert('即将打开隐私政策')
 }
 
 function openTermsOfService() {
-  uni.showToast({
-    title: '即将打开服务条款',
-    icon: 'none'
-  })
+  console.log('即将打开服务条款')
+  alert('即将打开服务条款')
 }
 
 // 数据管理
 function clearCache() {
-  uni.showModal({
-    title: '清除缓存',
-    content: '确定要清除应用缓存吗？这不会影响您的报价数据。',
-    success: res => {
-      if (res.confirm) {
-        uni.showLoading({
-          title: '清除中...'
-        })
+  const confirmClear = confirm('清除缓存\n确定要清除应用缓存吗？这不会影响您的报价数据。')
+  if (confirmClear) {
+    console.log('清除中...')
+    alert('正在清除缓存...')
 
-        setTimeout(() => {
-          uni.hideLoading()
-          dataStats.value.cacheSize = '0MB'
-          uni.showToast({
-            title: '缓存已清除',
-            icon: 'success'
-          })
-        }, 1500)
-      }
-    }
-  })
+    setTimeout(() => {
+      dataStats.value.cacheSize = '0MB'
+      console.log('缓存已清除')
+      alert('缓存已清除')
+    }, 1500)
+  }
 }
 
 function exportData() {
-  uni.showLoading({
-    title: '导出中...'
-  })
+  console.log('导出中...')
+  alert('正在导出数据...')
 
   setTimeout(() => {
-    uni.hideLoading()
-    uni.showToast({
+    console.log('数据导出完成')
+    alert('数据导出完成')
       title: '数据导出成功',
       icon: 'success'
     })
@@ -574,43 +532,33 @@ function exportData() {
 }
 
 function resetSettings() {
-  uni.showModal({
-    title: '重置设置',
-    content: '确定要将所有设置重置为默认值吗？此操作不可撤销。',
-    confirmColor: '#FF3B30',
-    success: res => {
-      if (res.confirm) {
-        preferences.value = {
-          theme: 'light',
-          fontSize: 'medium',
-          language: 'zh-CN'
-        }
-
-        businessSettings.value = {
-          defaultContact: '',
-          quoteValidDays: '30',
-          autoSave: true
-        }
-
-        hasUnsavedChanges.value = true
-
-        uni.showToast({
-          title: '设置已重置',
-          icon: 'success'
-        })
-      }
+  const confirmReset = confirm('重置设置\n确定要将所有设置重置为默认值吗？此操作不可撤销。')
+  if (confirmReset) {
+    preferences.value = {
+      theme: 'light',
+      fontSize: 'medium',
+      language: 'zh-CN'
     }
-  })
+
+    businessSettings.value = {
+      defaultContact: '',
+      quoteValidDays: '30',
+      autoSave: true
+    }
+
+    hasUnsavedChanges.value = true
+
+    console.log('设置已重置')
+    alert('设置已重置')
+  }
 }
 
 // 生命周期
 onMounted(() => {
   loadSettings()
 
-  // 设置页面标题
-  uni.setNavigationBarTitle({
-    title: '应用设置'
-  })
+  // 设置页面标题 (在网页中不需要)
+  document.title = '应用设置'
 })
 </script>
 

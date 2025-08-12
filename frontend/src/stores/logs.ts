@@ -306,10 +306,9 @@ export const useLogsStore = defineStore('logs', () => {
       // Simulate file download
       const filename = `logs_export_${new Date().toISOString().split('T')[0]}.${options.format}`
 
-      uni.showToast({
-        title: `导出完成: ${filename}`,
-        icon: 'success'
-      })
+      // Web implementation - show export success feedback
+      console.log(`Export completed: ${filename}`)
+      alert(`导出完成: ${filename}`)
 
       return exportData
     } catch (err) {
@@ -358,10 +357,9 @@ export const useLogsStore = defineStore('logs', () => {
         event.resolved_at = new Date().toISOString()
         event.resolution_notes = notes
 
-        uni.showToast({
-          title: '安全事件已处理',
-          icon: 'success'
-        })
+        // Web implementation - show security event resolution feedback
+        console.log('Security event resolved:', eventId)
+        alert('安全事件已处理')
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : '处理安全事件失败'

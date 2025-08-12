@@ -83,3 +83,13 @@ export interface UploadFileResponse {
   size: number
   type: string
 }
+
+// Add missing Category interface (commonly used in components)  
+export interface Category {
+  id: string
+  name: string
+  description?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}

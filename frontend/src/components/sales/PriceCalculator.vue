@@ -363,22 +363,18 @@ const exportCalculation = () => {
 
   emit('export', calculationData)
 
-  uni.showToast({
-    title: '计算明细已导出',
-    icon: 'success'
-  })
+  // Web implementation - show export success feedback
+  console.log('Export successful: 计算明细已导出')
+  
+  // Could implement a toast notification library for better UX
 }
 
 const resetCalculation = () => {
-  uni.showModal({
-    title: '重新计算',
-    content: '确定要重置所有计算数据吗？',
-    success: res => {
-      if (res.confirm) {
-        emit('reset')
-      }
-    }
-  })
+  // Web implementation - use confirm dialog
+  const confirmed = confirm('确定要重置所有计算数据吗？')
+  if (confirmed) {
+    emit('reset')
+  }
 }
 
 // Watchers

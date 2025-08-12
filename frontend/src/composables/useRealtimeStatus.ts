@@ -124,11 +124,8 @@ export function useRealtimeStatus() {
      * Show connection status toast
      */
     showStatusToast() {
-      uni.showToast({
-        title: this.getStatusMessage(),
-        icon: 'none',
-        duration: 3000
-      })
+      console.log('Connection status:', this.getStatusMessage())
+      alert(this.getStatusMessage())
     },
 
     /**
@@ -165,24 +162,16 @@ export function useRealtimeStatus() {
      */
     async reconnect() {
       try {
-        uni.showLoading({
-          title: '重新连接中...'
-        })
+        console.log('重新连接中...')
 
         await realtimeService.reconnect()
         updateStatus()
 
-        uni.hideLoading()
-        uni.showToast({
-          title: '重新连接成功',
-          icon: 'success'
-        })
+        console.log('重新连接成功')
+        alert('重新连接成功')
       } catch (error) {
-        uni.hideLoading()
-        uni.showToast({
-          title: '重新连接失败',
-          icon: 'none'
-        })
+        console.error('重新连接失败')
+        alert('重新连接失败')
         console.error('Reconnection failed:', error)
       }
     },
@@ -193,10 +182,8 @@ export function useRealtimeStatus() {
     async toggle() {
       if (status.value.isConnected) {
         await realtimeService.disconnect()
-        uni.showToast({
-          title: '实时更新已关闭',
-          icon: 'none'
-        })
+        console.log('实时更新已关闭')
+        alert('实时更新已关闭')
       } else {
         await this.reconnect()
       }
@@ -215,11 +202,7 @@ export function useRealtimeStatus() {
         `活跃频道: ${status.value.channels.join(', ')}`
       ].join('\n')
 
-      uni.showModal({
-        title: '实时连接详情',
-        content: details,
-        showCancel: false
-      })
+      alert(`实时连接详情\n\n${details}`)
     }
   }
 

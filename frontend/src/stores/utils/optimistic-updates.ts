@@ -155,13 +155,11 @@ export const useOptimisticStore = defineStore('optimistic', () => {
         operation.rollback()
       }
 
-      // Show rollback notification
+      // Show rollback notification - Web implementation
       if (DEFAULT_CONFIG.showRollbackToast) {
-        uni.showToast({
-          title: reason || '操作已撤销',
-          icon: 'none',
-          duration: 2000
-        })
+        const message = reason || '操作已撤销'
+        console.log('Optimistic update rollback:', message)
+        // Could implement toast notification library for better UX
       }
     }
   }

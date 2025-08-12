@@ -194,12 +194,15 @@ const closeTester = () => {
 }
 
 const handleTouchTest = (target: any) => {
-  uni.vibrateShort()
-  uni.showToast({
-    title: `${target.size}px target ${target.recommended ? '✓' : '⚠️'}`,
-    icon: 'none',
-    duration: 1000
-  })
+  // Web implementation - vibrate if supported
+  if (navigator.vibrate) {
+    navigator.vibrate(100)
+  }
+  
+  // Web implementation - show feedback
+  const message = `${target.size}px target ${target.recommended ? '✓' : '⚠️'}`
+  console.log('Touch test:', message)
+  alert(message)
 }
 
 const updateScreenInfo = () => {
@@ -216,19 +219,16 @@ const updateScreenInfo = () => {
   }
   // #endif
 
-  // #ifndef H5
-  uni.getSystemInfo({
-    success: res => {
-      screenInfo.width = res.screenWidth
-      screenInfo.height = res.screenHeight
-      screenInfo.dpr = res.pixelRatio
-      screenInfo.viewport = `${res.windowWidth}×${res.windowHeight}`
-
-      deviceInfo.isTouch = true
-      deviceInfo.isMobile = res.platform !== 'devtools'
-    }
-  })
-  // #endif
+  // Web fallback for when window is not available
+  if (typeof window === 'undefined') {
+    screenInfo.width = 375
+    screenInfo.height = 667
+    screenInfo.dpr = 2
+    screenInfo.viewport = '375×667'
+    
+    deviceInfo.isTouch = true
+    deviceInfo.isMobile = true
+  }
 }
 
 onMounted(() => {

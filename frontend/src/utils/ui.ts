@@ -26,44 +26,19 @@ export const showModal = async (options: ModalOptions): Promise<ModalResult> => 
   const {
     title,
     content,
-    showCancel = true,
-    cancelText = '取消',
-    confirmText = '确定',
+    showCancel: _showCancel = true,
+    cancelText: _cancelText = '取消',
+    confirmText: _confirmText = '确定',
     type: _type = 'info'
   } = options
 
   return new Promise(resolve => {
-    // In a real implementation, this would show a modal component
-    // For now, use uni.showModal or browser confirm as fallback
-
-    if (typeof uni !== 'undefined' && uni.showModal) {
-      uni.showModal({
-        title,
-        content,
-        showCancel,
-        cancelText,
-        confirmText,
-        success: res => {
-          resolve({
-            confirm: res.confirm || false,
-            cancel: res.cancel || false
-          })
-        },
-        fail: () => {
-          resolve({
-            confirm: false,
-            cancel: true
-          })
-        }
-      })
-    } else {
-      // Fallback for web environment
-      const result = window.confirm(`${title}\n\n${content}`)
-      resolve({
-        confirm: result,
-        cancel: !result
-      })
-    }
+    // Web implementation using browser confirm
+    const result = window.confirm(`${title}\n\n${content}`)
+    resolve({
+      confirm: result,
+      cancel: !result
+    })
   })
 }
 
@@ -75,26 +50,22 @@ export const showToast = (
   type: ToastType = 'success',
   duration: number = 2000
 ): void => {
-  if (typeof uni !== 'undefined' && uni.showToast) {
-    // UniApp environment
-    uni.showToast({
-      title: message,
-      icon: type === 'error' ? 'error' : type === 'success' ? 'success' : 'none',
-      duration
-    })
-  } else {
-    // Web environment fallback
-    console.log(`[${type.toUpperCase()}] ${message}`)
+  // Web environment implementation
+  console.log(`[${type.toUpperCase()}] ${message}`)
 
-    // Could implement a custom toast notification here
-    // For now, just use console output
-    if (type === 'error') {
-      console.error(message)
-    } else if (type === 'warning') {
-      console.warn(message)
-    } else {
-      console.info(message)
-    }
+  // Log with appropriate level
+  if (type === 'error') {
+    console.error(message)
+  } else if (type === 'warning') {
+    console.warn(message)
+  } else {
+    console.info(message)
+  }
+
+  // Could implement a custom toast notification library here
+  // For now, also show as alert for critical messages
+  if (type === 'error') {
+    alert(`Error: ${message}`)
   }
 }
 
@@ -102,21 +73,18 @@ export const showToast = (
  * Show loading indicator
  */
 export const showLoading = (title: string = '加载中...'): void => {
-  if (typeof uni !== 'undefined' && uni.showLoading) {
-    uni.showLoading({
-      title,
-      mask: true
-    })
-  }
+  // Web implementation - log to console for now
+  console.log('Loading:', title)
+  // Could implement a custom loading overlay here
 }
 
 /**
  * Hide loading indicator
  */
 export const hideLoading = (): void => {
-  if (typeof uni !== 'undefined' && uni.hideLoading) {
-    uni.hideLoading()
-  }
+  // Web implementation - log to console for now
+  console.log('Loading hidden')
+  // Could hide custom loading overlay here
 }
 
 /**
@@ -130,16 +98,9 @@ export interface ActionSheetOptions {
 
 export const showActionSheet = (options: ActionSheetOptions): Promise<{ tapIndex: number }> => {
   return new Promise((resolve, reject) => {
-    if (typeof uni !== 'undefined' && uni.showActionSheet) {
-      uni.showActionSheet({
-        ...options,
-        success: res => resolve(res),
-        fail: err => reject(err)
-      })
-    } else {
-      // Web fallback - could implement custom action sheet
-      reject(new Error('Action sheet not supported in web environment'))
-    }
+    // Web implementation - for now, reject as not implemented
+    // Could implement custom action sheet component here
+    reject(new Error('Action sheet not yet implemented in web environment'))
   })
 }
 
@@ -148,16 +109,7 @@ export const showActionSheet = (options: ActionSheetOptions): Promise<{ tapIndex
  */
 export const copyToClipboard = (text: string): Promise<void> => {
   return new Promise((resolve, reject) => {
-    if (typeof uni !== 'undefined' && uni.setClipboardData) {
-      uni.setClipboardData({
-        data: text,
-        success: () => {
-          showToast('已复制到剪贴板')
-          resolve()
-        },
-        fail: err => reject(err)
-      })
-    } else if (navigator.clipboard) {
+    if (navigator.clipboard) {
       // Modern browser clipboard API
       navigator.clipboard
         .writeText(text)

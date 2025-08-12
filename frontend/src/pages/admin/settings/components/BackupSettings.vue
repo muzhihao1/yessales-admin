@@ -711,9 +711,13 @@ const testBackupConnection = async () => {
 }
 
 const viewBackupHistory = () => {
-  showToast('跳转到备份历史页面')
-  // 这里可以跳转到备份历史页面
-  // uni.navigateTo({ url: '/pages/admin/backup/history' })
+  // Web implementation - use Vue Router for navigation
+  // Note: Assuming the route exists in the router configuration
+  // router.push('/admin/backup/history')
+  
+  // For now, show placeholder since backup history page may not exist yet
+  showToast('备份历史功能开发中')
+  console.log('Navigate to backup history page')
 }
 
 // 加载设置数据

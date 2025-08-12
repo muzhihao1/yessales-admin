@@ -130,12 +130,13 @@ export const useCacheStore = defineStore('cache', () => {
     if (finalConfig.enablePersistence) {
       try {
         const storageKey = `${finalConfig.storagePrefix}_${key}`
-        uni.setStorageSync(storageKey, {
+        const storageData = JSON.stringify({
           data,
           timestamp: now,
           ttl: finalConfig.ttl,
           tags: finalConfig.tags
         })
+        localStorage.setItem(storageKey, storageData)
       } catch (error) {
         console.warn('Failed to persist cache entry to storage:', error)
       }
@@ -269,15 +270,16 @@ export const useCacheStore = defineStore('cache', () => {
   function loadFromStorage<T>(key: string): T | null {
     try {
       const storageKey = `${DEFAULT_CONFIG.storagePrefix}_${key}`
-      const stored = uni.getStorageSync(storageKey)
+      const storedJson = localStorage.getItem(storageKey)
 
-      if (!stored) return null
+      if (!storedJson) return null
 
+      const stored = JSON.parse(storedJson)
       const now = Date.now()
 
       // Check if expired
       if (now - stored.timestamp > stored.ttl) {
-        uni.removeStorageSync(storageKey)
+        localStorage.removeItem(storageKey)
         return null
       }
 
@@ -297,7 +299,7 @@ export const useCacheStore = defineStore('cache', () => {
   function hasInStorage(key: string): boolean {
     try {
       const storageKey = `${DEFAULT_CONFIG.storagePrefix}_${key}`
-      return !!uni.getStorageSync(storageKey)
+      return localStorage.getItem(storageKey) !== null
     } catch {
       return false
     }
@@ -306,7 +308,7 @@ export const useCacheStore = defineStore('cache', () => {
   function removeFromStorage(key: string): void {
     try {
       const storageKey = `${DEFAULT_CONFIG.storagePrefix}_${key}`
-      uni.removeStorageSync(storageKey)
+      localStorage.removeItem(storageKey)
     } catch (error) {
       console.warn('Failed to remove from storage:', error)
     }
@@ -314,10 +316,12 @@ export const useCacheStore = defineStore('cache', () => {
 
   function clearStorage(): void {
     try {
-      const info = uni.getStorageInfoSync()
-      info.keys
+      // Get all localStorage keys that match our cache prefix
+      const keysToRemove = Object.keys(localStorage)
         .filter(key => key.startsWith(DEFAULT_CONFIG.storagePrefix))
-        .forEach(key => uni.removeStorageSync(key))
+      
+      // Remove each matching key
+      keysToRemove.forEach(key => localStorage.removeItem(key))
     } catch (error) {
       console.warn('Failed to clear storage:', error)
     }

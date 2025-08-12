@@ -36,11 +36,11 @@
     "src/**/*.ts",
     "src/**/*.d.ts", 
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "../shared/**/*.ts"
+    "src/**/*.vue"
   ],
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "../shared/**/*.ts"
   ]
 }

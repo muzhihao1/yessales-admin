@@ -142,11 +142,9 @@ export const useAppStore = defineStore('app', () => {
 
   async function checkNetworkStatus() {
     try {
-      // 检查网络连接
-      const networkInfo = uni.getNetworkType()
-      if (networkInfo) {
-        setOnlineStatus(networkInfo.networkType !== 'none')
-      }
+      // 检查网络连接 - Web implementation
+      const networkConnected = navigator.onLine
+      setOnlineStatus(networkConnected)
 
       // 检查API健康状态
       if (isOnline.value) {
@@ -237,8 +235,12 @@ export const useAppStore = defineStore('app', () => {
   function updateSettings(newSettings: Partial<typeof settings.value>) {
     settings.value = { ...settings.value, ...newSettings }
 
-    // 持久化设置
-    uni.setStorageSync('app_settings', settings.value)
+    // 持久化设置 - Web implementation
+    try {
+      localStorage.setItem('app_settings', JSON.stringify(settings.value))
+    } catch (error) {
+      console.error('Failed to save settings:', error)
+    }
 
     // 应用设置变更
     applySettings()
@@ -251,8 +253,10 @@ export const useAppStore = defineStore('app', () => {
 
   function loadSettings() {
     try {
-      const savedSettings = uni.getStorageSync('app_settings')
-      if (savedSettings) {
+      // Web implementation
+      const savedSettingsJson = localStorage.getItem('app_settings')
+      if (savedSettingsJson) {
+        const savedSettings = JSON.parse(savedSettingsJson)
         settings.value = { ...settings.value, ...savedSettings }
         applySettings()
       }
@@ -292,13 +296,15 @@ export const useAppStore = defineStore('app', () => {
       }, 3000)
     }
 
-    // 显示系统通知
+    // 显示系统通知 - Web implementation
     if (settings.value.notificationsEnabled) {
-      uni.showToast({
-        title: notification.title,
-        icon: notification.type === 'success' ? 'success' : 'none',
-        duration: notification.persistent ? 5000 : 2000
-      })
+      const duration = notification.persistent ? 5000 : 2000
+      console.log(`Notification: ${notification.title}`)
+      
+      // For critical notifications, also show alert
+      if (notification.type === 'error' || notification.persistent) {
+        alert(notification.title)
+      }
     }
   }
 
@@ -434,17 +440,17 @@ export const useAppStore = defineStore('app', () => {
    */
   function updateSystemInfo() {
     try {
-      const info = uni.getSystemInfoSync()
+      // Web implementation - get browser/system info
       systemInfo.value = {
-        platform: info.platform || '',
-        version: info.system || '',
-        brand: info.brand || '',
-        model: info.model || '',
-        screenWidth: info.screenWidth || 0,
-        screenHeight: info.screenHeight || 0,
-        pixelRatio: info.pixelRatio || 1,
-        statusBarHeight: info.statusBarHeight || 0,
-        navigationBarHeight: 44 // 默认导航栏高度
+        platform: 'web',
+        version: navigator.userAgent,
+        brand: 'Browser',
+        model: navigator.platform,
+        screenWidth: screen.width,
+        screenHeight: screen.height,
+        pixelRatio: window.devicePixelRatio || 1,
+        statusBarHeight: 0, // Not applicable in web
+        navigationBarHeight: 44 // Default navigation bar height
       }
     } catch (error) {
       console.error('Failed to get system info:', error)
@@ -473,9 +479,13 @@ export const useAppStore = defineStore('app', () => {
       // 检查网络状态
       await checkNetworkStatus()
 
-      // 监听网络状态变化
-      uni.onNetworkStatusChange(res => {
-        setOnlineStatus(res.isConnected)
+      // 监听网络状态变化 - Web implementation
+      window.addEventListener('online', () => {
+        setOnlineStatus(true)
+      })
+      
+      window.addEventListener('offline', () => {
+        setOnlineStatus(false)
       })
 
       // 设置定期健康检查

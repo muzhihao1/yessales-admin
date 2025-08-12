@@ -23,16 +23,9 @@ app.config.errorHandler = (err, vm, info) => {
   console.error('Component:', vm)
   console.error('Info:', info)
 
-  // Show user-friendly error message
-  if (window.uni) {
-    window.uni.showToast({
-      title: '应用出现错误，请刷新页面',
-      icon: 'error',
-      duration: 3000
-    })
-  } else {
-    alert('应用出现错误，请刷新页面')
-  }
+  // Show user-friendly error message - Web implementation
+  console.error('Application Error: 应用出现错误，请刷新页面')
+  alert('应用出现错误，请刷新页面')
 }
 
 // Performance monitoring

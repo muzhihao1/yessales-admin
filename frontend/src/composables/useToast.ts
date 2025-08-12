@@ -203,8 +203,7 @@ const toastManager = new ToastManager()
 
 // Composable function
 export function useToast() {
-  // For H5 platform, use the enhanced toast manager
-  // #ifdef H5
+  // Pure web implementation using enhanced toast manager
   return {
     show: (options: ToastOptions) => toastManager.show(options),
     success: (message: string, options?: Partial<ToastOptions>) =>
@@ -224,110 +223,6 @@ export function useToast() {
     formSuccess: (message?: string) => toastManager.formSuccess(message),
     networkError: (action?: string) => toastManager.networkError(action)
   }
-  // #endif
-
-  // For other platforms, fall back to uni.showToast
-  // #ifndef H5
-  return {
-    show: (options: ToastOptions) => {
-      uni.showToast({
-        title: options.message,
-        icon:
-          options.type === 'success' ? 'success' : options.type === 'loading' ? 'loading' : 'none',
-        duration: options.duration || 3000
-      })
-
-      return {
-        id: Date.now().toString(),
-        close: () => uni.hideToast(),
-        update: () => {}
-      }
-    },
-
-    success: (message: string) => {
-      uni.showToast({
-        title: message,
-        icon: 'success',
-        duration: 2000
-      })
-      return { id: '', close: () => {}, update: () => {} }
-    },
-
-    error: (message: string) => {
-      uni.showToast({
-        title: message,
-        icon: 'none',
-        duration: 3000
-      })
-      if (uni.vibrateShort) {
-        uni.vibrateShort()
-      }
-      return { id: '', close: () => {}, update: () => {} }
-    },
-
-    warning: (message: string) => {
-      uni.showToast({
-        title: message,
-        icon: 'none',
-        duration: 3000
-      })
-      return { id: '', close: () => {}, update: () => {} }
-    },
-
-    info: (message: string) => {
-      uni.showToast({
-        title: message,
-        icon: 'none',
-        duration: 2500
-      })
-      return { id: '', close: () => {}, update: () => {} }
-    },
-
-    loading: (message: string) => {
-      uni.showLoading({
-        title: message
-      })
-      return {
-        id: '',
-        close: () => uni.hideLoading(),
-        update: () => {}
-      }
-    },
-
-    clear: () => {
-      uni.hideToast()
-      uni.hideLoading()
-    },
-
-    // Form-specific methods
-    validationError: (field: string, message: string) => {
-      uni.showToast({
-        title: `${field}: ${message}`,
-        icon: 'none',
-        duration: 3000
-      })
-      return { id: '', close: () => {}, update: () => {} }
-    },
-
-    formSuccess: (message: string = '操作成功') => {
-      uni.showToast({
-        title: message,
-        icon: 'success',
-        duration: 2000
-      })
-      return { id: '', close: () => {}, update: () => {} }
-    },
-
-    networkError: () => {
-      uni.showToast({
-        title: '网络连接异常，请检查网络设置',
-        icon: 'none',
-        duration: 3000
-      })
-      return { id: '', close: () => {}, update: () => {} }
-    }
-  }
-  // #endif
 }
 
 export default useToast

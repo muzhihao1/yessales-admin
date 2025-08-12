@@ -516,11 +516,12 @@ const applyDiscountPreset = (preset: { label: string; value: number }) => {
   discountError.value = ''
   emitConfigUpdate()
 
-  uni.showToast({
-    title: `已应用${preset.label}折扣`,
-    icon: 'success',
-    duration: 1000
-  })
+  // Web implementation - show preset discount application feedback
+  const message = `已应用${preset.label}折扣`
+  console.log('Discount preset applied:', message)
+  
+  // For user feedback, could implement a toast notification library
+  // For now, just log the success action
 }
 
 const toggleTaxIncluded = () => {

@@ -29,20 +29,13 @@ const getApiConfig = (): ApiConfig => {
 export const apiConfig = getApiConfig()
 
 /**
- * 智能存储适配器 - 运行时检测UniApp环境
- * 支持UniApp和标准Web环境的存储API
+ * Web存储适配器 - 使用标准localStorage API
  */
 const createStorageAdapter = () => {
   return {
     getItem: (key: string) => {
       try {
-        // 优先使用UniApp API（如果可用）
-        if (typeof window !== 'undefined' && window.uni && window.uni.getStorageSync) {
-          const result = window.uni.getStorageSync(key)
-          return result || null
-        }
-
-        // 回退到标准localStorage
+        // 使用标准localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           return localStorage.getItem(key)
         }
@@ -56,13 +49,7 @@ const createStorageAdapter = () => {
 
     setItem: (key: string, value: string) => {
       try {
-        // 优先使用UniApp API（如果可用）
-        if (typeof window !== 'undefined' && window.uni && window.uni.setStorageSync) {
-          window.uni.setStorageSync(key, value)
-          return
-        }
-
-        // 回退到标准localStorage
+        // 使用标准localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem(key, value)
           return
@@ -77,13 +64,7 @@ const createStorageAdapter = () => {
 
     removeItem: (key: string) => {
       try {
-        // 优先使用UniApp API（如果可用）
-        if (typeof window !== 'undefined' && window.uni && window.uni.removeStorageSync) {
-          window.uni.removeStorageSync(key)
-          return
-        }
-
-        // 回退到标准localStorage
+        // 使用标准localStorage
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.removeItem(key)
           return

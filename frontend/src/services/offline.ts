@@ -86,16 +86,35 @@ function generateOperationId(): string {
 }
 
 /**
- * Detect network connection type
+ * Detect network connection type - Web implementation
  */
 function getNetworkInfo(): Partial<NetworkStatus> {
   try {
-    // Uniapp network info
-    const networkType = uni.getNetworkTypeSync()
+    // Web implementation - use navigator.onLine and connection API
+    const isOnline = navigator.onLine
+    
+    // Try to get connection info if available (modern browsers)
+    let connectionType = 'unknown'
+    let effectiveType = undefined
+    let downlink = undefined
+    let rtt = undefined
+    
+    // @ts-ignore - Connection API is experimental
+    if ('connection' in navigator) {
+      // @ts-ignore
+      const connection = navigator.connection
+      connectionType = connection.type || connection.effectiveType || 'unknown'
+      effectiveType = connection.effectiveType
+      downlink = connection.downlink
+      rtt = connection.rtt
+    }
 
     return {
-      connectionType: networkType.networkType,
-      isOnline: networkType.networkType !== 'none'
+      isOnline,
+      connectionType,
+      effectiveType,
+      downlink,
+      rtt
     }
   } catch (error) {
     console.warn('Failed to get network info:', error)
@@ -163,32 +182,45 @@ export const useOfflineStore = defineStore('offline', () => {
     return Math.round((completed / total) * 100)
   })
 
-  // Network monitoring
+  // Network monitoring - Web implementation
   function initializeNetworkMonitoring() {
-    // Monitor network status changes
-    uni.onNetworkStatusChange(res => {
+    // Monitor network status changes using Web API events
+    const handleOnline = () => {
       const wasOffline = !networkStatus.isOnline
+      
+      // Update network status
+      const newStatus = getNetworkInfo()
+      Object.assign(networkStatus, newStatus)
+      networkStatus.lastOnlineTime = Date.now()
 
-      networkStatus.isOnline = res.isConnected
-      networkStatus.connectionType = res.networkType
-
-      if (res.isConnected) {
-        networkStatus.lastOnlineTime = Date.now()
-
-        // Trigger sync when coming back online
-        if (wasOffline && config.value.syncOnConnect) {
-          console.log('📶 网络已连接，开始同步离线数据')
-          setTimeout(() => syncOfflineOperations(), 1000)
-        }
-      } else {
-        networkStatus.lastOfflineTime = Date.now()
-        console.log('📵 网络已断开，进入离线模式')
+      // Trigger sync when coming back online
+      if (wasOffline && config.value.syncOnConnect) {
+        console.log('📶 网络已连接，开始同步离线数据')
+        setTimeout(() => syncAllOperations(), 1000)
       }
-    })
+    }
+    
+    const handleOffline = () => {
+      networkStatus.isOnline = false
+      networkStatus.lastOfflineTime = Date.now()
+      console.log('📵 网络已断开，进入离线模式')
+    }
+    
+    // Add event listeners for network changes
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    
+    // Store cleanup function for later removal if needed
+    const cleanup = () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
 
     // Initial network status check
     const initialStatus = getNetworkInfo()
     Object.assign(networkStatus, initialStatus)
+    
+    return cleanup
   }
 
   // Operation management

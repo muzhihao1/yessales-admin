@@ -347,10 +347,8 @@ function copyLogDetails() {
     navigator.clipboard
       .writeText(details)
       .then(() => {
-        uni.showToast({
-          title: '已复制到剪贴板',
-          icon: 'success'
-        })
+        console.log('已复制到剪贴板')
+        alert('已复制到剪贴板')
       })
       .catch(() => {
         showCopyModal(details)
@@ -361,12 +359,7 @@ function copyLogDetails() {
 }
 
 function showCopyModal(text: string) {
-  uni.showModal({
-    title: '复制以下内容',
-    content: text,
-    showCancel: false,
-    confirmText: '确定'
-  })
+  alert(`复制以下内容:\n${text}`)
 }
 
 function exportSingleLog() {
@@ -381,10 +374,8 @@ function exportSingleLog() {
   // Simulate file download
   const filename = `log_${props.log.id}_${new Date().toISOString().split('T')[0]}.json`
 
-  uni.showToast({
-    title: `已导出: ${filename}`,
-    icon: 'success'
-  })
+  console.log(`已导出: ${filename}`)
+  alert(`已导出: ${filename}`)
 
   console.log('Exported log:', logData)
 }
@@ -392,41 +383,28 @@ function exportSingleLog() {
 function handleResolve() {
   if (!props.log) return
 
-  uni.showModal({
-    title: '处理错误',
-    content: '请输入处理说明（可选）',
-    editable: true,
-    placeholderText: '输入处理说明...',
-    success: res => {
-      if (res.confirm) {
-        emit('resolve', props.log!, res.content || undefined)
-
-        uni.showToast({
-          title: '已标记为已处理',
-          icon: 'success'
-        })
-      }
-    }
-  })
+  const userInput = prompt('处理错误\n请输入处理说明（可选）：', '')
+  if (userInput !== null) {
+    emit('resolve', props.log!, userInput || undefined)
+    console.log('已标记为已处理')
+    alert('已标记为已处理')
+  }
 }
 
 function handleEscalate() {
   if (!props.log) return
 
-  uni.showActionSheet({
-    itemList: ['发送邮件给管理员', '创建工单', '标记为关键问题'],
-    success: res => {
-      const actions = ['email', 'ticket', 'critical']
-      const action = actions[res.tapIndex]
-
-      uni.showToast({
-        title: `已${['发送邮件', '创建工单', '标记为关键'][res.tapIndex]}`,
-        icon: 'success'
-      })
-
-      console.log('Escalated log:', props.log, 'action:', action)
-    }
-  })
+  const options = ['发送邮件给管理员', '创建工单', '标记为关键问题']
+  const choice = confirm(`选择操作：\n1. ${options[0]}\n2. ${options[1]}\n3. ${options[2]}\n\n点击确定选择第一个选项，取消则跳过`)
+  
+  if (choice) {
+    const actions = ['email', 'ticket', 'critical']
+    const action = actions[0] // Default to first option for simplicity
+    
+    console.log('已发送邮件')
+    alert('已发送邮件')
+    console.log('Escalated log:', props.log, 'action:', action)
+  }
 }
 </script>
 

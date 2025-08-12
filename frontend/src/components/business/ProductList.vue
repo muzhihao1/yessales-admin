@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Product } from '@/types/api'
+import type { Product } from '@/types/models'
 
 interface Props {
   products?: Product[]

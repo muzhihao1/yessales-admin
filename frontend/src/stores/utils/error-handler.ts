@@ -284,13 +284,14 @@ export async function handleStoreError(
     })
   }
 
-  // Show user notification
+  // Show user notification - Web implementation
   if (showToast) {
-    uni.showToast({
-      title: userMessage,
-      icon: 'none',
-      duration: 3000
-    })
+    console.log('Error notification:', userMessage)
+    // Could implement toast notification library for better UX
+    // For now using alert for critical errors
+    if (severity === ErrorSeverity.HIGH || severity === ErrorSeverity.CRITICAL) {
+      alert(userMessage)
+    }
   }
 
   // Handle authentication errors by redirecting to login
@@ -298,14 +299,13 @@ export async function handleStoreError(
     const authStore = useAuthStore()
     await authStore.logout()
 
-    // Redirect to login page if not already there
-    const pages = getCurrentPages()
-    const currentPage = pages[pages.length - 1]
-
-    if (currentPage?.route !== 'pages/admin/login/index') {
-      uni.reLaunch({
-        url: '/pages/admin/login/index'
-      })
+    // Redirect to login page if not already there - Web implementation
+    // Check current path to avoid redirect loops
+    const currentPath = window.location.pathname
+    
+    if (!currentPath.includes('/admin/login')) {
+      // Use window.location for full page reload to clear all state
+      window.location.href = '/admin/login'
     }
   }
 

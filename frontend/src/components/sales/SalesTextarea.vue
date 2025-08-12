@@ -1,5 +1,5 @@
 <template>
-  <view class="sales-form-item">
+  <div class="sales-form-item">
     <label v-if="label" class="sales-form-label" :class="{ required: required }">
       {{ label }}
     </label>
@@ -10,17 +10,16 @@
       :placeholder="placeholder"
       :maxlength="maxlength"
       :disabled="disabled"
-      :auto-height="autoHeight"
       @input="handleInput"
       @blur="handleBlur"
       @focus="handleFocus"
     />
-    <view v-if="showCount && maxlength" class="sales-textarea-count">
+    <div v-if="showCount && maxlength" class="sales-textarea-count">
       {{ modelValue.length }}/{{ maxlength }}
-    </view>
-    <view v-if="error" class="sales-form-error">{{ error }}</view>
-    <view v-if="help && !error" class="sales-form-help">{{ help }}</view>
-  </view>
+    </div>
+    <div v-if="error" class="sales-form-error">{{ error }}</div>
+    <div v-if="help && !error" class="sales-form-help">{{ help }}</div>
+  </div>
 </template>
 
 <script setup lang="ts">

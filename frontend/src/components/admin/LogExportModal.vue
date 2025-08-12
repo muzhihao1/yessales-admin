@@ -407,12 +407,7 @@ function onEndDateChange(event: any) {
 function previewExport() {
   const options = buildExportOptions()
 
-  uni.showModal({
-    title: '导出预览',
-    content: `格式: ${selectedFormat.value.toUpperCase()}\n预计条目: ${estimatedCount.value}\n文件大小: ${estimatedSize.value}\n文件名: ${generatedFilename.value}`,
-    showCancel: false,
-    confirmText: '确定'
-  })
+  alert(`导出预览:\n\n格式: ${selectedFormat.value.toUpperCase()}\n预计条目: ${estimatedCount.value}\n文件大小: ${estimatedSize.value}\n文件名: ${generatedFilename.value}`)
 }
 
 function handleExport() {
@@ -425,10 +420,8 @@ function handleExport() {
     loading.value = false
     emit('export', options)
 
-    uni.showToast({
-      title: '导出完成',
-      icon: 'success'
-    })
+    console.log('导出完成')
+    alert('导出完成')
 
     emit('close')
   }, 2000)

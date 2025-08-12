@@ -173,129 +173,70 @@ export function canAccessFeature(feature: string): boolean {
 }
 
 /**
- * Navigation interceptor for Uniapp
- * Call this in app.vue or main.js
+ * Navigation interceptor for Vue Router
+ * Call this in router/index.ts or main.ts with Vue Router instance
  */
-export function setupRouteGuards() {
-  // Save original navigation methods
-  const originalNavigateTo = uni.navigateTo
-  const originalRedirectTo = uni.redirectTo
-  const originalReLaunch = uni.reLaunch
-  const originalSwitchTab = uni.switchTab
-
-  // Override navigation methods with route guards
-  uni.navigateTo = async function (options: UniApp.NavigateToOptions) {
-    const url = options.url.split('?')[0] // Remove query parameters
-    const routePath = url.startsWith('/') ? url.substring(1) : url
+export function setupRouteGuards(router: any) {
+  // Add global beforeEach guard
+  router.beforeEach(async (to: any, _from: any, next: any) => {
+    const routePath = to.path.startsWith('/') ? to.path.substring(1) : to.path
 
     const guardResult = await routeGuard(routePath)
 
     if (!guardResult.allowed) {
       console.warn(`Route access denied: ${routePath} - ${guardResult.reason}`)
+
+      // Show notification for access denial
+      alert(guardResult.reason || '访问被拒绝')
 
       if (guardResult.redirectTo) {
-        uni.showToast({
-          title: guardResult.reason || '访问被拒绝',
-          icon: 'none',
-          duration: 2000
-        })
-
         // Redirect to appropriate page
-        return originalRedirectTo.call(this, {
-          url: guardResult.redirectTo
-        })
+        next(guardResult.redirectTo)
+      } else {
+        // Prevent navigation
+        next(false)
       }
-
-      return Promise.reject(new Error(guardResult.reason))
+    } else {
+      // Allow navigation
+      next()
     }
-
-    return originalNavigateTo.call(this, options)
-  }
-
-  uni.redirectTo = async function (options: UniApp.RedirectToOptions) {
-    const url = options.url.split('?')[0]
-    const routePath = url.startsWith('/') ? url.substring(1) : url
-
-    const guardResult = await routeGuard(routePath)
-
-    if (!guardResult.allowed && guardResult.redirectTo) {
-      console.warn(`Route access denied: ${routePath} - ${guardResult.reason}`)
-      options.url = guardResult.redirectTo
-    }
-
-    return originalRedirectTo.call(this, options)
-  }
-
-  uni.reLaunch = async function (options: UniApp.ReLaunchOptions) {
-    const url = options.url.split('?')[0]
-    const routePath = url.startsWith('/') ? url.substring(1) : url
-
-    const guardResult = await routeGuard(routePath)
-
-    if (!guardResult.allowed && guardResult.redirectTo) {
-      console.warn(`Route access denied: ${routePath} - ${guardResult.reason}`)
-      options.url = guardResult.redirectTo
-    }
-
-    return originalReLaunch.call(this, options)
-  }
-
-  uni.switchTab = async function (options: UniApp.SwitchTabOptions) {
-    const url = options.url.split('?')[0]
-    const routePath = url.startsWith('/') ? url.substring(1) : url
-
-    const guardResult = await routeGuard(routePath)
-
-    if (!guardResult.allowed) {
-      console.warn(`Tab access denied: ${routePath} - ${guardResult.reason}`)
-
-      uni.showToast({
-        title: guardResult.reason || '访问被拒绝',
-        icon: 'none'
-      })
-
-      // For tab navigation, we can't easily redirect, so just prevent the action
-      return Promise.reject(new Error(guardResult.reason))
-    }
-
-    return originalSwitchTab.call(this, options)
-  }
+  })
 }
 
 /**
- * Page-level route guard mixin
- * Use this in page components to check permissions on load
+ * Page-level route guard composable
+ * Use this in Vue components to check permissions on mount
  */
-export const routeGuardMixin = {
-  async onLoad() {
-    const pages = getCurrentPages()
-    const currentPage = pages[pages.length - 1]
-    const routePath = currentPage.route
+export function useRouteGuard() {
+  const checkRoutePermission = async (routePath?: string) => {
+    // Get current route path from window location or passed parameter
+    const currentPath = routePath || window.location.pathname
+    const normalizedPath = currentPath.startsWith('/') ? currentPath.substring(1) : currentPath
 
-    if (routePath) {
-      const guardResult = await routeGuard(routePath)
+    const guardResult = await routeGuard(normalizedPath)
 
-      if (!guardResult.allowed) {
-        console.warn(`Page access denied: ${routePath} - ${guardResult.reason}`)
+    if (!guardResult.allowed) {
+      console.warn(`Page access denied: ${normalizedPath} - ${guardResult.reason}`)
 
-        uni.showToast({
-          title: guardResult.reason || '访问被拒绝',
-          icon: 'none'
-        })
+      // Show notification for access denial
+      alert(guardResult.reason || '访问被拒绝')
 
-        if (guardResult.redirectTo) {
-          setTimeout(() => {
-            uni.redirectTo({
-              url: guardResult.redirectTo!
-            })
-          }, 1500)
-        } else {
-          setTimeout(() => {
-            uni.navigateBack()
-          }, 1500)
-        }
+      if (guardResult.redirectTo) {
+        setTimeout(() => {
+          window.location.href = guardResult.redirectTo!
+        }, 1500)
+      } else {
+        setTimeout(() => {
+          window.history.back()
+        }, 1500)
       }
     }
+
+    return guardResult
+  }
+
+  return {
+    checkRoutePermission
   }
 }
 

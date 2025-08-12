@@ -118,25 +118,11 @@ const handleLinkClick = (link: QuickLink) => {
   emit('link-click', link)
 
   if (link.page) {
-    uni.navigateTo({
-      url: link.page
-    })
+    // Use Vue Router or window navigation
+    window.location.href = link.page
   } else if (link.url) {
     // Handle external URL
-    // #ifdef H5
     window.open(link.url, '_blank')
-    // #endif
-    // #ifndef H5
-    uni.showModal({
-      title: '提示',
-      content: '是否打开外部链接？',
-      success: res => {
-        if (res.confirm) {
-          // Handle external link in app
-        }
-      }
-    })
-    // #endif
   }
 }
 
@@ -144,14 +130,8 @@ const handleBarItemClick = (item: BottomBarItem, index: number) => {
   emit('bar-item-click', item, index)
 
   if (item.page) {
-    uni.switchTab({
-      url: item.page,
-      fail: () => {
-        uni.navigateTo({
-          url: item.page
-        })
-      }
-    })
+    // Use web navigation
+    window.location.href = item.page
   }
 }
 </script>

@@ -1,276 +1,275 @@
 <template>
-  <view class="quote-preview">
+  <div class="quote-preview">
     <SalesHeader title="报价单预览" :show-back="true" :fixed="true" />
 
     <!-- Loading State -->
-    <view v-if="loading" class="loading-container">
-      <view class="loading-spinner"></view>
-      <text class="loading-text">加载报价单...</text>
-    </view>
+    <div v-if="loading" class="loading-container">
+      <div class="loading-spinner"></div>
+      <span class="loading-text">加载报价单...</span>
+    </div>
 
     <!-- Error State -->
-    <view v-else-if="error" class="error-container">
-      <text class="error-text">{{ error }}</text>
+    <div v-else-if="error" class="error-container">
+      <span class="error-text">{{ error }}</span>
       <SalesButton @click="loadQuoteData">重试</SalesButton>
-    </view>
+    </div>
 
     <!-- Quote Document -->
-    <view v-else-if="quoteData" class="quote-document">
+    <div v-else-if="quoteData" class="quote-document">
       <!-- Document Header -->
-      <view class="document-header">
-        <view class="header-row">
-          <view class="company-section">
-            <image
+      <div class="document-header">
+        <div class="header-row">
+          <div class="company-section">
+            <img
               class="company-logo"
               src="/static/logo.png"
-              mode="aspectFit"
-              @error="handleLogoError"
+                            @error="handleLogoError"
             />
-            <view class="company-info">
-              <text class="company-name">耶氏台球斗南销售中心</text>
-              <text class="company-subtitle">专业台球设备供应商</text>
-              <text class="company-contact">电话：400-888-8888</text>
-              <text class="company-address">地址：昆明市斗南花卉市场</text>
-            </view>
-          </view>
+            <div class="company-info">
+              <span class="company-name">耶氏台球斗南销售中心</span>
+              <span class="company-subtitle">专业台球设备供应商</span>
+              <span class="company-contact">电话：400-888-8888</span>
+              <span class="company-address">地址：昆明市斗南花卉市场</span>
+            </div>
+          </div>
 
-          <view class="quote-info">
-            <text class="quote-title">报价单</text>
-            <text class="quote-number">{{ quoteData.quote.quoteNumber }}</text>
-            <view class="quote-meta">
-              <text class="meta-item">日期：{{ formatDate(quoteData.createdAt) }}</text>
-              <text class="meta-item">有效期至：{{ getValidUntilDate() }}</text>
-              <view class="quote-status" :class="`status-${quoteData.status || 'draft'}`">
+          <div class="quote-info">
+            <span class="quote-title">报价单</span>
+            <span class="quote-number">{{ quoteData.quote.quoteNumber }}</span>
+            <div class="quote-meta">
+              <span class="meta-item">日期：{{ formatDate(quoteData.createdAt) }}</span>
+              <span class="meta-item">有效期至：{{ getValidUntilDate() }}</span>
+              <div class="quote-status" :class="`status-${quoteData.status || 'draft'}`">
                 {{ getStatusText(quoteData.status || 'draft') }}
-              </view>
-            </view>
-          </view>
-        </view>
-      </view>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Customer & Company Info -->
-      <view class="info-section">
-        <view class="info-card">
-          <text class="info-title">客户信息</text>
-          <view class="info-content">
-            <view class="info-row">
-              <text class="info-label">客户姓名</text>
-              <text class="info-value">{{ quoteData.customer.name }}</text>
-            </view>
-            <view class="info-row">
-              <text class="info-label">联系电话</text>
-              <text class="info-value">{{ quoteData.customer.phone }}</text>
-            </view>
-            <view v-if="quoteData.customer.wechat" class="info-row">
-              <text class="info-label">微信号</text>
-              <text class="info-value">{{ quoteData.customer.wechat }}</text>
-            </view>
-            <view v-if="quoteData.customer.email" class="info-row">
-              <text class="info-label">邮箱</text>
-              <text class="info-value">{{ quoteData.customer.email }}</text>
-            </view>
-            <view v-if="quoteData.customer.address" class="info-row">
-              <text class="info-label">地址</text>
-              <text class="info-value">
+      <div class="info-section">
+        <div class="info-card">
+          <span class="info-title">客户信息</span>
+          <div class="info-content">
+            <div class="info-row">
+              <span class="info-label">客户姓名</span>
+              <span class="info-value">{{ quoteData.customer.name }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">联系电话</span>
+              <span class="info-value">{{ quoteData.customer.phone }}</span>
+            </div>
+            <div v-if="quoteData.customer.wechat" class="info-row">
+              <span class="info-label">微信号</span>
+              <span class="info-value">{{ quoteData.customer.wechat }}</span>
+            </div>
+            <div v-if="quoteData.customer.email" class="info-row">
+              <span class="info-label">邮箱</span>
+              <span class="info-value">{{ quoteData.customer.email }}</span>
+            </div>
+            <div v-if="quoteData.customer.address" class="info-row">
+              <span class="info-label">地址</span>
+              <span class="info-value">
                 {{ quoteData.customer.province }}{{ quoteData.customer.city
                 }}{{ quoteData.customer.address }}
-              </text>
-            </view>
-            <view class="info-row">
-              <text class="info-label">客户类型</text>
-              <text class="info-value">{{ getCustomerTypeText(quoteData.customer.type) }}</text>
-            </view>
-            <view v-if="quoteData.customer.remark" class="info-row">
-              <text class="info-label">备注</text>
-              <text class="info-value">{{ quoteData.customer.remark }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
+              </span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">客户类型</span>
+              <span class="info-value">{{ getCustomerTypeText(quoteData.customer.type) }}</span>
+            </div>
+            <div v-if="quoteData.customer.remark" class="info-row">
+              <span class="info-label">备注</span>
+              <span class="info-value">{{ quoteData.customer.remark }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Products Table -->
-      <view class="products-section">
-        <text class="section-title">产品明细</text>
+      <div class="products-section">
+        <span class="section-title">产品明细</span>
 
-        <view class="products-table">
+        <div class="products-table">
           <!-- Table Header -->
-          <view class="table-header">
-            <text class="header-cell product-name">产品名称</text>
-            <text class="header-cell product-model">型号规格</text>
-            <text class="header-cell product-quantity">数量</text>
-            <text class="header-cell product-price">单价</text>
-            <text class="header-cell product-total">小计</text>
-          </view>
+          <div class="table-header">
+            <span class="header-cell product-name">产品名称</span>
+            <span class="header-cell product-model">型号规格</span>
+            <span class="header-cell product-quantity">数量</span>
+            <span class="header-cell product-price">单价</span>
+            <span class="header-cell product-total">小计</span>
+          </div>
 
           <!-- Table Rows -->
-          <view v-for="(item, index) in quoteData.items" :key="index" class="table-row">
-            <view class="table-cell product-name">
-              <text class="cell-title">{{ item.product_name }}</text>
-            </view>
-            <view class="table-cell product-model">
-              <text class="cell-content">{{ item.product_model }}</text>
-              <text v-if="item.sku_name" class="cell-sku">{{ item.sku_name }}</text>
-            </view>
-            <view class="table-cell product-quantity">
-              <text class="cell-content">{{ item.quantity }}</text>
-            </view>
-            <view class="table-cell product-price">
-              <text class="cell-content">¥{{ formatPrice(item.unit_price) }}</text>
-            </view>
-            <view class="table-cell product-total">
-              <text class="cell-total">¥{{ formatPrice(item.total_price) }}</text>
-            </view>
-          </view>
-        </view>
-      </view>
+          <div v-for="(item, index) in quoteData.items" :key="index" class="table-row">
+            <div class="table-cell product-name">
+              <span class="cell-title">{{ item.product_name }}</span>
+            </div>
+            <div class="table-cell product-model">
+              <span class="cell-content">{{ item.product_model }}</span>
+              <span v-if="item.sku_name" class="cell-sku">{{ item.sku_name }}</span>
+            </div>
+            <div class="table-cell product-quantity">
+              <span class="cell-content">{{ item.quantity }}</span>
+            </div>
+            <div class="table-cell product-price">
+              <span class="cell-content">¥{{ formatPrice(item.unit_price) }}</span>
+            </div>
+            <div class="table-cell product-total">
+              <span class="cell-total">¥{{ formatPrice(item.total_price) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Price Summary -->
-      <view class="summary-section">
-        <view class="summary-card">
-          <text class="summary-title">价格汇总</text>
+      <div class="summary-section">
+        <div class="summary-card">
+          <span class="summary-title">价格汇总</span>
 
-          <view class="summary-rows">
-            <view class="summary-row">
-              <text class="summary-label">产品小计</text>
-              <text class="summary-value">¥{{ formatPrice(quoteData.pricing.subtotal) }}</text>
-            </view>
+          <div class="summary-rows">
+            <div class="summary-row">
+              <span class="summary-label">产品小计</span>
+              <span class="summary-value">¥{{ formatPrice(quoteData.pricing.subtotal) }}</span>
+            </div>
 
-            <view v-if="quoteData.pricing.discount.amount > 0" class="summary-row discount-row">
-              <text class="summary-label">
+            <div v-if="quoteData.pricing.discount.amount > 0" class="summary-row discount-row">
+              <span class="summary-label">
                 折扣优惠
-                <text class="discount-detail">
+                <span class="discount-detail">
                   ({{
                     quoteData.pricing.discount.type === 'percentage'
                       ? `${quoteData.pricing.discount.value}%`
                       : `¥${formatPrice(quoteData.pricing.discount.value)}`
                   }})
-                </text>
-              </text>
-              <text class="summary-value discount-value"
+                </span>
+              </span>
+              <span class="summary-value discount-value"
                 >-¥{{ formatPrice(quoteData.pricing.discount.amount) }}</text
               >
-            </view>
+            </div>
 
-            <view class="summary-row subtotal-row">
-              <text class="summary-label">折扣后小计</text>
-              <text class="summary-value"
+            <div class="summary-row subtotal-row">
+              <span class="summary-label">折扣后小计</span>
+              <span class="summary-value"
                 >¥{{
                   formatPrice(quoteData.pricing.subtotal - quoteData.pricing.discount.amount)
                 }}</text
               >
-            </view>
+            </div>
 
-            <view v-if="quoteData.pricing.additionalCharges.deliveryFee > 0" class="summary-row">
-              <text class="summary-label">配送费</text>
-              <text class="summary-value"
+            <div v-if="quoteData.pricing.additionalCharges.deliveryFee > 0" class="summary-row">
+              <span class="summary-label">配送费</span>
+              <span class="summary-value"
                 >+¥{{ formatPrice(quoteData.pricing.additionalCharges.deliveryFee) }}</text
               >
-            </view>
+            </div>
 
-            <view
+            <div
               v-if="quoteData.pricing.additionalCharges.installationFee > 0"
               class="summary-row"
             >
-              <text class="summary-label">安装费</text>
-              <text class="summary-value"
+              <span class="summary-label">安装费</span>
+              <span class="summary-value"
                 >+¥{{ formatPrice(quoteData.pricing.additionalCharges.installationFee) }}</text
               >
-            </view>
+            </div>
 
-            <view
+            <div
               v-if="quoteData.pricing.additionalCharges.otherCharges.length > 0"
               class="summary-row"
             >
-              <text class="summary-label">其他费用</text>
-              <text class="summary-value">+¥{{ formatPrice(getOtherChargesTotal()) }}</text>
-            </view>
+              <span class="summary-label">其他费用</span>
+              <span class="summary-value">+¥{{ formatPrice(getOtherChargesTotal()) }}</span>
+            </div>
 
-            <view v-if="quoteData.pricing.tax.amount > 0" class="summary-row">
-              <text class="summary-label">税费 ({{ quoteData.pricing.tax.rate }}%)</text>
-              <text class="summary-value">+¥{{ formatPrice(quoteData.pricing.tax.amount) }}</text>
-            </view>
+            <div v-if="quoteData.pricing.tax.amount > 0" class="summary-row">
+              <span class="summary-label">税费 ({{ quoteData.pricing.tax.rate }}%)</span>
+              <span class="summary-value">+¥{{ formatPrice(quoteData.pricing.tax.amount) }}</span>
+            </div>
 
-            <view class="summary-row total-row">
-              <text class="summary-label">合计金额</text>
-              <text class="summary-value total-value"
+            <div class="summary-row total-row">
+              <span class="summary-label">合计金额</span>
+              <span class="summary-value total-value"
                 >¥{{ formatPrice(quoteData.pricing.finalTotal) }}</text
               >
-            </view>
-          </view>
-        </view>
-      </view>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Terms & Conditions -->
-      <view class="terms-section">
-        <text class="section-title">付款条件与说明</text>
+      <div class="terms-section">
+        <span class="section-title">付款条件与说明</span>
 
-        <view class="terms-content">
-          <view class="terms-row">
-            <text class="terms-label">付款条件：</text>
-            <text class="terms-value">{{ getPaymentTermsText(quoteData.quote.paymentTerms) }}</text>
-          </view>
+        <div class="terms-content">
+          <div class="terms-row">
+            <span class="terms-label">付款条件：</span>
+            <span class="terms-value">{{ getPaymentTermsText(quoteData.quote.paymentTerms) }}</span>
+          </div>
 
-          <view v-if="quoteData.quote.specialTerms" class="terms-row">
-            <text class="terms-label">特殊条款：</text>
-            <text class="terms-value">{{ quoteData.quote.specialTerms }}</text>
-          </view>
+          <div v-if="quoteData.quote.specialTerms" class="terms-row">
+            <span class="terms-label">特殊条款：</span>
+            <span class="terms-value">{{ quoteData.quote.specialTerms }}</span>
+          </div>
 
-          <view v-if="quoteData.quote.notes" class="terms-row">
-            <text class="terms-label">备注说明：</text>
-            <text class="terms-value">{{ quoteData.quote.notes }}</text>
-          </view>
+          <div v-if="quoteData.quote.notes" class="terms-row">
+            <span class="terms-label">备注说明：</span>
+            <span class="terms-value">{{ quoteData.quote.notes }}</span>
+          </div>
 
-          <view class="standard-terms">
-            <text class="terms-title">标准条款：</text>
-            <text class="terms-text"
+          <div class="standard-terms">
+            <span class="terms-title">标准条款：</span>
+            <span class="terms-text"
               >1. 本报价单有效期为 {{ quoteData.quote.validityDays }} 天。</text
             >
-            <text class="terms-text">2. 产品价格以报价单确认时为准，如有变动以书面通知为准。</text>
-            <text class="terms-text">3. 配送及安装服务需提前预约，具体时间双方协商确定。</text>
-            <text class="terms-text">4. 产品质量保证按照国家相关标准执行。</text>
-          </view>
-        </view>
-      </view>
+            <span class="terms-text">2. 产品价格以报价单确认时为准，如有变动以书面通知为准。</span>
+            <span class="terms-text">3. 配送及安装服务需提前预约，具体时间双方协商确定。</span>
+            <span class="terms-text">4. 产品质量保证按照国家相关标准执行。</span>
+          </div>
+        </div>
+      </div>
 
       <!-- Document Footer -->
-      <view class="document-footer">
-        <view class="signature-section">
-          <view class="signature-block">
-            <text class="signature-label">销售代表：</text>
-            <view class="signature-line"></view>
-            <text class="signature-date">日期：________________</text>
-          </view>
+      <div class="document-footer">
+        <div class="signature-section">
+          <div class="signature-block">
+            <span class="signature-label">销售代表：</span>
+            <div class="signature-line"></div>
+            <span class="signature-date">日期：________________</span>
+          </div>
 
-          <view class="signature-block">
-            <text class="signature-label">客户确认：</text>
-            <view class="signature-line"></view>
-            <text class="signature-date">日期：________________</text>
-          </view>
-        </view>
+          <div class="signature-block">
+            <span class="signature-label">客户确认：</span>
+            <div class="signature-line"></div>
+            <span class="signature-date">日期：________________</span>
+          </div>
+        </div>
 
-        <view class="footer-info">
-          <text class="footer-text"
+        <div class="footer-info">
+          <span class="footer-text"
             >感谢您选择耶氏台球设备，我们将为您提供最优质的产品和服务！</text
           >
-        </view>
-      </view>
-    </view>
+        </div>
+      </div>
+    </div>
 
     <!-- Action Buttons -->
-    <view v-if="quoteData && !loading" class="quote-actions">
-      <view class="actions-row">
+    <div v-if="quoteData && !loading" class="quote-actions">
+      <div class="actions-row">
         <SalesButton type="default" @click="editQuote"> 编辑报价 </SalesButton>
 
         <SalesButton type="plain" @click="printQuote"> 打印报价 </SalesButton>
 
         <SalesButton type="primary" @click="saveQuote" :loading="saving"> 保存报价 </SalesButton>
-      </view>
+      </div>
 
-      <view class="actions-row">
+      <div class="actions-row">
         <SalesButton type="success" :block="true" @click="sendQuote"> 发送给客户 </SalesButton>
-      </view>
-    </view>
-  </view>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -499,20 +498,17 @@ const getPaymentTermsText = (terms: string) => {
 
 // Action handlers
 const editQuote = () => {
-  uni.navigateBack()
+  window.history.back()
 }
 
 const printQuote = () => {
-  // #ifdef H5
-  window.print()
-  // #endif
-
-  // #ifndef H5
-  uni.showToast({
-    title: '请使用浏览器打开进行打印',
-    icon: 'none'
-  })
-  // #endif
+  // Web implementation - directly use browser print
+  if (window.print) {
+    window.print()
+  } else {
+    console.warn('请使用浏览器打开进行打印')
+    alert('请使用浏览器打开进行打印')
+  }
 }
 
 const saveQuote = async () => {
@@ -522,38 +518,38 @@ const saveQuote = async () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
 
-    uni.showToast({
-      title: '报价单保存成功',
-      icon: 'success'
-    })
+    console.log('报价单保存成功')
+    alert('报价单保存成功')
 
     // Navigate to quote list or home
     setTimeout(() => {
-      uni.navigateTo({
-        url: '/pages/sales/history/index'
-      })
+      window.location.href = '/pages/sales/history/index'
     }, 1500)
   } catch (err) {
-    uni.showToast({
-      title: '保存失败，请重试',
-      icon: 'none'
-    })
+    console.error('保存失败，请重试')
+    alert('保存失败，请重试')
   } finally {
     saving.value = false
   }
 }
 
 const sendQuote = () => {
-  uni.showActionSheet({
-    itemList: ['微信发送', '邮件发送', '短信发送', '复制链接'],
-    success: res => {
-      const actions = ['微信', '邮件', '短信', '链接']
-      uni.showToast({
-        title: `通过${actions[res.tapIndex]}发送`,
-        icon: 'success'
-      })
+  const options = ['微信发送', '邮件发送', '短信发送', '复制链接']
+  const actions = ['微信', '邮件', '短信', '链接']
+  
+  // Simple implementation using prompts for web
+  const optionsText = options.map((option, index) => `${index + 1}. ${option}`).join('\n')
+  const userChoice = prompt(`请选择发送方式:\n${optionsText}\n\n请输入选项编号 (1-4):`)
+  
+  if (userChoice) {
+    const choiceIndex = parseInt(userChoice) - 1
+    if (choiceIndex >= 0 && choiceIndex < actions.length) {
+      console.log(`通过${actions[choiceIndex]}发送`)
+      alert(`通过${actions[choiceIndex]}发送`)
+    } else {
+      alert('无效的选择')
     }
-  })
+  }
 }
 
 const handleLogoError = () => {

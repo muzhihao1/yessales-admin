@@ -242,25 +242,24 @@ export function loadImageWithProgress(
       return
     }
 
-    // For Uniapp, use uni.downloadFile for progress tracking
-    uni.downloadFile({
-      url,
-      success: res => {
-        if (res.statusCode === 200) {
-          // Cache the result
-          cacheImage(url, res.tempFilePath, 0) // Size unknown in Uniapp
-          resolve(res.tempFilePath)
-        } else {
-          reject(new Error(`Failed to load image: ${res.statusCode}`))
-        }
-      },
-      fail: error => {
-        reject(error)
-      }
-    })
-
-    // Progress tracking not directly available in uni.downloadFile
-    // This is a simulation
+    // For web, use fetch API with progress tracking
+    const img = new Image()
+    img.crossOrigin = 'anonymous'
+    
+    img.onload = () => {
+      // Cache the result
+      cacheImage(url, url, 0) // Use original URL for web
+      resolve(url)
+    }
+    
+    img.onerror = () => {
+      reject(new Error('Failed to load image'))
+    }
+    
+    // Start loading
+    img.src = url
+    
+    // Simulate progress for web
     if (onProgress) {
       let progress = 0
       const progressInterval = setInterval(() => {

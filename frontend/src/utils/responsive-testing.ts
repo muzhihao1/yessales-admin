@@ -227,34 +227,36 @@ export async function simulateViewport(width: number, height: number): Promise<v
 /**
  * Measure DOM element
  */
-export function measureElement(selector: string): ElementMeasurement | null {
-  // In Uniapp, we need to use uni.createSelectorQuery
+export function measureElement(selector: string): Promise<ElementMeasurement | null> {
+  // For web, use standard DOM APIs
   return new Promise(resolve => {
-    const query = uni.createSelectorQuery()
-
-    query
-      .select(selector)
-      .boundingClientRect(rect => {
-        if (!rect) {
-          resolve(null)
-          return
-        }
-
-        const measurement: ElementMeasurement = {
-          selector,
-          width: rect.width,
-          height: rect.height,
-          x: rect.left,
-          y: rect.top,
-          visible: rect.width > 0 && rect.height > 0,
-          overflow: false, // Would need additional logic to detect
-          zIndex: 0, // Would need to get computed style
-          computedStyle: {} // Would need additional API calls
-        }
-
-        resolve(measurement)
-      })
-      .exec()
+    const element = document.querySelector(selector)
+    
+    if (!element) {
+      resolve(null)
+      return
+    }
+    
+    const rect = element.getBoundingClientRect()
+    const computedStyle = window.getComputedStyle(element)
+    
+    const measurement: ElementMeasurement = {
+      selector,
+      width: rect.width,
+      height: rect.height,
+      x: rect.left,
+      y: rect.top,
+      visible: rect.width > 0 && rect.height > 0,
+      overflow: computedStyle.overflow === 'hidden' || computedStyle.overflow === 'scroll',
+      zIndex: parseInt(computedStyle.zIndex) || 0,
+      computedStyle: {
+        display: computedStyle.display,
+        position: computedStyle.position,
+        overflow: computedStyle.overflow
+      }
+    }
+    
+    resolve(measurement)
   })
 }
 

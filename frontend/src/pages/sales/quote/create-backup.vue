@@ -789,19 +789,20 @@ const generateQuoteNumber = () => {
 // 加载草稿
 const loadDraft = () => {
   try {
-    const draft = uni.getStorageSync('quote_draft')
-    if (draft) {
-      if (draft.form) {
-        Object.assign(form, draft.form)
+    const draft = localStorage.getItem('quote_draft')
+    const parsedDraft = draft ? JSON.parse(draft) : null
+    if (parsedDraft) {
+      if (parsedDraft.form) {
+        Object.assign(form, parsedDraft.form)
       }
-      if (draft.selectedProducts) {
-        selectedProducts.value = draft.selectedProducts
+      if (parsedDraft.selectedProducts) {
+        selectedProducts.value = parsedDraft.selectedProducts
       }
-      if (draft.pricingConfig) {
-        Object.assign(pricingConfig, draft.pricingConfig)
+      if (parsedDraft.pricingConfig) {
+        Object.assign(pricingConfig, parsedDraft.pricingConfig)
       }
-      if (draft.quoteMetadata) {
-        Object.assign(quoteMetadata, draft.quoteMetadata)
+      if (parsedDraft.quoteMetadata) {
+        Object.assign(quoteMetadata, parsedDraft.quoteMetadata)
       }
     }
   } catch (error) {
@@ -818,7 +819,7 @@ const saveDraft = () => {
       pricingConfig,
       quoteMetadata
     }
-    uni.setStorageSync('quote_draft', draftData)
+    localStorage.setItem('quote_draft', JSON.stringify(draftData))
   } catch (error) {
     console.warn('Failed to save draft:', error)
   }
@@ -946,16 +947,11 @@ const copyWechatToPhone = () => {
   if (/^1[3-9]\d{9}$/.test(wechat)) {
     form.customerPhone = wechat
     validatePhone()
-    uni.showToast({
-      title: '已同步到手机号',
-      icon: 'success',
-      duration: 1000
-    })
+    console.log('已同步到手机号')
+    alert('已同步到手机号')
   } else {
-    uni.showToast({
-      title: '微信号格式不是手机号',
-      icon: 'none'
-    })
+    console.warn('微信号格式不是手机号')
+    alert('微信号格式不是手机号')
   }
 }
 
@@ -977,28 +973,27 @@ const handleCityChange = (city: string) => {
 const getCurrentLocation = () => {
   locationLoading.value = true
 
-  uni.getLocation({
-    type: 'gcj02',
-    success: res => {
-      // 模拟根据坐标获取地址
-      setTimeout(() => {
-        form.customerAddress = '昆明市五华区东风西路123号' // 模拟地址
+  // 使用网页定位 API
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // 模拟根据坐标获取地址
+        setTimeout(() => {
+          form.customerAddress = '昆明市五华区东风西路123号' // 模拟地址
+          locationLoading.value = false
+          console.log('定位成功')
+          alert('定位成功')
+        }, 1000)
+      },
+      () => {
         locationLoading.value = false
-        uni.showToast({
-          title: '定位成功',
-          icon: 'success'
-        })
-      }, 1000)
-    },
-    fail: () => {
-      locationLoading.value = false
-      uni.showModal({
-        title: '定位失败',
-        content: '无法获取您的位置信息，请手动输入地址',
-        showCancel: false
-      })
-    }
-  })
+        alert('定位失败\n无法获取您的位置信息，请手动输入地址')
+      }
+    )
+  } else {
+    locationLoading.value = false
+    alert('您的浏览器不支持定位功能')
+  }
 }
 
 // 切换保存客户选项
@@ -1017,11 +1012,8 @@ const handleProductsConfirm = (products: SelectedProduct[]) => {
   selectedProducts.value = products
   showProductSelector.value = false
 
-  uni.showToast({
-    title: `已选择${products.length}种产品`,
-    icon: 'success',
-    duration: 1500
-  })
+  console.log(`已选择${products.length}种产品`)
+  alert(`已选择${products.length}种产品`)
 }
 
 // 产品选择取消
@@ -1073,18 +1065,14 @@ const handlePricingInput = (field: string, value: any) => {
 const validateDiscount = () => {
   if (pricingConfig.discountType === 'percentage') {
     if (pricingConfig.discountValue < 0 || pricingConfig.discountValue > 50) {
-      uni.showToast({
-        title: '折扣比例应在0-50%之间',
-        icon: 'none'
-      })
+      console.warn('折扣比例应在0-50%之间')
+      alert('折扣比例应在0-50%之间')
       pricingConfig.discountValue = Math.max(0, Math.min(50, pricingConfig.discountValue))
     }
   } else {
     if (pricingConfig.discountValue > subtotal.value) {
-      uni.showToast({
-        title: '折扣金额不能超过小计',
-        icon: 'none'
-      })
+      console.warn('折扣金额不能超过小计')
+      alert('折扣金额不能超过小计')
       pricingConfig.discountValue = subtotal.value
     }
   }
@@ -1109,33 +1097,31 @@ const validateForm = (): boolean => {
 
   // 验证是否选择了产品
   if (selectedProducts.value.length === 0) {
-    uni.showToast({
-      title: '请选择产品',
-      icon: 'none'
-    })
+    console.warn('请选择产品')
+    alert('请选择产品')
     isValid = false
   }
 
   return isValid
 }
 
+// 返回上一页
+const goBack = () => {
+  window.history.back()
+}
+
 // 取消
 const handleCancel = () => {
-  uni.showModal({
-    title: '提示',
-    content: '确定要取消新建报价吗？未保存的信息将丢失。',
-    success: res => {
-      if (res.confirm) {
-        // 清除草稿
-        try {
-          uni.removeStorageSync('quote_draft')
-        } catch (error) {
-          console.warn('Failed to clear draft:', error)
-        }
-        uni.navigateBack()
-      }
+  const confirmCancel = confirm('提示\n确定要取消新建报价吗？未保存的信息将丢失。')
+  if (confirmCancel) {
+    // 清除草稿
+    try {
+      localStorage.removeItem('quote_draft')
+    } catch (error) {
+      console.warn('Failed to clear draft:', error)
     }
-  })
+    window.history.back()
+  }
 }
 
 // 提交
@@ -1207,30 +1193,24 @@ const handleSubmit = async () => {
     if (response.success && response.data) {
       // 清除草稿
       try {
-        uni.removeStorageSync('quote_draft')
+        localStorage.removeItem('quote_draft')
       } catch (error) {
         console.warn('Failed to clear draft:', error)
       }
 
-      uni.showToast({
-        title: '报价创建成功',
-        icon: 'success'
-      })
+      console.log('报价创建成功')
+      alert('报价创建成功')
 
       // 跳转到预览页面
       setTimeout(() => {
-        uni.redirectTo({
-          url: `/pages/sales/quote/preview?id=${response.data?.id || quoteMetadata.quoteNumber}`
-        })
+        window.location.href = `/pages/sales/quote/preview?id=${response.data?.id || quoteMetadata.quoteNumber}`
       }, 1500)
     } else {
       throw new Error(response.error?.message || '创建失败')
     }
   } catch (error) {
-    uni.showToast({
-      title: (error as Error).message || '创建失败，请重试',
-      icon: 'none'
-    })
+    console.error((error as Error).message || '创建失败，请重试')
+    alert((error as Error).message || '创建失败，请重试')
   } finally {
     submitting.value = false
   }
