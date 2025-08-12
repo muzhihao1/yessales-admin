@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted } from 'vue'
-import { setupRouteGuards } from '@/utils/route-guards'
 import { useAuthStore } from '@/stores/auth'
 import { realtimeService } from '@/services/realtime'
 
@@ -14,8 +13,8 @@ import { realtimeService } from '@/services/realtime'
 onMounted(async () => {
   console.log('App Mounted')
 
-  // Initialize route guards
-  setupRouteGuards()
+  // Initialize route guards (disabled - handled by Vue Router)
+  // setupRouteGuards()
 
   // Initialize auth store and check for existing session
   const authStore = useAuthStore()

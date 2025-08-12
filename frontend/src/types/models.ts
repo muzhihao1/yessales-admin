@@ -25,8 +25,13 @@ export interface Product {
   is_active: boolean
   isNew?: boolean // For marking new products
   stock_quantity?: number
+  stock?: number // Alias for stock_quantity for component compatibility
   status?: 'active' | 'inactive' | 'discontinued'
   skuOptions?: Array<{ id: string; name: string; price: number }> // For product selector compatibility
+  features?: string[] // Product features list
+  rating?: number // Product rating (0-5)
+  originalPrice?: number // Original price before discount
+  specifications?: Record<string, string> // Product specifications
   created_at: string
   updated_at?: string
   skus?: ProductSku[]

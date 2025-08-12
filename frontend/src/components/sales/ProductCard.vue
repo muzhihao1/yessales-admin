@@ -96,7 +96,7 @@
         <view class="action-buttons">
           <SalesButton
             v-if="!isSelected"
-            size="mini"
+            size="small"
             type="primary"
             @click.stop="handleSelect"
             :disabled="disabled"

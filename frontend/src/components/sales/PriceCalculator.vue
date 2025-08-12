@@ -137,9 +137,9 @@
 
       <!-- Quick Actions -->
       <view class="calculator-actions">
-        <SalesButton size="small" type="plain" @click="exportCalculation"> 导出明细 </SalesButton>
+        <SalesButton size="small" type="default" plain @click="exportCalculation"> 导出明细 </SalesButton>
 
-        <SalesButton size="small" type="plain" @click="resetCalculation"> 重新计算 </SalesButton>
+        <SalesButton size="small" type="default" plain @click="resetCalculation"> 重新计算 </SalesButton>
       </view>
     </view>
 

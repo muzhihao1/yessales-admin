@@ -120,7 +120,7 @@ const startAutoDismiss = () => {
     // Start auto-dismiss timer
     timer = setTimeout(() => {
       handleClose()
-    }, props.duration)
+    }, props.duration) as unknown as number
 
     // Start progress bar animation
     if (props.showProgress) {
@@ -137,7 +137,7 @@ const startAutoDismiss = () => {
           clearInterval(progressTimer!)
           progressTimer = null
         }
-      }, progressInterval)
+      }, progressInterval) as unknown as number
     }
   }
 }

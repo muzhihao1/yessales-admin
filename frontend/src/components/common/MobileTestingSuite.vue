@@ -110,7 +110,7 @@
               </view>
               <view class="result-metrics">
                 <text v-for="(value, key) in result.details.metrics" :key="key" class="metric">
-                  {{ formatMetric(key, value) }}
+                  {{ formatMetric(String(key), value) }}
                 </text>
               </view>
             </view>
@@ -320,8 +320,8 @@
 
               <view class="metric-details">
                 <view v-for="(value, key) in result.details.metrics" :key="key" class="detail-item">
-                  <text class="detail-label">{{ formatMetricLabel(key) }}</text>
-                  <text class="detail-value">{{ formatMetricValue(key, value) }}</text>
+                  <text class="detail-label">{{ formatMetricLabel(String(key)) }}</text>
+                  <text class="detail-value">{{ formatMetricValue(String(key), value) }}</text>
                 </view>
               </view>
             </view>
@@ -355,15 +355,15 @@
             <view class="summary-grid">
               <view class="summary-item">
                 <text class="item-label">总测试数</text>
-                <text class="item-value">{{ testReport.summary.totalTests }}</text>
+                <text class="item-value">{{ testReport.summary.total }}</text>
               </view>
               <view class="summary-item">
                 <text class="item-label">通过测试</text>
-                <text class="item-value success">{{ testReport.summary.passedTests }}</text>
+                <text class="item-value success">{{ testReport.summary.passed }}</text>
               </view>
               <view class="summary-item">
                 <text class="item-label">失败测试</text>
-                <text class="item-value error">{{ testReport.summary.failedTests }}</text>
+                <text class="item-value error">{{ testReport.summary.failed }}</text>
               </view>
               <view class="summary-item">
                 <text class="item-label">通过率</text>
@@ -597,7 +597,7 @@ const testReport = computed(() => {
 const combinedRecommendations = computed(() => {
   const recommendations = []
 
-  if (responsiveReport.value.recommendations) {
+  if (responsiveReport.value && typeof responsiveReport.value === 'object' && 'recommendations' in responsiveReport.value && Array.isArray(responsiveReport.value.recommendations)) {
     recommendations.push(...responsiveReport.value.recommendations)
   }
 

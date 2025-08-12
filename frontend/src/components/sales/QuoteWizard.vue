@@ -270,11 +270,11 @@ const quoteMetadata = reactive({
 
 // Categories (matching admin interface)
 const categories = ref<Category[]>([
-  { id: '台球桌', name: '台球桌', icon: '🎱' },
-  { id: '地毯', name: '地毯', icon: '🟫' },
-  { id: '球杆', name: '球杆', icon: '🎯' },
-  { id: '台球', name: '台球', icon: '⚪' },
-  { id: '其他配件', name: '其他配件', icon: '🔧' }
+  { id: '台球桌', name: '台球桌', icon: '🎱', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
+  { id: '地毯', name: '地毯', icon: '🟫', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
+  { id: '球杆', name: '球杆', icon: '🎯', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
+  { id: '台球', name: '台球', icon: '⚪', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' },
+  { id: '其他配件', name: '其他配件', icon: '🔧', is_active: true, created_at: '2024-01-01', updated_at: '2024-01-01' }
 ])
 
 // Computed properties

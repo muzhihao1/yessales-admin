@@ -18,7 +18,7 @@ export class ApiService {
    */
   static async get(endpoint: string, options?: { params?: any }): Promise<ApiResponse<any>> {
     try {
-      return await ApiClient.request('GET', endpoint, undefined, options?.params)
+      return await ApiClient.request('GET', endpoint, { query: options?.params })
     } catch (error) {
       return {
         success: false,
