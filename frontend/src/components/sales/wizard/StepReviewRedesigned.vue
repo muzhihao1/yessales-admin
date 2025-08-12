@@ -97,7 +97,7 @@
               <span>地址信息</span>
               <Icon
                 name="chevron-down"
-                :class="['toggle-icon', { 'toggle-icon--rotated': showCustomerDetails }]"
+                :class="showCustomerDetails ? 'toggle-icon toggle-icon--rotated' : 'toggle-icon'"
               />
             </button>
             <div v-show="showCustomerDetails" class="details-content">
@@ -157,7 +157,7 @@
               <span>产品明细</span>
               <Icon
                 name="chevron-down"
-                :class="['toggle-icon', { 'toggle-icon--rotated': showProductDetails }]"
+                :class="showProductDetails ? 'toggle-icon toggle-icon--rotated' : 'toggle-icon'"
               />
             </button>
             <div v-show="showProductDetails" class="details-content">
@@ -312,7 +312,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import Icon from '@/components/ui/Icon.vue'
-import type { SelectedProduct } from '@/types/quote'
+import type { SelectedProduct } from '@/components/business/ProductSelector.vue'
 
 interface Props {
   customerData: {

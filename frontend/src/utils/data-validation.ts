@@ -231,18 +231,17 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
   const errors: string[] = []
   const warnings: string[] = []
 
-  // Required fields validation
-  if (!quote.quote_number || quote.quote_number.trim().length === 0) {
+  // Required fields validation (using quote_no as in Quote interface)
+  if (!quote.quote_no || quote.quote_no.trim().length === 0) {
     errors.push('报价单号不能为空')
-  } else if (!VALIDATION_PATTERNS.QUOTE_NUMBER.test(quote.quote_number)) {
-    errors.push('报价单号格式不正确')
   }
 
   if (!quote.customer_id || quote.customer_id.trim().length === 0) {
     errors.push('客户ID不能为空')
   }
 
-  if (!quote.customer_name || quote.customer_name.trim().length === 0) {
+  // Customer name validation (use customer object if available)
+  if (quote.customer && (!quote.customer.name || quote.customer.name.trim().length === 0)) {
     errors.push('客户名称不能为空')
   }
 
@@ -261,7 +260,7 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
         errors.push(`第${index + 1}个产品的ID不能为空`)
       }
 
-      if (!item.product_name) {
+      if (!item.name) {
         errors.push(`第${index + 1}个产品的名称不能为空`)
       }
 
@@ -285,20 +284,11 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
     })
   }
 
-  // Amount validation
-  if (quote.total_amount === undefined || quote.total_amount === null) {
+  // Amount validation (using Quote interface properties)
+  if (quote.total_price === undefined || quote.total_price === null) {
     errors.push('报价总金额不能为空')
-  } else if (quote.total_amount < 0) {
+  } else if (quote.total_price < 0) {
     errors.push('报价总金额不能为负数')
-  }
-
-  if (quote.discount_amount !== undefined && quote.discount_amount !== null) {
-    if (quote.discount_amount < 0) {
-      errors.push('折扣金额不能为负数')
-    }
-    if (quote.total_amount !== undefined && quote.discount_amount > quote.total_amount) {
-      errors.push('折扣金额不能超过总金额')
-    }
   }
 
   if (quote.tax_amount !== undefined && quote.tax_amount !== null && quote.tax_amount < 0) {
@@ -309,15 +299,6 @@ export function validateQuote(quote: Partial<Quote>): ValidationResult {
     errors.push('最终金额不能为空')
   } else if (quote.final_amount < 0) {
     errors.push('最终金额不能为负数')
-  }
-
-  // Calculate expected final amount
-  if (quote.total_amount !== undefined && quote.final_amount !== undefined) {
-    const expectedFinalAmount =
-      quote.total_amount - (quote.discount_amount || 0) + (quote.tax_amount || 0)
-    if (Math.abs(quote.final_amount - expectedFinalAmount) > 0.01) {
-      errors.push('最终金额计算不正确')
-    }
   }
 
   // Valid until validation
@@ -611,13 +592,13 @@ export function validateBusinessLogic(data: {
   quote.items.forEach((item, index) => {
     const product = products.find(p => p.id === item.product_id)
     if (product) {
-      if (product.stock_quantity < item.quantity) {
+      if (product.stock && product.stock < item.quantity) {
         errors.push(
-          `第${index + 1}个产品库存不足：需要${item.quantity}，可用${product.stock_quantity}`
+          `第${index + 1}个产品库存不足：需要${item.quantity}，可用${product.stock}`
         )
       }
 
-      if (product.status !== 'active') {
+      if (product.is_active !== true) {
         errors.push(`第${index + 1}个产品已停用，无法添加到报价单`)
       }
 

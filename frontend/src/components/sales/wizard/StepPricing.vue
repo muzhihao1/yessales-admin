@@ -96,14 +96,14 @@
       <!-- Discount Value Input -->
       <view class="discount-input-section">
         <SalesInput
-          v-model.number="localConfig.discountValue"
+          :modelValue="String(localConfig.discountValue)"
           :label="discountLabel"
           :placeholder="discountPlaceholder"
           type="number"
           :min="0"
           :max="discountMax"
           :error="discountError"
-          @input="handleDiscountInput"
+          @update:modelValue="(value: string) => handleDiscountInput(Number(value) || 0)"
           @blur="validateDiscount"
         >
           <template #suffix>
@@ -149,13 +149,13 @@
 
           <view class="form-row">
             <SalesInput
-              v-model.number="localConfig.taxRate"
+              :modelValue="String(localConfig.taxRate)"
               label="税率 (%)"
               placeholder="13"
               type="number"
               :min="0"
               :max="30"
-              @input="emitConfigUpdate"
+              @update:modelValue="(value: string) => { localConfig.taxRate = Number(value) || 0; emitConfigUpdate(); }"
             />
 
             <view class="tax-included-option" @click="toggleTaxIncluded">
@@ -173,12 +173,12 @@
 
           <view class="form-grid">
             <SalesInput
-              v-model.number="localConfig.deliveryFee"
+              :modelValue="String(localConfig.deliveryFee)"
               label="配送费 (¥)"
               placeholder="0"
               type="number"
               :min="0"
-              @input="emitConfigUpdate"
+              @update:modelValue="(value: string) => { localConfig.deliveryFee = Number(value) || 0; emitConfigUpdate(); }"
             >
               <template #prefix>
                 <text class="input-icon">🚚</text>
@@ -186,12 +186,12 @@
             </SalesInput>
 
             <SalesInput
-              v-model.number="localConfig.installationFee"
+              :modelValue="String(localConfig.installationFee)"
               label="安装费 (¥)"
               placeholder="0"
               type="number"
               :min="0"
-              @input="emitConfigUpdate"
+              @update:modelValue="(value: string) => { localConfig.installationFee = Number(value) || 0; emitConfigUpdate(); }"
             >
               <template #prefix>
                 <text class="input-icon">🔧</text>
@@ -232,11 +232,11 @@
                 </view>
 
                 <SalesInput
-                  v-model.number="charge.amount"
+                  :modelValue="String(charge.amount)"
                   :placeholder="charge.type === 'percentage' ? '百分比' : '金额'"
                   type="number"
                   :min="0"
-                  @input="emitConfigUpdate"
+                  @update:modelValue="(value: string) => { charge.amount = Number(value) || 0; emitConfigUpdate(); }"
                   class="charge-amount"
                 />
 
@@ -247,7 +247,7 @@
             </view>
           </view>
 
-          <SalesButton type="plain" size="small" @click="addOtherCharge">
+          <SalesButton type="default" size="small" @click="addOtherCharge">
             + 添加其他费用
           </SalesButton>
         </view>
@@ -258,13 +258,13 @@
 
           <view class="form-grid">
             <SalesInput
-              v-model.number="quoteValidityDays"
+              :modelValue="String(quoteValidityDays)"
               label="有效期 (天)"
               placeholder="30"
               type="number"
               :min="1"
               :max="365"
-              @input="$emit('update:validityDays', quoteValidityDays)"
+              @update:modelValue="(value: string) => { quoteValidityDays = Number(value) || 30; $emit('update:validityDays', quoteValidityDays); }"
             >
               <template #help>
                 <text class="validity-hint"> 有效至：{{ getValidUntilDate() }} </text>

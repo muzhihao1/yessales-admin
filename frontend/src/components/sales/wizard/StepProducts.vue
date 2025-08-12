@@ -98,7 +98,7 @@
           </div>
           <div class="item-actions">
             <span class="item-subtotal">¥{{ item.subtotal.toFixed(2) }}</span>
-            <SalesButton size="mini" type="danger" @click="removeSelectedItem(index)">
+            <SalesButton size="small" type="danger" @click="removeSelectedItem(index)">
               移除
             </SalesButton>
           </div>
@@ -127,7 +127,7 @@
           <span class="empty-subtitle">
             {{ searchKeyword ? '尝试其他搜索关键词' : '该分类暂无产品' }}
           </span>
-          <SalesButton v-if="searchKeyword" type="plain" @click="clearSearch" size="small">
+          <SalesButton v-if="searchKeyword" type="default" @click="clearSearch" size="small">
             清除搜索条件
           </SalesButton>
         </div>
@@ -183,7 +183,7 @@
 
           <!-- Load More -->
           <div v-if="hasMore && !loading" class="load-more">
-            <SalesButton type="plain" @click="loadMore"> 加载更多产品 </SalesButton>
+            <SalesButton type="default" @click="loadMore"> 加载更多产品 </SalesButton>
           </div>
         </div>
       </div>
@@ -338,6 +338,8 @@ const generateMockProducts = (categoryId?: string) => {
         category: cat,
         stock: Math.floor(Math.random() * 50) + 10,
         image: `/static/images/products/${cat}-${i + 1}.jpg`,
+        is_active: true,
+        created_at: new Date().toISOString(),
         skuOptions:
           Math.random() > 0.6
             ? [
@@ -442,10 +444,12 @@ const loadProducts = async () => {
   }
 }
 
+let searchTimer: ReturnType<typeof setTimeout> | null = null
+
 const handleSearch = () => {
   // Simple debounce
-  clearTimeout(handleSearch.timer)
-  handleSearch.timer = setTimeout(() => {
+  if (searchTimer) clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
     resetAndLoad()
   }, 300)
 }

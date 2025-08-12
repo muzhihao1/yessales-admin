@@ -21,9 +21,9 @@ export function usePermissions() {
       // User authentication status
       isAuthenticated: authStore.isAuthenticated,
       isAdmin: user?.role === 'admin',
-      isManager: user?.role === 'admin' || user?.role === 'sales_manager',
-      isSalesRep: user?.role === 'sales_rep',
-      isViewer: user?.role === 'viewer',
+      isManager: user?.role === 'admin',
+      isSalesRep: user?.role === 'sales',
+      isViewer: user?.role === 'sales',
 
       // Feature-based permissions
       canManageUsers: canAccessFeature('user_management'),
@@ -39,13 +39,13 @@ export function usePermissions() {
       showAdminMenu: user?.role === 'admin',
       showUserManagement: canAccessFeature('user_management'),
       showSystemSettings: canAccessFeature('system_settings'),
-      showAdvancedFeatures: user?.role === 'admin' || user?.role === 'sales_manager',
+      showAdvancedFeatures: user?.role === 'admin',
 
       // Action permissions
       canEditOwnProfile: !!user,
-      canDeleteRecords: user?.role === 'admin' || user?.role === 'sales_manager',
-      canBulkOperations: user?.role === 'admin' || user?.role === 'sales_manager',
-      canViewAllData: user?.role === 'admin' || user?.role === 'sales_manager',
+      canDeleteRecords: user?.role === 'admin',
+      canBulkOperations: user?.role === 'admin',
+      canViewAllData: user?.role === 'admin',
 
       // Current user info
       currentUser: user,
@@ -95,33 +95,33 @@ export function usePermissions() {
       const actionPermissions: Record<string, Record<string, string[]>> = {
         create: {
           user: ['admin'],
-          product: ['admin', 'sales_manager'],
-          customer: ['admin', 'sales_manager'],
-          quote: ['admin', 'sales_manager', 'sales_rep']
+          product: ['admin'],
+          customer: ['admin', 'sales'],
+          quote: ['admin', 'sales']
         },
         edit: {
           user: ['admin'],
-          product: ['admin', 'sales_manager'],
-          customer: ['admin', 'sales_manager'],
-          quote: ['admin', 'sales_manager', 'sales_rep']
+          product: ['admin'],
+          customer: ['admin', 'sales'],
+          quote: ['admin', 'sales']
         },
         delete: {
           user: ['admin'],
           product: ['admin'],
           customer: ['admin'],
-          quote: ['admin', 'sales_manager']
+          quote: ['admin']
         },
         view: {
-          user: ['admin', 'sales_manager'],
-          product: ['admin', 'sales_manager', 'sales_rep', 'viewer'],
-          customer: ['admin', 'sales_manager', 'sales_rep', 'viewer'],
-          quote: ['admin', 'sales_manager', 'sales_rep', 'viewer']
+          user: ['admin'],
+          product: ['admin', 'sales'],
+          customer: ['admin', 'sales'],
+          quote: ['admin', 'sales']
         },
         approve: {
-          quote: ['admin', 'sales_manager']
+          quote: ['admin']
         },
         export: {
-          data: ['admin', 'sales_manager']
+          data: ['admin']
         }
       }
 
@@ -133,7 +133,7 @@ export function usePermissions() {
      * Check if user can access admin panel
      */
     canAccessAdminPanel(): boolean {
-      return this.hasAnyRole(['admin', 'sales_manager', 'sales_rep', 'viewer'])
+      return this.hasAnyRole(['admin', 'sales'])
     },
 
     /**
@@ -147,7 +147,7 @@ export function usePermissions() {
      * Check if user can edit/delete their own content or has admin privileges
      */
     canModifyResource(resourceUserId: string): boolean {
-      return this.ownsResource(resourceUserId) || this.hasAnyRole(['admin', 'sales_manager'])
+      return this.ownsResource(resourceUserId) || this.hasAnyRole(['admin'])
     }
   }
 
@@ -183,9 +183,7 @@ export function usePermissions() {
     getRoleDisplayName(role?: string): string {
       const roleNames: Record<string, string> = {
         admin: '系统管理员',
-        sales_manager: '销售经理',
-        sales_rep: '销售代表',
-        viewer: '查看者'
+        sales: '销售代表'
       }
 
       return roleNames[role || authStore.user?.role || ''] || '未知角色'
@@ -197,9 +195,7 @@ export function usePermissions() {
     getRoleBadgeColor(role?: string): string {
       const colors: Record<string, string> = {
         admin: '#ef4444',
-        sales_manager: '#f59e0b',
-        sales_rep: '#3b82f6',
-        viewer: '#6b7280'
+        sales: '#3b82f6'
       }
 
       return colors[role || authStore.user?.role || ''] || '#6b7280'

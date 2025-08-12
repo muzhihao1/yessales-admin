@@ -220,7 +220,7 @@ const localForm = reactive({
   customerCity: props.form.customerCity || '',
   customerAddress: props.form.customerAddress || '',
   customerRemark: props.form.customerRemark || '',
-  saveCustomer: props.form.saveCustomer || true
+  saveCustomer: props.form.saveCustomer ?? true
 })
 
 // UI state

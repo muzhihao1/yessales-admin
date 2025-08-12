@@ -26,7 +26,7 @@
       <view class="section-header">
         <text class="section-icon">👤</text>
         <text class="section-title">客户信息</text>
-        <SalesButton size="mini" type="plain" @click="editStep(1)"> 修改 </SalesButton>
+        <SalesButton size="small" type="default" @click="editStep(1)"> 修改 </SalesButton>
       </view>
 
       <view class="info-grid">
@@ -78,7 +78,7 @@
       <view class="section-header">
         <text class="section-icon">📦</text>
         <text class="section-title">选择产品 ({{ selectedProducts.length }}种)</text>
-        <SalesButton size="mini" type="plain" @click="editStep(2)"> 修改 </SalesButton>
+        <SalesButton size="small" type="default" @click="editStep(2)"> 修改 </SalesButton>
       </view>
 
       <view class="products-list">
@@ -113,7 +113,7 @@
       <view class="section-header">
         <text class="section-icon">💰</text>
         <text class="section-title">价格配置</text>
-        <SalesButton size="mini" type="plain" @click="editStep(3)"> 修改 </SalesButton>
+        <SalesButton size="small" type="default" @click="editStep(3)"> 修改 </SalesButton>
       </view>
 
       <view class="pricing-breakdown">

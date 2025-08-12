@@ -123,7 +123,10 @@ export function useEnhancedTableWithRealtime<T extends TableItem & DataItem>(
           tableEnhancements.virtualScrolling?.refresh()
         } else {
           // 传统模式：直接更新表格状态
-          tableEnhancements.setData(realtimeUpdates.state.items, realtimeUpdates.state.total)
+          // Note: setData is available through the spread tableState in traditional mode
+          if ('setData' in tableEnhancements) {
+            (tableEnhancements as any).setData(realtimeUpdates.state.items, realtimeUpdates.state.items.length)
+          }
         }
       }
 
@@ -189,7 +192,7 @@ export function useEnhancedTableWithRealtime<T extends TableItem & DataItem>(
     if (cached) {
       return {
         items: [cached] as T[], // 缓存是单个项目，这里需要调整逻辑
-        total: realtimeUpdates.state.total,
+        total: 1, // Cached single item count
         hasMore: true
       }
     }
