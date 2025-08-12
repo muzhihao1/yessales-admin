@@ -146,7 +146,7 @@
                 </span>
               </span>
               <span class="summary-value discount-value"
-                >-¥{{ formatPrice(quoteData.pricing.discount.amount) }}</text
+                >-¥{{ formatPrice(quoteData.pricing.discount.amount) }}</span
               >
             </div>
 
@@ -155,14 +155,14 @@
               <span class="summary-value"
                 >¥{{
                   formatPrice(quoteData.pricing.subtotal - quoteData.pricing.discount.amount)
-                }}</text
+                }}</span
               >
             </div>
 
             <div v-if="quoteData.pricing.additionalCharges.deliveryFee > 0" class="summary-row">
               <span class="summary-label">配送费</span>
               <span class="summary-value"
-                >+¥{{ formatPrice(quoteData.pricing.additionalCharges.deliveryFee) }}</text
+                >+¥{{ formatPrice(quoteData.pricing.additionalCharges.deliveryFee) }}</span
               >
             </div>
 
@@ -172,7 +172,7 @@
             >
               <span class="summary-label">安装费</span>
               <span class="summary-value"
-                >+¥{{ formatPrice(quoteData.pricing.additionalCharges.installationFee) }}</text
+                >+¥{{ formatPrice(quoteData.pricing.additionalCharges.installationFee) }}</span
               >
             </div>
 
@@ -192,7 +192,7 @@
             <div class="summary-row total-row">
               <span class="summary-label">合计金额</span>
               <span class="summary-value total-value"
-                >¥{{ formatPrice(quoteData.pricing.finalTotal) }}</text
+                >¥{{ formatPrice(quoteData.pricing.finalTotal) }}</span
               >
             </div>
           </div>
@@ -222,7 +222,7 @@
           <div class="standard-terms">
             <span class="terms-title">标准条款：</span>
             <span class="terms-text"
-              >1. 本报价单有效期为 {{ quoteData.quote.validityDays }} 天。</text
+              >1. 本报价单有效期为 {{ quoteData.quote.validityDays }} 天。</span
             >
             <span class="terms-text">2. 产品价格以报价单确认时为准，如有变动以书面通知为准。</span>
             <span class="terms-text">3. 配送及安装服务需提前预约，具体时间双方协商确定。</span>
@@ -249,7 +249,7 @@
 
         <div class="footer-info">
           <span class="footer-text"
-            >感谢您选择耶氏台球设备，我们将为您提供最优质的产品和服务！</text
+            >感谢您选择耶氏台球设备，我们将为您提供最优质的产品和服务！</span
           >
         </div>
       </div>
