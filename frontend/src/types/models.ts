@@ -16,13 +16,17 @@ export interface Product {
   name: string
   model: string
   category: string
+  categoryId?: string // For compatibility with components expecting categoryId
   price: number
   unit: string
+  image?: string // Alias for image_url
   image_url?: string
   description?: string
   is_active: boolean
+  isNew?: boolean // For marking new products
   stock_quantity?: number
   status?: 'active' | 'inactive' | 'discontinued'
+  skuOptions?: Array<{ label: string; value: string }> // For product selector compatibility
   created_at: string
   updated_at?: string
   skus?: ProductSku[]

@@ -89,7 +89,11 @@ export interface Category {
   id: string
   name: string
   description?: string
+  icon?: string
   is_active: boolean
   created_at: string
   updated_at: string
 }
+
+// Re-export common types from models for API compatibility
+export type { Customer, Product, Quote, User, QuoteItem } from './models'
