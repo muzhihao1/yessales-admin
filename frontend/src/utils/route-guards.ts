@@ -8,6 +8,21 @@
 import { useAuthStore } from '@/stores/auth'
 import type { User } from '@/types/models'
 
+// Vue Router types for navigation guards
+interface RouteLocationNormalized {
+  path: string
+  name?: string | symbol
+  params: Record<string, string | string[]>
+  query: Record<string, string | string[]>
+  meta: Record<string, any>
+}
+
+type NavigationGuardNext = (to?: any) => void
+
+interface Router {
+  beforeEach: (guard: (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => void | Promise<void>) => void
+}
+
 /**
  * Route categories and their required permissions
  */
@@ -20,7 +35,7 @@ export const ROUTE_PERMISSIONS = {
     'pages/sales/history/index',
     'pages/sales/history/detail',
     'pages/admin/login/index'
-  ],
+  ] as string[],
 
   // Routes requiring basic authentication
   AUTHENTICATED: ['pages/admin/dashboard/index'],
@@ -60,7 +75,7 @@ export const ROLE_PERMISSIONS = {
  */
 export function hasRoutePermission(user: User | null, routePath: string): boolean {
   // Allow access to public routes
-  if (ROUTE_PERMISSIONS.PUBLIC.includes(routePath)) {
+  if ((ROUTE_PERMISSIONS.PUBLIC as string[]).includes(routePath)) {
     return true
   }
 
@@ -74,8 +89,8 @@ export function hasRoutePermission(user: User | null, routePath: string): boolea
 
   // Check route permission requirements
   for (const [permissionLevel, routes] of Object.entries(ROUTE_PERMISSIONS)) {
-    if (routes.includes(routePath)) {
-      return userPermissions.includes(permissionLevel)
+    if ((routes as string[]).includes(routePath)) {
+      return (userPermissions as string[]).includes(permissionLevel)
     }
   }
 
@@ -176,9 +191,9 @@ export function canAccessFeature(feature: string): boolean {
  * Navigation interceptor for Vue Router
  * Call this in router/index.ts or main.ts with Vue Router instance
  */
-export function setupRouteGuards(router: any) {
+export function setupRouteGuards(router: Router) {
   // Add global beforeEach guard
-  router.beforeEach(async (to: any, _from: any, next: any) => {
+  router.beforeEach(async (to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
     const routePath = to.path.startsWith('/') ? to.path.substring(1) : to.path
 
     const guardResult = await routeGuard(routePath)

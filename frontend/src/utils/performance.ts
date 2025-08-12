@@ -8,6 +8,48 @@
 import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { defineStore } from 'pinia'
 
+// Type declarations for Chrome's memory API
+interface ChromePerformanceMemory {
+  usedJSHeapSize: number
+  totalJSHeapSize: number
+  jsHeapSizeLimit: number
+}
+
+interface PerformanceWithMemory extends Performance {
+  memory?: ChromePerformanceMemory
+}
+
+interface PerformanceNavigationWithTransferSize {
+  transferSize?: number
+}
+
+// Extended performance entry types
+interface LayoutShiftEntry extends PerformanceEntry {
+  value: number
+  hadRecentInput: boolean
+}
+
+interface FirstInputEntry extends PerformanceEntry {
+  processingStart: number
+}
+
+// Global type extensions
+declare global {
+  interface Window {
+    __webpack_require__?: {
+      cache: Record<string, any>
+    }
+    __YESSALES_PERFORMANCE__?: any
+  }
+}
+
+// Environment variable type
+declare const process: {
+  env: {
+    NODE_ENV: string
+  }
+}
+
 /**
  * Performance metrics
  */
@@ -192,14 +234,16 @@ export const usePerformanceStore = defineStore('performance', () => {
               break
 
             case 'layout-shift':
-              if (!(entry as any).hadRecentInput) {
+              const layoutEntry = entry as LayoutShiftEntry
+              if (!layoutEntry.hadRecentInput) {
                 metrics.cumulativeLayoutShift =
-                  (metrics.cumulativeLayoutShift || 0) + (entry as any).value
+                  (metrics.cumulativeLayoutShift || 0) + layoutEntry.value
               }
               break
 
             case 'first-input':
-              metrics.inputDelay = (entry as any).processingStart - entry.startTime
+              const firstInputEntry = entry as FirstInputEntry
+              metrics.inputDelay = firstInputEntry.processingStart - entry.startTime
               break
           }
         })
@@ -219,10 +263,13 @@ export const usePerformanceStore = defineStore('performance', () => {
     const checkMemory = () => {
       if (
         typeof window !== 'undefined' &&
-        'performance' in window &&
-        (window.performance as any).memory
+        'performance' in window
       ) {
-        const memory = (window.performance as any).memory
+        const performance = window.performance as PerformanceWithMemory
+        const memory = performance.memory
+        
+        if (!memory) return
+        
         const usageInMB = Math.round(memory.usedJSHeapSize / 1024 / 1024)
         const limitInMB = Math.round(memory.jsHeapSizeLimit / 1024 / 1024)
 
@@ -275,7 +322,7 @@ export const usePerformanceStore = defineStore('performance', () => {
 
       window.fetch = async function (...args) {
         const start = performance.now()
-        const url = typeof args[0] === 'string' ? args[0] : args[0].url
+        const url = typeof args[0] === 'string' ? args[0] : (args[0] as any).url || '[Unknown URL]'
         const method = args[1]?.method || 'GET'
 
         try {
@@ -484,10 +531,12 @@ export function useMemoryLeakDetector(componentName: string) {
   onMounted(() => {
     if (
       typeof window !== 'undefined' &&
-      'performance' in window &&
-      (window.performance as any).memory
+      'performance' in window
     ) {
-      initialMemory = (window.performance as any).memory.usedJSHeapSize
+      const performance = window.performance as PerformanceWithMemory
+      if (performance.memory) {
+        initialMemory = performance.memory.usedJSHeapSize
+      }
     }
   })
 
@@ -506,18 +555,20 @@ export function useMemoryLeakDetector(componentName: string) {
     if (
       initialMemory > 0 &&
       typeof window !== 'undefined' &&
-      'performance' in window &&
-      (window.performance as any).memory
+      'performance' in window
     ) {
-      const finalMemory = (window.performance as any).memory.usedJSHeapSize
-      const memoryDelta = finalMemory - initialMemory
+      const performance = window.performance as PerformanceWithMemory
+      if (performance.memory) {
+        const finalMemory = performance.memory.usedJSHeapSize
+        const memoryDelta = finalMemory - initialMemory
 
-      if (memoryDelta > 1024 * 1024) {
-        // More than 1MB
-        performanceStore.addWarning(
-          'potential-memory-leak',
-          `组件 ${componentName} 可能存在内存泄漏 (+${Math.round(memoryDelta / 1024 / 1024)}MB)`
-        )
+        if (memoryDelta > 1024 * 1024) {
+          // More than 1MB
+          performanceStore.addWarning(
+            'potential-memory-leak',
+            `组件 ${componentName} 可能存在内存泄漏 (+${Math.round(memoryDelta / 1024 / 1024)}MB)`
+          )
+        }
       }
     }
   })
@@ -579,7 +630,7 @@ export const performanceUtils = {
     let timeout: number
     return ((...args: any[]) => {
       clearTimeout(timeout)
-      timeout = setTimeout(() => func.apply(this, args), wait)
+      timeout = setTimeout(() => func.apply(this, args), wait) as any
     }) as T
   },
 
@@ -610,11 +661,12 @@ export const performanceUtils = {
   analyzeBundleSize() {
     if (process.env.NODE_ENV === 'development') {
       console.log('📊 Bundle 分析:')
-      console.log(`Initial bundle size: ${(performance.navigation?.transferSize || 0) / 1024}KB`)
+      const navigationTiming = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming & PerformanceNavigationWithTransferSize
+      console.log(`Initial bundle size: ${(navigationTiming?.transferSize || 0) / 1024}KB`)
 
       // Log loaded modules (if webpack is available)
-      if (typeof __webpack_require__ !== 'undefined' && __webpack_require__.cache) {
-        const loadedModules = Object.keys(__webpack_require__.cache).length
+      if (window.__webpack_require__?.cache) {
+        const loadedModules = Object.keys(window.__webpack_require__.cache).length
         console.log(`Loaded modules: ${loadedModules}`)
       }
     }

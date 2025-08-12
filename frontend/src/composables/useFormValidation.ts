@@ -1,4 +1,4 @@
-import { computed, reactive, ref, toRefs, watch } from 'vue'
+import { computed, reactive, readonly, ref, toRefs, watch } from 'vue'
 import { useToast } from './useToast'
 
 interface ValidationRule {
@@ -27,6 +27,14 @@ interface ValidationState {
 
 interface FormConfig {
   [key: string]: FieldConfig
+}
+
+type FormData<T extends FormConfig> = {
+  [K in keyof T]: T[K]['value'] extends infer V ? V : any
+}
+
+type ValidationStatesMap<T extends FormConfig> = {
+  [K in keyof T]: ValidationState
 }
 
 // Built-in validation rules
@@ -130,16 +138,16 @@ export const ValidationRules = {
 export function useFormValidation<T extends FormConfig>(config: T) {
   const toast = useToast()
 
-  // Form data
-  const formData = reactive<{ [K in keyof T]: any }>({} as any)
+  // Form data - use Record with proper indexing
+  const formData = reactive<Record<string, any>>({})
 
-  // Validation states
-  const validationStates = reactive<{ [K in keyof T]: ValidationState }>({} as any)
+  // Validation states - use Record with proper indexing  
+  const validationStates = reactive<Record<string, ValidationState>>({})
 
   // Initialize form data and validation states
   for (const [key, field] of Object.entries(config)) {
-    formData[key as keyof T] = field.value || ''
-    validationStates[key as keyof T] = {
+    formData[key] = field.value || ''
+    validationStates[key] = {
       isValid: false,
       isValidating: false,
       message: '',
@@ -173,8 +181,8 @@ export function useFormValidation<T extends FormConfig>(config: T) {
     showToast: boolean = false
   ): Promise<boolean> => {
     const field = config[fieldName]
-    const value = formData[fieldName]
-    const state = validationStates[fieldName]
+    const value = formData[fieldName as string]
+    const state = validationStates[fieldName as string]
 
     state.isValidating = true
     state.hasError = false
@@ -275,8 +283,8 @@ export function useFormValidation<T extends FormConfig>(config: T) {
 
   // Reset field
   const resetField = (fieldName: keyof T) => {
-    formData[fieldName] = config[fieldName].value || ''
-    validationStates[fieldName] = {
+    formData[fieldName as string] = config[fieldName].value || ''
+    validationStates[fieldName as string] = {
       isValid: false,
       isValidating: false,
       message: '',
@@ -294,22 +302,22 @@ export function useFormValidation<T extends FormConfig>(config: T) {
 
   // Get field error
   const getFieldError = (fieldName: keyof T): string => {
-    return validationStates[fieldName].message
+    return validationStates[fieldName as string].message
   }
 
   // Check if field has error
   const hasFieldError = (fieldName: keyof T): boolean => {
-    return validationStates[fieldName].hasError
+    return validationStates[fieldName as string].hasError
   }
 
   // Check if field is valid
   const isFieldValid = (fieldName: keyof T): boolean => {
-    return validationStates[fieldName].isValid
+    return validationStates[fieldName as string].isValid
   }
 
   // Set field value with validation
   const setFieldValue = async (fieldName: keyof T, value: any, validate: boolean = false) => {
-    formData[fieldName] = value
+    formData[fieldName as string] = value
 
     if (validate) {
       await validateField(fieldName)
@@ -322,7 +330,7 @@ export function useFormValidation<T extends FormConfig>(config: T) {
 
     if (hasInputTrigger) {
       watch(
-        () => formData[key as keyof T],
+        () => formData[key],
         (newValue, oldValue) => {
           if (newValue !== oldValue && newValue) {
             // Debounce validation for input trigger
@@ -336,11 +344,11 @@ export function useFormValidation<T extends FormConfig>(config: T) {
   }
 
   return {
-    // Form data
-    formData: toRefs(formData),
+    // Form data as reactive refs
+    formData: readonly(formData),
 
-    // Validation states
-    validationStates: toRefs(validationStates),
+    // Validation states as reactive refs
+    validationStates: readonly(validationStates),
 
     // Computed properties
     isFormValid,

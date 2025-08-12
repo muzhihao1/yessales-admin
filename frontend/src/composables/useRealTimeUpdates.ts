@@ -67,6 +67,18 @@ export interface CacheEntry<T> {
   expiry: number
 }
 
+export interface WebSocketMessage {
+  type: 'update' | 'create' | 'delete' | 'batch'
+  id?: string | number
+  data?: any
+}
+
+export interface RealtimeBatchOperation {
+  type: 'update' | 'create' | 'delete'
+  id: string | number
+  data?: any
+}
+
 const DEFAULT_OPTIONS: RealTimeUpdateOptions = {
   debounceDelay: 300,
   cacheExpiry: 5 * 60 * 1000, // 5分钟
@@ -85,15 +97,15 @@ export function useRealTimeUpdates<T extends DataItem>(
 ) {
   const opts = { ...DEFAULT_OPTIONS, ...options }
 
-  // 响应式状态
+  // 响应式状态 - Use ref for array to avoid unwrapping issues
   const state = reactive({
-    items: [] as T[],
+    items: [] as any[],
     loading: false,
     syncing: false,
     connected: false,
     lastSync: null as Date | null,
     pendingUpdates: [] as UpdateOperation[],
-    conflicts: [] as Array<{ local: T; remote: T }>
+    conflicts: [] as Array<{ local: any; remote: any }>
   })
 
   // 缓存管理
@@ -102,11 +114,11 @@ export function useRealTimeUpdates<T extends DataItem>(
 
   // WebSocket连接
   let ws: WebSocket | null = null
-  let reconnectTimer: number | null = null
+  let reconnectTimer: ReturnType<typeof setTimeout> | null = null
 
   // 防抖定时器
-  const debounceTimers = new Map<string, number>()
-  const batchTimer: number | null = null
+  const debounceTimers = new Map<string, ReturnType<typeof setTimeout>>()
+  const batchTimer: ReturnType<typeof setTimeout> | null = null
 
   /**
    * 智能防抖函数 - 根据操作类型使用不同延迟
@@ -125,7 +137,7 @@ export function useRealTimeUpdates<T extends DataItem>(
       } catch (error) {
         console.error(`Debounced operation failed for key ${key}:`, error)
       }
-    }, actualDelay) as unknown as number
+    }, actualDelay)
 
     debounceTimers.set(key, timer)
   }
@@ -179,8 +191,8 @@ export function useRealTimeUpdates<T extends DataItem>(
     let hasChanges = false
 
     for (const [key, value] of Object.entries(updates)) {
-      if (current[key] !== value) {
-        merged[key] = value
+      if ((current as any)[key] !== value) {
+        ;(merged as any)[key] = value
         hasChanges = true
       }
     }
@@ -327,7 +339,7 @@ export function useRealTimeUpdates<T extends DataItem>(
           const remoteTime = new Date(remote._lastModified || 0)
 
           if (localTime > remoteTime) {
-            merged[key] = value
+            ;(merged as any)[key] = value
           }
         }
         merged._version = Math.max(local._version || 0, remote._version || 0) + 1
@@ -375,7 +387,7 @@ export function useRealTimeUpdates<T extends DataItem>(
         // 自动重连
         reconnectTimer = setTimeout(() => {
           connectWebSocket()
-        }, opts.reconnectInterval) as unknown as number
+        }, opts.reconnectInterval)
       }
 
       ws.onerror = error => {
@@ -389,21 +401,29 @@ export function useRealTimeUpdates<T extends DataItem>(
   /**
    * 处理实时消息
    */
-  const handleRealtimeMessage = (message: any) => {
+  const handleRealtimeMessage = (message: WebSocketMessage) => {
     const { type, data, id } = message
 
     switch (type) {
       case 'update':
-        handleRealtimeUpdate(id, data)
+        if (id !== undefined) {
+          handleRealtimeUpdate(id, data)
+        }
         break
       case 'create':
-        handleRealtimeCreate(data)
+        if (data) {
+          handleRealtimeCreate(data)
+        }
         break
       case 'delete':
-        handleRealtimeDelete(id)
+        if (id !== undefined) {
+          handleRealtimeDelete(id)
+        }
         break
       case 'batch':
-        handleRealtimeBatch(data)
+        if (data) {
+          handleRealtimeBatch(data)
+        }
         break
       default:
         console.warn('Unknown realtime message type:', type)
@@ -443,16 +463,18 @@ export function useRealTimeUpdates<T extends DataItem>(
     }
   }
 
-  const handleRealtimeBatch = (
-    operations: Array<{ type: string; id: string | number; data?: any }>
-  ) => {
+  const handleRealtimeBatch = (operations: RealtimeBatchOperation[]) => {
     operations.forEach(op => {
       switch (op.type) {
         case 'update':
-          handleRealtimeUpdate(op.id, op.data)
+          if (op.data) {
+            handleRealtimeUpdate(op.id, op.data)
+          }
           break
         case 'create':
-          handleRealtimeCreate(op.data)
+          if (op.data) {
+            handleRealtimeCreate(op.data)
+          }
           break
         case 'delete':
           handleRealtimeDelete(op.id)
@@ -484,7 +506,7 @@ export function useRealTimeUpdates<T extends DataItem>(
       queueUpdate(id, 'update', updates)
       // 这里需要返回实际的API调用结果
       const current = state.items.find(item => item.id === id)!
-      return mergeDataChanges(current, updates)
+      return mergeDataChanges(current as T, updates)
     })
   }
 
