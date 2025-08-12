@@ -5,6 +5,8 @@ export interface Customer {
   wechat?: string
   address?: string
   remark?: string
+  assigned_to?: string
+  credit_limit?: number
   created_at: string
   updated_at?: string
 }
@@ -19,6 +21,8 @@ export interface Product {
   image_url?: string
   description?: string
   is_active: boolean
+  stock_quantity?: number
+  status?: 'active' | 'inactive' | 'discontinued'
   created_at: string
   updated_at?: string
   skus?: ProductSku[]
@@ -51,6 +55,7 @@ export interface Accessory {
 export interface User {
   id: string
   username: string
+  email?: string
   role: 'admin' | 'sales'
   name: string
   phone?: string
@@ -63,10 +68,17 @@ export interface User {
 export interface Quote {
   id: string
   quote_no: string
+  quote_number?: string // Alias for quote_no for compatibility
   customer_id: string
   sales_id?: string
   total_price: number
-  status: 'pending' | 'approved' | 'rejected' | 'completed'
+  tax_amount?: number
+  final_amount?: number
+  status: 'draft' | 'pending' | 'approved' | 'rejected' | 'completed'
+  valid_until?: string
+  created_by?: string
+  approved_by?: string
+  notes?: string
   remark?: string
   created_at: string
   updated_at?: string

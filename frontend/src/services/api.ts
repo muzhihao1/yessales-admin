@@ -5,11 +5,9 @@
  * the frontend expectations and Terminal 1's Supabase-based APIs.
  */
 
-import { customersApi } from '../../../shared/api/customers'
-import { productsApi } from '../../../shared/api/products'
-import { quotesApi } from '../../../shared/api/quotes'
-import { authApi } from '../../../shared/api/auth'
-import type { ApiResponse } from '../../../shared/types/api'
+import { ApiClient } from '@/api/client'
+import { supabase } from '@/api/config'
+import type { ApiResponse } from '@/types/api'
 
 /**
  * HTTP-like API client that translates REST-style calls to Supabase API calls
@@ -26,18 +24,31 @@ export const api = {
 
     // Handle different endpoints
     if (endpoint === '/api/customers') {
-      return await customersApi.getCustomers({
-        page: params.page,
-        page_size: params.pageSize,
-        search: params.search,
-        sort_by: params.sortBy,
-        sort_order: params.sortOrder
+      const query: any = {}
+      if (params.search) {
+        // For search, we'll use a text search on name or phone
+        query.or = `name.ilike.%${params.search}%,phone.ilike.%${params.search}%`
+      }
+      if (params.sortBy) {
+        query.order = `${params.sortBy}.${params.sortOrder || 'asc'}`
+      }
+      if (params.page && params.pageSize) {
+        query.limit = params.pageSize
+        query.offset = (params.page - 1) * params.pageSize
+      }
+
+      return await ApiClient.request('GET', 'customers', {
+        query,
+        select: '*'
       })
     }
 
     if (endpoint.startsWith('/api/customers/') && endpoint.includes('/quotes')) {
       const customerId = endpoint.split('/')[3]
-      const response = await customersApi.getCustomerQuotes(customerId)
+      const response = await ApiClient.request('GET', 'quotes', {
+        query: { customer_id: customerId },
+        select: '*'
+      })
       return {
         data: {
           data: response.data,
@@ -59,7 +70,10 @@ export const api = {
 
     if (endpoint.startsWith('/api/customers/') && !endpoint.includes('/')) {
       const customerId = endpoint.split('/')[3]
-      const response = await customersApi.getCustomer(customerId)
+      const response = await ApiClient.request('GET', 'customers', {
+        id: customerId,
+        select: '*'
+      })
 
       // Transform the response to include additional customer details structure
       if (response.success && response.data) {
@@ -76,19 +90,22 @@ export const api = {
 
         // Fetch customer quotes if needed
         try {
-          const quotesResponse = await customersApi.getCustomerQuotes(customerId)
+          const quotesResponse = await ApiClient.request('GET', 'quotes', {
+            query: { customer_id: customerId },
+            select: '*'
+          })
           if (quotesResponse.success && quotesResponse.data) {
             customerDetail.quotes = quotesResponse.data.map((quote: any) => ({
               id: quote.id,
-              quote_number: quote.quote_no,
-              total_amount: quote.total_price,
+              quote_number: quote.quote_no || quote.id,
+              total_amount: quote.total_price || quote.total_amount || 0,
               items_count: quote.items?.length || 0,
               created_at: quote.created_at,
               status: quote.status
             }))
             customerDetail.total_quotes = quotesResponse.data.length
             customerDetail.total_amount = quotesResponse.data.reduce(
-              (sum: number, q: any) => sum + (q.total_price || 0),
+              (sum: number, q: any) => sum + (q.total_price || q.total_amount || 0),
               0
             )
             if (quotesResponse.data.length > 0) {
@@ -106,7 +123,10 @@ export const api = {
 
     if (endpoint === '/api/customers/search') {
       if (params.phone) {
-        const response = await customersApi.getCustomerByPhone(params.phone)
+        const response = await ApiClient.request('GET', 'customers', {
+          query: { phone: params.phone },
+          select: '*'
+        })
         return {
           data: response.data ? [response.data] : []
         }
@@ -144,7 +164,7 @@ export const api = {
    */
   async post(endpoint: string, data: any) {
     if (endpoint === '/api/customers') {
-      return await customersApi.createCustomer(data)
+      return await ApiClient.request('POST', 'customers', { data })
     }
 
     if (endpoint.startsWith('/api/customers/') && endpoint.includes('/activities')) {
@@ -165,7 +185,10 @@ export const api = {
 
     if (endpoint === '/api/customers/merge') {
       // Mock merge functionality for now
-      const response = await customersApi.getCustomer(data.primary_customer_id)
+      const response = await ApiClient.request('GET', 'customers', {
+        id: data.primary_customer_id,
+        select: '*'
+      })
       return response
     }
 
@@ -178,7 +201,10 @@ export const api = {
   async put(endpoint: string, data: any) {
     if (endpoint.startsWith('/api/customers/')) {
       const customerId = endpoint.split('/')[3]
-      return await customersApi.updateCustomer(customerId, data)
+      return await ApiClient.request('PUT', 'customers', { 
+        id: customerId, 
+        data 
+      })
     }
 
     throw new Error(`Unhandled PUT endpoint: ${endpoint}`)
@@ -190,7 +216,7 @@ export const api = {
   async delete(endpoint: string) {
     if (endpoint.startsWith('/api/customers/')) {
       const customerId = endpoint.split('/')[3]
-      return await customersApi.deleteCustomer(customerId)
+      return await ApiClient.request('DELETE', 'customers', { id: customerId })
     }
 
     throw new Error(`Unhandled DELETE endpoint: ${endpoint}`)
@@ -202,15 +228,95 @@ export const api = {
  */
 export const authService = {
   async login(credentials: { email: string; password: string }) {
-    return await authApi.login(credentials.email, credentials.password)
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.email,
+        password: credentials.password
+      })
+      
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'AUTH_ERROR',
+            message: error.message
+          }
+        }
+      }
+      
+      return {
+        success: true,
+        data: {
+          user: data.user,
+          session: data.session
+        }
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AUTH_ERROR',
+          message: 'Login failed'
+        }
+      }
+    }
   },
 
   async logout() {
-    return await authApi.logout()
+    try {
+      const { error } = await supabase.auth.signOut()
+      
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'AUTH_ERROR',
+            message: error.message
+          }
+        }
+      }
+      
+      return {
+        success: true
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AUTH_ERROR',
+          message: 'Logout failed'
+        }
+      }
+    }
   },
 
   async getCurrentUser() {
-    return await authApi.getCurrentUser()
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser()
+      
+      if (error) {
+        return {
+          success: false,
+          error: {
+            code: 'AUTH_ERROR',
+            message: error.message
+          }
+        }
+      }
+      
+      return {
+        success: true,
+        data: user
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: {
+          code: 'AUTH_ERROR',
+          message: 'Failed to get current user'
+        }
+      }
+    }
   }
 }
 
@@ -219,12 +325,6 @@ export const authService = {
  */
 export const uploadService = {
   async uploadFile(file: File, path: string) {
-    // For now, return a mock upload response
-    return {
-      success: true,
-      data: {
-        url: `https://placeholder.image/400x300?text=${encodeURIComponent(file.name)}`
-      }
-    }
+    return await ApiClient.uploadFile(file, 'uploads', path)
   }
 }
