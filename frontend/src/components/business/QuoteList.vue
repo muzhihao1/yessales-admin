@@ -22,7 +22,7 @@
       >
         <!-- Quote header -->
         <view class="quote-header">
-          <view class="quote-number">{{ quote.quoteNumber }}</view>
+          <view class="quote-number">{{ quote.quote_number }}</view>
           <view class="quote-status" :class="`quote-status--${quote.status}`">
             {{ getStatusText(quote.status) }}
           </view>
@@ -30,19 +30,19 @@
 
         <!-- Customer info -->
         <view class="customer-info">
-          <view class="customer-name">{{ quote.customerName }}</view>
-          <view v-if="quote.companyName" class="company-name">{{ quote.companyName }}</view>
+          <view class="customer-name">{{ quote.customer?.name || '未知客户' }}</view>
+          <view v-if="quote.customer?.address" class="company-name">{{ quote.customer.address }}</view>
         </view>
 
         <!-- Quote details -->
         <view class="quote-details">
           <view class="detail-item">
             <text class="detail-label">产品数量：</text>
-            <text class="detail-value">{{ quote.itemCount || 0 }}种</text>
+            <text class="detail-value">{{ quote.items?.length || 0 }}种</text>
           </view>
           <view class="detail-item">
             <text class="detail-label">总数量：</text>
-            <text class="detail-value">{{ quote.totalQuantity || 0 }}件</text>
+            <text class="detail-value">{{ getTotalQuantity(quote) }}件</text>
           </view>
         </view>
 
@@ -50,18 +50,18 @@
         <view class="quote-footer">
           <view class="quote-date">
             <text class="date-label">创建时间：</text>
-            <text class="date-value">{{ formatDate(quote.createdAt) }}</text>
+            <text class="date-value">{{ formatDate(quote.created_at) }}</text>
           </view>
           <view class="quote-amount">
             <text class="amount-label">总金额：</text>
-            <text class="amount-value">¥{{ formatAmount(quote.totalAmount) }}</text>
+            <text class="amount-value">¥{{ formatAmount(quote.final_amount || quote.total_price) }}</text>
           </view>
         </view>
 
         <!-- Action buttons -->
         <view class="quote-actions" @click.stop>
           <button
-            v-if="showActions && (quote.status === 'draft' || quote.status === 'sent')"
+            v-if="showActions && (quote.status === 'draft' || quote.status === 'pending')"
             class="action-btn action-btn--edit"
             @click="handleEdit(quote)"
           >
@@ -116,11 +116,10 @@ const emit = defineEmits<{
 
 const statusMap: Record<string, string> = {
   draft: '草稿',
-  sent: '已发送',
-  viewed: '已查看',
-  confirmed: '已确认',
+  pending: '待审核',
+  approved: '已通过', 
   rejected: '已拒绝',
-  expired: '已过期'
+  completed: '已完成'
 }
 
 const getStatusText = (status: string) => {
@@ -141,6 +140,11 @@ const formatDate = (dateString: string | undefined) => {
 const formatAmount = (amount: number | undefined) => {
   if (amount === undefined || amount === null) return '0.00'
   return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+const getTotalQuantity = (quote: Quote) => {
+  if (!quote.items || quote.items.length === 0) return 0
+  return quote.items.reduce((total, item) => total + (item.quantity || 1), 0)
 }
 
 const handleQuoteClick = (quote: Quote) => {
