@@ -26,7 +26,7 @@ export interface Product {
   isNew?: boolean // For marking new products
   stock_quantity?: number
   status?: 'active' | 'inactive' | 'discontinued'
-  skuOptions?: Array<{ label: string; value: string }> // For product selector compatibility
+  skuOptions?: Array<{ id: string; name: string; price: number }> // For product selector compatibility
   created_at: string
   updated_at?: string
   skus?: ProductSku[]

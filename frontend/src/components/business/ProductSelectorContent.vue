@@ -242,10 +242,15 @@ const loadProducts = async (reset = false) => {
   const mockProducts: Product[] = []
   for (let i = 0; i < pageSize; i++) {
     const id = `prod-${page.value}-${i}`
+    const categoryName = activeCategoryId.value === 'all'
+      ? props.categories[Math.floor(Math.random() * props.categories.length)]?.name || '默认分类'
+      : props.categories.find(cat => cat.id === activeCategoryId.value)?.name || '默认分类'
+      
     mockProducts.push({
       id,
       name: `产品 ${page.value}-${i}`,
       model: `MODEL-${Math.random().toString(36).substring(7).toUpperCase()}`,
+      category: categoryName,
       price: Math.floor(Math.random() * 1000) + 100,
       unit: ['个', '件', '套', '箱'][Math.floor(Math.random() * 4)],
       categoryId:
@@ -253,6 +258,8 @@ const loadProducts = async (reset = false) => {
           ? props.categories[Math.floor(Math.random() * props.categories.length)]?.id
           : activeCategoryId.value,
       image: `/static/images/product-${(i % 5) + 1}.jpg`,
+      is_active: true,
+      created_at: new Date().toISOString(),
       skuOptions:
         Math.random() > 0.5
           ? [

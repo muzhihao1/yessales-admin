@@ -29,7 +29,6 @@ const AdminLogs = () => import('@/pages/admin/logs/index.vue')
 const AdminSettings = () => import('@/pages/admin/settings/index.vue')
 
 // Test pages
-const TestIntegration = () => import('@/pages/test/integration.vue')
 const TestMobileAdaptation = () => import('@/pages/test/mobile-adaptation.vue')
 
 /**
@@ -208,12 +207,6 @@ const routes: RouteRecordRaw[] = [
   },
 
   // Test routes
-  {
-    path: '/test/integration',
-    name: 'TestIntegration',
-    component: TestIntegration,
-    meta: { title: '集成测试' }
-  },
   {
     path: '/test/mobile-adaptation',
     name: 'TestMobileAdaptation',
