@@ -28,8 +28,7 @@ const AdminCustomerEdit = () => import('@/pages/admin/customers/edit.vue')
 const AdminLogs = () => import('@/pages/admin/logs/index.vue')
 const AdminSettings = () => import('@/pages/admin/settings/index.vue')
 
-// Test pages
-const TestMobileAdaptation = () => import('@/pages/test/mobile-adaptation.vue')
+// Test pages (currently disabled - no test files exist)
 
 /**
  * Route definitions based on pages.json structure
@@ -206,13 +205,7 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
-  // Test routes
-  {
-    path: '/test/mobile-adaptation',
-    name: 'TestMobileAdaptation',
-    component: TestMobileAdaptation,
-    meta: { title: '移动端适配测试' }
-  },
+  // Test routes (disabled - no test files exist)
 
   // 404 fallback
   {
