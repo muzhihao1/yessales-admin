@@ -222,7 +222,7 @@ const steps = [
 ]
 
 // Form data
-const customerForm = reactive({
+let customerForm = reactive({
   customerName: '',
   customerPhone: '',
   customerWechat: '',
@@ -245,7 +245,7 @@ const customerErrors = reactive({
 
 const selectedProducts = ref<SelectedProduct[]>([])
 
-const pricingConfig = reactive({
+let pricingConfig = reactive({
   discountType: 'percentage' as 'percentage' | 'fixed',
   discountValue: 0,
   taxRate: 13,
