@@ -1,7 +1,7 @@
 {
   "version": 2,
   "name": "yessales-admin",
-  "installCommand": "cd frontend && npm ci --legacy-peer-deps",
+  "installCommand": "cd frontend && npm ci",
   "buildCommand": "cd frontend && npm run build",
   "outputDirectory": "frontend/dist",
   "public": true,
@@ -13,6 +13,14 @@
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable"
       }
+    },
+    {
+      "src": "/sales(.*)",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/admin(.*)",
+      "dest": "/index.html"
     },
     {
       "src": "/(.*)",

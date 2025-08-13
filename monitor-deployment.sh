@@ -19,8 +19,8 @@ check_deployment_status() {
     MAIN_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://yessales-admin.vercel.app/ --max-time 10)
     echo "   主页面状态: $MAIN_STATUS"
     
-    # 检查资源文件
-    ASSETS_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://yessales-admin.vercel.app/assets/index-C_Px2wwp.js --max-time 10)
+    # 检查资源文件 (use current deployed filename)
+    ASSETS_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://yessales-admin.vercel.app/assets/index-ClvP5PA7.js --max-time 10)
     echo "   资源文件状态: $ASSETS_STATUS"
     
     # 检查 admin 路由
