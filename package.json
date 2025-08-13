@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "install": "cd frontend && npm ci",
     "build": "cd frontend && npm run build",
     "dev": "cd frontend && npm run dev",
     "type-check": "cd frontend && npm run type-check",
