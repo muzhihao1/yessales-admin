@@ -7,15 +7,17 @@
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import {
+  DEFAULT_BUSINESS_RULES,
+  DEFAULT_SECURITY_SETTINGS,
+  SETTINGS_CATEGORIES
+} from '@/types/settings'
 import type {
   AppearanceSettings,
   BackupSettings,
   BusinessRuleSettings,
-  DEFAULT_BUSINESS_RULES,
-  DEFAULT_SECURITY_SETTINGS,
   IntegrationSettings,
   NotificationSettings,
-  SETTINGS_CATEGORIES,
   SecuritySettings,
   SettingsCategory,
   SettingsChangeHistory,
@@ -618,6 +620,22 @@ export const useSettingsStore = defineStore('settings', () => {
     return setting ? setting.value : defaultValue
   }
 
+  // Alias methods for backward compatibility with existing components
+  async function updateSettings(settingUpdates: Partial<SystemSettings>[]) {
+    // Convert array of partial settings to key-value updates format
+    const updates: Record<string, any> = {}
+    settingUpdates.forEach(setting => {
+      if (setting.key) {
+        updates[setting.key] = setting.value
+      }
+    })
+    return await batchUpdateSettings(updates)
+  }
+
+  function getSettingsByCategory(category: SettingsCategory): SystemSettings[] {
+    return settingsByCategory.value[category] || []
+  }
+
   return {
     // State
     settings,
@@ -644,6 +662,7 @@ export const useSettingsStore = defineStore('settings', () => {
     fetchSettings,
     updateSetting,
     batchUpdateSettings,
+    updateSettings,
     resetToDefaults,
     exportSettings,
     importSettings,
@@ -651,6 +670,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setCurrentCategory,
     validateSettingValue,
     getSetting,
-    getSettingValue
+    getSettingValue,
+    getSettingsByCategory
   }
 })

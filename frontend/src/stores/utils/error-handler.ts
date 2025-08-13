@@ -47,6 +47,8 @@ export interface StoreError {
     store: string
     action: string
     payload?: any
+    batchIndex?: number
+    target?: string
   }
 }
 
@@ -62,6 +64,8 @@ export interface ErrorHandlerConfig {
     store: string
     action: string
     payload?: any
+    batchIndex?: number
+    target?: string
   }
 }
 

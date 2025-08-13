@@ -40,7 +40,19 @@ export const useAppStore = defineStore('app', () => {
     notificationsEnabled: true,
     cacheEnabled: true,
     debugMode: false,
-    pageSize: 20
+    pageSize: 20,
+    preferences: {
+      language: 'zh-CN',
+      timezone: 'Asia/Shanghai',
+      dateFormat: 'YYYY-MM-DD',
+      currency: 'CNY'
+    },
+    business: {
+      companyName: '耶氏台球斗南销售中心',
+      contactInfo: '',
+      defaultTaxRate: 0.13,
+      quotationValidDays: 30
+    }
   })
 
   // ============= UI状态 =============

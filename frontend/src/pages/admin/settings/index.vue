@@ -268,6 +268,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 import { usePermissions } from '@/composables/usePermissions'
@@ -294,7 +295,7 @@ const settingsStore = useSettingsStore()
 const { checkPermission } = usePermissions()
 const router = useRouter()
 
-// Extract store state and methods
+// Extract reactive state and computed properties with proper typing
 const {
   settings,
   currentCategory,
@@ -310,8 +311,11 @@ const {
   appearanceSettings,
   currentCategorySettings,
   hasUnsavedChanges,
-  categoryInfo,
+  categoryInfo
+} = storeToRefs(settingsStore)
 
+// Extract methods directly from store
+const {
   fetchSettings,
   updateSetting,
   batchUpdateSettings,
@@ -655,19 +659,24 @@ function getCategoryBestPractices(category: SettingsCategory): string[] {
 
 function getCategoryWarning(category: SettingsCategory): string | undefined {
   const warnings: Record<SettingsCategory, string> = {
+    general: '',
     security:
       '⚠️ 安全设置的修改可能影响系统安全性，请确保你了解每项设置的含义，并在修改前制定回滚计划。',
     business: '⚠️ 业务规则的变更将直接影响用户操作流程，请务必与相关业务团队确认后再进行修改。',
+    notification: '',
     integration: '⚠️ 集成设置错误可能导致外部服务无法正常工作，请在修改前确认相关服务的可用性。',
-    backup: '⚠️ 备份设置关系到数据安全，错误配置可能导致数据丢失，请谨慎操作。'
+    appearance: '',
+    backup: '⚠️ 备份设置关系到数据安全，错误配置可能导致数据丢失，请谨慎操作。',
+    maintenance: ''
   }
-  return warnings[category]
+  return warnings[category] || undefined
 }
 
 function getCategoryRelatedSettings(
   category: SettingsCategory
 ): Array<{ key: string; label: string }> {
   const relatedSettings: Record<SettingsCategory, Array<{ key: string; label: string }>> = {
+    general: [],
     security: [
       { key: 'notification', label: '安全通知设置' },
       { key: 'backup', label: '数据备份设置' }
@@ -676,13 +685,21 @@ function getCategoryRelatedSettings(
       { key: 'notification', label: '业务流程通知' },
       { key: 'integration', label: '业务系统集成' }
     ],
+    notification: [
+      { key: 'security', label: '安全通知设置' },
+      { key: 'business', label: '业务流程通知' }
+    ],
     integration: [
       { key: 'security', label: '集成安全设置' },
       { key: 'notification', label: '集成状态通知' }
     ],
+    appearance: [],
     backup: [
       { key: 'security', label: '备份安全设置' },
       { key: 'maintenance', label: '备份维护策略' }
+    ],
+    maintenance: [
+      { key: 'backup', label: '备份维护策略' }
     ]
   }
   return relatedSettings[category] || []
@@ -691,7 +708,9 @@ function getCategoryRelatedSettings(
 // Watch for category changes
 watch(currentCategory, () => {
   // Update page title for web
-  document.title = `系统设置 - ${categoryInfo.value.title}`
+  if (categoryInfo.value) {
+    document.title = `系统设置 - ${categoryInfo.value.title}`
+  }
 })
 
 // Lifecycle

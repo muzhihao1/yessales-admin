@@ -4,7 +4,7 @@
  * Global setup for all test files including mocks, utilities, and environment setup.
  */
 
-import { vi } from 'vitest'
+import { vi, beforeEach, afterEach } from 'vitest'
 import { createPinia, setActivePinia } from 'pinia'
 
 // Mock uni-app globals

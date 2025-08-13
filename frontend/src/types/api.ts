@@ -1,11 +1,7 @@
 export interface ApiResponse<T = any> {
   success: boolean
   data?: T
-  error?: {
-    code: string
-    message: string
-    field?: string
-  }
+  error?: ApiError
   pagination?: {
     page: number
     page_size: number
@@ -18,6 +14,7 @@ export interface ApiError {
   message: string
   field?: string
   details?: any
+  status?: number
 }
 
 export interface PaginationParams {
@@ -33,6 +30,8 @@ export interface QueryParams extends PaginationParams {
   startDate?: string
   endDate?: string
   limit?: number
+  responseType?: string
+  forceRefresh?: boolean
 }
 
 export interface LoginRequest {
@@ -48,7 +47,7 @@ export interface LoginResponse {
   user: {
     id: string
     username: string
-    role: 'admin' | 'sales'
+    role: 'admin' | 'sales_manager' | 'sales_rep' | 'viewer'
     name: string
   }
 }

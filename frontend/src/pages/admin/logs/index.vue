@@ -329,10 +329,10 @@
 
     <!-- Export modal -->
     <LogExportModal
-      :visible="showExportModal"
+      :visible="showExportModalRef"
       :filters="currentFilter"
       @close="closeExportModal"
-      @export="exportLogs"
+      @export="storeExportLogs"
     />
   </div>
 </template>
@@ -340,6 +340,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import { useLogsStore } from '@/stores/logs'
 import { usePermissions } from '@/composables/usePermissions'
 import DataTable from '@/components/common/DataTable.vue'
@@ -372,7 +373,7 @@ const showActionSelect = ref(false)
 // Quick filter levels
 const quickLevelFilters: LogLevel[] = ['critical', 'error', 'warn', 'info']
 
-// Extract store state
+// Extract store reactive state
 const {
   logs,
   statistics,
@@ -385,8 +386,11 @@ const {
   hasLogs,
   filteredLogs,
   currentFilter,
-  autoRefresh,
-  
+  autoRefresh
+} = storeToRefs(logsStore)
+
+// Extract store methods
+const {
   fetchLogs,
   fetchStatistics,
   searchLogs,
@@ -410,28 +414,28 @@ const paginatedLogs = computed(() => {
 })
 
 const categoryOptions = computed(() => [
-  { value: 'auth', label: '认证' },
-  { value: 'user', label: '用户' },
-  { value: 'customer', label: '客户' },
-  { value: 'product', label: '产品' },
-  { value: 'quote', label: '报价' },
-  { value: 'system', label: '系统' },
-  { value: 'security', label: '安全' },
-  { value: 'api', label: 'API' },
-  { value: 'data', label: '数据' },
-  { value: 'export', label: '导出' }
+  { value: 'auth' as LogCategory, label: '认证' },
+  { value: 'user' as LogCategory, label: '用户' },
+  { value: 'customer' as LogCategory, label: '客户' },
+  { value: 'product' as LogCategory, label: '产品' },
+  { value: 'quote' as LogCategory, label: '报价' },
+  { value: 'system' as LogCategory, label: '系统' },
+  { value: 'security' as LogCategory, label: '安全' },
+  { value: 'api' as LogCategory, label: 'API' },
+  { value: 'data' as LogCategory, label: '数据' },
+  { value: 'export' as LogCategory, label: '导出' }
 ])
 
 const actionOptions = computed(() => [
-  { value: 'create', label: '创建' },
-  { value: 'read', label: '查看' },
-  { value: 'update', label: '更新' },
-  { value: 'delete', label: '删除' },
-  { value: 'login', label: '登录' },
-  { value: 'logout', label: '登出' },
-  { value: 'approve', label: '批准' },
-  { value: 'reject', label: '拒绝' },
-  { value: 'export', label: '导出' }
+  { value: 'create' as LogAction, label: '创建' },
+  { value: 'read' as LogAction, label: '查看' },
+  { value: 'update' as LogAction, label: '更新' },
+  { value: 'delete' as LogAction, label: '删除' },
+  { value: 'login' as LogAction, label: '登录' },
+  { value: 'logout' as LogAction, label: '登出' },
+  { value: 'approve' as LogAction, label: '批准' },
+  { value: 'reject' as LogAction, label: '拒绝' },
+  { value: 'export' as LogAction, label: '导出' }
 ])
 
 // Table columns configuration

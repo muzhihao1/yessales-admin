@@ -178,6 +178,7 @@ export interface CustomerExportData {
   includeQuoteHistory?: boolean
   includeActivities?: boolean
   format?: 'csv' | 'excel'
+  customerIds?: Array<string | number>
 }
 
 // Validation schemas

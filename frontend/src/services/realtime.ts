@@ -251,7 +251,7 @@ class RealtimeService {
       case 'INSERT':
         if (payload.new) {
           quotesStore.quotes.unshift(payload.new)
-          quotesStore.totalCount++
+          quotesStore.total++
           this.showChangeNotification('报价单', '新增', payload.new.quote_no)
         }
         break
@@ -285,7 +285,7 @@ class RealtimeService {
       case 'DELETE':
         if (payload.old) {
           quotesStore.quotes = quotesStore.quotes.filter(q => q.id !== payload.old.id)
-          quotesStore.totalCount--
+          quotesStore.total--
 
           // Clear current quote if it was deleted
           if (quotesStore.currentQuote?.id === payload.old.id) {

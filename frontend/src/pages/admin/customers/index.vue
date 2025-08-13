@@ -166,7 +166,7 @@
             :key="column.key"
             class="header-cell"
             :class="[`align-${column.align || 'left'}`, { sortable: column.sortable }]"
-            :style="{ width: column.width, flex: column.flex }"
+            :style="{ width: column.width, flex: column.flex || undefined }"
             @click="column.sortable && handleSort(column.key)"
           >
             <span class="header-title">{{ column.label }}</span>
@@ -197,7 +197,7 @@
                 <input
                   type="checkbox"
                   :checked="(selectedItems || []).includes(customer.id)"
-                  @change="handleRowSelect($event.target.checked, customer)"
+                  @change="handleRowSelect(($event.target as HTMLInputElement).checked, customer)"
                 />
               </div>
               <!-- Customer info cell -->
@@ -380,7 +380,7 @@
                   v-model="newCustomer.email"
                   class="form-input"
                   placeholder="请输入邮箱"
-                  type="email"
+                  type="text"
                 />
               </div>
               <div class="form-item">
@@ -550,13 +550,13 @@ function clearSelection() {
 
 // Simplified table configuration without complex types
 const columns = [
-  { key: 'customer', label: '客户信息', width: '250px' },
-  { key: 'contact', label: '联系方式', width: '200px' },
-  { key: 'status', label: '状态', width: '100px' },
-  { key: 'source', label: '来源', width: '100px' },
-  { key: 'business_metrics', label: '业务数据', width: '150px' },
-  { key: 'last_activity', label: '最后活动', width: '120px', sortable: true },
-  { key: 'created_at', label: '创建时间', width: '120px', sortable: true }
+  { key: 'customer', label: '客户信息', width: '250px', align: 'left' as const, flex: undefined },
+  { key: 'contact', label: '联系方式', width: '200px', align: 'left' as const, flex: undefined },
+  { key: 'status', label: '状态', width: '100px', align: 'center' as const, flex: undefined },
+  { key: 'source', label: '来源', width: '100px', align: 'center' as const, flex: undefined },
+  { key: 'business_metrics', label: '业务数据', width: '150px', align: 'right' as const, flex: undefined },
+  { key: 'last_activity', label: '最后活动', width: '120px', sortable: true, align: 'center' as const, flex: undefined },
+  { key: 'created_at', label: '创建时间', width: '120px', sortable: true, align: 'center' as const, flex: undefined }
 ]
 
 // Actions configuration (PRD compliant - only view and export)

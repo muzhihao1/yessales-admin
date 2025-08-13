@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { QuotesApi } from '@/api/quotes'
-import type { Customer, Quote } from '@/types/models'
-import type { QueryParams } from '@/types/api'
+import type { Customer, Quote, QuoteExportParams } from '@/types/models'
+import type { QueryParams, CreateQuoteRequest } from '@/types/api'
 
 export const useQuotesStore = defineStore('quotes', () => {
   // State
@@ -32,6 +32,21 @@ export const useQuotesStore = defineStore('quotes', () => {
   const rejectedQuotes = computed(() => quotes.value.filter(q => q.status === 'rejected'))
 
   const totalQuotesAmount = computed(() => quotes.value.reduce((sum, q) => sum + q.total_price, 0))
+
+  // Store compatibility aliases
+  const totalCount = computed(() => total.value)
+  const loading = computed(() => isLoading.value)
+  
+  // Statistics computed property
+  const statistics = computed(() => ({
+    total: quotes.value.length,
+    pending: pendingQuotes.value.length,
+    approved: approvedQuotes.value.length,
+    rejected: rejectedQuotes.value.length,
+    totalAmount: totalQuotesAmount.value,
+    pendingAmount: pendingQuotes.value.reduce((sum, q) => sum + q.total_price, 0),
+    approvedAmount: approvedQuotes.value.reduce((sum, q) => sum + q.total_price, 0)
+  }))
 
   const filteredQuotes = computed(() => {
     let result = [...quotes.value]
@@ -179,6 +194,30 @@ export const useQuotesStore = defineStore('quotes', () => {
     }
   }
 
+  async function createQuote(quoteData: CreateQuoteRequest) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await QuotesApi.createQuote(quoteData)
+
+      if (response.success && response.data) {
+        quotes.value.unshift(response.data)
+        total.value++
+        return { success: true, data: response.data }
+      } else {
+        error.value = response.error?.message || '创建报价单失败'
+        return { success: false, error: error.value }
+      }
+    } catch (err) {
+      error.value = '网络错误，请稍后重试'
+      console.error('Create quote error:', err)
+      return { success: false, error: error.value }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   async function deleteQuote(id: string) {
     isLoading.value = true
     error.value = null
@@ -203,7 +242,7 @@ export const useQuotesStore = defineStore('quotes', () => {
     }
   }
 
-  async function exportQuotes(params: { startDate: string; endDate: string; status?: string }) {
+  async function exportQuotes(params: QuoteExportParams) {
     isLoading.value = true
     error.value = null
 
@@ -308,6 +347,99 @@ export const useQuotesStore = defineStore('quotes', () => {
     }
   }
 
+  // 更新报价单
+  async function updateQuote(id: string, updates: Partial<Quote>) {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      // Mock implementation - replace with actual API call
+      const quoteIndex = quotes.value.findIndex(q => q.id === id)
+      if (quoteIndex === -1) {
+        throw new Error('报价单未找到')
+      }
+
+      const quote = quotes.value[quoteIndex]
+      
+      // Business logic validation - prevent modification of approved quotes
+      if (quote.status === 'approved') {
+        return {
+          success: false,
+          error: { message: 'Cannot modify approved quote', code: 'QUOTE_LOCKED' }
+        }
+      }
+
+      // Update the quote
+      quotes.value[quoteIndex] = { ...quote, ...updates, updated_at: new Date().toISOString() }
+      
+      return { success: true, data: quotes.value[quoteIndex] }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '更新报价单失败'
+      error.value = errorMessage
+      return { success: false, error: { message: errorMessage, code: 'UPDATE_FAILED' } }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // 更新报价单状态
+  async function updateQuoteStatus(id: string, newStatus: Quote['status']) {
+    isLoading.value = true
+    error.value = null
+    
+    try {
+      const quoteIndex = quotes.value.findIndex(q => q.id === id)
+      if (quoteIndex === -1) {
+        throw new Error('报价单未找到')
+      }
+
+      const quote = quotes.value[quoteIndex]
+      
+      // Business logic validation
+      const validTransitions: Record<string, string[]> = {
+        'draft': ['pending'],
+        'pending': ['approved', 'rejected'],
+        'approved': [],
+        'rejected': ['pending'],
+        'completed': []
+      }
+      
+      if (!validTransitions[quote.status]?.includes(newStatus)) {
+        return {
+          success: false,
+          error: { message: `Cannot transition from ${quote.status} to ${newStatus}`, code: 'INVALID_TRANSITION' }
+        }
+      }
+
+      // Check if quote is expired when trying to approve
+      if (newStatus === 'approved' && quote.valid_until) {
+        const validUntil = new Date(quote.valid_until)
+        if (validUntil < new Date()) {
+          return {
+            success: false,
+            error: { message: 'Cannot approve expired quote', code: 'QUOTE_EXPIRED' }
+          }
+        }
+      }
+
+      // Update the status
+      quotes.value[quoteIndex] = { 
+        ...quote, 
+        status: newStatus, 
+        updated_at: new Date().toISOString(),
+        ...(newStatus === 'approved' ? { approved_by: 'current_user' } : {})
+      }
+      
+      return { success: true, data: quotes.value[quoteIndex] }
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : '更新状态失败'
+      error.value = errorMessage
+      return { success: false, error: { message: errorMessage, code: 'STATUS_UPDATE_FAILED' } }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     quotes,
@@ -333,10 +465,19 @@ export const useQuotesStore = defineStore('quotes', () => {
     rejectedQuotes,
     totalQuotesAmount,
     filteredQuotes,
+    
+    // Store compatibility
+    totalCount,
+    loading,
+    statistics,
 
     // Actions
     fetchQuotes,
     fetchQuote,
+    fetchQuoteById: fetchQuote, // Alias for compatibility
+    createQuote,
+    updateQuote,
+    updateQuoteStatus,
     approveQuote,
     rejectQuote,
     deleteQuote,

@@ -4,6 +4,10 @@
 
 import type { UniAPI } from '@/utils/uni-compat'
 
+declare module '@/types/quote' {
+  export * from './quote'
+}
+
 declare global {
   interface Window {
     uni?: UniAPI

@@ -14,6 +14,18 @@ import {
   useValidationStore
 } from '../utils'
 import type {
+  CacheConfig,
+  DebugConfig,
+  ErrorHandlerConfig,
+  LoadingConfig,
+  OptimisticConfig,
+  PersistenceConfig,
+  ValidationSchema
+} from '../utils'
+
+// Re-export types for stores/index.ts
+export type {
+  CacheConfig,
   DebugConfig,
   ErrorHandlerConfig,
   LoadingConfig,
@@ -112,8 +124,8 @@ export class StoreEnhancer {
   withErrorHandling<T extends Record<string, any>>(store: T): T {
     if (!this.shouldEnable('errorHandler')) return store
 
-    // Wrap all store methods with error handling
-    const enhanced = { ...store }
+    // Create a new object with proper typing to avoid generic mutation
+    const enhanced: any = { ...store }
 
     for (const [key, value] of Object.entries(store)) {
       if (typeof value === 'function') {
@@ -124,7 +136,7 @@ export class StoreEnhancer {
       }
     }
 
-    return enhanced
+    return enhanced as T
   }
 
   /**

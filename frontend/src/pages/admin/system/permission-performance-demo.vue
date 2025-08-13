@@ -362,7 +362,7 @@ import {
   useEnhancedPermissionSystem
 } from '@/composables/useEnhancedPermissionSystem'
 import type { PermissionCheckResult, SystemHealth } from '@/composables/useEnhancedPermissionSystem'
-import AdminLayout from '@/layouts/AdminLayout.vue'
+import AdminLayout from '@/components/admin/AdminLayout.vue'
 import { showToast } from '@/utils/ui'
 
 /**

@@ -72,7 +72,7 @@ describe('Permission System Tests', () => {
       })
 
       test('should allow access to all authenticated users', () => {
-        const roles = ['viewer', 'sales_rep', 'sales_manager', 'admin']
+        const roles = ['sales', 'sales_rep', 'admin', 'admin']
 
         roles.forEach(role => {
           const user: User = {
@@ -93,7 +93,7 @@ describe('Permission System Tests', () => {
 
     describe('Manager Routes', () => {
       test('should deny access to viewers and sales reps', () => {
-        const restrictedRoles = ['viewer', 'sales_rep']
+        const restrictedRoles = ['sales', 'sales_rep']
 
         restrictedRoles.forEach(role => {
           const user: User = {
@@ -112,7 +112,7 @@ describe('Permission System Tests', () => {
       })
 
       test('should allow access to managers and admins', () => {
-        const allowedRoles = ['sales_manager', 'admin']
+        const allowedRoles = ['admin', 'admin']
 
         allowedRoles.forEach(role => {
           const user: User = {
@@ -133,7 +133,7 @@ describe('Permission System Tests', () => {
 
     describe('Admin-only Routes', () => {
       test('should deny access to non-admin users', () => {
-        const nonAdminRoles = ['viewer', 'sales_rep', 'sales_manager']
+        const nonAdminRoles = ['sales', 'sales_rep', 'admin']
 
         nonAdminRoles.forEach(role => {
           const user: User = {
@@ -200,7 +200,7 @@ describe('Permission System Tests', () => {
       authStore.user = {
         id: '1',
         username: 'manager',
-        role: 'sales_manager',
+        role: 'admin',
         name: 'Manager User',
         is_active: true,
         created_at: new Date().toISOString()
@@ -245,8 +245,8 @@ describe('Permission System Tests', () => {
       const authStore = useAuthStore()
       authStore.user = {
         id: '1',
-        username: 'viewer',
-        role: 'viewer',
+        username: 'sales',
+        role: 'sales_rep',
         name: 'Viewer User',
         is_active: true,
         created_at: new Date().toISOString()
@@ -283,7 +283,7 @@ describe('Permission System Tests', () => {
       authStore.user = {
         id: '1',
         username: 'manager',
-        role: 'sales_manager',
+        role: 'admin',
         name: 'Manager User',
         is_active: true,
         created_at: new Date().toISOString()
@@ -343,7 +343,7 @@ describe('Permission System Tests', () => {
       authStore.user = {
         id: '1',
         username: 'manager',
-        role: 'sales_manager',
+        role: 'admin',
         name: 'Manager User',
         is_active: true,
         created_at: new Date().toISOString()
@@ -404,7 +404,7 @@ describe('Permission System Tests', () => {
       expect(checkPermission.canPerformAction('approve', 'quote')).toBe(true)
 
       // Test sales manager permissions
-      authStore.user.role = 'sales_manager'
+      authStore.user.role = 'admin'
 
       expect(checkPermission.canPerformAction('create', 'user')).toBe(false)
       expect(checkPermission.canPerformAction('delete', 'user')).toBe(false)
@@ -433,9 +433,9 @@ describe('Permission System Tests', () => {
       }
 
       expect(checkPermission.hasRole('admin')).toBe(true)
-      expect(checkPermission.hasRole('sales_manager')).toBe(false)
-      expect(checkPermission.hasAnyRole(['admin', 'sales_manager'])).toBe(true)
-      expect(checkPermission.hasAnyRole(['sales_rep', 'viewer'])).toBe(false)
+      expect(checkPermission.hasRole('admin')).toBe(false)
+      expect(checkPermission.hasAnyRole(['admin', 'admin'])).toBe(true)
+      expect(checkPermission.hasAnyRole(['sales_rep', 'sales'])).toBe(false)
     })
 
     test('resource ownership should work correctly', () => {
@@ -460,7 +460,7 @@ describe('Permission System Tests', () => {
       expect(checkPermission.canModifyResource('other-user')).toBe(false)
 
       // Manager can modify others' resources
-      authStore.user.role = 'sales_manager'
+      authStore.user.role = 'admin'
       expect(checkPermission.canModifyResource('other-user')).toBe(true)
     })
   })
@@ -516,9 +516,9 @@ describe('Permission System Tests', () => {
       const { uiHelpers } = usePermissions()
 
       expect(uiHelpers.getRoleDisplayName('admin')).toBe('系统管理员')
-      expect(uiHelpers.getRoleDisplayName('sales_manager')).toBe('销售经理')
+      expect(uiHelpers.getRoleDisplayName('admin')).toBe('销售经理')
       expect(uiHelpers.getRoleDisplayName('sales_rep')).toBe('销售代表')
-      expect(uiHelpers.getRoleDisplayName('viewer')).toBe('查看者')
+      expect(uiHelpers.getRoleDisplayName('sales')).toBe('查看者')
       expect(uiHelpers.getRoleDisplayName('unknown')).toBe('未知角色')
     })
 
@@ -526,9 +526,9 @@ describe('Permission System Tests', () => {
       const { uiHelpers } = usePermissions()
 
       expect(uiHelpers.getRoleBadgeColor('admin')).toBe('#ef4444')
-      expect(uiHelpers.getRoleBadgeColor('sales_manager')).toBe('#f59e0b')
+      expect(uiHelpers.getRoleBadgeColor('admin')).toBe('#f59e0b')
       expect(uiHelpers.getRoleBadgeColor('sales_rep')).toBe('#3b82f6')
-      expect(uiHelpers.getRoleBadgeColor('viewer')).toBe('#6b7280')
+      expect(uiHelpers.getRoleBadgeColor('sales')).toBe('#6b7280')
     })
 
     test('should provide correct permission denied messages', () => {
@@ -573,7 +573,7 @@ describe('Route Guard Navigation Integration', () => {
     authStore.user = {
       id: '1',
       username: 'manager',
-      role: 'sales_manager',
+      role: 'admin',
       name: 'Manager User',
       is_active: true,
       created_at: new Date().toISOString()

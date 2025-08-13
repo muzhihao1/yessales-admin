@@ -91,7 +91,7 @@
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
-              <text class="header-title">{{ column.title }}</text>
+              <text class="header-title">{{ column.label }}</text>
               <text v-if="column.sortable" class="sort-icon">
                 {{ getSortIcon(column.key) }}
               </text>
@@ -105,7 +105,7 @@
           :columns="enhancedColumns"
           :actions="productActions"
           :selectable="true"
-          :is-selected="id => tableEnhancements.isSelected(id)"
+          :is-selected="id => tableEnhancements.isSelected(String(id))"
           :preset="'default'"
           :container-height="600"
           :page-size="50"
@@ -170,7 +170,7 @@
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
-              <text class="header-title">{{ column.title }}</text>
+              <text class="header-title">{{ column.label }}</text>
               <text v-if="column.sortable" class="sort-icon">
                 {{ getSortIcon(column.key) }}
               </text>
@@ -184,7 +184,7 @@
           <TableLoadingSkeleton
             v-if="tableEnhancements.state.loading"
             :rows="pageSize"
-            :columns="tableColumns.length"
+            :columns="tableColumns.map(col => col.key)"
             :has-selection="true"
             :show-header="false"
           />
@@ -200,7 +200,7 @@
               :selected="tableEnhancements.isSelected(product.id)"
               :actions="productActions"
               :touch-optimized="true"
-              @select="handleRowSelect"
+              @select="handleDataRowSelect"
               @click="handleRowClick"
               @action="handleRowAction"
             >
@@ -314,7 +314,7 @@ import VirtualTableContainer from '@/components/admin/table/VirtualTableContaine
 import DataTableRow from '@/components/admin/DataTableRow.vue'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
 import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
-import AdminLayout from '@/layouts/AdminLayout.vue'
+import AdminLayout from '@/components/admin/AdminLayout.vue'
 
 /**
  * 虚拟滚动产品管理演示页面
@@ -355,29 +355,30 @@ const sortOrder = ref<'asc' | 'desc'>('desc')
 
 // 表格列配置
 const tableColumns = [
-  { key: 'image', title: '图片', width: '80px', align: 'center' as const },
-  { key: 'name', title: '产品信息', flex: '2', sortable: true },
-  { key: 'category', title: '分类', width: '120px', sortable: true },
-  { key: 'price', title: '价格', width: '120px', align: 'right' as const, sortable: true },
-  { key: 'stock', title: '库存', width: '100px', align: 'center' as const, sortable: true },
-  { key: 'status', title: '状态', width: '100px', align: 'center' as const },
-  { key: 'created_at', title: '创建时间', width: '160px', sortable: true }
+  { key: 'image', label: '图片', width: '80px', align: 'center' as const },
+  { key: 'name', label: '产品信息', flex: '2', sortable: true },
+  { key: 'category', label: '分类', width: '120px', sortable: true },
+  { key: 'price', label: '价格', width: '120px', align: 'right' as const, sortable: true },
+  { key: 'stock', label: '库存', width: '100px', align: 'center' as const, sortable: true },
+  { key: 'status', label: '状态', width: '100px', align: 'center' as const },
+  { key: 'created_at', label: '创建时间', width: '160px', sortable: true }
 ]
 
 // 增强列配置（包含类型信息）
 const enhancedColumns = computed(() =>
   tableColumns.map(col => ({
     ...col,
+    title: col.label, // 确保VirtualTableContainer兼容性
     type:
       col.key === 'price'
-        ? 'price'
+        ? ('price' as const)
         : col.key === 'created_at'
-          ? 'date'
+          ? ('date' as const)
           : col.key === 'status'
-            ? 'status'
+            ? ('status' as const)
             : col.key === 'image'
-              ? 'image'
-              : 'text'
+              ? ('image' as const)
+              : ('text' as const)
   }))
 )
 
@@ -412,7 +413,6 @@ const virtualScrollingConfig: VirtualScrollingConfig = {
   preset: 'default',
   itemHeight: 80,
   containerHeight: 600,
-  pageSize: 50,
   loadData: async (page: number, pageSize: number, filters?, sort?) => {
     // 模拟数据加载
     await new Promise(resolve => setTimeout(resolve, 100))
@@ -575,9 +575,14 @@ const toggleVirtualMode = () => {
   }
 }
 
-// 表格行事件处理
+// 表格行事件处理 (for VirtualTableContainer)
 const handleRowSelect = (id: string | number, selected: boolean) => {
-  tableEnhancements.toggleSelection(id as string)
+  tableEnhancements.toggleSelection(String(id))
+}
+
+// 数据行选择处理 (for DataTableRow)
+const handleDataRowSelect = (selected: boolean, item: Record<string, any>) => {
+  tableEnhancements.toggleSelection(String(item.id))
 }
 
 const handleRowClick = (item: any) => {

@@ -8,7 +8,7 @@
     <!-- Error state -->
     <div v-else-if="error" class="error-container">
       <span class="error-text">{{ error }}</span>
-      <button class="retry-btn" @click="loadQuote">重试</button>
+      <button class="retry-btn" @click="() => loadQuote()">重试</button>
     </div>
 
     <!-- Quote details -->
@@ -23,14 +23,14 @@
         </div>
         <div class="header-actions">
           <button
-            v-if="quote.status === 'submitted'"
+            v-if="quote.status === 'pending'"
             class="action-btn action-approve"
             @click="handleApprove"
           >
             批准报价
           </button>
           <button
-            v-if="quote.status === 'submitted'"
+            v-if="quote.status === 'pending'"
             class="action-btn action-reject"
             @click="handleReject"
           >
@@ -197,7 +197,7 @@
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuotesStore } from '@/stores/quotes'
-import type { Quote } from '@/types/quote'
+import type { Quote } from '@/types/models'
 
 const route = useRoute()
 const router = useRouter()

@@ -25,17 +25,20 @@ import {
  * @author Terminal 3 (Admin Frontend Team)
  */
 
-export interface TableItem {
-  id: string
+export interface TableItem extends VirtualScrollItem {
   [key: string]: any
 }
 
 export interface TableColumn {
   key: string
   label: string
+  title?: string
   sortable?: boolean
   width?: string
   align?: 'left' | 'center' | 'right'
+  flex?: string
+  type?: 'price' | 'image' | 'status' | 'date' | 'text' | 'longtext'
+  formatter?: (value: any, item: any) => string
 }
 
 export interface BatchOperation {
@@ -111,7 +114,7 @@ export function useTableSelection() {
     if (selectAll.value) {
       selectedIds.value.clear()
     } else {
-      items.forEach(item => selectedIds.value.add(item.id))
+      items.forEach(item => selectedIds.value.add(String(item.id)))
     }
 
     updateSelectAllState()
@@ -147,7 +150,7 @@ export function useTableSelection() {
 
   // 获取选中的项目
   const getSelectedItems = (items: TableItem[]) => {
-    return items.filter(item => selectedIds.value.has(item.id))
+    return items.filter(item => selectedIds.value.has(String(item.id)))
   }
 
   return {
@@ -419,6 +422,7 @@ export function useVirtualTableEnhancements<T extends TableItem & VirtualScrollI
     },
     setLoading: tableState.setLoading,
     setError: tableState.setError,
+    setData: tableState.setData,
     updateSort,
     updateFilters,
     clearFilters,

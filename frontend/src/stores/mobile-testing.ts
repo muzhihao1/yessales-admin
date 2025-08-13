@@ -309,12 +309,11 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
 
   // Utilities
   const { isLoading, startLoading, stopLoading } = useLoadingState('mobile-testing')
-  const cache = useCache('mobile-testing', { defaultTTL: 30 * 60 * 1000 }) // 30 minutes
+  const cache = useCache('mobile-testing', { ttl: 30 * 60 * 1000 }) // 30 minutes
   const deviceDetection = useDeviceDetection()
   const performanceStore = usePerformanceStore()
   const persistence = usePersistence('mobile-testing', {
-    include: ['config', 'testResults', 'testSuites', 'testHistory'],
-    enableAutoPersist: true
+    include: ['config', 'testResults', 'testSuites', 'testHistory']
   })
 
   // Initialize persistence
@@ -837,13 +836,18 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const info = deviceDetection.info.value
     if (!info) return null
 
+    // Map platform to supported types
+    const platform: 'ios' | 'android' | 'web' = 
+      info.platform === 'ios' ? 'ios' :
+      info.platform === 'android' ? 'android' : 'web'
+
     return {
       id: 'current-device',
       name: `${info.brand} ${info.model}`,
       width: info.windowWidth,
       height: info.windowHeight,
       pixelRatio: info.pixelRatio,
-      platform: info.platform,
+      platform,
       isTablet: info.isTablet
     }
   }

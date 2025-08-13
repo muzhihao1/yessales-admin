@@ -260,7 +260,7 @@
       <div class="actions-row">
         <SalesButton type="default" @click="editQuote"> 编辑报价 </SalesButton>
 
-        <SalesButton type="plain" @click="printQuote"> 打印报价 </SalesButton>
+        <SalesButton type="default" @click="printQuote"> 打印报价 </SalesButton>
 
         <SalesButton type="primary" @click="saveQuote" :loading="saving"> 保存报价 </SalesButton>
       </div>
@@ -274,6 +274,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import SalesHeader from '@/components/sales/SalesHeader.vue'
 import SalesButton from '@/components/sales/SalesButton.vue'
 import { QuotesApi } from '@/api'
@@ -337,6 +338,7 @@ interface QuoteData {
 }
 
 // State
+const route = useRoute()
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
@@ -345,12 +347,10 @@ const quoteId = ref('')
 
 // Get quote ID from URL parameters
 onMounted(() => {
-  const pages = getCurrentPages()
-  const currentPage = pages[pages.length - 1]
-  const options = currentPage.options
+  const id = route.params.id || route.query.id
 
-  if (options.id) {
-    quoteId.value = options.id
+  if (id) {
+    quoteId.value = Array.isArray(id) ? id[0] : id
     loadQuoteData()
   } else {
     error.value = '缺少报价单ID参数'

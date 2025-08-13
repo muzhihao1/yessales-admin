@@ -257,6 +257,124 @@ export const useProductsStore = defineStore('products', () => {
     fetchProducts()
   }
 
+  // 批量导出产品
+  async function exportProducts(productIds?: string[]) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const productsToExport = productIds 
+        ? products.value.filter(p => productIds.includes(p.id))
+        : products.value
+
+      // 构建CSV内容
+      const headers = ['产品名称', '型号', '分类', '价格', '单位', '状态', '创建时间']
+      const csvContent = [
+        headers.join(','),
+        ...productsToExport.map(product => [
+          `"${product.name}"`,
+          `"${product.model}"`,
+          `"${product.category}"`,
+          product.price.toString(),
+          `"${product.unit}"`,
+          product.is_active ? '启用' : '禁用',
+          new Date(product.created_at || '').toLocaleDateString()
+        ].join(','))
+      ].join('\n')
+
+      // 创建下载链接
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+      const link = document.createElement('a')
+      const url = URL.createObjectURL(blob)
+      link.setAttribute('href', url)
+      link.setAttribute('download', `products_${new Date().toISOString().split('T')[0]}.csv`)
+      link.style.visibility = 'hidden'
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+
+      return { success: true }
+    } catch (err) {
+      error.value = '导出产品数据失败'
+      console.error('Export products error:', err)
+      return { success: false, error: error.value }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // 批量更新状态
+  async function batchUpdateStatus(productIds: string[], isActive: boolean) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const updatePromises = productIds.map(id => 
+        ProductsApi.updateProduct(id, { is_active: isActive })
+      )
+
+      const results = await Promise.allSettled(updatePromises)
+      const successes = results.filter(r => r.status === 'fulfilled').length
+      const failures = results.length - successes
+
+      // 更新本地状态
+      products.value = products.value.map(product => 
+        productIds.includes(product.id) 
+          ? { ...product, is_active: isActive }
+          : product
+      )
+
+      if (failures === 0) {
+        return { success: true, message: `成功更新 ${successes} 个产品状态` }
+      } else {
+        return { 
+          success: false, 
+          error: `${successes} 个成功，${failures} 个失败`,
+          partial: true
+        }
+      }
+    } catch (err) {
+      error.value = '批量更新状态失败'
+      console.error('Batch update status error:', err)
+      return { success: false, error: error.value }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  // 批量删除产品
+  async function batchDeleteProducts(productIds: string[]) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const deletePromises = productIds.map(id => ProductsApi.deleteProduct(id))
+      const results = await Promise.allSettled(deletePromises)
+      const successes = results.filter(r => r.status === 'fulfilled').length
+      const failures = results.length - successes
+
+      // 更新本地状态 - 移除成功删除的产品
+      products.value = products.value.filter(product => !productIds.includes(product.id))
+      total.value -= successes
+
+      if (failures === 0) {
+        return { success: true, message: `成功删除 ${successes} 个产品` }
+      } else {
+        return { 
+          success: false, 
+          error: `${successes} 个成功，${failures} 个失败`,
+          partial: true
+        }
+      }
+    } catch (err) {
+      error.value = '批量删除产品失败'
+      console.error('Batch delete products error:', err)
+      return { success: false, error: error.value }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     // State
     products,
@@ -292,6 +410,9 @@ export const useProductsStore = defineStore('products', () => {
     searchProducts,
     resetFilters,
     setPage,
-    setPageSize
+    setPageSize,
+    exportProducts,
+    batchUpdateStatus,
+    batchDeleteProducts
   }
 })

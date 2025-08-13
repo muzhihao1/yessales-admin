@@ -1,6 +1,6 @@
 import ApiClient from './client'
 import { supabase } from './config'
-import type { Quote } from '@/types/models'
+import type { Quote, QuoteExportParams } from '@/types/models'
 import type { ApiResponse, CreateQuoteRequest, QueryParams } from '@/types/api'
 
 export class QuotesApi {
@@ -169,11 +169,7 @@ export class QuotesApi {
     })
   }
 
-  static async exportQuotes(params: {
-    startDate: string
-    endDate: string
-    status?: string
-  }): Promise<ApiResponse<Blob>> {
+  static async exportQuotes(params: QuoteExportParams): Promise<ApiResponse<Blob>> {
     try {
       const { data, error } = await supabase.functions.invoke('export-quotes', {
         body: params

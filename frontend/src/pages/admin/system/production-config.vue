@@ -144,7 +144,7 @@
             <text class="form-label">调试模式</text>
             <switch
               :checked="config.app.debug"
-              @change="config.app.debug = $event.detail.value"
+              @change="config.app.debug = ($event as any).detail?.value ?? ($event.target as HTMLInputElement)?.checked"
               color="#007AFF"
             />
           </view>
@@ -203,7 +203,7 @@
             <text class="form-label">启用压缩</text>
             <switch
               :checked="config.api.enableCompression"
-              @change="config.api.enableCompression = $event.detail.value"
+              @change="config.api.enableCompression = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -212,7 +212,7 @@
             <text class="form-label">启用缓存</text>
             <switch
               :checked="config.api.enableCaching"
-              @change="config.api.enableCaching = $event.detail.value"
+              @change="config.api.enableCaching = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -228,7 +228,7 @@
             <text class="form-label">启用 HTTPS</text>
             <switch
               :checked="config.security.enableHTTPS"
-              @change="config.security.enableHTTPS = $event.detail.value"
+              @change="config.security.enableHTTPS = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -237,7 +237,7 @@
             <text class="form-label">启用 CSP</text>
             <switch
               :checked="config.security.enableCSP"
-              @change="config.security.enableCSP = $event.detail.value"
+              @change="config.security.enableCSP = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -285,7 +285,7 @@
             <text class="form-label">启用 Service Worker</text>
             <switch
               :checked="config.cache.enableServiceWorker"
-              @change="config.cache.enableServiceWorker = $event.detail.value"
+              @change="config.cache.enableServiceWorker = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -330,7 +330,7 @@
             <text class="form-label">启用图片优化</text>
             <switch
               :checked="config.resources.enableImageOptimization"
-              @change="config.resources.enableImageOptimization = $event.detail.value"
+              @change="config.resources.enableImageOptimization = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -351,7 +351,7 @@
             <text class="form-label">启用虚拟滚动</text>
             <switch
               :checked="config.ui.enableVirtualScrolling"
-              @change="config.ui.enableVirtualScrolling = $event.detail.value"
+              @change="config.ui.enableVirtualScrolling = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -379,7 +379,7 @@
             <text class="form-label">启用性能追踪</text>
             <switch
               :checked="config.monitoring.enablePerformanceTracking"
-              @change="config.monitoring.enablePerformanceTracking = $event.detail.value"
+              @change="config.monitoring.enablePerformanceTracking = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -388,7 +388,7 @@
             <text class="form-label">启用错误追踪</text>
             <switch
               :checked="config.monitoring.enableErrorTracking"
-              @change="config.monitoring.enableErrorTracking = $event.detail.value"
+              @change="config.monitoring.enableErrorTracking = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -424,7 +424,7 @@
             <text class="form-label">启用远程日志</text>
             <switch
               :checked="config.logging.enableRemoteLogging"
-              @change="config.logging.enableRemoteLogging = $event.detail.value"
+              @change="config.logging.enableRemoteLogging = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -433,7 +433,7 @@
             <text class="form-label">敏感数据掩码</text>
             <switch
               :checked="config.logging.sensitiveDataMask"
-              @change="config.logging.sensitiveDataMask = $event.detail.value"
+              @change="config.logging.sensitiveDataMask = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -449,7 +449,7 @@
             <text class="form-label">启用实时更新</text>
             <switch
               :checked="config.features.enableRealTimeUpdates"
-              @change="config.features.enableRealTimeUpdates = $event.detail.value"
+              @change="config.features.enableRealTimeUpdates = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -458,7 +458,7 @@
             <text class="form-label">启用离线模式</text>
             <switch
               :checked="config.features.enableOfflineMode"
-              @change="config.features.enableOfflineMode = $event.detail.value"
+              @change="config.features.enableOfflineMode = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -467,7 +467,7 @@
             <text class="form-label">启用推送通知</text>
             <switch
               :checked="config.features.enablePushNotifications"
-              @change="config.features.enablePushNotifications = $event.detail.value"
+              @change="config.features.enablePushNotifications = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -476,7 +476,7 @@
             <text class="form-label">启用分析统计</text>
             <switch
               :checked="config.features.enableAnalytics"
-              @change="config.features.enableAnalytics = $event.detail.value"
+              @change="config.features.enableAnalytics = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -485,7 +485,7 @@
             <text class="form-label">启用高级过滤器</text>
             <switch
               :checked="config.features.enableAdvancedFilters"
-              @change="config.features.enableAdvancedFilters = $event.detail.value"
+              @change="config.features.enableAdvancedFilters = ($event as any).detail?.value ?? ($event.target as any)?.checked ?? $event"
               color="#007AFF"
             />
           </view>
@@ -553,7 +553,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ConfigValidator, getProductionConfig, productionPresets } from '@/config/production'
 import type { ProductionConfig } from '@/config/production'
-import AdminLayout from '@/layouts/AdminLayout.vue'
+import AdminLayout from '@/components/admin/AdminLayout.vue'
 import { showToast } from '@/utils/ui'
 
 /**

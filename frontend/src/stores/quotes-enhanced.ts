@@ -19,7 +19,7 @@ import {
   withLoading
 } from '@/stores/utils'
 import type { Customer, Quote } from '@/types/models'
-import type { QueryParams } from '@/types/api'
+import type { QueryParams, CreateQuoteRequest } from '@/types/api'
 
 export const useQuotesStore = defineStore('quotes', () => {
   // Core state
@@ -40,12 +40,11 @@ export const useQuotesStore = defineStore('quotes', () => {
 
   // Utilities
   const { isLoading, startLoading, stopLoading } = useLoadingState('quotes')
-  const cache = useCache('quotes', { defaultTTL: 5 * 60 * 1000 }) // 5 minutes
+  const cache = useCache('quotes', { ttl: 5 * 60 * 1000 }) // 5 minutes
   const { createOffline, updateOffline, deleteOffline } = useOffline('quote')
   const { optimisticCreate, optimisticUpdate, optimisticDelete } = useOptimisticUpdates('quotes')
   const persistence = usePersistence('quotes', {
-    include: ['quotes', 'currentQuote', 'currentPage', 'pageSize', 'total'],
-    enableAutoPersist: true
+    include: ['quotes', 'currentQuote', 'currentPage', 'pageSize', 'total']
   })
 
   // Initialize persistence
@@ -193,14 +192,27 @@ export const useQuotesStore = defineStore('quotes', () => {
   /**
    * Create quote with offline support and optimistic updates
    */
-  async function createQuote(quoteData: Omit<Quote, 'id' | 'created_at' | 'updated_at'>) {
+  async function createQuote(quoteData: CreateQuoteRequest) {
     const tempId = `temp_${Date.now()}`
+    const tempQuoteNo = `QT${Date.now()}`
+    
+    // Calculate total price from items
+    const totalPrice = quoteData.items.reduce((sum, item) => sum + item.total_price, 0)
+    
     const tempQuote: Quote = {
-      ...quoteData,
       id: tempId,
+      quote_no: tempQuoteNo,
+      customer_id: tempId, // Will be updated when saved to server
+      total_price: totalPrice,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      status: 'draft'
+      status: 'draft',
+      customer: {
+        ...quoteData.customer,
+        id: tempId, // Temporary ID, will be updated when saved
+        created_at: new Date().toISOString()
+      },
+      items: quoteData.items
     }
 
     return await optimisticCreate(
@@ -412,7 +424,7 @@ export const useQuotesStore = defineStore('quotes', () => {
         if (response.success && response.data) {
           try {
             // Handle file download in web browser
-            const downloadUrl = response.data as string
+            const downloadUrl = response.data as unknown as string
             
             // Create a temporary link element to trigger download
             const link = document.createElement('a')

@@ -22,8 +22,8 @@ export function usePermissions() {
       isAuthenticated: authStore.isAuthenticated,
       isAdmin: user?.role === 'admin',
       isManager: user?.role === 'admin',
-      isSalesRep: user?.role === 'sales',
-      isViewer: user?.role === 'sales',
+      isSalesRep: user?.role === 'sales_rep',
+      isViewer: user?.role === 'viewer',
 
       // Feature-based permissions
       canManageUsers: canAccessFeature('user_management'),

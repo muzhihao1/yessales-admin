@@ -529,7 +529,7 @@ const handleSave = async () => {
         key,
         value,
         type: Array.isArray(value)
-          ? 'array'
+          ? 'multiselect'
           : typeof value === 'boolean'
             ? 'boolean'
             : typeof value === 'number'

@@ -84,7 +84,7 @@
             :style="{ width: column.width, flex: column.flex }"
             @click="column.sortable && handleSort(column.key)"
           >
-            <span class="header-title">{{ column.title }}</span>
+            <span class="header-title">{{ column.label }}</span>
             <span v-if="column.sortable" class="sort-icon">
               {{ getSortIcon(column.key) }}
             </span>
@@ -98,7 +98,7 @@
         <TableLoadingSkeleton
           v-if="quotesStore.loading"
           :rows="pageSize"
-          :columns="columns.length"
+          :columns="columns.map(c => c.key)"
           :has-selection="true"
           :show-header="false"
         />
@@ -216,7 +216,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuotesStore } from '@/stores/quotes'
-import type { Quote } from '@/types/quote'
+import type { Quote } from '@/types/models'
 import TableLoadingSkeleton from '@/components/admin/TableLoadingSkeleton.vue'
 import DataTableRow from '@/components/admin/DataTableRow.vue'
 import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
@@ -254,36 +254,36 @@ const {
 const columns: TableColumn[] = [
   {
     key: 'quote_number',
-    title: '报价单号',
+    label: '报价单号',
     width: '150px',
     sortable: true
   },
   {
     key: 'customer',
-    title: '客户信息',
+    label: '客户信息',
     width: '200px'
   },
   {
     key: 'products',
-    title: '产品',
+    label: '产品',
     width: '120px'
   },
   {
     key: 'amount',
-    title: '总金额',
+    label: '总金额',
     width: '120px',
     align: 'right',
     sortable: true
   },
   {
     key: 'status',
-    title: '状态',
+    label: '状态',
     width: '100px',
     align: 'center'
   },
   {
     key: 'created_at',
-    title: '创建时间',
+    label: '创建时间',
     width: '150px',
     sortable: true
   }
@@ -292,7 +292,7 @@ const columns: TableColumn[] = [
 // Enhanced columns for DataTableRow (converted from old format)
 const enhancedColumns: TableColumn[] = columns.map(col => ({
   key: col.key,
-  label: col.title,
+  label: col.label,
   width: col.width,
   align: col.align,
   sortable: col.sortable,
@@ -310,7 +310,7 @@ const enhancedColumns: TableColumn[] = columns.map(col => ({
 function getQuoteActions(quote: Quote): ActionItem[] {
   const actions: ActionItem[] = [commonActions.quotes.view]
 
-  if (quote.status === 'submitted') {
+  if (quote.status === 'pending') {
     actions.push(commonActions.quotes.approve, commonActions.quotes.reject)
   } else if (quote.status === 'draft') {
     actions.push(commonActions.quotes.edit)
@@ -513,7 +513,10 @@ async function handleBatchApprove() {
       }
     }, 300)
 
-    await quotesStore.batchApproveQuotes(selectedItems.value)
+    // 批量批准报价单 - 循环调用单个批准方法
+    for (const quoteId of selectedItems.value) {
+      await quotesStore.approveQuote(quoteId)
+    }
 
     clearInterval(progressInterval)
     batchProgress.value = 100

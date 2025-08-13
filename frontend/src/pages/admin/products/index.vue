@@ -38,7 +38,7 @@
 
           <div class="filter-item">
             <select v-model="statusIndex" class="filter-select" @change="handleStatusChange">
-              <option v-for="(option, index) in statusOptions" :key="option.value" :value="index">
+              <option v-for="(option, index) in statusOptions" :key="String(option.value ?? 'null')" :value="index">
                 {{ option.label }}
               </option>
             </select>
@@ -69,7 +69,7 @@
               :style="{ width: column.width, flex: column.flex }"
               @click="column.sortable && handleSort(column.key)"
             >
-              <span class="header-title">{{ column.title }}</span>
+              <span class="header-title">{{ column.label }}</span>
               <span v-if="column.sortable" class="sort-icon">
                 {{ getSortIcon(column.key) }}
               </span>
@@ -83,7 +83,7 @@
           <TableLoadingSkeleton
             v-if="productsStore.isLoading"
             :rows="productsStore.pageSize"
-            :columns="tableColumns"
+            :columns="tableColumns.map(col => col.key)"
             :has-selection="true"
             :show-header="false"
           />
@@ -232,7 +232,7 @@ import EnhancedConfirmationDialog from '@/components/admin/EnhancedConfirmationD
 import OperationProgressModal from '@/components/admin/OperationProgressModal.vue'
 import { useTableEnhancements } from '@/composables/useTableEnhancements'
 import { commonActions, commonBatchOperations } from '@/utils/common-actions'
-import type { TableColumn } from '@/components/admin/DataTableRow.vue'
+import type { TableColumn } from '@/composables/useTableEnhancements'
 import type { ActionItem } from '@/components/admin/ActionButtonGroup.vue'
 
 /**
@@ -280,42 +280,42 @@ const statusIndex = ref(0)
 const tableColumns: TableColumn[] = [
   {
     key: 'image',
-    title: '图片',
+    label: '图片',
     width: '80px',
     align: 'center'
   },
   {
     key: 'name',
-    title: '产品信息',
+    label: '产品信息',
     width: '200px'
   },
   {
     key: 'category',
-    title: '分类',
+    label: '分类',
     width: '120px'
   },
   {
     key: 'price',
-    title: '价格',
+    label: '价格',
     width: '120px',
     align: 'right',
     sortable: true
   },
   {
     key: 'unit',
-    title: '单位',
+    label: '单位',
     width: '80px',
     align: 'center'
   },
   {
     key: 'status',
-    title: '状态',
+    label: '状态',
     width: '100px',
     align: 'center'
   },
   {
     key: 'created_at',
-    title: '创建时间',
+    label: '创建时间',
     width: '160px',
     sortable: true,
     formatter: (value: string) => {
@@ -328,7 +328,7 @@ const tableColumns: TableColumn[] = [
 // Enhanced columns for DataTableRow (converted from old format)
 const enhancedColumns: TableColumn[] = tableColumns.map(col => ({
   key: col.key,
-  label: col.title,
+  label: col.label,
   width: col.width,
   align: col.align,
   sortable: col.sortable,
@@ -535,7 +535,7 @@ async function handleBatchExport() {
     progressModal.value.downloadLinks = [
       {
         name: `产品导出_${new Date().toISOString().split('T')[0]}.xlsx`,
-        url: exportResult?.downloadUrl || '#',
+        url: (exportResult as any)?.downloadUrl || '#',
         size: Math.floor(Math.random() * 500000) + 100000, // Simulated file size
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
       }

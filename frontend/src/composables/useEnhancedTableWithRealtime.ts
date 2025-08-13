@@ -46,7 +46,7 @@ export interface EnhancedTableRealtimeOptions<T extends TableItem & DataItem> {
   realtimeOptions?: Partial<RealTimeUpdateOptions>
 
   /** 虚拟滚动配置 */
-  virtualConfig?: VirtualScrollingConfig
+  virtualConfig?: VirtualScrollingConfig<T>
 
   /** 数据加载函数 */
   loadData: (

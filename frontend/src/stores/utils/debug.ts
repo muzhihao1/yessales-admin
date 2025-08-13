@@ -81,6 +81,7 @@ export interface DebugConfig {
   maxLogEntries?: number
   maxSnapshots?: number
   logLevel?: 'debug' | 'info' | 'warn' | 'error'
+  isActive?: boolean
 }
 
 /**
@@ -94,7 +95,8 @@ const DEFAULT_DEBUG_CONFIG: Required<DebugConfig> = {
   enableDependencyTracking: true,
   maxLogEntries: 1000,
   maxSnapshots: 100,
-  logLevel: 'debug'
+  logLevel: 'debug',
+  isActive: true
 }
 
 /**

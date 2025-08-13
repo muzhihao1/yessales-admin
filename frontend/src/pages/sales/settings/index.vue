@@ -48,9 +48,9 @@
                 <text class="label-desc">选择您喜欢的界面风格</text>
               </view>
               <SalesSelector
-                :value="preferences.theme"
+                :model-value="preferences.theme"
                 :options="themeOptions"
-                @change="updatePreference('theme', $event)"
+                @update:model-value="updatePreference('theme', $event)"
               />
             </view>
 
@@ -61,9 +61,9 @@
                 <text class="label-desc">调整文字显示大小</text>
               </view>
               <SalesSelector
-                :value="preferences.fontSize"
+                :model-value="preferences.fontSize"
                 :options="fontSizeOptions"
-                @change="updatePreference('fontSize', $event)"
+                @update:model-value="updatePreference('fontSize', $event)"
               />
             </view>
 
@@ -74,9 +74,9 @@
                 <text class="label-desc">选择界面显示语言</text>
               </view>
               <SalesSelector
-                :value="preferences.language"
+                :model-value="preferences.language"
                 :options="languageOptions"
-                @change="updatePreference('language', $event)"
+                @update:model-value="updatePreference('language', $event)"
               />
             </view>
           </view>
@@ -97,9 +97,9 @@
                 <text class="label-desc">新建报价时的默认联系方式</text>
               </view>
               <SalesInput
-                :value="businessSettings.defaultContact"
+                :model-value="businessSettings.contactInfo"
                 placeholder="输入默认联系方式"
-                @input="updateBusinessSetting('defaultContact', $event)"
+                @update:model-value="updateBusinessSetting('contactInfo', $event)"
               />
             </view>
 
@@ -110,9 +110,9 @@
                 <text class="label-desc">报价单的默认有效天数</text>
               </view>
               <SalesSelector
-                :value="businessSettings.quoteValidDays"
+                :model-value="String(businessSettings.quotationValidDays)"
                 :options="validDaysOptions"
-                @change="updateBusinessSetting('quoteValidDays', $event)"
+                @update:model-value="updateBusinessSetting('quotationValidDays', Number($event))"
               />
             </view>
 
@@ -123,8 +123,8 @@
                 <text class="label-desc">编辑报价时自动保存</text>
               </view>
               <switch
-                :checked="businessSettings.autoSave"
-                @change="updateBusinessSetting('autoSave', $event.detail.value)"
+                :checked="preferences.autoSave || false"
+                @change="updatePreference('autoSave', ($event.target as HTMLInputElement).checked)"
                 color="#007AFF"
               />
             </view>
@@ -207,9 +207,9 @@
           </view>
 
           <view class="system-actions">
-            <SalesButton text="隐私政策" type="outline" @click="openPrivacyPolicy" />
+            <SalesButton text="隐私政策" type="default" @click="openPrivacyPolicy" />
 
-            <SalesButton text="服务条款" type="outline" @click="openTermsOfService" />
+            <SalesButton text="服务条款" type="default" @click="openTermsOfService" />
           </view>
         </view>
 
@@ -238,7 +238,7 @@
           </view>
 
           <view class="data-actions">
-            <SalesButton text="清除缓存" type="outline" @click="clearCache" />
+            <SalesButton text="清除缓存" type="default" @click="clearCache" />
 
             <SalesButton text="导出数据" type="primary" @click="exportData" />
 
@@ -253,7 +253,7 @@
       <view class="save-content">
         <text class="save-text">有未保存的更改</text>
         <view class="save-actions">
-          <SalesButton text="取消" type="outline" size="small" @click="discardChanges" />
+          <SalesButton text="取消" type="default" size="small" @click="discardChanges" />
           <SalesButton
             text="保存"
             type="primary"
@@ -322,13 +322,18 @@ const settingsCategories = [
 const preferences = ref({
   theme: 'light',
   fontSize: 'medium',
-  language: 'zh-CN'
+  language: 'zh-CN',
+  timezone: 'Asia/Shanghai',
+  dateFormat: 'YYYY-MM-DD',
+  currency: 'CNY',
+  autoSave: true
 })
 
 const businessSettings = ref({
-  defaultContact: '',
-  quoteValidDays: '30',
-  autoSave: true
+  companyName: '耶氏台球斗南销售中心',
+  contactInfo: '',
+  defaultTaxRate: 0.13,
+  quotationValidDays: 30
 })
 
 const systemInfo = ref({
@@ -534,13 +539,18 @@ function resetSettings() {
     preferences.value = {
       theme: 'light',
       fontSize: 'medium',
-      language: 'zh-CN'
+      language: 'zh-CN',
+      timezone: 'Asia/Shanghai',
+      dateFormat: 'YYYY-MM-DD',
+      currency: 'CNY',
+      autoSave: true
     }
 
     businessSettings.value = {
-      defaultContact: '',
-      quoteValidDays: '30',
-      autoSave: true
+      companyName: '耶氏台球斗南销售中心',
+      contactInfo: '',
+      defaultTaxRate: 0.13,
+      quotationValidDays: 30
     }
 
     hasUnsavedChanges.value = true

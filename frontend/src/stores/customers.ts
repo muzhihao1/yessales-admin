@@ -347,6 +347,29 @@ export const useCustomersStore = defineStore('customers', () => {
     }
   }
 
+  async function bulkCreateCustomers(customersData: Partial<Customer>[]) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await ApiService.post('/api/customers/bulk', {
+        customers: customersData
+      })
+
+      // Add new customers to the beginning of the list
+      customers.value.unshift(...response.data)
+      totalCount.value += response.data.length
+
+      return { success: true, data: response.data }
+    } catch (err: any) {
+      error.value = err.message || '批量创建客户失败'
+      console.error('Failed to bulk create customers:', err)
+      return { success: false, error: error.value }
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function mergeCustomers(primaryCustomerId: string, duplicateCustomerId: string) {
     loading.value = true
     error.value = null
@@ -438,6 +461,7 @@ export const useCustomersStore = defineStore('customers', () => {
     getCustomerActivities,
     addCustomerActivity,
     exportCustomers,
+    bulkCreateCustomers,
     mergeCustomers,
     getCustomerStatistics,
     clearError,

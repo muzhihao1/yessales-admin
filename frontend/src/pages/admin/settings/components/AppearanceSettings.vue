@@ -695,8 +695,12 @@ const handleSave = async () => {
       })
     )
 
-    // 保存设置
-    await settingsStore.updateSettings(settings)
+    // 保存设置 - 转换数组格式为Record格式
+    const updates: Record<string, any> = {}
+    settings.forEach(setting => {
+      updates[setting.key] = setting.value
+    })
+    await settingsStore.batchUpdateSettings(updates)
 
     // 更新原始数据
     originalData.value = { ...formData.value }
@@ -713,7 +717,7 @@ const handleSave = async () => {
 // 加载设置数据
 const loadSettings = async () => {
   try {
-    const appearanceSettings = settingsStore.getSettingsByCategory('appearance')
+    const appearanceSettings = settingsStore.settingsByCategory.appearance
 
     // 将设置数据填充到表单
     appearanceSettings.forEach(setting => {

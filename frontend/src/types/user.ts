@@ -1,11 +1,13 @@
 export interface User {
   id: string
+  username: string
   email: string
   name: string
   phone?: string
   avatar?: string
   role: UserRole
   status: UserStatus
+  is_active: boolean
   department?: string
   position?: string
   last_login_at?: string

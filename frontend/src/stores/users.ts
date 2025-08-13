@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { ApiService } from '@/api'
-import type { User, UserFilters, UserStatistics } from '@/types/user'
+import type { User, UserFilters, UserStatistics, UserRole } from '@/types/user'
 
 export const useUsersStore = defineStore('users', () => {
   // State
@@ -161,7 +161,7 @@ export const useUsersStore = defineStore('users', () => {
     return updateUser(id, { status: 'inactive' })
   }
 
-  async function updateUserRole(id: string, role: string) {
+  async function updateUserRole(id: string, role: UserRole) {
     return updateUser(id, { role })
   }
 
@@ -170,7 +170,7 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null
 
     try {
-      const response = await ApiService.post(`/api/users/${id}/reset-password`)
+      const response = await ApiService.post(`/api/users/${id}/reset-password`, {})
       return response.data
     } catch (err: any) {
       error.value = err.message || '重置密码失败'
@@ -203,8 +203,7 @@ export const useUsersStore = defineStore('users', () => {
 
     try {
       const response = await ApiService.get('/api/users/export', {
-        params: filters,
-        responseType: 'blob'
+        params: filters
       })
 
       // Create download link

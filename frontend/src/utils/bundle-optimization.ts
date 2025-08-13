@@ -118,7 +118,8 @@ export function createAsyncComponent<T extends Component>(
         loadedChunks.add(componentName)
 
         console.log(`✅ Successfully loaded ${componentName}`)
-        return component
+        // Handle both direct component and { default: Component } exports
+        return (component as any)?.default || component
       } catch (error) {
         state.retryCount++
         console.warn(`❌ Failed to load ${componentName} (attempt ${attempt + 1}):`, error)

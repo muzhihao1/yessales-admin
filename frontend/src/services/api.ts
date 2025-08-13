@@ -52,7 +52,7 @@ export const api = {
       return {
         data: {
           data: response.data,
-          total: response.data?.length || 0
+          total: Array.isArray(response.data) ? response.data.length : 0
         }
       }
     }
@@ -78,7 +78,7 @@ export const api = {
       // Transform the response to include additional customer details structure
       if (response.success && response.data) {
         const customerDetail = {
-          ...response.data,
+          ...(response.data as object),
           quotes: [],
           recent_activities: [],
           total_quotes: 0,
@@ -94,7 +94,7 @@ export const api = {
             query: { customer_id: customerId },
             select: '*'
           })
-          if (quotesResponse.success && quotesResponse.data) {
+          if (quotesResponse.success && quotesResponse.data && Array.isArray(quotesResponse.data)) {
             customerDetail.quotes = quotesResponse.data.map((quote: any) => ({
               id: quote.id,
               quote_number: quote.quote_no || quote.id,

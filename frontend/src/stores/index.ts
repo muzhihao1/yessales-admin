@@ -20,7 +20,7 @@ export function createAppPinia(middlewareConfig?: Partial<GlobalMiddlewareConfig
   if (process.env.NODE_ENV === 'development') {
     pinia.use(({ store }) => {
       store.$subscribe((mutation, state) => {
-        console.log(`🔄 [${store.$id}] ${mutation.type}:`, mutation.payload)
+        console.log(`🔄 [${store.$id}] ${mutation.type}:`, mutation.events || 'state_change')
       })
     })
   }
@@ -49,7 +49,7 @@ export function createAppPiniaFull(middlewareConfig?: Partial<GlobalMiddlewareCo
     // 基础的mutation日志（保持原有功能）
     pinia.use(({ store }) => {
       store.$subscribe((mutation, state) => {
-        console.log(`🔄 [${store.$id}] ${mutation.type}:`, mutation.payload)
+        console.log(`🔄 [${store.$id}] ${mutation.type}:`, mutation.events || 'state_change')
       })
     })
 

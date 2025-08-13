@@ -196,7 +196,7 @@
               v-model="newUser.email"
               class="form-input"
               placeholder="请输入邮箱地址"
-              type="email"
+              type="text"
             />
           </div>
           <div class="form-item">
@@ -254,7 +254,7 @@
               v-model="inviteEmail"
               class="form-input"
               placeholder="请输入邀请邮箱"
-              type="email"
+              type="text"
             />
           </div>
           <div class="form-item">
@@ -291,7 +291,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUsersStore } from '@/stores/users'
-import type { CreateUserData, User } from '@/types/user'
+import type { CreateUserData, User, UserRole, UserStatus } from '@/types/user'
 import DataTable from '@/components/admin/DataTable.vue'
 import type { TableColumn } from '@/components/admin/DataTable.vue'
 
@@ -611,8 +611,8 @@ async function handleExport() {
   exporting.value = true
   try {
     await usersStore.exportUsers({
-      role: roleOptions[roleIndex.value].value,
-      status: statusOptions[statusIndex.value].value,
+      role: roleOptions[roleIndex.value].value as UserRole,
+      status: statusOptions[statusIndex.value].value as UserStatus,
       search: searchQuery.value,
       department: departmentFilter.value
     })

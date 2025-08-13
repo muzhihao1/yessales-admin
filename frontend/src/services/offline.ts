@@ -99,10 +99,14 @@ function getNetworkInfo(): Partial<NetworkStatus> {
     let downlink = undefined
     let rtt = undefined
     
-    // @ts-ignore - Connection API is experimental
+    // Connection API is experimental - add type safety
     if ('connection' in navigator) {
-      // @ts-ignore
-      const connection = navigator.connection
+      const connection = (navigator as any).connection as {
+        type?: string
+        effectiveType?: string
+        downlink?: number
+        rtt?: number
+      }
       connectionType = connection.type || connection.effectiveType || 'unknown'
       effectiveType = connection.effectiveType
       downlink = connection.downlink
@@ -148,7 +152,7 @@ export const useOfflineStore = defineStore('offline', () => {
     isRunning: false,
     lastSyncTime: 0,
     nextSyncTime: 0,
-    syncInterval: null as number | null,
+    syncInterval: null as ReturnType<typeof setInterval> | null,
     operationsProcessed: 0,
     operationsFailed: 0
   })

@@ -82,7 +82,7 @@ export interface User {
   id: string
   username: string
   email?: string
-  role: 'admin' | 'sales'
+  role: 'admin' | 'sales_manager' | 'sales_rep' | 'viewer'
   name: string
   phone?: string
   is_active: boolean
@@ -111,6 +111,25 @@ export interface Quote {
   customer?: Customer
   sales?: User
   items?: QuoteItem[]
+  // Customer-related properties for display
+  customer_name?: string
+  customer_phone?: string
+  customer_email?: string
+  customer_company?: string
+  delivery_address?: string
+  // Financial properties
+  subtotal?: number
+  tax_rate?: number
+  total_amount?: number
+  terms_conditions?: string
+  // Timeline properties
+  submitted_at?: string
+  approved_at?: string
+  rejected_at?: string
+  created_by_name?: string
+  approved_by_name?: string
+  rejected_by_name?: string
+  rejection_reason?: string
 }
 
 export interface QuoteItem {
@@ -128,6 +147,10 @@ export interface QuoteItem {
   total_price: number
   image_url?: string
   created_at?: string
+  // Additional product properties for display
+  product_name?: string
+  product_sku?: string
+  subtotal?: number
 }
 
 export interface OperationLog {
@@ -140,4 +163,11 @@ export interface OperationLog {
   ip_address?: string
   user_agent?: string
   created_at: string
+}
+
+export interface QuoteExportParams {
+  startDate?: string
+  endDate?: string
+  status?: string
+  quoteIds?: string[]
 }

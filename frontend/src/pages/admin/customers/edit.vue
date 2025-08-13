@@ -166,7 +166,7 @@
               v-model="formData.email"
               class="form-input"
               placeholder="请输入邮箱地址"
-              type="email"
+              type="text"
               :class="{ error: errors.email }"
             />
             <span v-if="errors.email" class="error-text">{{ errors.email }}</span>

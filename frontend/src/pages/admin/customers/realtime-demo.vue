@@ -181,7 +181,7 @@
           :columns="enhancedColumns"
           :actions="customerActions"
           :selectable="true"
-          :is-selected="id => isSelected(id)"
+          :is-selected="id => isSelected(String(id))"
           :preset="'default'"
           :container-height="600"
           :page-size="50"
@@ -325,7 +325,6 @@ import {
 import { type DataItem } from '@/composables/useRealTimeUpdates'
 import VirtualTableContainer from '@/components/admin/table/VirtualTableContainer.vue'
 import BatchOperationBar from '@/components/admin/BatchOperationBar.vue'
-import AdminLayout from '@/layouts/AdminLayout.vue'
 
 /**
  * 客户管理实时更新演示页面

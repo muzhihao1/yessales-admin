@@ -78,8 +78,8 @@
             <template #suffix>
               <SalesButton
                 v-if="form.customerWechat && !form.customerPhone"
-                size="mini"
-                type="plain"
+                size="small"
+                type="default"
                 @click="copyWechatToPhone"
               >
                 同步到手机号
@@ -91,7 +91,7 @@
             v-model="form.customerEmail"
             label="邮箱地址"
             placeholder="用于发送报价单（选填）"
-            type="email"
+            type="text"
             :error="errors.customerEmail"
             @blur="validateEmail"
           >
@@ -139,8 +139,8 @@
             </template>
             <template #suffix>
               <SalesButton
-                size="mini"
-                type="plain"
+                size="small"
+                type="default"
                 @click="getCurrentLocation"
                 :loading="locationLoading"
               >
@@ -286,7 +286,7 @@
             </view>
 
             <SalesInput
-              v-model.number="pricingConfig.discountValue"
+              v-model="discountValueStr"
               :label="pricingConfig.discountType === 'percentage' ? '折扣比例 (%)' : '折扣金额 (¥)'"
               :placeholder="
                 pricingConfig.discountType === 'percentage' ? '输入0-50' : '输入折扣金额'
@@ -318,7 +318,7 @@
 
             <view class="tax-controls">
               <SalesInput
-                v-model.number="pricingConfig.taxRate"
+                v-model="taxRateStr"
                 label="税率 (%)"
                 placeholder="输入税率"
                 type="number"
@@ -353,7 +353,7 @@
             </view>
 
             <SalesInput
-              v-model.number="pricingConfig.deliveryFee"
+              v-model="deliveryFeeStr"
               label="配送费 (¥)"
               placeholder="输入配送费用"
               type="number"
@@ -361,7 +361,7 @@
             />
 
             <SalesInput
-              v-model.number="pricingConfig.installationFee"
+              v-model="installationFeeStr"
               label="安装费 (¥)"
               placeholder="输入安装费用"
               type="number"
@@ -379,7 +379,7 @@
                 <view class="charge-amount-row">
                   <SalesButton
                     :type="charge.type === 'fixed' ? 'primary' : 'default'"
-                    size="mini"
+                    size="small"
                     @click="
                       () => {
                         charge.type = 'fixed'
@@ -391,7 +391,7 @@
                   </SalesButton>
                   <SalesButton
                     :type="charge.type === 'percentage' ? 'primary' : 'default'"
-                    size="mini"
+                    size="small"
                     @click="
                       () => {
                         charge.type = 'percentage'
@@ -402,19 +402,19 @@
                     比例
                   </SalesButton>
                   <SalesInput
-                    v-model.number="charge.amount"
+                    :model-value="charge.amount.toString()"
+                    @update:model-value="(value: string) => { charge.amount = parseFloat(value) || 0; saveDraft() }"
                     :placeholder="charge.type === 'percentage' ? '百分比' : '金额'"
                     type="number"
-                    @input="saveDraft"
                   />
-                  <SalesButton size="mini" type="danger" @click="removeOtherCharge(charge.id)">
+                  <SalesButton size="small" type="danger" @click="removeOtherCharge(charge.id)">
                     删除
                   </SalesButton>
                 </view>
               </view>
             </view>
 
-            <SalesButton type="plain" size="small" @click="addOtherCharge">
+            <SalesButton type="default" size="small" @click="addOtherCharge">
               + 添加其他费用
             </SalesButton>
           </view>
@@ -437,7 +437,7 @@
             </view>
 
             <SalesInput
-              v-model.number="quoteMetadata.validityDays"
+              v-model="validityDaysStr"
               label="有效天数"
               placeholder="30"
               type="number"
@@ -598,11 +598,11 @@ const showProductSelector = ref(false)
 
 // 产品分类数据
 const categories = ref<Category[]>([
-  { id: 'tables', name: '台球桌' },
-  { id: 'cues', name: '球杆' },
-  { id: 'balls', name: '台球' },
-  { id: 'accessories', name: '配件' },
-  { id: 'maintenance', name: '维护用品' }
+  { id: 'tables', name: '台球桌', is_active: true, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' },
+  { id: 'cues', name: '球杆', is_active: true, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' },
+  { id: 'balls', name: '台球', is_active: true, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' },
+  { id: 'accessories', name: '配件', is_active: true, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' },
+  { id: 'maintenance', name: '维护用品', is_active: true, created_at: '2024-01-01T00:00:00Z', updated_at: '2024-01-01T00:00:00Z' }
 ])
 
 // 价格配置
@@ -648,6 +648,47 @@ const paymentOptions = [
 
 // 提交状态
 const submitting = ref(false)
+
+// 数字字段的字符串计算属性（为了v-model兼容性）
+const discountValueStr = computed({
+  get: () => pricingConfig.discountValue.toString(),
+  set: (value: string) => {
+    const num = parseFloat(value) || 0
+    pricingConfig.discountValue = num
+  }
+})
+
+const taxRateStr = computed({
+  get: () => pricingConfig.taxRate.toString(),
+  set: (value: string) => {
+    const num = parseFloat(value) || 0
+    pricingConfig.taxRate = num
+  }
+})
+
+const deliveryFeeStr = computed({
+  get: () => pricingConfig.deliveryFee.toString(),
+  set: (value: string) => {
+    const num = parseFloat(value) || 0
+    pricingConfig.deliveryFee = num
+  }
+})
+
+const installationFeeStr = computed({
+  get: () => pricingConfig.installationFee.toString(),
+  set: (value: string) => {
+    const num = parseFloat(value) || 0
+    pricingConfig.installationFee = num
+  }
+})
+
+const validityDaysStr = computed({
+  get: () => quoteMetadata.validityDays.toString(),
+  set: (value: string) => {
+    const num = parseInt(value) || 30
+    quoteMetadata.validityDays = num
+  }
+})
 
 // 客户类型选项
 const customerTypes = ref([
@@ -1149,10 +1190,11 @@ const handleSubmit = async () => {
       },
       items: selectedProducts.value.map(item => ({
         product_id: item.product.id,
-        product_name: item.product.name,
-        product_model: item.product.model,
-        sku_id: item.skuId,
-        sku_name: item.skuName,
+        product_sku_id: item.skuId,
+        type: 'product' as const,
+        name: item.product.name,
+        model: item.product.model,
+        spec: item.skuName,
         quantity: item.quantity,
         unit_price: item.price,
         total_price: item.subtotal

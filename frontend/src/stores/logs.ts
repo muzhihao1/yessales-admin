@@ -225,6 +225,7 @@ export const useLogsStore = defineStore('logs', () => {
           delete: 50,
           login: 100,
           logout: 50,
+          register: 20,
           approve: 30,
           reject: 10,
           assign: 40,

@@ -25,6 +25,42 @@ export interface VirtualScrollItem {
   [key: string]: any
 }
 
+/**
+ * 预设配置
+ */
+export const virtualScrollPresets = {
+  // 小型行（适合简单文本列表）
+  compact: {
+    itemHeight: 40,
+    overscan: 10,
+    pageSize: 100
+  },
+
+  // 标准行（适合普通表格）
+  default: {
+    itemHeight: 60,
+    overscan: 5,
+    pageSize: 50
+  },
+
+  // 大型行（适合带图片的复杂内容）
+  large: {
+    itemHeight: 120,
+    overscan: 3,
+    pageSize: 30
+  },
+
+  // 移动端优化
+  mobile: {
+    itemHeight: 80,
+    overscan: 3,
+    pageSize: 20,
+    threshold: 0.7
+  }
+} as const
+
+export type VirtualScrollPreset = keyof typeof virtualScrollPresets
+
 export interface VirtualScrollOptions {
   itemHeight: number // 默认行高
   containerHeight: number // 容器高度
@@ -33,6 +69,7 @@ export interface VirtualScrollOptions {
   pageSize: number // 每次加载的数据量
   minHeight: number // 最小行高
   maxHeight: number // 最大行高
+  preset?: VirtualScrollPreset // 预设配置类型
 }
 
 export interface VirtualScrollState {
@@ -328,39 +365,3 @@ export function useVirtualScrolling<T extends VirtualScrollItem>(
     hasData: computed(() => state.items.length > 0)
   }
 }
-
-/**
- * 预设配置
- */
-export const virtualScrollPresets = {
-  // 小型行（适合简单文本列表）
-  compact: {
-    itemHeight: 40,
-    overscan: 10,
-    pageSize: 100
-  },
-
-  // 标准行（适合普通表格）
-  default: {
-    itemHeight: 60,
-    overscan: 5,
-    pageSize: 50
-  },
-
-  // 大型行（适合带图片的复杂内容）
-  large: {
-    itemHeight: 120,
-    overscan: 3,
-    pageSize: 30
-  },
-
-  // 移动端优化
-  mobile: {
-    itemHeight: 80,
-    overscan: 3,
-    pageSize: 20,
-    threshold: 0.7
-  }
-} as const
-
-export type VirtualScrollPreset = keyof typeof virtualScrollPresets

@@ -348,7 +348,7 @@ export const usePersistenceStore = defineStore('persistence', () => {
         debounceTimers.delete(storeId)
       }, finalConfig.debounce)
 
-      debounceTimers.set(storeId, timer)
+      debounceTimers.set(storeId, timer as unknown as number)
     }
 
     // Setup watcher

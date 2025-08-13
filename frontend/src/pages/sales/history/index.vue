@@ -39,7 +39,7 @@
             <text class="filter-text">{{ filter.label }}</text>
             <text class="filter-remove">×</text>
           </view>
-          <SalesButton size="mini" type="plain" @click="clearAllFilters"> 清除全部 </SalesButton>
+          <SalesButton size="small" type="default" @click="clearAllFilters"> 清除全部 </SalesButton>
         </view>
       </view>
 
@@ -82,7 +82,7 @@
           <text class="filter-title">报价金额</text>
           <view class="amount-filter">
             <SalesInput
-              v-model.number="filters.minAmount"
+              v-model="filters.minAmount"
               placeholder="最低金额"
               type="number"
               size="small"
@@ -90,7 +90,7 @@
             />
             <text class="amount-separator">-</text>
             <SalesInput
-              v-model.number="filters.maxAmount"
+              v-model="filters.maxAmount"
               placeholder="最高金额"
               type="number"
               size="small"
@@ -198,13 +198,13 @@
               </view>
 
               <view class="card-actions">
-                <SalesButton size="mini" type="plain" @click.stop="editQuote(quote)">
+                <SalesButton size="small" type="default" @click.stop="editQuote(quote)">
                   编辑
                 </SalesButton>
-                <SalesButton size="mini" type="plain" @click.stop="duplicateQuote(quote)">
+                <SalesButton size="small" type="default" @click.stop="duplicateQuote(quote)">
                   复制
                 </SalesButton>
-                <SalesButton size="mini" type="plain" @click.stop="showQuoteActions(quote)">
+                <SalesButton size="small" type="default" @click.stop="showQuoteActions(quote)">
                   更多
                 </SalesButton>
               </view>
@@ -272,8 +272,8 @@ const pageSize = 10
 const filters = reactive({
   status: 'all' as string,
   datePeriod: 'all' as string,
-  minAmount: undefined as number | undefined,
-  maxAmount: undefined as number | undefined,
+  minAmount: undefined as string | undefined,
+  maxAmount: undefined as string | undefined,
   sortBy: 'createdAt_desc' as string
 })
 
@@ -370,10 +370,10 @@ const filteredQuotes = computed(() => {
 
   // Amount filter
   if (filters.minAmount !== undefined) {
-    result = result.filter(quote => quote.totalAmount >= filters.minAmount!)
+    result = result.filter(quote => quote.totalAmount >= parseFloat(filters.minAmount!))
   }
   if (filters.maxAmount !== undefined) {
-    result = result.filter(quote => quote.totalAmount <= filters.maxAmount!)
+    result = result.filter(quote => quote.totalAmount <= parseFloat(filters.maxAmount!))
   }
 
   // Sort
@@ -435,7 +435,7 @@ const activeFilters = computed(() => {
   }
 
   if (filters.minAmount !== undefined || filters.maxAmount !== undefined) {
-    const min = filters.minAmount || 0
+    const min = filters.minAmount || '0'
     const max = filters.maxAmount || '无限'
     active.push({ key: 'amount', label: `金额: ¥${min} - ¥${max}` })
   }
