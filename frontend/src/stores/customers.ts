@@ -319,8 +319,7 @@ export const useCustomersStore = defineStore('customers', () => {
         params: {
           ...exportData,
           format: exportData.format || 'excel'
-        },
-        responseType: 'blob'
+        }
       })
 
       // Create download link

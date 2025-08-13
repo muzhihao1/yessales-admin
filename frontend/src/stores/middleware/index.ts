@@ -209,7 +209,7 @@ export class StoreEnhancer {
    * Check if a feature should be enabled
    */
   private shouldEnable(feature: keyof StoreMiddlewareConfig): boolean {
-    return this.config[feature] !== undefined && this.config[feature] !== false
+    return this.config[feature] !== undefined
   }
 }
 

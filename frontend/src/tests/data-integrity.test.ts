@@ -59,6 +59,7 @@ function createMockProduct(overrides?: Partial<Product>): Product {
     stock_quantity: 100,
     min_stock_level: 10,
     status: 'active',
+    is_active: true,
     description: '测试产品描述',
     specifications: { cpu: '8核', memory: '16GB', storage: '512GB SSD' },
     supplier: '华为技术有限公司',
@@ -73,6 +74,7 @@ function createMockProduct(overrides?: Partial<Product>): Product {
 function createMockQuote(overrides?: Partial<Quote>): Quote {
   return {
     id: 'quote_' + Math.random().toString(36).substr(2, 9),
+    quote_no: 'Q' + new Date().getFullYear() + Math.random().toString().substr(2, 6),
     quote_number: 'Q' + new Date().getFullYear() + Math.random().toString().substr(2, 6),
     customer_id: 'cust_123',
     // customer_name: // Removed - not in Quote interface '测试客户',
@@ -109,6 +111,7 @@ function createMockUser(overrides?: Partial<User>): User {
     name: '测试用户',
     role: 'sales_rep',
     status: 'active',
+    is_active: true,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     ...overrides
@@ -207,7 +210,21 @@ describe('Data Consistency and Integrity Tests', () => {
       })
 
       await customersStore.createCustomer(customer)
-      await quotesStore.createQuote(quote)
+      
+      // Convert Quote to CreateQuoteRequest format
+      const createQuoteRequest = {
+        customer: {
+          name: customer.name,
+          phone: customer.phone,
+          wechat: customer.wechat_id,
+          address: customer.address,
+          remark: customer.notes
+        },
+        items: quote.items || [],
+        remark: quote.remark
+      }
+      
+      await quotesStore.createQuote(createQuoteRequest)
 
       // Verify referential integrity
       expect(quote.customer_id).toBe(customer.id)
@@ -254,16 +271,15 @@ describe('Data Consistency and Integrity Tests', () => {
         status: 'pending'
       })
 
-      // Mock customer with active quotes
-      vi.spyOn(customersStore, 'deleteCustomer').mockResolvedValue({
-        success: false,
-        error: { message: 'Cannot delete customer with active quotes', code: 'ACTIVE_REFERENCES' }
-      })
+      // Mock customer with active quotes - deleteCustomer throws error when it fails
+      vi.spyOn(customersStore, 'deleteCustomer').mockRejectedValue(
+        new Error('Cannot delete customer with active quotes')
+      )
 
-      const result = await customersStore.deleteCustomer(customer.id)
-
-      expect(result.success).toBe(false)
-      expect(result.error?.code).toBe('ACTIVE_REFERENCES')
+      // Expect the method to throw an error
+      await expect(customersStore.deleteCustomer(customer.id)).rejects.toThrow(
+        'Cannot delete customer with active quotes'
+      )
     })
   })
 
@@ -380,14 +396,16 @@ describe('Data Consistency and Integrity Tests', () => {
       const subtotal = quote.items.reduce((sum, item) => sum + item.total_price, 0)
       expect(subtotal).toBe(20000)
 
-      // Verify final amount calculation with discount and tax
-      const expectedFinalAmount = subtotal - (quote.discount_amount || 0) + (quote.tax_amount || 0)
+      // Verify final amount calculation with tax (no discount_amount in Quote interface)
+      const expectedFinalAmount = subtotal + (quote.tax_amount || 0)
       expect(quote.final_amount).toBe(expectedFinalAmount)
     })
 
     test('should validate quote item quantities against stock', async () => {
       const product = createMockProduct({ stock_quantity: 5 })
+      const customer = createMockCustomer()
       const quote = createMockQuote({
+        customer_id: customer.id,
         items: [
           {
             product_id: product.id,
@@ -402,17 +420,26 @@ describe('Data Consistency and Integrity Tests', () => {
 
       vi.spyOn(quotesStore, 'createQuote').mockResolvedValue({
         success: false,
-        error: {
-          message: 'Insufficient stock for quote items',
-          code: 'INSUFFICIENT_STOCK',
-          details: [`Product ${product.name}: requested 10, available 5`]
-        }
+        error: 'Insufficient stock for quote items'
       })
 
-      const result = await quotesStore.createQuote(quote)
+      // Convert Quote to CreateQuoteRequest format
+      const createQuoteRequest = {
+        customer: {
+          name: customer.name,
+          phone: customer.phone,
+          wechat: customer.wechat_id,
+          address: customer.address,
+          remark: customer.notes
+        },
+        items: quote.items || [],
+        remark: quote.remark
+      }
+
+      const result = await quotesStore.createQuote(createQuoteRequest)
 
       expect(result.success).toBe(false)
-      expect(result.error?.code).toBe('INSUFFICIENT_STOCK')
+      expect(result.error).toBe('Insufficient stock for quote items')
     })
 
     test('should handle quote status transitions correctly', async () => {
@@ -430,14 +457,14 @@ describe('Data Consistency and Integrity Tests', () => {
       for (const transition of validTransitions) {
         vi.spyOn(quotesStore, 'updateQuoteStatus').mockResolvedValue(
           transition.valid
-            ? { success: true, data: { ...quote, status: transition.to } }
+            ? { success: true, data: { ...quote, status: transition.to as 'draft' | 'pending' | 'approved' | 'rejected' | 'completed' } }
             : {
                 success: false,
                 error: { message: 'Invalid status transition', code: 'INVALID_TRANSITION' }
               }
         )
 
-        const result = await quotesStore.updateQuoteStatus(quote.id, transition.to)
+        const result = await quotesStore.updateQuoteStatus(quote.id, transition.to as 'draft' | 'pending' | 'approved' | 'rejected' | 'completed')
 
         if (transition.valid) {
           expect(result.success).toBe(true)
@@ -544,17 +571,21 @@ describe('Data Consistency and Integrity Tests', () => {
 
       // Mock real-time update event
       const realtimeUpdate = {
-        eventType: 'UPDATE',
+        eventType: 'UPDATE' as const,
+        schema: 'public',
+        table: 'customers',
+        commit_timestamp: new Date().toISOString(),
+        errors: [],
         new: { ...customer, name: '更新后的客户名' },
         old: customer
       }
 
       // Simulate real-time update
-      vi.spyOn(realtimeService, 'subscribe').mockImplementation((tableName, callback) => {
+      vi.spyOn(realtimeService, 'subscribeToTable').mockImplementation(async (tableName, callback) => {
         callback(realtimeUpdate)
       })
 
-      realtimeService.subscribe('customers', payload => {
+      realtimeService.subscribeToTable('customers', payload => {
         if (payload.eventType === 'UPDATE') {
           customersStore.customers = customersStore.customers.map(c =>
             c.id === payload.new.id ? payload.new : c
@@ -712,7 +743,21 @@ describe('Data Consistency and Integrity Tests', () => {
       // Execute operations
       const customerResult = await customersStore.createCustomer(customer)
       const productResult = await productsStore.createProduct(product)
-      const quoteResult = await quotesStore.createQuote(quote)
+      
+      // Convert Quote to CreateQuoteRequest format
+      const createQuoteRequest = {
+        customer: {
+          name: customer.name,
+          phone: customer.phone,
+          wechat: customer.wechat_id,
+          address: customer.address,
+          remark: customer.notes
+        },
+        items: quote.items || [],
+        remark: quote.remark
+      }
+      
+      const quoteResult = await quotesStore.createQuote(createQuoteRequest)
 
       // Verify all operations succeeded
       expect(customerResult.success).toBe(true)
@@ -740,15 +785,29 @@ describe('Data Consistency and Integrity Tests', () => {
       // Quote creation fails due to invalid customer reference
       vi.spyOn(quotesStore, 'createQuote').mockResolvedValue({
         success: false,
-        error: { message: 'Customer not found', code: 'INVALID_REFERENCE' }
+        error: 'Customer not found'
       })
 
       const customerResult = await customersStore.createCustomer(customer)
-      const quoteResult = await quotesStore.createQuote(failedQuote)
+      
+      // Convert Quote to CreateQuoteRequest format (even though this will fail)
+      const createFailedQuoteRequest = {
+        customer: {
+          name: 'Nonexistent Customer',
+          phone: '000-0000-0000',
+          wechat: '',
+          address: '',
+          remark: 'Test failure case'
+        },
+        items: failedQuote.items || [],
+        remark: failedQuote.remark
+      }
+      
+      const quoteResult = await quotesStore.createQuote(createFailedQuoteRequest)
 
       expect(customerResult.success).toBe(true)
       expect(quoteResult.success).toBe(false)
-      expect(quoteResult.error?.code).toBe('INVALID_REFERENCE')
+      expect(quoteResult.error).toBe('Customer not found')
     })
 
     test('should recover from data corruption scenarios', async () => {
@@ -776,14 +835,13 @@ describe('Data Consistency and Integrity Tests', () => {
           source: data.source || 'walk_in',
           // industry: data.industry || '', // Removed - not in Customer interface
           // company_size: data.company_size || 'small', // Removed - not in Customer interface
-          location: data.location || '',
-          source: data.source || 'other',
-          assigned_to: data.assigned_to || '',
-          priority_level: data.priority_level || 'low',
+          // location: data.location || '', // Removed - not in Customer interface
+          // assigned_to: data.assigned_to || '', // Removed - not in Customer interface
+          // priority_level: data.priority_level || 'low', // Removed - not in Customer interface
           // credit_limit: data.credit_limit || 0, // Removed - not in Customer interface
-          payment_terms: data.payment_terms || '30_days',
+          // payment_terms: data.payment_terms || '30_days', // Removed - not in Customer interface
           preferred_contact_method: data.preferred_contact_method || 'phone',
-          tags: Array.isArray(data.tags) ? data.tags : [],
+          // tags: Array.isArray(data.tags) ? data.tags : [], // Removed - not in Customer interface
           notes: data.notes || '',
           created_at: data.created_at || new Date().toISOString(),
           updated_at: data.updated_at || new Date().toISOString()
@@ -838,13 +896,8 @@ describe('Data Consistency and Integrity Tests', () => {
       // Mock bulk operation
       vi.spyOn(customersStore, 'bulkCreateCustomers').mockResolvedValue({
         success: true,
-        data: largeCustomerSet,
-        statistics: {
-          total: 1000,
-          successful: 1000,
-          failed: 0,
-          duration_ms: 500
-        }
+        data: largeCustomerSet
+        // statistics not part of ApiResponse interface
       })
 
       const result = await customersStore.bulkCreateCustomers(largeCustomerSet)

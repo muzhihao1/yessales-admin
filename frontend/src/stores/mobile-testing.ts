@@ -403,7 +403,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
     const testId = `${testType}_${device.id}_${testContext.timestamp}`
 
     try {
-      startLoading('mobile-testing', `running-${testType}`)
+      startLoading(`running-${testType}`)
 
       let result: TestResult
 
@@ -448,7 +448,7 @@ export const useMobileTestingStore = defineStore('mobileTesting', () => {
       console.log(`✅ ${testType} 测试完成:`, result.status)
       return result
     } finally {
-      stopLoading('mobile-testing', `running-${testType}`)
+      stopLoading()
       currentTest.value = null
     }
   }
