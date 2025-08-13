@@ -1,12 +1,67 @@
 {
-  "name": "yessales",
-  "version": "1.0.0",
-  "private": true,
+  "name": "yessales-frontend",
+  "version": "1.0.1",
+  "description": "YesSales（耶氏台球斗南销售中心报价系统）Frontend - Vue 3 + Supabase",
+  "type": "module",
   "scripts": {
-    "build": "cd frontend && npm run build",
-    "dev": "cd frontend && npm run dev",
-    "type-check": "cd frontend && npm run type-check",
-    "lint": "cd frontend && npm run lint"
+    "dev": "vite --host 0.0.0.0 --port 3001",
+    "build": "vite build",
+    "build:analyze": "vite build --mode analyze",
+    "type-check": "vue-tsc --noEmit",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .eslintignore",
+    "format": "prettier --write src/",
+    "validate": "npm run type-check && npm run lint && prettier --check src/",
+    "preview": "vite preview --port 4173",
+    "verify-env": "node scripts/verify-env.js",
+    "test:unit": "vitest",
+    "test:smoke": "vitest run src/tests/"
   },
-  "description": "YesSales billiards equipment quotation management system"
+  "dependencies": {
+    "@supabase/supabase-js": "^2.54.0",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "crypto-js": "^4.2.0",
+    "pinia": "^2.1.7",
+    "sass-embedded": "^1.90.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.19",
+    "vue": "^3.4.29",
+    "vue-router": "^4.2.4",
+    "vue-tsc": "^2.0.29"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@vitejs/plugin-legacy": "^5.4.1",
+    "@vue/eslint-config-typescript": "^13.0.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-vue": "^9.17.0",
+    "postcss": "^8.4.39",
+    "prettier": "^3.3.2",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "iOS >= 10",
+    "Android >= 6"
+  ],
+  "keywords": [
+    "vue3",
+    "supabase",
+    "typescript",
+    "billiards",
+    "sales",
+    "quotation"
+  ],
+  "author": "YesSales Team",
+  "license": "UNLICENSED",
+  "private": true
 }

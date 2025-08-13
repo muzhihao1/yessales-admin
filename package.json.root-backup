@@ -1,0 +1,12 @@
+{
+  "name": "yessales",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd frontend && npm run build",
+    "dev": "cd frontend && npm run dev",
+    "type-check": "cd frontend && npm run type-check",
+    "lint": "cd frontend && npm run lint"
+  },
+  "description": "YesSales billiards equipment quotation management system"
+}
