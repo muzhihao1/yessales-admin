@@ -15,12 +15,7 @@
       }
     },
     {
-      "src": "/sales(.*)",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/admin(.*)",
-      "dest": "/index.html"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
