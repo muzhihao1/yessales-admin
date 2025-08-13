@@ -6,13 +6,28 @@
 import { type RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-// Import all page components
+// Import all page components with explicit chunk names and error handling
 // Sales pages
-const SalesIndex = () => import('@/pages/sales/index.vue')
-const SalesQuoteCreate = () => import('@/pages/sales/quote/create.vue')
-const SalesQuotePreview = () => import('@/pages/sales/quote/preview.vue')
-const SalesHistory = () => import('@/pages/sales/history/index.vue')
-const SalesSettings = () => import('@/pages/sales/settings/index.vue')
+const SalesIndex = () => import(/* webpackChunkName: "sales-home" */ '@/pages/sales/index.vue').catch(err => {
+  console.error('Failed to load SalesIndex component:', err)
+  throw err
+})
+const SalesQuoteCreate = () => import(/* webpackChunkName: "sales-quote-create" */ '@/pages/sales/quote/create.vue').catch(err => {
+  console.error('Failed to load SalesQuoteCreate component:', err)
+  throw err
+})
+const SalesQuotePreview = () => import(/* webpackChunkName: "sales-quote-preview" */ '@/pages/sales/quote/preview.vue').catch(err => {
+  console.error('Failed to load SalesQuotePreview component:', err)
+  throw err
+})
+const SalesHistory = () => import(/* webpackChunkName: "sales-history" */ '@/pages/sales/history/index.vue').catch(err => {
+  console.error('Failed to load SalesHistory component:', err)
+  throw err
+})
+const SalesSettings = () => import(/* webpackChunkName: "sales-settings" */ '@/pages/sales/settings/index.vue').catch(err => {
+  console.error('Failed to load SalesSettings component:', err)
+  throw err
+})
 
 // Admin pages
 const AdminLogin = () => import('@/pages/admin/login/index.vue')
@@ -232,7 +247,7 @@ const router = createRouter({
 
 /**
  * Global navigation guards - 全局路由守卫
- * TODO: Re-implement after fixing Pinia initialization timing
+ * Enhanced with component loading error handling
  */
 router.beforeEach(async (to, from, next) => {
   // 设置页面标题
@@ -240,8 +255,32 @@ router.beforeEach(async (to, from, next) => {
     document.title = to.meta.title as string
   }
 
+  // Log navigation for debugging
+  console.log(`🧭 Navigating from ${from.path} to ${to.path}`)
+
   // For now, just allow all navigation - auth checks will happen in components
   next()
+})
+
+/**
+ * Global error handler for route component loading failures
+ */
+router.onError((error) => {
+  console.error('🚨 Router Error:', error)
+  console.error('Error details:', {
+    message: error.message,
+    stack: error.stack,
+    name: error.name
+  })
+  
+  // If it's a chunk loading error, try to reload the page
+  if (error.message.includes('Loading chunk') || error.message.includes('Failed to import')) {
+    console.warn('🔄 Chunk loading failed, attempting page reload...')
+    // Give user a chance to see the error before reloading
+    setTimeout(() => {
+      window.location.reload()
+    }, 2000)
+  }
 })
 
 // Commented out complex auth logic to fix Pinia initialization issues

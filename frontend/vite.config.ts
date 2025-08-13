@@ -28,11 +28,19 @@ export default defineConfig({
         manualChunks: {
           vendor: ['vue', 'vue-router', 'pinia'],
           supabase: ['@supabase/supabase-js']
-        }
+        },
+        // Ensure consistent chunk naming
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     },
-    sourcemap: false,
-    minify: 'esbuild'
+    sourcemap: process.env.NODE_ENV === 'development' ? 'inline' : false,
+    minify: 'esbuild',
+    // Add more verbose build output for debugging
+    reportCompressedSize: true,
+    // Ensure proper module resolution
+    target: 'esnext'
   },
   server: {
     port: 3001,
